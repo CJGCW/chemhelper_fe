@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Group colors */
+  --c-hydrogen:        #94a3b8;
+  --c-alkali:          #f87171;
+  --c-alkaline:        #fb923c;
+  --c-transition:      #facc15;
+  --c-post-transition: #a3e635;
+  --c-metalloid:       #2dd4bf;
+  --c-carbon:          #4ade80;
+  --c-pnictogen:       #34d399;
+  --c-chalcogen:       #38bdf8;
+  --c-halogen:         #60a5fa;
+  --c-noble:           #c084fc;
+  --c-lanthanide:      #f472b6;
+  --c-actinide:        #fb7185;
+  --c-unknown:         #475569;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #08090d;
+  color: #c8cdd8;
+  font-family: 'Outfit', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0e1016;
+}
+::-webkit-scrollbar-thumb {
+  background: #1c1f2e;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2a2d3d;
+}
+
+/* Scroll hint shadow for horizontal scroll containers */
+.scroll-hint {
+  position: relative;
+}
+.scroll-hint::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: 100%;
+  background: linear-gradient(to right, transparent, #08090d);
+  pointer-events: none;
+  z-index: 1;
+}

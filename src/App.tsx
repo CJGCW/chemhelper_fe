@@ -1,0 +1,21 @@
+import { Routes, Route, Navigate } from 'react-router-dom'
+import AppLayout from './components/Layout/AppLayout'
+import TablePage from './pages/TablePage'
+import PlaceholderPage from './pages/PlaceholderPage'
+
+export default function App() {
+  return (
+    <Routes>
+      <Route element={<AppLayout />}>
+        <Route index element={<Navigate to="/table" replace />} />
+        <Route path="/table" element={<TablePage />} />
+        <Route path="/calculations/molarity" element={<PlaceholderPage />} />
+        <Route path="/calculations/molality" element={<PlaceholderPage />} />
+        <Route path="/calculations/bpe"      element={<PlaceholderPage />} />
+        <Route path="/calculations/fpd"      element={<PlaceholderPage />} />
+        <Route path="/compound"              element={<PlaceholderPage />} />
+        <Route path="*" element={<Navigate to="/table" replace />} />
+      </Route>
+    </Routes>
+  )
+}
