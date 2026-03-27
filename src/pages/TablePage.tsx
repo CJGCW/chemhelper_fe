@@ -2,8 +2,8 @@ import PeriodicTable from '../components/PeriodicTable/PeriodicTable'
 
 export default function TablePage() {
   return (
-    <div className="p-4 md:p-6 lg:p-8">
-      <div className="mb-6">
+    <div className="px-2 py-4 md:px-6 md:py-6 lg:px-8 lg:py-8">
+      <div className="mb-4 md:mb-6">
         <h2 className="font-sans font-semibold text-bright text-xl">
           Periodic Table
         </h2>

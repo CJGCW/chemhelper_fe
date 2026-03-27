@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import NavSidebar from './NavSidebar'
-import ElementSidebar from '../ElementDetail/ElementSidebar'
+import ElementModal from '../ElementDetail/ElementModal'
 
 const PAGE_TITLES: Record<string, string> = {
   '/table':                 'Periodic Table',
@@ -24,7 +24,7 @@ export default function AppLayout() {
       <NavSidebar open={navOpen} onClose={() => setNavOpen(false)} />
 
       {/* Element detail sidebar — slides over content from the left on desktop */}
-      <ElementSidebar />
+      <ElementModal />
 
       {/* Main content area */}
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
