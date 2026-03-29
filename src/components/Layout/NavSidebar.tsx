@@ -10,7 +10,8 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { to: '/table',                    label: 'Periodic Table', icon: '⬡', group: 'Reference' },
-  { to: '/calculations/molarity',    label: 'Molarity',       icon: '⚗', group: 'Calculations' },
+  { to: '/calculations/moles',       label: 'Moles',          icon: '⚗', group: 'Calculations' },
+  { to: '/calculations/molarity',    label: 'Molarity',       icon: '⚗' },
   { to: '/calculations/molality',    label: 'Molality',       icon: '⚗' },
   { to: '/calculations/bpe',         label: 'Boiling Point',  icon: '△' },
   { to: '/calculations/fpd',         label: 'Freezing Point', icon: '▽' },

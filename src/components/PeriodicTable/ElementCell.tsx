@@ -54,16 +54,8 @@ export default function ElementCell({ element, animationIndex = 0 }: Props) {
   return (
     // Outer div: hides in-place when selected so grid doesn't reflow,
     // but keeps its space. The visual is owned by the modal's layoutId.
-    <div
-      style={{
-        isolation: 'isolate',
-        width: '100%',
-        opacity: isSelected ? 0 : 1,
-        pointerEvents: isSelected ? 'none' : 'auto',
-      }}
-    >
+    <div style={{ isolation: 'isolate', width: '100%' }}>
       <motion.button
-        layoutId={`element-${element.atomicNumber}`}
         onClick={() => selectElement(element)}
         className="relative w-full aspect-[4/5] flex flex-col items-center justify-center
                    rounded-sm border cursor-pointer select-none outline-none overflow-hidden

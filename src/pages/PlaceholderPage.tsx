@@ -11,6 +11,7 @@ const item = {
 }
 
 const DESCRIPTIONS: Record<string, string> = {
+  '/calculations/moles':       'Calculate moles, molar mass, or mass using n = m / M.',
   '/calculations/molarity':    'Calculate concentration in moles per litre from moles, mass, or volume.',
   '/calculations/molality':    'Calculate moles of solute per kilogram of solvent.',
   '/calculations/bpe':         'Determine how much a solute raises the boiling point of a solvent.',

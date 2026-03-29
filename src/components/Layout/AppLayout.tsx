@@ -1,11 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import NavSidebar from './NavSidebar'
+import { useElementStore } from '../../stores/elementStore'
 import ElementModal from '../ElementDetail/ElementModal'
 
 const PAGE_TITLES: Record<string, string> = {
   '/table':                 'Periodic Table',
+  '/calculations/moles':    'Mole Calculations',
   '/calculations/molarity': 'Molarity',
   '/calculations/molality': 'Molality',
   '/calculations/bpe':      'Boiling Point Elevation',
@@ -16,6 +18,12 @@ const PAGE_TITLES: Record<string, string> = {
 export default function AppLayout() {
   const [navOpen, setNavOpen] = useState(false)
   const location = useLocation()
+  const selectElement = useElementStore(s => s.selectElement)
+
+  // Clear any selected element when navigating away from the table
+  useEffect(() => {
+    selectElement(null)
+  }, [location.pathname, selectElement])
   const title = PAGE_TITLES[location.pathname] ?? 'ChemHelper'
 
   return (
@@ -52,14 +60,14 @@ export default function AppLayout() {
 
         {/* Page content with route transitions */}
         <main className="flex-1 overflow-y-auto overflow-x-hidden">
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="sync">
             <motion.div
               key={location.pathname}
               className="h-full"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
             >
               <Outlet />
             </motion.div>

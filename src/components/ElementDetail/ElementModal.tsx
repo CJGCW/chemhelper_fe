@@ -54,11 +54,14 @@ export default function ElementModal() {
             onClick={() => selectElement(null)}
           />
 
-          {/* Card — shares layoutId with the cell it expanded from */}
+          {/* Card — scale/fade from center */}
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
             <motion.div
               key="modal-card"
-              layoutId={`element-${el.atomicNumber}`}
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.92 }}
+              transition={{ type: 'spring', stiffness: 380, damping: 32 }}
               className="relative flex flex-col overflow-hidden pointer-events-auto"
               style={{
                 width: 'min(400px, 90vw)',
