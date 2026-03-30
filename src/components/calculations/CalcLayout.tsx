@@ -21,7 +21,7 @@ export default function CalcLayout({
   const [showExplanation, setShowExplanation] = useState(false)
 
   return (
-    <div className="p-4 md:p-6 max-w-5xl mx-auto flex flex-col gap-6">
+    <div className="p-4 md:p-6 max-w-7xl mx-auto flex flex-col gap-6">
 
       {/* Page header — title and "What is this" inline */}
       <div className="flex flex-col gap-1">
@@ -47,7 +47,7 @@ export default function CalcLayout({
           <div className="flex flex-col self-start">{animation}</div>
         </div>
       ) : (
-        <div className="flex flex-col gap-4 max-w-lg">{form}</div>
+        <div className="flex flex-col gap-4 ">{form}</div>
       )}
 
       {/* Steps + sig figs — above result */}

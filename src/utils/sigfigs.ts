@@ -3,18 +3,22 @@
  * so the browser can compute limiting sig figs without a round-trip.
  */
 
-/** Count significant figures in a numeric string. */
+/** Count significant figures in a numeric string.
+ *  Handles leading-decimal inputs like ".7500" correctly.
+ */
 export function countSigFigs(numStr: string): number {
-  const match = numStr.trim().match(/\d+\.?\d*/)
-  if (!match) return 0
-  let s = match[0]
+  // Match optional leading decimal: .7500 or 0.7500 or 18.015 or 180.
+  const match = numStr.trim().match(/^\d*\.?\d*$/)
+  if (!match || match[0] === '' || match[0] === '.') return 0
+  const s = match[0]
   if (s.includes('.')) {
-    s = s.replace('.', '').replace(/^0+/, '')
-    return s.length
+    // Has explicit decimal point — all digits except leading zeros are significant
+    const digits = s.replace('.', '')        // remove decimal
+    const stripped = digits.replace(/^0+/, '') // remove leading zeros
+    return stripped.length
   }
-  // No decimal point — trailing zeros are ambiguous, treat as non-significant
-  s = s.replace(/^0+/, '').replace(/0+$/, '')
-  return s.length
+  // No decimal point — trailing zeros ambiguous, not significant
+  return s.replace(/^0+/, '').replace(/0+$/, '').length
 }
 
 /** Return the lowest sig fig count across a set of input strings. */

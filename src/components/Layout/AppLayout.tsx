@@ -1,15 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
 import NavSidebar from './NavSidebar'
 import { useElementStore } from '../../stores/elementStore'
 import ElementModal from '../ElementDetail/ElementModal'
 
 const PAGE_TITLES: Record<string, string> = {
   '/table':                 'Periodic Table',
-  '/calculations/moles':    'Mole Calculations',
-  '/calculations/molarity': 'Molarity',
-  '/calculations/molality': 'Molality',
+  '/calculations':          'Calculations',
   '/calculations/bpe':      'Boiling Point Elevation',
   '/calculations/fpd':      'Freezing Point Depression',
   '/compound':              'Compound Resolver',
@@ -58,20 +55,9 @@ export default function AppLayout() {
           <div className="flex-1 h-px bg-border ml-2" />
         </header>
 
-        {/* Page content with route transitions */}
+        {/* Page content */}
         <main className="flex-1 overflow-y-auto overflow-x-hidden">
-          <AnimatePresence mode="sync">
-            <motion.div
-              key={location.pathname}
-              className="h-full"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15, ease: 'easeOut' }}
-            >
-              <Outlet />
-            </motion.div>
-          </AnimatePresence>
+          <Outlet />
         </main>
 
       </div>
