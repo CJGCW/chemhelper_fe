@@ -53,7 +53,6 @@ export default function Balance({
     "idle",
   );
   const [displayValue, setDisplayValue] = useState("0.000");
-  const [showMoles, setShowMoles] = useState(false);
   const countIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const particleCount = massOnScale
@@ -65,7 +64,6 @@ export default function Balance({
       setStage("idle");
       setParticles([]);
       setDisplayValue("0.000");
-      setShowMoles(false);
       return;
     }
     setParticles(generateParticles(particleCount));
@@ -75,7 +73,6 @@ export default function Balance({
 
   useEffect(() => {
     if (!calculating || massOnScale === null) return;
-    setShowMoles(false);
     setStage("counting");
     setDisplayValue("- - - -");
     const target = parseFloat(massDisplayValue);
@@ -90,10 +87,7 @@ export default function Balance({
           clearInterval(countIntervalRef.current!);
           setDisplayValue(formatDisplay(massDisplayValue));
           setStage("done");
-          setTimeout(() => {
-            setShowMoles(true);
-            onCalcComplete?.();
-          }, 350);
+          setTimeout(() => onCalcComplete?.(), 350);
         } else {
           setDisplayValue(formatDisplay(current.toString()));
         }
@@ -103,7 +97,7 @@ export default function Balance({
       clearTimeout(t);
       if (countIntervalRef.current) clearInterval(countIntervalRef.current);
     };
-  }, [calculating]);
+  }, [calculating, massDisplayValue]);
 
   const hasParticles = stage !== "idle" && particles.length > 0;
   const displayLit = stage !== "idle";

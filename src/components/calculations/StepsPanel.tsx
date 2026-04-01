@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface Props {
@@ -11,16 +11,26 @@ const CHARS_PER_STEP_DELAY_MS = 400
 export default function StepsPanel({ steps }: Props) {
   const [open, setOpen] = useState(false)
   const [revealed, setRevealed] = useState(0)
+  const timerIds = useRef<ReturnType<typeof setTimeout>[]>([])
+
+  function clearTimers() {
+    timerIds.current.forEach(clearTimeout)
+    timerIds.current = []
+  }
+
+  useEffect(() => clearTimers, [])
 
   function handleOpen() {
+    clearTimers()
     setOpen(true)
     setRevealed(0)
-    steps.forEach((_, i) => {
+    timerIds.current = steps.map((_, i) =>
       setTimeout(() => setRevealed(i + 1), i * CHARS_PER_STEP_DELAY_MS)
-    })
+    )
   }
 
   function handleClose() {
+    clearTimers()
     setOpen(false)
     setRevealed(0)
   }

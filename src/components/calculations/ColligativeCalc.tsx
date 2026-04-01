@@ -9,7 +9,7 @@ import StepsPanel from "./StepsPanel";
 import SigFigPanel from "./SigFigPanel";
 import Beaker from "./animations/Beaker";
 import Thermometer from "./animations/Thermometer";
-import { sanitize, hasValue } from "../../utils/calcHelpers";
+import { sanitize, hasValue, ANIMATION_RESTART_DELAY_MS } from "../../utils/calcHelpers";
 
 /** Format a raw number cleanly — no scientific notation, no trailing zeros */
 function fmtRaw(n: number): string {
@@ -102,7 +102,7 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
     setBeakerMolality(molality);
     setThermoTemp(newTempC);
     setBeakerPlaying(false);
-    setTimeout(() => setBeakerPlaying(true), 80);
+    setTimeout(() => setBeakerPlaying(true), ANIMATION_RESTART_DELAY_MS);
   }
 
   function handleMassToMolesResolved(
@@ -586,15 +586,7 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
             value={result}
             unit={resultUnit}
             sigFigsValue={sigFigsResult}
-            verified={
-              verified === "correct"
-                ? true
-                : verified === "incorrect"
-                  ? false
-                  : verified === "sig_fig_warning"
-                    ? "sig_fig_warning"
-                    : null
-            }
+            verified={verified}
           />
           <AnimatePresence>
             {resultNewPoint && result && (

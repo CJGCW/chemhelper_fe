@@ -7,7 +7,7 @@ import ResultDisplay from './ResultDisplay'
 import StepsPanel from './StepsPanel'
 import SigFigPanel from './SigFigPanel'
 import Balance from './animations/Balance'
-import { sanitize, hasValue, toStandard, conversionStep } from '../../utils/calcHelpers'
+import { sanitize, hasValue, toStandard, conversionStep, ANIMATION_RESTART_DELAY_MS } from '../../utils/calcHelpers'
 import type { VerifyState } from '../../utils/calcHelpers'
 import {
   buildSigFigBreakdown, countSigFigs, formatSigFigs, lowestSigFigs,
@@ -35,7 +35,7 @@ export default function MolesCalc() {
 
   function triggerAnimation() {
     setCalculating(false)
-    setTimeout(() => setCalculating(true), 80)
+    setTimeout(() => setCalculating(true), ANIMATION_RESTART_DELAY_MS)
   }
 
   function handleMassBlur() {
@@ -161,7 +161,7 @@ export default function MolesCalc() {
           <SigFigPanel breakdown={breakdown} />
           <ResultDisplay label={resultLabel} value={result} unit={resultUnit}
             sigFigsValue={sigFigsResult}
-            verified={verified === 'correct' ? true : verified === 'incorrect' ? false : verified === 'sig_fig_warning' ? 'sig_fig_warning' : null}
+            verified={verified}
           />
         </div>
       )}

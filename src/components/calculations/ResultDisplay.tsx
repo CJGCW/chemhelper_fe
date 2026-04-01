@@ -1,6 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-
-type VerifyState = true | false | 'sig_fig_warning' | null | undefined
+import type { VerifyState } from '../../utils/calcHelpers'
 
 interface Props {
   label: string
@@ -14,8 +13,8 @@ interface Props {
 export default function ResultDisplay({ label, value, unit, sigFigsValue, verified, verifyMessage }: Props) {
   const hasVerification = verified !== null && verified !== undefined
   const isSFWarning = verified === 'sig_fig_warning'
-  const isCorrect   = verified === true
-  const isIncorrect = verified === false
+  const isCorrect   = verified === 'correct'
+  const isIncorrect = verified === 'incorrect'
 
   const borderColor = !hasVerification
     ? (value ? 'color-mix(in srgb, var(--c-halogen) 35%, #1c1f2e)' : '#1c1f2e')

@@ -10,7 +10,7 @@
 
 interface VhfResult {
   i: number
-  confidence: 'exact' | 'estimated' | 'default'
+  confidence: 'exact' | 'default'
   note: string
 }
 

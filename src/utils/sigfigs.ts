@@ -45,8 +45,8 @@ export function formatSigFigs(value: number, sigFigs: number): string {
   // toPrecision may return scientific notation for very large/small values;
   // convert those to fixed notation while keeping trailing zeros intact.
   if (str.includes('e')) {
-    // Fall back to a high-precision fixed representation trimmed to sig figs
-    return rounded.toPrecision(sigFigs)
+    const decimals = Math.max(0, sigFigs - Math.floor(Math.log10(Math.abs(rounded))) - 1)
+    return rounded.toFixed(decimals)
   }
   // Return as-is — toPrecision already pads trailing zeros correctly
   return str

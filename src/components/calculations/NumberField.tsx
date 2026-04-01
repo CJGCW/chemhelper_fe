@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { sanitize } from '../../utils/calcHelpers'
 
 interface Props {
   label: string
@@ -12,19 +13,6 @@ interface Props {
   hint?: string
 }
 
-/** Only allow characters that form a valid decimal number */
-function sanitize(raw: string): string {
-  // Allow digits, one decimal point, optional leading minus
-  let result = ''
-  let hasDot = false
-  let hasMinus = false
-  for (const ch of raw) {
-    if (ch === '-' && !hasMinus && result.length === 0) { hasMinus = true; result += ch }
-    else if (ch === '.' && !hasDot) { hasDot = true; result += ch }
-    else if (ch >= '0' && ch <= '9') { result += ch }
-  }
-  return result
-}
 
 export default function NumberField({
   label, value, onChange, onBlur, placeholder = '0',
@@ -52,7 +40,7 @@ export default function NumberField({
           type="text"
           inputMode="decimal"
           value={value}
-          onChange={e => onChange(sanitize(e.target.value))}
+          onChange={e => onChange(sanitize(e.target.value, true))}
           onBlur={onBlur}
           placeholder={placeholder}
           disabled={disabled || solveFor}

@@ -1,11 +1,13 @@
 import type { UnitOption } from '../components/calculations/UnitSelect'
 
-/** Strip non-numeric characters, allow one decimal point */
-export function sanitize(raw: string): string {
+/** Strip non-numeric characters, allow one decimal point. Pass allowNegative=true for fields that accept negative values. */
+export function sanitize(raw: string, allowNegative = false): string {
   let result = ''
   let hasDot = false
+  let hasMinus = false
   for (const ch of raw) {
-    if (ch === '.' && !hasDot) { hasDot = true; result += ch }
+    if (allowNegative && ch === '-' && !hasMinus && result.length === 0) { hasMinus = true; result += ch }
+    else if (ch === '.' && !hasDot) { hasDot = true; result += ch }
     else if (ch >= '0' && ch <= '9') { result += ch }
   }
   return result
@@ -13,8 +15,12 @@ export function sanitize(raw: string): string {
 
 /** True if string represents a valid positive number */
 export function hasValue(v: string): boolean {
-  return v.trim() !== '' && !isNaN(parseFloat(v)) && parseFloat(v) > 0
+  const n = parseFloat(v.trim())
+  return v.trim() !== '' && !isNaN(n) && n > 0
 }
+
+/** Delay before restarting a playing animation (ms) */
+export const ANIMATION_RESTART_DELAY_MS = 80
 
 /** Convert a value+unit to grams (or litres for volume units) */
 export function toStandard(value: string, unit: UnitOption): number {

@@ -7,7 +7,7 @@ import ResultDisplay from "./ResultDisplay";
 import StepsPanel from "./StepsPanel";
 import SigFigPanel from "./SigFigPanel";
 import Beaker from "./animations/Beaker";
-import { sanitize, hasValue, toStandard } from "../../utils/calcHelpers";
+import { sanitize, hasValue, toStandard, ANIMATION_RESTART_DELAY_MS } from "../../utils/calcHelpers";
 import type { VerifyState } from "../../utils/calcHelpers";
 import {
   buildSigFigBreakdown,
@@ -36,11 +36,7 @@ export default function MolalityCalc() {
   const [beakerMoles, setBeakerMoles] = useState<number | null>(null);
   const [beakerPlaying, setBeakerPlaying] = useState(false);
 
-  function handleMassToMolesResolved(
-    moles: string,
-    mSteps: string[],
-    _suggestedI?: { i: number; note: string } | null,
-  ) {
+  function handleMassToMolesResolved(moles: string, mSteps: string[]) {
     setMolesValue(moles);
     setMolesFromMass(true);
     setMassSteps(mSteps);
@@ -65,7 +61,7 @@ export default function MolalityCalc() {
     setBeakerMolality(molality);
     setBeakerMoles(n);
     setBeakerPlaying(false);
-    setTimeout(() => setBeakerPlaying(true), 80);
+    setTimeout(() => setBeakerPlaying(true), ANIMATION_RESTART_DELAY_MS);
   }
 
   const hasMoles = hasValue(molesValue);
@@ -330,15 +326,7 @@ export default function MolalityCalc() {
             value={result}
             unit={resultUnit}
             sigFigsValue={sigFigsResult}
-            verified={
-              verified === "correct"
-                ? true
-                : verified === "incorrect"
-                  ? false
-                  : verified === "sig_fig_warning"
-                    ? "sig_fig_warning"
-                    : null
-            }
+            verified={verified}
           />
         </div>
       )}
