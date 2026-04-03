@@ -10,6 +10,7 @@ const PAGE_TITLES: Record<string, string> = {
   '/calculations/bpe':      'Boiling Point Elevation',
   '/calculations/fpd':      'Freezing Point Depression',
   '/compound':              'Compound Resolver',
+  '/structures':            'Structures',
 }
 
 export default function AppLayout() {

@@ -83,7 +83,7 @@ type Mode = 'generate' | 'practice'
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
-export default function LewisPage() {
+export default function LewisPage({ embedded = false }: { embedded?: boolean }) {
   const [mode, setMode]           = useState<Mode>('generate')
   const [input, setInput]         = useState('')
   const [chargeRaw, setChargeRaw] = useState('0')
@@ -163,12 +163,11 @@ export default function LewisPage() {
   // Summarise formal charges for the info strip
   const chargedAtoms = result?.atoms.filter(a => a.formal_charge !== 0) ?? []
 
-  return (
-    <div className="p-4 md:p-6 max-w-4xl mx-auto flex flex-col gap-6">
-
-      {/* Header + mode tabs */}
+  const inner = (
+    <>
+      {/* Header + mode tabs — hidden when embedded inside StructuresPage */}
       <div className="flex flex-col gap-3">
-        <h2 className="font-sans font-semibold text-bright text-xl">Lewis Structure</h2>
+        {!embedded && <h2 className="font-sans font-semibold text-bright text-xl">Lewis Structure</h2>}
 
         {/* Mode tabs */}
         <div className="flex items-center gap-1 p-1 rounded-sm self-start"
@@ -352,8 +351,11 @@ export default function LewisPage() {
         )}
       </AnimatePresence>
       </div>}
-    </div>
+    </>
   )
+
+  if (embedded) return inner
+  return <div className="p-4 md:p-6 max-w-4xl mx-auto flex flex-col gap-6">{inner}</div>
 }
 
 function Stat({ label, value }: { label: string; value: string }) {

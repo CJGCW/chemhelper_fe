@@ -158,7 +158,7 @@ export default function NavSidebar({ open, onClose }: Props) {
             </>
           )}
         </NavLink>
-        <NavLink to="/lewis"
+        <NavLink to="/structures"
           className={({ isActive }) =>
             `flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm transition-all duration-150
              ${isActive ? 'bg-raised text-bright border border-border' : 'text-secondary hover:text-primary hover:bg-surface border border-transparent'}`
@@ -169,7 +169,7 @@ export default function NavSidebar({ open, onClose }: Props) {
             <>
               <span className="font-mono text-base leading-none shrink-0 w-4 text-center"
                 style={{ color: isActive ? 'var(--c-halogen)' : undefined }}>⬡</span>
-              <span>Lewis Structure</span>
+              <span>Structures</span>
             </>
           )}
         </NavLink>
