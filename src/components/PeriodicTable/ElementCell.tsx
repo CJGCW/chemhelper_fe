@@ -24,14 +24,12 @@ function radiusFraction(val: number): number {
 
 export default function ElementCell({ element, animationIndex = 0 }: Props) {
   const {
-    selectedElement, hoveredGroup, hoveredColumnGroup,
+    hoveredGroup, hoveredColumnGroup,
     searchQuery, selectElement, trendMode,
   } = useElementStore()
 
   const category   = getColorCategory(element)
   const color      = GROUP_COLORS[category]
-  const isSelected = selectedElement?.atomicNumber === element.atomicNumber
-
   const isGroupDimmed  = hoveredGroup !== null && getColorCategory(element) !== hoveredGroup
   const isColumnDimmed = hoveredColumnGroup !== null && element.group !== hoveredColumnGroup
   const isSearchDimmed = searchQuery !== '' && !matchesSearch(element, searchQuery)

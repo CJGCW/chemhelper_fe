@@ -158,11 +158,6 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
     const b = hasValue(molalityValue) ? parseFloat(molalityValue) : NaN;
     const dT = hasValue(deltaValue) ? parseFloat(deltaValue) : NaN;
     const prefix = massSteps.length > 0 ? [...massSteps] : [];
-    const iInputs =
-      parseFloat(vhfValue) !== 1
-        ? [{ label: "van't Hoff i", value: vhfValue }]
-        : [];
-
     try {
       if (hasValue(molalityValue) && hasValue(deltaValue)) {
         if (isNaN(b) || isNaN(dT) || b === 0) {

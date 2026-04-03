@@ -9,7 +9,7 @@ import NumberField from './NumberField'
 import UnitSelect, { MASS_UNITS } from './UnitSelect'
 import type { UnitOption } from './UnitSelect'
 import CompoundInput from './CompoundInput'
-import { sanitize, hasValue, toStandard, conversionStep } from '../../utils/calcHelpers'
+import { sanitize, hasValue, toStandard } from '../../utils/calcHelpers'
 import { formatSigFigs, lowestSigFigs } from '../../utils/sigfigs'
 import { estimateVhf } from '../../utils/vhfUtility'
 

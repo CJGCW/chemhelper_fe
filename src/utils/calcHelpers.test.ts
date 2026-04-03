@@ -5,7 +5,7 @@ import type { UnitOption } from '../components/calculations/UnitSelect'
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function unit(label: string, toGrams: number): UnitOption {
-  return { label, toGrams }
+  return { label, toGrams, prefix: 'none', unit: 'gram' }
 }
 
 const GRAM  = unit('g',  1)

@@ -162,19 +162,9 @@ export default function Beaker({
 
   const innerH = bH - wT * 2;
   const innerBotY = bBotY - wT;
-  const innerTopY = bTopY + wT;
   const liqH = fillFrac * innerH;
   const liqTopY = innerBotY - liqH;
-
-  // Build the liquid polygon: trapezoid slice from liqTopY to innerBotY
-  // Width at liqTopY and innerBotY based on inner wall interpolation
   const liqTopHW = iHwAt(liqTopY);
-  const liqBotHW = iBotHW;
-
-  const liqPolygon =
-    fillFrac > 0
-      ? `${cx - liqTopHW},${liqTopY} ${cx + liqTopHW},${liqTopY} ${cx + liqBotHW},${innerBotY} ${cx - liqBotHW},${innerBotY}`
-      : "";
 
   // Stir bar — ellipse, scaleX = |cos(angle)| for flat-spin illusion
   const rad = (stirAngle * Math.PI) / 180;
