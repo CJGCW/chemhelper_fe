@@ -18,8 +18,9 @@ function NavGroup({ label }: { label: string }) {
 }
 
 const BASE_CALC_ITEMS: { tab: string; label: string; formula: string }[] = [
-  { tab: "sig-figs",    label: "Sig Figs",         formula: "sf" },
-  { tab: "conversions", label: "Unit Conversions",  formula: "↔"  },
+  { tab: "sig-figs",      label: "Sig Figs",         formula: "sf"   },
+  { tab: "sci-notation",  label: "Sci Notation",      formula: "×10ⁿ" },
+  { tab: "conversions",   label: "Unit Conversions",  formula: "↔"    },
 ]
 
 function BaseCalcSubItem({

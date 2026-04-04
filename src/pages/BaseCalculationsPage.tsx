@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { countSigFigs, formatSigFigs, lowestSigFigs } from '../utils/sigfigs'
 import SigFigPractice from '../components/calculations/SigFigPractice'
 import UnitConversions from '../components/calculations/UnitConversions'
+import ScientificNotation from '../components/calculations/ScientificNotation'
 
 // ── Digit annotation ──────────────────────────────────────────────────────────
 
@@ -157,11 +158,11 @@ export default function BaseCalculationsPage() {
       {/* Header */}
       <div className="flex flex-col gap-3">
         <h2 className="font-sans font-semibold text-bright text-xl">
-          {pageTab === 'conversions' ? 'Unit Conversions' : 'Sig Figs'}
+          {pageTab === 'conversions' ? 'Unit Conversions' : pageTab === 'sci-notation' ? 'Scientific Notation' : 'Sig Figs'}
         </h2>
 
         {/* Reference / Practice pills — only shown on sig figs tab */}
-        {pageTab !== 'conversions' && (
+        {pageTab === 'sig-figs' && (
           <div className="flex items-center gap-1 p-1 rounded-sm self-start"
             style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
             {(['reference', 'practice'] as const).map(tab => (
@@ -190,6 +191,13 @@ export default function BaseCalculationsPage() {
           transition={{ duration: 0.18 }}
         >
           <UnitConversions />
+        </motion.div>
+      ) : pageTab === 'sci-notation' ? (
+        <motion.div key="sci-notation"
+          initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.18 }}
+        >
+          <ScientificNotation />
         </motion.div>
       ) : sigFigTab === 'practice' ? (
         <motion.div key="practice"
