@@ -1,28 +1,28 @@
-import { useState, useEffect } from 'react'
-import { Outlet, useLocation } from 'react-router-dom'
-import NavSidebar from './NavSidebar'
-import { useElementStore } from '../../stores/elementStore'
-import ElementModal from '../ElementDetail/ElementModal'
+import { useState, useEffect } from "react";
+import { Outlet, useLocation } from "react-router-dom";
+import NavSidebar from "./NavSidebar";
+import { useElementStore } from "../../stores/elementStore";
+import ElementModal from "../ElementDetail/ElementModal";
 
 const PAGE_TITLES: Record<string, string> = {
-  '/table':                 'Periodic Table',
-  '/calculations':          'Calculations',
-  '/calculations/bpe':      'Boiling Point Elevation',
-  '/calculations/fpd':      'Freezing Point Depression',
-  '/compound':              'Compound Resolver',
-  '/structures':            'Structures',
-}
+  "/table": "Periodic Table",
+  "/calculations": "Calculations",
+  "/calculations/bpe": "Boiling Point Elevation",
+  "/calculations/fpd": "Freezing Point Depression",
+  "/compound": "Compound Resolver",
+  "/structures": "Structures",
+};
 
 export default function AppLayout() {
-  const [navOpen, setNavOpen] = useState(false)
-  const location = useLocation()
-  const selectElement = useElementStore(s => s.selectElement)
+  const [navOpen, setNavOpen] = useState(false);
+  const location = useLocation();
+  const selectElement = useElementStore((s) => s.selectElement);
 
   // Clear any selected element when navigating away from the table
   useEffect(() => {
-    selectElement(null)
-  }, [location.pathname, selectElement])
-  const title = PAGE_TITLES[location.pathname] ?? 'ChemHelper'
+    selectElement(null);
+  }, [location.pathname, selectElement]);
+  const title = PAGE_TITLES[location.pathname] ?? "ChemHelper";
 
   return (
     <div className="flex h-screen overflow-hidden bg-base">
@@ -34,7 +34,6 @@ export default function AppLayout() {
 
       {/* Main content area */}
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-
         {/* Top bar */}
         <header className="flex items-center gap-3 px-5 py-3 border-b border-border shrink-0 bg-surface">
           {/* Mobile hamburger */}
@@ -60,8 +59,7 @@ export default function AppLayout() {
         <main className="flex-1 overflow-y-auto overflow-x-hidden">
           <Outlet />
         </main>
-
       </div>
     </div>
-  )
+  );
 }
