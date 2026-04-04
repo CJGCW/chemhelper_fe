@@ -17,6 +17,40 @@ function NavGroup({ label }: { label: string }) {
   );
 }
 
+const BASE_CALC_ITEMS: { tab: string; label: string; formula: string }[] = [
+  { tab: "sig-figs",    label: "Sig Figs",         formula: "sf" },
+  { tab: "conversions", label: "Unit Conversions",  formula: "↔"  },
+]
+
+function BaseCalcSubItem({
+  item,
+  onNavigate,
+}: {
+  item: (typeof BASE_CALC_ITEMS)[0];
+  onNavigate: () => void;
+}) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const currentTab = new URLSearchParams(location.search).get("tab") ?? "sig-figs";
+  const isActive = location.pathname === "/base-calculations" && currentTab === item.tab;
+
+  return (
+    <button
+      onClick={() => { navigate(`/base-calculations?tab=${item.tab}`); onNavigate(); }}
+      className={`w-full flex items-center gap-2 pl-8 pr-3 py-1.5 mx-2 rounded-sm font-sans text-sm
+                  transition-all duration-150 text-left
+                  ${isActive
+                    ? "bg-raised text-bright border border-border"
+                    : "text-secondary hover:text-primary hover:bg-surface border border-transparent"
+                  }`}
+      style={{ width: "calc(100% - 16px)" }}
+    >
+      <span className="font-mono text-[9px] opacity-50 shrink-0">{item.formula}</span>
+      <span className="truncate text-xs">{item.label}</span>
+    </button>
+  );
+}
+
 const CALC_ITEMS: {
   tab: string;
   label: string;
@@ -92,8 +126,12 @@ export default function NavSidebar({ open, onClose }: Props) {
   const [calcExpanded, setCalcExpanded] = useState(
     location.pathname === "/calculations",
   );
+  const [baseCalcExpanded, setBaseCalcExpanded] = useState(
+    location.pathname === "/base-calculations",
+  );
 
   const isCalcActive = location.pathname === "/calculations";
+  const isBaseCalcActive = location.pathname === "/base-calculations";
 
   const inner = (
     <div className="flex flex-col h-full">
@@ -142,27 +180,49 @@ export default function NavSidebar({ open, onClose }: Props) {
         {/* Calculations */}
         <NavGroup label="Calculations" />
 
-        {/* Base Calculations */}
-        <NavLink
-          to="/base-calculations"
-          className={({ isActive }) =>
-            `flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm transition-all duration-150
-             ${isActive ? "bg-raised text-bright border border-border" : "text-secondary hover:text-primary hover:bg-surface border border-transparent"}`
-          }
-          onClick={onClose}
-        >
-          {({ isActive }) => (
-            <>
-              <span
-                className="font-mono text-base leading-none shrink-0 w-4 text-center"
-                style={{ color: isActive ? "var(--c-halogen)" : undefined }}
+        {/* Base Calculations — expandable */}
+        <div>
+          <button
+            onClick={() => setBaseCalcExpanded((e) => !e)}
+            className={`w-full flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm
+                        transition-all duration-150 text-left
+                        ${isBaseCalcActive ? "text-bright" : "text-secondary hover:text-primary"}`}
+            style={{ width: "calc(100% - 16px)" }}
+          >
+            <span
+              className="font-mono text-base leading-none shrink-0 w-4 text-center"
+              style={{ color: isBaseCalcActive ? "var(--c-halogen)" : undefined }}
+            >
+              ±
+            </span>
+            <span className="flex-1">Base Calculations</span>
+            <motion.span
+              animate={{ rotate: baseCalcExpanded ? 90 : 0 }}
+              transition={{ duration: 0.15 }}
+              className="font-mono text-[10px] text-dim"
+            >
+              ▶
+            </motion.span>
+          </button>
+
+          <AnimatePresence initial={false}>
+            {baseCalcExpanded && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.18 }}
+                style={{ overflow: "hidden" }}
               >
-                ±
-              </span>
-              <span>Base Calculations</span>
-            </>
-          )}
-        </NavLink>
+                <div className="flex flex-col gap-0.5 py-1">
+                  {BASE_CALC_ITEMS.map((item, i) => (
+                    <BaseCalcSubItem key={i} item={item} onNavigate={onClose} />
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
         <div>
           {/* Molar Calculations — expandable */}
