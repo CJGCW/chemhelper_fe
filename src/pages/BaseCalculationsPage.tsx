@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { countSigFigs, formatSigFigs, lowestSigFigs } from '../utils/sigfigs'
+import SigFigPractice from '../components/calculations/SigFigPractice'
 
 // ── Digit annotation ──────────────────────────────────────────────────────────
 
@@ -93,6 +94,7 @@ const OP_EXAMPLES = [
 type OpType = '×' | '÷' | '+' | '−'
 
 export default function BaseCalculationsPage() {
+  const [activeTab, setActiveTab] = useState<'reference' | 'practice'>('reference')
   const [counterInput, setCounterInput] = useState('')
 
   const [inputA, setInputA] = useState('')
@@ -149,12 +151,44 @@ export default function BaseCalculationsPage() {
     <div className="p-4 md:p-6 max-w-7xl mx-auto flex flex-col gap-6">
 
       {/* Header */}
-      <div>
+      <div className="flex flex-col gap-3">
         <h2 className="font-sans font-semibold text-bright text-xl">Base Calculations</h2>
-        <p className="font-sans text-sm text-secondary mt-1">
-          Significant figures and arithmetic precision
-        </p>
+
+        {/* Tab pills */}
+        <div className="flex items-center gap-1 p-1 rounded-sm self-start"
+          style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+          {(['reference', 'practice'] as const).map(tab => (
+            <button key={tab} onClick={() => setActiveTab(tab)}
+              className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors capitalize"
+              style={{ color: activeTab === tab ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}
+            >
+              {activeTab === tab && (
+                <motion.div layoutId="base-calc-tab-bg"
+                  className="absolute inset-0 rounded-sm"
+                  style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                />
+              )}
+              <span className="relative z-10">{tab}</span>
+            </button>
+          ))}
+        </div>
       </div>
+
+      <AnimatePresence mode="wait">
+      {activeTab === 'practice' ? (
+        <motion.div key="practice"
+          initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.18 }}
+        >
+          <SigFigPractice />
+        </motion.div>
+      ) : (
+      <motion.div key="reference"
+        initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+        transition={{ duration: 0.18 }}
+        className="flex flex-col gap-6"
+      >
 
       {/* Two cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
@@ -377,6 +411,11 @@ export default function BaseCalculationsPage() {
           ))}
         </div>
       </div>
+
+      </motion.div>
+      )}
+      </AnimatePresence>
+
     </div>
   )
 }
