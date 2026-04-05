@@ -5,6 +5,7 @@ import CalculationsPage from './pages/calculations/CalculationsPage'
 import BaseCalculationsPage from './pages/BaseCalculationsPage'
 import StructuresPage from './pages/StructuresPage'
 import CompoundPage from './pages/CompoundPage'
+import ElectronConfigPage from './pages/ElectronConfigPage'
 import PlaceholderPage from './pages/PlaceholderPage'
 
 export default function App() {
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="/calculations/bpe"      element={<PlaceholderPage />} />
         <Route path="/calculations/fpd"      element={<PlaceholderPage />} />
         <Route path="/compound"              element={<CompoundPage />} />
+        <Route path="/electron-config"       element={<ElectronConfigPage />} />
         <Route path="*" element={<Navigate to="/table" replace />} />
       </Route>
     </Routes>

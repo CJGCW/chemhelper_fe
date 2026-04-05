@@ -17,6 +17,39 @@ function NavGroup({ label }: { label: string }) {
   );
 }
 
+const TABLE_ITEMS: { path: string; label: string; formula: string }[] = [
+  { path: '/table',          label: 'Periodic Table',   formula: '⬡'  },
+  { path: '/electron-config', label: 'Electron Config', formula: 'e⁻' },
+]
+
+function TableSubItem({
+  item,
+  onNavigate,
+}: {
+  item: (typeof TABLE_ITEMS)[0]
+  onNavigate: () => void
+}) {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const isActive = location.pathname === item.path
+
+  return (
+    <button
+      onClick={() => { navigate(item.path); onNavigate() }}
+      className={`w-full flex items-center gap-2 pl-8 pr-3 py-1.5 mx-2 rounded-sm font-sans text-sm
+                  transition-all duration-150 text-left
+                  ${isActive
+                    ? "bg-raised text-bright border border-border"
+                    : "text-secondary hover:text-primary hover:bg-surface border border-transparent"
+                  }`}
+      style={{ width: "calc(100% - 16px)" }}
+    >
+      <span className="font-mono text-[9px] opacity-50 shrink-0">{item.formula}</span>
+      <span className="truncate text-xs">{item.label}</span>
+    </button>
+  )
+}
+
 const BASE_CALC_ITEMS: { tab: string; label: string; formula: string }[] = [
   { tab: "sig-figs",      label: "Sig Figs",         formula: "sf"   },
   { tab: "sci-notation",  label: "Sci Notation",      formula: "×10ⁿ" },
@@ -124,6 +157,9 @@ function CalcSubItem({
 
 export default function NavSidebar({ open, onClose }: Props) {
   const location = useLocation();
+  const [tableExpanded, setTableExpanded] = useState(
+    location.pathname === "/table" || location.pathname === "/electron-config",
+  );
   const [calcExpanded, setCalcExpanded] = useState(
     location.pathname === "/calculations",
   );
@@ -131,6 +167,7 @@ export default function NavSidebar({ open, onClose }: Props) {
     location.pathname === "/base-calculations",
   );
 
+  const isTableActive = location.pathname === "/table" || location.pathname === "/electron-config";
   const isCalcActive = location.pathname === "/calculations";
   const isBaseCalcActive = location.pathname === "/base-calculations";
 
@@ -157,26 +194,48 @@ export default function NavSidebar({ open, onClose }: Props) {
       <nav className="flex-1 overflow-y-auto py-2">
         {/* Reference */}
         <NavGroup label="Reference" />
-        <NavLink
-          to="/table"
-          className={({ isActive }) =>
-            `flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm transition-all duration-150
-             ${isActive ? "bg-raised text-bright border border-border" : "text-secondary hover:text-primary hover:bg-surface border border-transparent"}`
-          }
-          onClick={onClose}
-        >
-          {({ isActive }) => (
-            <>
-              <span
-                className="font-mono text-base leading-none shrink-0 w-4 text-center"
-                style={{ color: isActive ? "var(--c-halogen)" : undefined }}
+        <div>
+          <button
+            onClick={() => setTableExpanded((e) => !e)}
+            className={`w-full flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm
+                        transition-all duration-150 text-left
+                        ${isTableActive ? "text-bright" : "text-secondary hover:text-primary"}`}
+            style={{ width: "calc(100% - 16px)" }}
+          >
+            <span
+              className="font-mono text-base leading-none shrink-0 w-4 text-center"
+              style={{ color: isTableActive ? "var(--c-halogen)" : undefined }}
+            >
+              ⬡
+            </span>
+            <span className="flex-1">Periodic Table</span>
+            <motion.span
+              animate={{ rotate: tableExpanded ? 90 : 0 }}
+              transition={{ duration: 0.15 }}
+              className="font-mono text-[10px] text-dim"
+            >
+              ▶
+            </motion.span>
+          </button>
+
+          <AnimatePresence initial={false}>
+            {tableExpanded && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.18 }}
+                style={{ overflow: "hidden" }}
               >
-                ⬡
-              </span>
-              <span>Periodic Table</span>
-            </>
-          )}
-        </NavLink>
+                <div className="flex flex-col gap-0.5 py-1">
+                  {TABLE_ITEMS.map((item, i) => (
+                    <TableSubItem key={i} item={item} onNavigate={onClose} />
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
         {/* Calculations */}
         <NavGroup label="Calculations" />
