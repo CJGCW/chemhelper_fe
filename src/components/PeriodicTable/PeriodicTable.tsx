@@ -283,6 +283,36 @@ export default function PeriodicTable() {
               setTrendMode(trendMode === "radius" ? "none" : "radius")
             }
           />
+          <TrendButton
+            mode="ie1"
+            active={trendMode === "ie1"}
+            color="#4ade80"
+            label="IE₁"
+            sublabel="kJ/mol"
+            onClick={() =>
+              setTrendMode(trendMode === "ie1" ? "none" : "ie1")
+            }
+          />
+          <TrendButton
+            mode="ea"
+            active={trendMode === "ea"}
+            color="#a78bfa"
+            label="Elec. Affinity"
+            sublabel="kJ/mol"
+            onClick={() =>
+              setTrendMode(trendMode === "ea" ? "none" : "ea")
+            }
+          />
+          <TrendButton
+            mode="ionicRadius"
+            active={trendMode === "ionicRadius"}
+            color="#fb923c"
+            label="Ionic Radius"
+            sublabel="pm"
+            onClick={() =>
+              setTrendMode(trendMode === "ionicRadius" ? "none" : "ionicRadius")
+            }
+          />
         </div>
       </div>
 

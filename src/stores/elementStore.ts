@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import type { Element } from '../types'
 import { fetchAllElements } from '../api/elements'
 
-export type TrendMode = 'none' | 'electronegativity' | 'radius'
+export type TrendMode = 'none' | 'electronegativity' | 'radius' | 'ie1' | 'ea' | 'ionicRadius'
 
 interface ElementState {
   elements: Element[]

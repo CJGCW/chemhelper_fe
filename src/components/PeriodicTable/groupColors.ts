@@ -35,12 +35,15 @@ export const GROUP_LABELS: Record<ColorCategory, string> = {
   unknown:          'Unknown',
 }
 
+const METALLOID_Z = new Set([5, 14, 32, 33, 51, 52, 84, 85])
+
 /** Derive the color category for an element */
 export function getColorCategory(el: Element): ColorCategory {
   const n = el.atomicNumber
   if (n === 1) return 'hydrogen'
   if (n >= 57 && n <= 71) return 'lanthanide'
   if (n >= 89 && n <= 103) return 'actinide'
+  if (METALLOID_Z.has(n)) return 'metalloid'
 
   switch (el.groupName) {
     case 'Alkali Metals':        return 'alkali'
@@ -50,7 +53,6 @@ export function getColorCategory(el: Element): ColorCategory {
     case 'Chalcogens':           return 'chalcogen'
     case 'Halogens':             return 'halogen'
     case 'Noble Gases':          return 'noble'
-    case 'Metalloid':            return 'metalloid'
     case 'Metals':
       // Transition metals: groups 3–12
       if (el.group >= 3 && el.group <= 12) return 'transition'
