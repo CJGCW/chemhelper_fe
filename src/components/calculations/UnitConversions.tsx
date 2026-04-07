@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import ConversionExamples from './DimensionalAnalysis'
+
+type ConvTab = 'converter' | 'dimensional'
 
 // ── Conversion data ───────────────────────────────────────────────────────────
 
@@ -23,16 +26,28 @@ const VOLUME: Record<string, UnitDef> = {
 const TEMP_UNITS = ['°C', '°F', 'K'] as const
 type TempUnit = typeof TEMP_UNITS[number]
 
-function toCelsius(v: number, from: TempUnit): number {
+export function toCelsius(v: number, from: TempUnit): number {
   if (from === '°C') return v
   if (from === '°F') return (v - 32) * 5 / 9
   return v - 273.15
 }
 
-function fromCelsius(c: number, to: TempUnit): number {
+export function fromCelsius(c: number, to: TempUnit): number {
   if (to === '°C') return c
   if (to === '°F') return c * 9 / 5 + 32
   return c + 273.15
+}
+
+export function convertTemp(v: number, from: TempUnit, to: TempUnit): number {
+  return fromCelsius(toCelsius(v, from), to)
+}
+
+export function convertMass(v: number, from: string, to: string): number {
+  return (v * MASS[from].toBase) / MASS[to].toBase
+}
+
+export function convertVolume(v: number, from: string, to: string): number {
+  return (v * VOLUME[from].toBase) / VOLUME[to].toBase
 }
 
 // ── Formatting ────────────────────────────────────────────────────────────────
@@ -187,7 +202,9 @@ const TD = ({ children, mono, accent }: { children: React.ReactNode; mono?: bool
 
 // ── Main export ───────────────────────────────────────────────────────────────
 
-export default function UnitConversions() {
+export default function UnitConversions({ tab = 'converter' }: { tab?: ConvTab }) {
+  if (tab === 'dimensional') return <ConversionExamples />
+
   return (
     <div className="flex flex-col gap-8">
 

@@ -7,6 +7,7 @@ import StructuresPage from './pages/StructuresPage'
 import CompoundPage from './pages/CompoundPage'
 import ElectronConfigPage from './pages/ElectronConfigPage'
 import PlaceholderPage from './pages/PlaceholderPage'
+import EmpiricalPage from './pages/EmpiricalPage'
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/calculations/fpd"      element={<PlaceholderPage />} />
         <Route path="/compound"              element={<CompoundPage />} />
         <Route path="/electron-config"       element={<ElectronConfigPage />} />
+        <Route path="/empirical"             element={<EmpiricalPage />} />
         <Route path="*" element={<Navigate to="/table" replace />} />
       </Route>
     </Routes>

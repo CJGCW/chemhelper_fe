@@ -329,6 +329,28 @@ export default function NavSidebar({ open, onClose }: Props) {
           </AnimatePresence>
         </div>
 
+        {/* Empirical / Molecular Formula */}
+        <NavLink
+          to="/empirical"
+          className={({ isActive }) =>
+            `flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm transition-all duration-150
+             ${isActive ? "bg-raised text-bright border border-border" : "text-secondary hover:text-primary hover:bg-surface border border-transparent"}`
+          }
+          onClick={onClose}
+        >
+          {({ isActive }) => (
+            <>
+              <span
+                className="font-mono text-base leading-none shrink-0 w-4 text-center"
+                style={{ color: isActive ? "var(--c-halogen)" : undefined }}
+              >
+                ⌬
+              </span>
+              <span>Empirical Formula</span>
+            </>
+          )}
+        </NavLink>
+
         {/* Tools */}
         <NavGroup label="Tools" />
         <NavLink

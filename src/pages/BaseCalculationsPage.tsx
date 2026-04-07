@@ -74,6 +74,77 @@ const SF_RULES: { rule: string; description: string; example: string; sigFigs: n
   },
 ]
 
+const SCI_NOTATION_EXAMPLES: { coefficient: string; exponent: string; sigFigs: number; note: string }[] = [
+  { coefficient: '6.022', exponent: '23',  sigFigs: 4, note: 'Avogadro\'s number (as measured — 4 sf from the coefficient)' },
+  { coefficient: '3.0',   exponent: '4',   sigFigs: 2, note: 'Trailing zero after decimal is significant — 2 sf' },
+  { coefficient: '1.500', exponent: '−3',  sigFigs: 4, note: 'All trailing zeros after the decimal are significant — 4 sf' },
+  { coefficient: '2.1',   exponent: '8',   sigFigs: 2, note: 'Only the two non-zero digits count — 2 sf' },
+  { coefficient: '9.979', exponent: '7',   sigFigs: 4, note: 'Four digits in the coefficient → 4 sf' },
+]
+
+const EXACT_EXAMPLES: { category: string; badge: string; items: { value: string; label: string }[]; note: string }[] = [
+  {
+    category: 'Counting Numbers',
+    badge: '∞ sf',
+    items: [
+      { value: '6 atoms',      label: 'exact integer' },
+      { value: '3 molecules',  label: 'exact integer' },
+      { value: '2 moles',      label: 'exact integer' },
+    ],
+    note: 'Discrete objects counted without measurement carry infinite precision and never limit sig figs.',
+  },
+  {
+    category: 'Stoichiometric Coefficients',
+    badge: '∞ sf',
+    items: [
+      { value: '2 in 2H₂',    label: 'exact' },
+      { value: '1 in O₂',     label: 'exact' },
+      { value: '3 in 3CaCl₂', label: 'exact' },
+    ],
+    note: 'Balancing coefficients are exact integers — they never restrict the sig figs of a mole calculation.',
+  },
+  {
+    category: 'Defined Unit Conversions',
+    badge: '∞ sf',
+    items: [
+      { value: '1 in = 2.54 cm',  label: 'exact by definition' },
+      { value: '1 min = 60 s',    label: 'exact by definition' },
+      { value: '1 kg = 1000 g',   label: 'exact by definition' },
+    ],
+    note: 'Defined conversion factors (not measured) are exact — use all the digits without concern for sig figs.',
+  },
+  {
+    category: 'Mathematical Constants',
+    badge: '∞ sf',
+    items: [
+      { value: 'π = 3.14159…',    label: 'irrational' },
+      { value: 'e = 2.71828…',    label: 'irrational' },
+      { value: '√2 = 1.41421…',   label: 'irrational' },
+    ],
+    note: 'Mathematical constants are exact by definition. Use enough decimal places so they don\'t limit your answer.',
+  },
+  {
+    category: 'SI-Defined Physical Constants',
+    badge: 'exact',
+    items: [
+      { value: 'c = 299,792,458 m/s',        label: 'speed of light' },
+      { value: 'Nₐ = 6.02214076 × 10²³',    label: 'Avogadro (2019 def.)' },
+      { value: 'h = 6.62607015 × 10⁻³⁴ J·s', label: 'Planck constant' },
+    ],
+    note: 'Since the 2019 SI redefinition these constants are fixed exactly. Treat them as exact in calculations.',
+  },
+  {
+    category: 'Molar Mass from Atomic Weights',
+    badge: 'use table',
+    items: [
+      { value: 'M(C)  = 12.011 g/mol',  label: 'IUPAC standard' },
+      { value: 'M(Fe) = 55.845 g/mol',  label: 'IUPAC standard' },
+      { value: 'M(H)  = 1.008 g/mol',   label: 'IUPAC standard' },
+    ],
+    note: 'Atomic weights from the periodic table are themselves measured values. Use all digits given — don\'t round them before applying sig figs to your final answer.',
+  },
+]
+
 const OP_EXAMPLES = [
   {
     tag: '× / ÷',
@@ -100,6 +171,7 @@ export default function BaseCalculationsPage() {
   const [searchParams] = useSearchParams()
   const pageTab = searchParams.get('tab') ?? 'sig-figs'
   const [sigFigTab, setSigFigTab] = useState<'reference' | 'practice'>('reference')
+  const [convTab, setConvTab] = useState<'converter' | 'dimensional'>('converter')
   const [counterInput, setCounterInput] = useState('')
 
   const [inputA, setInputA] = useState('')
@@ -161,6 +233,28 @@ export default function BaseCalculationsPage() {
           {pageTab === 'conversions' ? 'Unit Conversions' : pageTab === 'sci-notation' ? 'Scientific Notation' : 'Sig Figs'}
         </h2>
 
+        {/* Converter / Dimensional Analysis pills — only shown on conversions tab */}
+        {pageTab === 'conversions' && (
+          <div className="flex items-center gap-1 p-1 rounded-sm self-start"
+            style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+            {(['converter', 'dimensional'] as const).map(tab => (
+              <button key={tab} onClick={() => setConvTab(tab)}
+                className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
+                style={{ color: convTab === tab ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}
+              >
+                {convTab === tab && (
+                  <motion.div layoutId="conv-tab-bg"
+                    className="absolute inset-0 rounded-sm"
+                    style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                  />
+                )}
+                <span className="relative z-10">{tab === 'converter' ? 'Converter' : 'Conversion Examples'}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Reference / Practice pills — only shown on sig figs tab */}
         {pageTab === 'sig-figs' && (
           <div className="flex items-center gap-1 p-1 rounded-sm self-start"
@@ -186,11 +280,11 @@ export default function BaseCalculationsPage() {
 
       <AnimatePresence mode="wait">
       {pageTab === 'conversions' ? (
-        <motion.div key="conversions"
+        <motion.div key={`conversions-${convTab}`}
           initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.18 }}
         >
-          <UnitConversions />
+          <UnitConversions tab={convTab} />
         </motion.div>
       ) : pageTab === 'sci-notation' ? (
         <motion.div key="sci-notation"
@@ -218,7 +312,7 @@ export default function BaseCalculationsPage() {
 
         {/* ── Sig Fig Counter ── */}
         <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
-          <p className="font-mono text-[10px] tracking-[0.15em] text-dim uppercase">Sig Fig Counter</p>
+          <p className="font-sans text-sm font-semibold text-primary tracking-wide uppercase">Sig Fig Counter</p>
 
           <input
             type="text"
@@ -282,7 +376,7 @@ export default function BaseCalculationsPage() {
         {/* ── Operation Calculator ── */}
         <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
           <div className="flex items-center justify-between">
-            <p className="font-mono text-[10px] tracking-[0.15em] text-dim uppercase">Operation Calculator</p>
+            <p className="font-sans text-sm font-semibold text-primary tracking-wide uppercase">Operation Calculator</p>
             <span className="font-sans text-xs text-secondary">
               {isMultDiv ? 'fewest sig figs' : 'fewest decimal places'}
             </span>
@@ -366,7 +460,7 @@ export default function BaseCalculationsPage() {
 
       {/* Rules Reference */}
       <div className="flex flex-col gap-3">
-        <p className="font-mono text-[10px] tracking-[0.15em] text-dim uppercase">Rules Reference</p>
+        <p className="font-sans text-sm font-semibold text-primary tracking-wide uppercase">Rules Reference</p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {SF_RULES.map((r, i) => (
@@ -430,6 +524,96 @@ export default function BaseCalculationsPage() {
                 <span className="font-sans text-xs font-medium text-primary">{ex.rule}</span>
               </div>
               <p className="font-mono text-xs text-secondary leading-relaxed">{ex.detail}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Scientific Notation */}
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-1">
+          <p className="font-sans text-sm font-semibold text-primary tracking-wide uppercase">Sig Figs in Scientific Notation</p>
+          <p className="font-sans text-xs text-secondary">
+            Only the coefficient (mantissa) determines significant figures. The × 10ⁿ part is exact and never limits precision.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {SCI_NOTATION_EXAMPLES.map((ex, i) => (
+            <div key={i} className="flex flex-col gap-3 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+              {/* Number display */}
+              <div className="flex items-end gap-1 flex-wrap">
+                {/* Annotated coefficient */}
+                {annotateNumber(ex.coefficient).map((ac, j) => (
+                  <div key={j} className="flex flex-col items-center gap-1.5">
+                    <span className="font-mono text-2xl font-semibold leading-none"
+                      style={{
+                        color: ac.char === '.'
+                          ? 'rgba(255,255,255,0.2)'
+                          : ac.significant ? 'var(--c-halogen)' : 'rgba(255,255,255,0.22)',
+                      }}>
+                      {ac.char}
+                    </span>
+                    {ac.char !== '.' && (
+                      <div className="w-1.5 h-1.5 rounded-full"
+                        style={{ background: ac.significant ? 'var(--c-halogen)' : 'rgba(255,255,255,0.12)' }} />
+                    )}
+                  </div>
+                ))}
+                {/* × 10^n — dim, not annotated */}
+                <span className="font-mono text-base text-dim leading-none mb-1">
+                  {' '}× 10<sup>{ex.exponent}</sup>
+                </span>
+                {/* Sig fig count badge */}
+                <span className="font-mono text-sm font-semibold px-2 py-0.5 rounded-sm ml-auto mb-1 shrink-0"
+                  style={{
+                    background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)',
+                    color: 'var(--c-halogen)',
+                    border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)',
+                  }}>
+                  {ex.sigFigs} sf
+                </span>
+              </div>
+              <p className="font-sans text-xs text-secondary leading-relaxed">{ex.note}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Exact Numbers */}
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-1">
+          <p className="font-sans text-sm font-semibold text-primary tracking-wide uppercase">
+            When Sig Figs <span className="text-bright font-bold text-base">Don't</span> Apply
+          </p>
+          <p className="font-sans text-xs text-secondary">
+            Exact numbers have infinite significant figures and never limit the precision of a result.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {EXACT_EXAMPLES.map((ex, i) => (
+            <div key={i} className="flex flex-col gap-3 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+              <div className="flex items-start justify-between gap-2">
+                <span className="font-sans text-xs font-medium text-primary leading-snug">{ex.category}</span>
+                <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm shrink-0"
+                  style={{
+                    background: 'color-mix(in srgb, #34d399 12%, transparent)',
+                    color: '#34d399',
+                    border: '1px solid color-mix(in srgb, #34d399 25%, transparent)',
+                  }}>
+                  {ex.badge}
+                </span>
+              </div>
+              <div className="flex flex-col gap-1">
+                {ex.items.map((item, j) => (
+                  <div key={j} className="flex items-baseline justify-between gap-2">
+                    <span className="font-mono text-xs text-primary">{item.value}</span>
+                    <span className="font-mono text-[10px] text-dim shrink-0">{item.label}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="font-sans text-[11px] text-secondary leading-relaxed border-t border-border pt-2">{ex.note}</p>
             </div>
           ))}
         </div>
