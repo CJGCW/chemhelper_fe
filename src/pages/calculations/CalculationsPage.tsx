@@ -6,9 +6,10 @@ import MolesCalc from '../../components/calculations/MolesCalc'
 import MolarityCalc from '../../components/calculations/MolarityCalc'
 import MolalityCalc from '../../components/calculations/MolalityCalc'
 import ColligativeCalc from '../../components/calculations/ColligativeCalc'
+import MolarPractice from '../../components/calculations/MolarPractice'
 import { useState } from 'react'
 
-type CalcType = 'moles' | 'molarity' | 'molality' | 'colligative'
+type CalcType = 'moles' | 'molarity' | 'molality' | 'colligative' | 'practice'
 type ColligativeMode = 'bpe' | 'fpd'
 
 const PILLS: { value: CalcType; label: string; formula: string }[] = [
@@ -16,6 +17,7 @@ const PILLS: { value: CalcType; label: string; formula: string }[] = [
   { value: 'molarity',    label: 'Molarity',    formula: 'C = n / V'  },
   { value: 'molality',    label: 'Molality',    formula: 'b = n / m'  },
   { value: 'colligative', label: 'Colligative', formula: 'ΔT = i·K·b' },
+  { value: 'practice',    label: 'Practice',    formula: '✎'          },
 ]
 
 const EXPLANATIONS: Record<CalcType, ExplanationContent> = {
@@ -101,6 +103,8 @@ export default function CalculationsPage() {
     })
   }
 
+  const showExplanationButton = activeTab !== 'practice'
+
   return (
     <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
 
@@ -108,14 +112,16 @@ export default function CalculationsPage() {
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-3">
           <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Calculations</h2>
-          <button
-            onClick={() => setShowExplanation(true)}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm border border-border
-                       font-sans text-xs text-secondary hover:text-primary hover:border-muted transition-colors"
-          >
-            <span className="font-mono">?</span>
-            <span>What is this</span>
-          </button>
+          {showExplanationButton && (
+            <button
+              onClick={() => setShowExplanation(true)}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm border border-border
+                         font-sans text-xs text-secondary hover:text-primary hover:border-muted transition-colors"
+            >
+              <span className="font-mono">?</span>
+              <span>What is this</span>
+            </button>
+          )}
         </div>
 
         {/* Pills */}
@@ -161,14 +167,17 @@ export default function CalculationsPage() {
           {activeTab === 'molarity'    && <MolarityCalc />}
           {activeTab === 'molality'    && <MolalityCalc />}
           {activeTab === 'colligative' && <ColligativeCalc initialMode={colligativeMode} />}
+          {activeTab === 'practice'    && <MolarPractice />}
         </motion.div>
       </AnimatePresence>
 
-      <ExplanationModal
-        content={EXPLANATIONS[activeTab]}
-        open={showExplanation}
-        onClose={() => setShowExplanation(false)}
-      />
+      {activeTab !== 'practice' && (
+        <ExplanationModal
+          content={EXPLANATIONS[activeTab]}
+          open={showExplanation}
+          onClose={() => setShowExplanation(false)}
+        />
+      )}
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Props {
@@ -17,25 +17,22 @@ function NavGroup({ label }: { label: string }) {
   );
 }
 
-const TABLE_ITEMS: { path: string; label: string; formula: string }[] = [
-  { path: '/table',          label: 'Periodic Table',   formula: '⬡'  },
-  { path: '/electron-config', label: 'Electron Config', formula: 'e⁻' },
-]
+// ── Shared sub-item button ────────────────────────────────────────────────────
 
-function TableSubItem({
-  item,
-  onNavigate,
+function SubItem({
+  formula,
+  label,
+  isActive,
+  onClick,
 }: {
-  item: (typeof TABLE_ITEMS)[0]
-  onNavigate: () => void
+  formula: string
+  label: string
+  isActive: boolean
+  onClick: () => void
 }) {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const isActive = location.pathname === item.path
-
   return (
     <button
-      onClick={() => { navigate(item.path); onNavigate() }}
+      onClick={onClick}
       className={`w-full flex items-center gap-2 pl-8 pr-3 py-1.5 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px]
                   transition-all duration-150 text-left
                   ${isActive
@@ -44,132 +41,202 @@ function TableSubItem({
                   }`}
       style={{ width: "calc(100% - 16px)" }}
     >
-      <span className="font-mono text-[9px] opacity-50 shrink-0">{item.formula}</span>
-      <span className="truncate text-xs">{item.label}</span>
+      <span className="font-mono text-[9px] opacity-50 shrink-0">{formula}</span>
+      <span className="truncate text-xs">{label}</span>
     </button>
   )
 }
 
-const BASE_CALC_ITEMS: { tab: string; label: string; formula: string }[] = [
-  { tab: "sig-figs",      label: "Sig Figs",         formula: "sf"   },
-  { tab: "sci-notation",  label: "Sci Notation",      formula: "×10ⁿ" },
-  { tab: "conversions",   label: "Unit Conversions",  formula: "↔"    },
+// ── Periodic Table sub-items ──────────────────────────────────────────────────
+
+const TABLE_ITEMS = [
+  { path: "/table",          label: "Periodic Table",  formula: "⬡"  },
+  { path: "/electron-config", label: "Electron Config", formula: "e⁻" },
 ]
 
-function BaseCalcSubItem({
-  item,
-  onNavigate,
-}: {
-  item: (typeof BASE_CALC_ITEMS)[0];
-  onNavigate: () => void;
-}) {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const currentTab = new URLSearchParams(location.search).get("tab") ?? "sig-figs";
-  const isActive = location.pathname === "/base-calculations" && currentTab === item.tab;
-
+function TableSubItem({ item, onNavigate }: { item: typeof TABLE_ITEMS[0]; onNavigate: () => void }) {
+  const location = useLocation()
+  const navigate = useNavigate()
   return (
-    <button
-      onClick={() => { navigate(`/base-calculations?tab=${item.tab}`); onNavigate(); }}
-      className={`w-full flex items-center gap-2 pl-8 pr-3 py-1.5 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px]
-                  transition-all duration-150 text-left
-                  ${isActive
-                    ? "bg-raised text-bright border border-border"
-                    : "text-secondary hover:text-primary hover:bg-surface border border-transparent"
-                  }`}
-      style={{ width: "calc(100% - 16px)" }}
-    >
-      <span className="font-mono text-[9px] opacity-50 shrink-0">{item.formula}</span>
-      <span className="truncate text-xs">{item.label}</span>
-    </button>
-  );
+    <SubItem
+      formula={item.formula}
+      label={item.label}
+      isActive={location.pathname === item.path}
+      onClick={() => { navigate(item.path); onNavigate() }}
+    />
+  )
 }
 
-const CALC_ITEMS: {
-  tab: string;
-  label: string;
-  formula: string;
-  mode?: string;
-}[] = [
-  { tab: "moles", label: "Moles", formula: "n = m/M" },
-  { tab: "molarity", label: "Molarity", formula: "C = n/V" },
-  { tab: "molality", label: "Molality", formula: "b = n/m" },
-  {
-    tab: "colligative",
-    label: "Boiling Point Elevation",
-    formula: "ΔTb",
-    mode: "bpe",
-  },
-  {
-    tab: "colligative",
-    label: "Freezing Point Depression",
-    formula: "ΔTf",
-    mode: "fpd",
-  },
-];
+// ── Base Calculations sub-items (tabs + paths) ────────────────────────────────
 
-function CalcSubItem({
-  item,
-  onNavigate,
-}: {
-  item: (typeof CALC_ITEMS)[0];
-  onNavigate: () => void;
-}) {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const params = new URLSearchParams(location.search);
-  const currentTab = params.get("tab") ?? "moles";
-  const currentMode = params.get("mode") ?? "bpe";
+const BASE_CALC_ITEMS: { tab?: string; path?: string; label: string; formula: string }[] = [
+  { tab:  "sig-figs",     label: "Sig Figs",          formula: "sf"   },
+  { tab:  "sci-notation", label: "Sci Notation",       formula: "×10ⁿ" },
+  { tab:  "conversions",  label: "Unit Conversions",   formula: "↔"    },
+  { path: "/empirical",   label: "Empirical Formula",  formula: "⌬"    },
+  { path: "/compound",    label: "Compound",           formula: "◈"    },
+]
+
+function BaseCalcSubItem({ item, onNavigate }: { item: typeof BASE_CALC_ITEMS[0]; onNavigate: () => void }) {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const currentTab = new URLSearchParams(location.search).get("tab") ?? "sig-figs"
+
+  const isActive = item.path
+    ? location.pathname === item.path
+    : location.pathname === "/base-calculations" && currentTab === item.tab
+
+  function handleClick() {
+    if (item.path) navigate(item.path)
+    else navigate(`/base-calculations?tab=${item.tab}`)
+    onNavigate()
+  }
+
+  return (
+    <SubItem formula={item.formula} label={item.label} isActive={isActive} onClick={handleClick} />
+  )
+}
+
+// ── Molar Calculations sub-items ──────────────────────────────────────────────
+
+const CALC_ITEMS: { tab: string; label: string; formula: string; mode?: string }[] = [
+  { tab: "moles",       label: "Moles",                  formula: "n = m/M" },
+  { tab: "molarity",    label: "Molarity",                formula: "C = n/V" },
+  { tab: "molality",    label: "Molality",                formula: "b = n/m" },
+  { tab: "colligative", label: "Boiling Point Elevation", formula: "ΔTb", mode: "bpe" },
+  { tab: "colligative", label: "Freezing Point Depression", formula: "ΔTf", mode: "fpd" },
+  { tab: "practice",    label: "Practice",                formula: "✎" },
+]
+
+function CalcSubItem({ item, onNavigate }: { item: typeof CALC_ITEMS[0]; onNavigate: () => void }) {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const params = new URLSearchParams(location.search)
+  const currentTab  = params.get("tab")  ?? "moles"
+  const currentMode = params.get("mode") ?? "bpe"
 
   const isActive =
     location.pathname === "/calculations" &&
     currentTab === item.tab &&
-    (!item.mode || currentMode === item.mode);
+    (!item.mode || currentMode === item.mode)
 
   function handleClick() {
-    const p = new URLSearchParams({
-      tab: item.tab,
-      ...(item.mode ? { mode: item.mode } : {}),
-    });
-    navigate(`/calculations?${p.toString()}`);
-    onNavigate();
+    const p = new URLSearchParams({ tab: item.tab, ...(item.mode ? { mode: item.mode } : {}) })
+    navigate(`/calculations?${p.toString()}`)
+    onNavigate()
   }
 
   return (
-    <button
-      onClick={handleClick}
-      className={`w-full flex items-center gap-2 pl-8 pr-3 py-1.5 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px]
-                  transition-all duration-150 text-left
-                  ${
-                    isActive
-                      ? "bg-raised text-bright border border-border"
-                      : "text-secondary hover:text-primary hover:bg-surface border border-transparent"
-                  }`}
-      style={{ width: "calc(100% - 16px)" }}
-    >
-      <span className="font-mono text-[9px] opacity-50 shrink-0">
-        {item.formula}
-      </span>
-      <span className="truncate text-xs">{item.label}</span>
-    </button>
-  );
+    <SubItem formula={item.formula} label={item.label} isActive={isActive} onClick={handleClick} />
+  )
 }
 
-export default function NavSidebar({ open, onClose }: Props) {
-  const location = useLocation();
-  const [tableExpanded, setTableExpanded] = useState(
-    location.pathname === "/table" || location.pathname === "/electron-config",
-  );
-  const [calcExpanded, setCalcExpanded] = useState(
-    location.pathname === "/calculations",
-  );
-  const [baseCalcExpanded, setBaseCalcExpanded] = useState(
-    location.pathname === "/base-calculations",
-  );
+// ── Structures sub-items ──────────────────────────────────────────────────────
 
-  const isTableActive = location.pathname === "/table" || location.pathname === "/electron-config";
-  const isCalcActive = location.pathname === "/calculations";
-  const isBaseCalcActive = location.pathname === "/base-calculations";
+const STRUCTURE_ITEMS = [
+  { tab: "lewis", label: "Lewis Structure", formula: "⌬" },
+  { tab: "vsepr", label: "VSEPR",           formula: "⬡" },
+]
+
+function StructureSubItem({ item, onNavigate }: { item: typeof STRUCTURE_ITEMS[0]; onNavigate: () => void }) {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const currentTab = new URLSearchParams(location.search).get("tab") ?? "lewis"
+  const isActive = location.pathname === "/structures" && currentTab === item.tab
+
+  return (
+    <SubItem
+      formula={item.formula}
+      label={item.label}
+      isActive={isActive}
+      onClick={() => { navigate(`/structures?tab=${item.tab}`); onNavigate() }}
+    />
+  )
+}
+
+// ── Expandable section ────────────────────────────────────────────────────────
+
+function ExpandableSection({
+  icon,
+  label,
+  isActive,
+  expanded,
+  onToggle,
+  children,
+}: {
+  icon: string
+  label: string
+  isActive: boolean
+  expanded: boolean
+  onToggle: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <div>
+      <button
+        onClick={onToggle}
+        className={`w-full flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px]
+                    transition-all duration-150 text-left
+                    ${isActive ? "text-bright" : "text-secondary hover:text-primary"}`}
+        style={{ width: "calc(100% - 16px)" }}
+      >
+        <span
+          className="font-mono text-base leading-none shrink-0 w-4 text-center"
+          style={{ color: isActive ? "var(--c-halogen)" : undefined }}
+        >
+          {icon}
+        </span>
+        <span className="flex-1">{label}</span>
+        <motion.span
+          animate={{ rotate: expanded ? 90 : 0 }}
+          transition={{ duration: 0.15 }}
+          className="font-mono text-[10px] text-dim"
+        >
+          ▶
+        </motion.span>
+      </button>
+
+      <AnimatePresence initial={false}>
+        {expanded && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.18 }}
+            style={{ overflow: "hidden" }}
+          >
+            <div className="flex flex-col gap-0.5 py-1">
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+// ── Main sidebar ──────────────────────────────────────────────────────────────
+
+export default function NavSidebar({ open, onClose }: Props) {
+  const location = useLocation()
+
+  const [tableExpanded,    setTableExpanded]    = useState(
+    location.pathname === "/table" || location.pathname === "/electron-config"
+  )
+  const [baseCalcExpanded, setBaseCalcExpanded] = useState(
+    location.pathname === "/base-calculations" ||
+    location.pathname === "/empirical" ||
+    location.pathname === "/compound"
+  )
+  const [calcExpanded,     setCalcExpanded]     = useState(location.pathname === "/calculations")
+  const [structExpanded,   setStructExpanded]   = useState(location.pathname === "/structures")
+
+  const isTableActive    = location.pathname === "/table" || location.pathname === "/electron-config"
+  const isBaseCalcActive = location.pathname === "/base-calculations" ||
+                           location.pathname === "/empirical" ||
+                           location.pathname === "/compound"
+  const isCalcActive     = location.pathname === "/calculations"
+  const isStructActive   = location.pathname === "/structures"
 
   const inner = (
     <div className="flex flex-col h-full">
@@ -194,205 +261,49 @@ export default function NavSidebar({ open, onClose }: Props) {
       <nav className="flex-1 overflow-y-auto py-2">
         {/* Reference */}
         <NavGroup label="Reference" />
-        <div>
-          <button
-            onClick={() => setTableExpanded((e) => !e)}
-            className={`w-full flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px]
-                        transition-all duration-150 text-left
-                        ${isTableActive ? "text-bright" : "text-secondary hover:text-primary"}`}
-            style={{ width: "calc(100% - 16px)" }}
-          >
-            <span
-              className="font-mono text-base leading-none shrink-0 w-4 text-center"
-              style={{ color: isTableActive ? "var(--c-halogen)" : undefined }}
-            >
-              ⬡
-            </span>
-            <span className="flex-1">Periodic Table</span>
-            <motion.span
-              animate={{ rotate: tableExpanded ? 90 : 0 }}
-              transition={{ duration: 0.15 }}
-              className="font-mono text-[10px] text-dim"
-            >
-              ▶
-            </motion.span>
-          </button>
-
-          <AnimatePresence initial={false}>
-            {tableExpanded && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.18 }}
-                style={{ overflow: "hidden" }}
-              >
-                <div className="flex flex-col gap-0.5 py-1">
-                  {TABLE_ITEMS.map((item, i) => (
-                    <TableSubItem key={i} item={item} onNavigate={onClose} />
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+        <ExpandableSection
+          icon="⬡" label="Periodic Table"
+          isActive={isTableActive} expanded={tableExpanded}
+          onToggle={() => setTableExpanded(e => !e)}
+        >
+          {TABLE_ITEMS.map((item, i) => (
+            <TableSubItem key={i} item={item} onNavigate={onClose} />
+          ))}
+        </ExpandableSection>
 
         {/* Calculations */}
         <NavGroup label="Calculations" />
-
-        {/* Base Calculations — expandable */}
-        <div>
-          <button
-            onClick={() => setBaseCalcExpanded((e) => !e)}
-            className={`w-full flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px]
-                        transition-all duration-150 text-left
-                        ${isBaseCalcActive ? "text-bright" : "text-secondary hover:text-primary"}`}
-            style={{ width: "calc(100% - 16px)" }}
-          >
-            <span
-              className="font-mono text-base leading-none shrink-0 w-4 text-center"
-              style={{ color: isBaseCalcActive ? "var(--c-halogen)" : undefined }}
-            >
-              ±
-            </span>
-            <span className="flex-1">Base Calculations</span>
-            <motion.span
-              animate={{ rotate: baseCalcExpanded ? 90 : 0 }}
-              transition={{ duration: 0.15 }}
-              className="font-mono text-[10px] text-dim"
-            >
-              ▶
-            </motion.span>
-          </button>
-
-          <AnimatePresence initial={false}>
-            {baseCalcExpanded && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.18 }}
-                style={{ overflow: "hidden" }}
-              >
-                <div className="flex flex-col gap-0.5 py-1">
-                  {BASE_CALC_ITEMS.map((item, i) => (
-                    <BaseCalcSubItem key={i} item={item} onNavigate={onClose} />
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        <div>
-          {/* Molar Calculations — expandable */}
-          <button
-            onClick={() => setCalcExpanded((e) => !e)}
-            className={`w-full flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px]
-                        transition-all duration-150 text-left
-                        ${isCalcActive ? "text-bright" : "text-secondary hover:text-primary"}`}
-            style={{ width: "calc(100% - 16px)" }}
-          >
-            <span
-              className="font-mono text-base leading-none shrink-0 w-4 text-center"
-              style={{ color: isCalcActive ? "var(--c-halogen)" : undefined }}
-            >
-              ⚗
-            </span>
-            <span className="flex-1">Molar Calculations</span>
-            <motion.span
-              animate={{ rotate: calcExpanded ? 90 : 0 }}
-              transition={{ duration: 0.15 }}
-              className="font-mono text-[10px] text-dim"
-            >
-              ▶
-            </motion.span>
-          </button>
-
-          {/* Sub-items */}
-          <AnimatePresence initial={false}>
-            {calcExpanded && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.18 }}
-                style={{ overflow: "hidden" }}
-              >
-                <div className="flex flex-col gap-0.5 py-1">
-                  {CALC_ITEMS.map((item, i) => (
-                    <CalcSubItem key={i} item={item} onNavigate={onClose} />
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Empirical / Molecular Formula */}
-        <NavLink
-          to="/empirical"
-          className={({ isActive }) =>
-            `flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px] transition-all duration-150
-             ${isActive ? "bg-raised text-bright border border-border" : "text-secondary hover:text-primary hover:bg-surface border border-transparent"}`
-          }
-          onClick={onClose}
+        <ExpandableSection
+          icon="±" label="Base Calculations"
+          isActive={isBaseCalcActive} expanded={baseCalcExpanded}
+          onToggle={() => setBaseCalcExpanded(e => !e)}
         >
-          {({ isActive }) => (
-            <>
-              <span
-                className="font-mono text-base leading-none shrink-0 w-4 text-center"
-                style={{ color: isActive ? "var(--c-halogen)" : undefined }}
-              >
-                ⌬
-              </span>
-              <span>Empirical Formula</span>
-            </>
-          )}
-        </NavLink>
+          {BASE_CALC_ITEMS.map((item, i) => (
+            <BaseCalcSubItem key={i} item={item} onNavigate={onClose} />
+          ))}
+        </ExpandableSection>
+
+        <ExpandableSection
+          icon="⚗" label="Molar Calculations"
+          isActive={isCalcActive} expanded={calcExpanded}
+          onToggle={() => setCalcExpanded(e => !e)}
+        >
+          {CALC_ITEMS.map((item, i) => (
+            <CalcSubItem key={i} item={item} onNavigate={onClose} />
+          ))}
+        </ExpandableSection>
 
         {/* Tools */}
         <NavGroup label="Tools" />
-        <NavLink
-          to="/compound"
-          className={({ isActive }) =>
-            `flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px] transition-all duration-150
-             ${isActive ? "bg-raised text-bright border border-border" : "text-secondary hover:text-primary hover:bg-surface border border-transparent"}`
-          }
-          onClick={onClose}
+        <ExpandableSection
+          icon="⬡" label="Structures"
+          isActive={isStructActive} expanded={structExpanded}
+          onToggle={() => setStructExpanded(e => !e)}
         >
-          {({ isActive }) => (
-            <>
-              <span
-                className="font-mono text-base leading-none shrink-0 w-4 text-center"
-                style={{ color: isActive ? "var(--c-halogen)" : undefined }}
-              >
-                ◈
-              </span>
-              <span>Compound</span>
-            </>
-          )}
-        </NavLink>
-        <NavLink
-          to="/structures"
-          className={({ isActive }) =>
-            `flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px] transition-all duration-150
-             ${isActive ? "bg-raised text-bright border border-border" : "text-secondary hover:text-primary hover:bg-surface border border-transparent"}`
-          }
-          onClick={onClose}
-        >
-          {({ isActive }) => (
-            <>
-              <span
-                className="font-mono text-base leading-none shrink-0 w-4 text-center"
-                style={{ color: isActive ? "var(--c-halogen)" : undefined }}
-              >
-                ⬡
-              </span>
-              <span>Structures</span>
-            </>
-          )}
-        </NavLink>
+          {STRUCTURE_ITEMS.map((item, i) => (
+            <StructureSubItem key={i} item={item} onNavigate={onClose} />
+          ))}
+        </ExpandableSection>
       </nav>
 
       <div className="p-4 border-t border-border shrink-0">
@@ -401,7 +312,7 @@ export default function NavSidebar({ open, onClose }: Props) {
         </p>
       </div>
     </div>
-  );
+  )
 
   return (
     <>
@@ -433,5 +344,5 @@ export default function NavSidebar({ open, onClose }: Props) {
         )}
       </AnimatePresence>
     </>
-  );
+  )
 }
