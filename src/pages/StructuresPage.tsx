@@ -19,11 +19,11 @@ export default function StructuresPage() {
   }
 
   return (
-    <div className="p-4 md:p-6 max-w-4xl mx-auto flex flex-col gap-6">
+    <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
 
       {/* Header + tabs */}
       <div className="flex flex-col gap-3">
-        <h2 className="font-sans font-semibold text-bright text-xl">Structures</h2>
+        <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Structures</h2>
 
         <div
           className="flex items-center gap-1 p-1 rounded-sm self-start"

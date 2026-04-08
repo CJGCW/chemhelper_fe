@@ -35,7 +35,7 @@ export default function AppLayout() {
       {/* Main content area */}
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         {/* Top bar */}
-        <header className="flex items-center gap-3 px-5 py-3 border-b border-border shrink-0 bg-surface">
+        <header className="flex items-center gap-3 px-5 lg:px-8 py-3 lg:py-4 border-b border-border shrink-0 bg-surface">
           {/* Mobile hamburger */}
           <button
             onClick={() => setNavOpen(true)}
@@ -47,7 +47,7 @@ export default function AppLayout() {
             <span className="block h-px w-full bg-secondary" />
           </button>
 
-          <h1 className="font-sans font-medium text-primary text-sm tracking-wide">
+          <h1 className="font-sans font-medium text-primary text-sm lg:text-base tracking-wide">
             {title}
           </h1>
 

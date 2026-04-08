@@ -36,7 +36,7 @@ function TableSubItem({
   return (
     <button
       onClick={() => { navigate(item.path); onNavigate() }}
-      className={`w-full flex items-center gap-2 pl-8 pr-3 py-1.5 mx-2 rounded-sm font-sans text-sm
+      className={`w-full flex items-center gap-2 pl-8 pr-3 py-1.5 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px]
                   transition-all duration-150 text-left
                   ${isActive
                     ? "bg-raised text-bright border border-border"
@@ -71,7 +71,7 @@ function BaseCalcSubItem({
   return (
     <button
       onClick={() => { navigate(`/base-calculations?tab=${item.tab}`); onNavigate(); }}
-      className={`w-full flex items-center gap-2 pl-8 pr-3 py-1.5 mx-2 rounded-sm font-sans text-sm
+      className={`w-full flex items-center gap-2 pl-8 pr-3 py-1.5 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px]
                   transition-all duration-150 text-left
                   ${isActive
                     ? "bg-raised text-bright border border-border"
@@ -138,7 +138,7 @@ function CalcSubItem({
   return (
     <button
       onClick={handleClick}
-      className={`w-full flex items-center gap-2 pl-8 pr-3 py-1.5 mx-2 rounded-sm font-sans text-sm
+      className={`w-full flex items-center gap-2 pl-8 pr-3 py-1.5 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px]
                   transition-all duration-150 text-left
                   ${
                     isActive
@@ -177,16 +177,16 @@ export default function NavSidebar({ open, onClose }: Props) {
       <div className="px-5 py-5 border-b border-border shrink-0">
         <div className="flex items-baseline gap-2">
           <span
-            className="font-mono text-lg font-semibold"
+            className="font-mono text-lg lg:text-xl font-semibold"
             style={{ color: "var(--c-halogen)" }}
           >
             ⚛
           </span>
-          <span className="font-sans font-semibold text-bright tracking-tight">
+          <span className="font-sans font-semibold text-bright tracking-tight lg:text-lg">
             Chem<span style={{ color: "var(--c-halogen)" }}>Helper</span>
           </span>
         </div>
-        <p className="font-mono text-[9px] text-dim mt-0.5 tracking-wider">
+        <p className="font-mono text-[9px] lg:text-[10px] text-dim mt-0.5 tracking-wider">
           CHEMISTRY TOOLKIT
         </p>
       </div>
@@ -197,7 +197,7 @@ export default function NavSidebar({ open, onClose }: Props) {
         <div>
           <button
             onClick={() => setTableExpanded((e) => !e)}
-            className={`w-full flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm
+            className={`w-full flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px]
                         transition-all duration-150 text-left
                         ${isTableActive ? "text-bright" : "text-secondary hover:text-primary"}`}
             style={{ width: "calc(100% - 16px)" }}
@@ -244,7 +244,7 @@ export default function NavSidebar({ open, onClose }: Props) {
         <div>
           <button
             onClick={() => setBaseCalcExpanded((e) => !e)}
-            className={`w-full flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm
+            className={`w-full flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px]
                         transition-all duration-150 text-left
                         ${isBaseCalcActive ? "text-bright" : "text-secondary hover:text-primary"}`}
             style={{ width: "calc(100% - 16px)" }}
@@ -288,7 +288,7 @@ export default function NavSidebar({ open, onClose }: Props) {
           {/* Molar Calculations — expandable */}
           <button
             onClick={() => setCalcExpanded((e) => !e)}
-            className={`w-full flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm
+            className={`w-full flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px]
                         transition-all duration-150 text-left
                         ${isCalcActive ? "text-bright" : "text-secondary hover:text-primary"}`}
             style={{ width: "calc(100% - 16px)" }}
@@ -333,7 +333,7 @@ export default function NavSidebar({ open, onClose }: Props) {
         <NavLink
           to="/empirical"
           className={({ isActive }) =>
-            `flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm transition-all duration-150
+            `flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px] transition-all duration-150
              ${isActive ? "bg-raised text-bright border border-border" : "text-secondary hover:text-primary hover:bg-surface border border-transparent"}`
           }
           onClick={onClose}
@@ -356,7 +356,7 @@ export default function NavSidebar({ open, onClose }: Props) {
         <NavLink
           to="/compound"
           className={({ isActive }) =>
-            `flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm transition-all duration-150
+            `flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px] transition-all duration-150
              ${isActive ? "bg-raised text-bright border border-border" : "text-secondary hover:text-primary hover:bg-surface border border-transparent"}`
           }
           onClick={onClose}
@@ -376,7 +376,7 @@ export default function NavSidebar({ open, onClose }: Props) {
         <NavLink
           to="/structures"
           className={({ isActive }) =>
-            `flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm transition-all duration-150
+            `flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px] transition-all duration-150
              ${isActive ? "bg-raised text-bright border border-border" : "text-secondary hover:text-primary hover:bg-surface border border-transparent"}`
           }
           onClick={onClose}
@@ -405,7 +405,7 @@ export default function NavSidebar({ open, onClose }: Props) {
 
   return (
     <>
-      <aside className="hidden md:flex flex-col w-52 shrink-0 bg-surface border-r border-border h-screen sticky top-0">
+      <aside className="hidden md:flex flex-col w-52 lg:w-60 shrink-0 bg-surface border-r border-border h-screen sticky top-0">
         {inner}
       </aside>
       <AnimatePresence>

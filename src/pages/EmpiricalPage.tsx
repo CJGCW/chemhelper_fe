@@ -16,9 +16,9 @@ export default function EmpiricalPage() {
   useEffect(() => { loadElements() }, [loadElements])
 
   return (
-    <div className="p-4 md:p-6 max-w-4xl mx-auto flex flex-col gap-6">
+    <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
       <div className="flex flex-col gap-3">
-        <h2 className="font-sans font-semibold text-bright text-xl">Empirical &amp; Molecular Formula</h2>
+        <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Empirical &amp; Molecular Formula</h2>
         <p className="font-sans text-sm text-secondary">
           Determine the simplest whole-number ratio of elements from percent composition or mass data.
         </p>

@@ -225,11 +225,11 @@ export default function BaseCalculationsPage() {
   }
 
   return (
-    <div className="p-4 md:p-6 max-w-7xl mx-auto flex flex-col gap-6">
+    <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
 
       {/* Header */}
       <div className="flex flex-col gap-3">
-        <h2 className="font-sans font-semibold text-bright text-xl">
+        <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">
           {pageTab === 'conversions' ? 'Unit Conversions' : pageTab === 'sci-notation' ? 'Scientific Notation' : 'Sig Figs'}
         </h2>
 
