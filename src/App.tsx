@@ -8,6 +8,7 @@ import CompoundPage from './pages/CompoundPage'
 import ElectronConfigPage from './pages/ElectronConfigPage'
 import PlaceholderPage from './pages/PlaceholderPage'
 import EmpiricalPage from './pages/EmpiricalPage'
+import TestPage from './pages/TestPage'
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
       <Route element={<AppLayout />}>
         <Route index element={<Navigate to="/table" replace />} />
         <Route path="/table" element={<TablePage />} />
+        <Route path="/test" element={<TestPage />} />
         <Route path="/calculations" element={<CalculationsPage />} />
         <Route path="/base-calculations" element={<BaseCalculationsPage />} />
         <Route path="/structures" element={<StructuresPage />} />

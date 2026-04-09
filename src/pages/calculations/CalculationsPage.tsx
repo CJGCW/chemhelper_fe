@@ -20,7 +20,7 @@ const PILLS: { value: CalcType; label: string; formula: string }[] = [
   { value: 'practice',    label: 'Practice',    formula: '✎'          },
 ]
 
-const EXPLANATIONS: Record<CalcType, ExplanationContent> = {
+const EXPLANATIONS: Partial<Record<CalcType, ExplanationContent>> = {
   colligative: {
     title: 'Colligative Properties',
     formula: 'ΔT = i · K · b',
@@ -171,9 +171,9 @@ export default function CalculationsPage() {
         </motion.div>
       </AnimatePresence>
 
-      {activeTab !== 'practice' && (
+      {activeTab !== 'practice' && EXPLANATIONS[activeTab] && (
         <ExplanationModal
-          content={EXPLANATIONS[activeTab]}
+          content={EXPLANATIONS[activeTab]!}
           open={showExplanation}
           onClose={() => setShowExplanation(false)}
         />

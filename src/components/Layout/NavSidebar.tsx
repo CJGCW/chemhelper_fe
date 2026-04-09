@@ -138,6 +138,31 @@ const STRUCTURE_ITEMS = [
   { tab: "vsepr", label: "VSEPR",           formula: "⬡" },
 ]
 
+// ── Test Generator (standalone nav item) ─────────────────────────────────────
+
+function TestNavItem({ onNavigate }: { onNavigate: () => void }) {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const isActive = location.pathname === "/test"
+  return (
+    <button
+      onClick={() => { navigate("/test"); onNavigate() }}
+      className={`w-full flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px]
+                  transition-all duration-150 text-left
+                  ${isActive ? "text-bright" : "text-secondary hover:text-primary"}`}
+      style={{ width: "calc(100% - 16px)" }}
+    >
+      <span
+        className="font-mono text-base leading-none shrink-0 w-4 text-center"
+        style={{ color: isActive ? "var(--c-halogen)" : undefined }}
+      >
+        ✎
+      </span>
+      <span className="flex-1">Test Generator</span>
+    </button>
+  )
+}
+
 function StructureSubItem({ item, onNavigate }: { item: typeof STRUCTURE_ITEMS[0]; onNavigate: () => void }) {
   const location = useLocation()
   const navigate = useNavigate()
@@ -304,6 +329,7 @@ export default function NavSidebar({ open, onClose }: Props) {
             <StructureSubItem key={i} item={item} onNavigate={onClose} />
           ))}
         </ExpandableSection>
+        <TestNavItem onNavigate={onClose} />
       </nav>
 
       <div className="p-4 border-t border-border shrink-0">
