@@ -50,18 +50,30 @@ function SubItem({
 // ── Periodic Table sub-items ──────────────────────────────────────────────────
 
 const TABLE_ITEMS = [
-  { path: "/table",          label: "Periodic Table",  formula: "⬡"  },
-  { path: "/electron-config", label: "Electron Config", formula: "e⁻" },
+  { path: "/table",                                      label: "Periodic Table",  formula: "⬡"  },
+  { path: "/electron-config?topic=electron_config",      label: "Electron Config", formula: "e⁻" },
+  { path: "/electron-config?topic=quantum_numbers",      label: "Quantum Numbers", formula: "QN" },
+  { path: "/electron-config?topic=energy_levels",        label: "Energy Levels",   formula: "Eₙ" },
 ]
 
 function TableSubItem({ item, onNavigate }: { item: typeof TABLE_ITEMS[0]; onNavigate: () => void }) {
   const location = useLocation()
   const navigate = useNavigate()
+
+  // Items may include query strings — match path + optional topic param
+  const [itemPath, itemQuery] = item.path.split('?')
+  const currentTopic = new URLSearchParams(location.search).get('topic') ?? 'electron_config'
+  const itemTopic    = itemQuery ? new URLSearchParams(itemQuery).get('topic') : null
+
+  const isActive = itemTopic
+    ? location.pathname === itemPath && currentTopic === itemTopic
+    : location.pathname === item.path
+
   return (
     <SubItem
       formula={item.formula}
       label={item.label}
-      isActive={location.pathname === item.path}
+      isActive={isActive}
       onClick={() => { navigate(item.path); onNavigate() }}
     />
   )
