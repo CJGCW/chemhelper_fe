@@ -5,6 +5,7 @@ import { checkEmpiricalAnswer } from '../../utils/empiricalPractice'
 import { checkConversionAnswer } from '../../utils/conversionPractice'
 import { checkAtomicAnswer } from '../../utils/atomicPractice'
 import { checkLewisProblem, checkVseprProblem } from '../../utils/lewisPractice'
+import { checkStoichAnswer } from '../../utils/stoichiometryPractice'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
 // ── Answer checking ───────────────────────────────────────────────────────────
@@ -30,6 +31,8 @@ function checkQuestion(q: TestQuestion, answer: string): Result {
     return checkLewisProblem(answer, q.problem.data) ? 'correct' : 'wrong'
   if (q.problem.kind === 'vsepr')
     return checkVseprProblem(answer, q.problem.data) ? 'correct' : 'wrong'
+  if (q.problem.kind === 'stoich')
+    return checkStoichAnswer(answer, q.problem.data) ? 'correct' : 'wrong'
 
   // molar
   const userVal = parseFloat(answer)
@@ -92,6 +95,19 @@ function buildQuestionHtml(q: TestQuestion): string {
     </div>`
   }
 
+  if (q.problem.kind === 'stoich') {
+    const p = q.problem.data
+    const lines = p.question.split('\n')
+    const unitLabel = p.answerUnit ? `<span class="unit-label">${p.answerUnit}</span>` : ''
+    const textHtml = lines.map((l, i) =>
+      `<p class="q-text" style="${i === 0 ? 'font-family:monospace;font-size:10pt;color:#555;' : ''}">${l}</p>`
+    ).join('')
+    return `<div class="question">${header}
+      ${textHtml}
+      <div class="answer-row"><span class="solve-for">Answer:</span><span class="answer-line"></span>${unitLabel}</div>
+    </div>`
+  }
+
   // molar
   const p = q.problem.data
   const givenHtml = p.style === 'arithmetic' && p.given.length > 0
@@ -118,6 +134,10 @@ function buildAnswerKeyHtml(q: TestQuestion): string {
       ? `${q.problem.data.answer} ${q.problem.data.answerUnit}`
       : q.problem.data.answer
   else if (q.problem.kind === 'lewis' || q.problem.kind === 'vsepr')
+    answer = q.problem.data.answerUnit
+      ? `${q.problem.data.answer} ${q.problem.data.answerUnit}`
+      : q.problem.data.answer
+  else if (q.problem.kind === 'stoich')
     answer = q.problem.data.answerUnit
       ? `${q.problem.data.answer} ${q.problem.data.answerUnit}`
       : q.problem.data.answer
@@ -244,6 +264,7 @@ export default function TestSheet({ test, onBack }: Props) {
     const atomicP     = q.problem.kind === 'atomic'     ? q.problem.data : null
     const lewisP      = q.problem.kind === 'lewis'      ? q.problem.data : null
     const vseprP      = q.problem.kind === 'vsepr'      ? q.problem.data : null
+    const stoichP     = q.problem.kind === 'stoich'     ? q.problem.data : null
 
     const questionText = sfProblem
       ? (sfProblem.kind === 'count'
@@ -259,6 +280,14 @@ export default function TestSheet({ test, onBack }: Props) {
       ? <p className="font-sans text-base text-bright leading-relaxed pl-8">
           Determine the empirical formula from the percent composition:
         </p>
+      : stoichP
+      ? <div className="pl-8 flex flex-col gap-1">
+          {stoichP.question.split('\n').map((line, i) =>
+            i === 0
+              ? <p key={i} className="font-mono text-xs text-secondary">{line}</p>
+              : <p key={i} className="font-sans text-base text-bright leading-relaxed">{line}</p>
+          )}
+        </div>
       : <p className="font-sans text-base text-bright leading-relaxed pl-8">
           {atomicP?.question ?? lewisP?.question ?? vseprP?.question ?? conversionP?.question ?? molarP!.question}
         </p>
@@ -275,6 +304,8 @@ export default function TestSheet({ test, onBack }: Props) {
       ? (lewisP.answerUnit ? `${lewisP.answer} ${lewisP.answerUnit}` : lewisP.answer)
       : vseprP
       ? (vseprP.answerUnit ? `${vseprP.answer} ${vseprP.answerUnit}` : vseprP.answer)
+      : stoichP
+      ? (stoichP.answerUnit ? `${stoichP.answer} ${stoichP.answerUnit}` : stoichP.answer)
       : `${molarP!.answer} ${molarP!.answerUnit}`
 
     const solutionSteps = sfProblem
@@ -289,6 +320,8 @@ export default function TestSheet({ test, onBack }: Props) {
       ? lewisP.steps
       : vseprP
       ? vseprP.steps
+      : stoichP
+      ? stoichP.steps
       : molarP!.steps
 
     return (
@@ -355,7 +388,7 @@ export default function TestSheet({ test, onBack }: Props) {
             <span className="font-mono text-base text-secondary whitespace-nowrap">EF =</span>
           )}
           <input
-            type={(sfProblem || empiricalP || atomicP?.isTextAnswer || lewisP?.isTextAnswer || vseprP?.isTextAnswer) ? 'text' : 'number'}
+            type={(sfProblem || empiricalP || atomicP?.isTextAnswer || lewisP?.isTextAnswer || vseprP?.isTextAnswer || stoichP?.isTextAnswer) ? 'text' : 'number'}
             inputMode={sfProblem?.kind === 'count' ? 'numeric' : 'decimal'}
             value={answers[q.id] ?? ''}
             onChange={e => setAnswer(q.id, e.target.value)}
@@ -366,12 +399,13 @@ export default function TestSheet({ test, onBack }: Props) {
               : atomicP?.isTextAnswer ? 'e.g. 1s²2s²2p⁶'
               : lewisP?.isTextAnswer ? 'e.g. Tetrahedral'
               : vseprP?.isTextAnswer ? 'e.g. sp³'
+              : stoichP?.isTextAnswer ? 'formula, e.g. H₂'
               : 'answer'
             }
             className={`bg-raised border rounded-sm px-3 py-1.5 font-mono text-base
                         placeholder-dim focus:outline-none focus:border-muted
                         disabled:cursor-not-allowed transition-colors
-                        ${(empiricalP || atomicP?.isTextAnswer || lewisP?.isTextAnswer || vseprP?.isTextAnswer) ? 'w-44' : 'w-36'}
+                        ${(empiricalP || atomicP?.isTextAnswer || lewisP?.isTextAnswer || vseprP?.isTextAnswer || stoichP?.isTextAnswer) ? 'w-44' : 'w-36'}
                         ${result === 'correct' ? 'border-emerald-700/60 text-emerald-300'
                           : (result === 'wrong' || result === 'wrong_sf') ? 'border-rose-700/60 text-rose-300'
                           : 'border-border text-bright'}`}
@@ -390,6 +424,9 @@ export default function TestSheet({ test, onBack }: Props) {
           )}
           {vseprP?.answerUnit && (
             <span className="font-mono text-sm text-secondary">{vseprP.answerUnit}</span>
+          )}
+          {stoichP?.answerUnit && (
+            <span className="font-mono text-sm text-secondary">{stoichP.answerUnit}</span>
           )}
 
           {checked && (

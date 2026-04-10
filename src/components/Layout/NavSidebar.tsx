@@ -143,6 +143,31 @@ function CalcSubItem({ item, onNavigate }: { item: typeof CALC_ITEMS[0]; onNavig
   )
 }
 
+// ── Stoichiometry (standalone nav item) ──────────────────────────────────────
+
+function StoichNavItem({ onNavigate }: { onNavigate: () => void }) {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const isActive = location.pathname === "/stoichiometry"
+  return (
+    <button
+      onClick={() => { navigate("/stoichiometry"); onNavigate() }}
+      className={`w-full flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px]
+                  transition-all duration-150 text-left
+                  ${isActive ? "text-bright" : "text-secondary hover:text-primary"}`}
+      style={{ width: "calc(100% - 16px)" }}
+    >
+      <span
+        className="font-mono text-base leading-none shrink-0 w-4 text-center"
+        style={{ color: isActive ? "var(--c-halogen)" : undefined }}
+      >
+        ⚖
+      </span>
+      <span className="flex-1">Stoichiometry</span>
+    </button>
+  )
+}
+
 // ── Structures sub-items ──────────────────────────────────────────────────────
 
 const STRUCTURE_ITEMS = [
@@ -329,6 +354,7 @@ export default function NavSidebar({ open, onClose }: Props) {
             <CalcSubItem key={i} item={item} onNavigate={onClose} />
           ))}
         </ExpandableSection>
+        <StoichNavItem onNavigate={onClose} />
 
         {/* Tools */}
         <NavGroup label="Tools" />

@@ -7,28 +7,32 @@ import { generateEmpiricalProblem } from '../../utils/empiricalPractice'
 import { generateConversionProblem } from '../../utils/conversionPractice'
 import { generateAtomicProblem } from '../../utils/atomicPractice'
 import { generateLewisProblem, generateVseprProblem } from '../../utils/lewisPractice'
+import type { StoichProblemType } from '../../utils/stoichiometryPractice'
+import { generateStoichProblem } from '../../utils/stoichiometryPractice'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
 // ── Topic definitions ─────────────────────────────────────────────────────────
 
-type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'vsepr'
-type TopicGroup = 'core' | 'atomic_molecular' | 'structures' | 'molar_solutions'
+type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'vsepr' | 'stoich'
+type TopicGroup = 'core' | 'atomic_molecular' | 'structures' | 'molar_solutions' | 'stoichiometry'
 
 const GROUP_LABELS: Record<TopicGroup, string> = {
   core:             'Core Skills',
   atomic_molecular: 'Atomic Structure',
   structures:       'Structures',
   molar_solutions:  'Molar & Solutions',
+  stoichiometry:    'Stoichiometry',
 }
-const GROUP_ORDER: TopicGroup[] = ['core', 'atomic_molecular', 'structures', 'molar_solutions']
+const GROUP_ORDER: TopicGroup[] = ['core', 'atomic_molecular', 'structures', 'molar_solutions', 'stoichiometry']
 
 interface TopicDef {
-  id:        string
-  kind:      TopicKind
-  group:     TopicGroup
-  label:     string
-  formula:   string
+  id:         string
+  kind:       TopicKind
+  group:      TopicGroup
+  label:      string
+  formula:    string
   molarType?: MolarCalcType
+  stoichType?: StoichProblemType
 }
 
 const ALL_TOPICS: TopicDef[] = [
@@ -43,6 +47,11 @@ const ALL_TOPICS: TopicDef[] = [
   { id: 'molality',   kind: 'molar',      group: 'molar_solutions',  label: 'Molality',                formula: 'b = n/m',              molarType: 'molality' },
   { id: 'bpe',        kind: 'molar',      group: 'molar_solutions',  label: 'Boiling Pt Elevation',    formula: 'ΔTb = i·Kb·b',         molarType: 'bpe'      },
   { id: 'fpd',        kind: 'molar',      group: 'molar_solutions',  label: 'Freezing Pt Depression',  formula: 'ΔTf = i·Kf·b',         molarType: 'fpd'      },
+  { id: 'stoich-mr',  kind: 'stoich',     group: 'stoichiometry',    label: 'Mole Ratios',             formula: 'n₁/n₂',                stoichType: 'mole_ratio'        },
+  { id: 'stoich-mm',  kind: 'stoich',     group: 'stoichiometry',    label: 'Mass-to-Mass',            formula: 'g → mol → g',           stoichType: 'mass_to_mass'      },
+  { id: 'stoich-lr',  kind: 'stoich',     group: 'stoichiometry',    label: 'Limiting Reagent',        formula: 'LR',                    stoichType: 'limiting_reagent'  },
+  { id: 'stoich-ty',  kind: 'stoich',     group: 'stoichiometry',    label: 'Theoretical Yield',       formula: 'TY (g)',                stoichType: 'theoretical_yield' },
+  { id: 'stoich-py',  kind: 'stoich',     group: 'stoichiometry',    label: 'Percent Yield',           formula: '% yield',               stoichType: 'percent_yield'     },
 ]
 
 const STYLES: ProblemStyle[] = ['word', 'arithmetic']
@@ -134,6 +143,8 @@ export default function TestBuilder({ onGenerate }: Props) {
         const data = await generateVseprProblem()
         return data ? { topic: t.label, topicFormula: t.formula, problem: { kind: 'vsepr', data } } : null
       }
+      if (t.kind === 'stoich')
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'stoich', data: generateStoichProblem(t.stoichType!) } }
       return { topic: t.label, topicFormula: t.formula, problem: { kind: 'molar', data: generateMolarProblem(t.molarType!, randomStyle()) } }
     }
 
