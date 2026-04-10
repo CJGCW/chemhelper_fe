@@ -25,17 +25,19 @@ export default function AppLayout() {
   const title = PAGE_TITLES[location.pathname] ?? "ChemHelper";
 
   return (
-    <div className="flex h-screen overflow-hidden bg-base">
-      {/* Left nav */}
-      <NavSidebar open={navOpen} onClose={() => setNavOpen(false)} />
+    <div className="flex h-screen overflow-hidden bg-base print:h-auto print:overflow-visible print:block">
+      {/* Left nav — hidden when printing */}
+      <div className="print:hidden contents">
+        <NavSidebar open={navOpen} onClose={() => setNavOpen(false)} />
+      </div>
 
       {/* Element detail sidebar — slides over content from the left on desktop */}
       <ElementModal />
 
       {/* Main content area */}
-      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-        {/* Top bar */}
-        <header className="flex items-center gap-3 px-5 lg:px-8 py-3 lg:py-4 border-b border-border shrink-0 bg-surface">
+      <div className="flex flex-col flex-1 min-w-0 overflow-hidden print:overflow-visible print:block">
+        {/* Top bar — hidden when printing */}
+        <header className="flex items-center gap-3 px-5 lg:px-8 py-3 lg:py-4 border-b border-border shrink-0 bg-surface print:hidden">
           {/* Mobile hamburger */}
           <button
             onClick={() => setNavOpen(true)}
@@ -56,7 +58,7 @@ export default function AppLayout() {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden print:overflow-visible">
           <Outlet />
         </main>
       </div>

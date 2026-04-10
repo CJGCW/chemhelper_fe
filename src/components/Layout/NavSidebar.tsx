@@ -117,7 +117,7 @@ const CALC_ITEMS: { tab: string; label: string; formula: string; mode?: string }
   { tab: "molality",    label: "Molality",                formula: "b = n/m" },
   { tab: "colligative", label: "Boiling Point Elevation", formula: "ΔTb", mode: "bpe" },
   { tab: "colligative", label: "Freezing Point Depression", formula: "ΔTf", mode: "fpd" },
-  { tab: "practice",    label: "Practice",                formula: "✎" },
+  { tab: "reference",   label: "Reference",               formula: "≡" },
 ]
 
 function CalcSubItem({ item, onNavigate }: { item: typeof CALC_ITEMS[0]; onNavigate: () => void }) {
@@ -143,28 +143,29 @@ function CalcSubItem({ item, onNavigate }: { item: typeof CALC_ITEMS[0]; onNavig
   )
 }
 
-// ── Stoichiometry (standalone nav item) ──────────────────────────────────────
+// ── Stoichiometry sub-items ───────────────────────────────────────────────────
 
-function StoichNavItem({ onNavigate }: { onNavigate: () => void }) {
+const STOICH_ITEMS: { tab: string; label: string; formula: string }[] = [
+  { tab: 'stoich',      label: 'Stoichiometry',    formula: 'g↔mol' },
+  { tab: 'limiting',    label: 'Limiting Reagent', formula: 'LR'    },
+  { tab: 'theoretical', label: 'Theoretical Yield',formula: 'T.Y.'  },
+  { tab: 'percent',     label: 'Percent Yield',    formula: '%Y'    },
+  { tab: 'reference',   label: 'Reference',        formula: '≡'     },
+]
+
+function StoichSubItem({ item, onNavigate }: { item: typeof STOICH_ITEMS[0]; onNavigate: () => void }) {
   const location = useLocation()
   const navigate = useNavigate()
-  const isActive = location.pathname === "/stoichiometry"
+  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'stoich'
+  const isActive = location.pathname === '/stoichiometry' && currentTab === item.tab
+
   return (
-    <button
-      onClick={() => { navigate("/stoichiometry"); onNavigate() }}
-      className={`w-full flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px]
-                  transition-all duration-150 text-left
-                  ${isActive ? "text-bright" : "text-secondary hover:text-primary"}`}
-      style={{ width: "calc(100% - 16px)" }}
-    >
-      <span
-        className="font-mono text-base leading-none shrink-0 w-4 text-center"
-        style={{ color: isActive ? "var(--c-halogen)" : undefined }}
-      >
-        ⚖
-      </span>
-      <span className="flex-1">Stoichiometry</span>
-    </button>
+    <SubItem
+      formula={item.formula}
+      label={item.label}
+      isActive={isActive}
+      onClick={() => { navigate(`/stoichiometry?tab=${item.tab}`); onNavigate() }}
+    />
   )
 }
 
@@ -174,6 +175,38 @@ const STRUCTURE_ITEMS = [
   { tab: "lewis", label: "Lewis Structure", formula: "⌬" },
   { tab: "vsepr", label: "VSEPR",           formula: "⬡" },
 ]
+
+// ── Practice standalone nav items ────────────────────────────────────────────
+
+function PracticeNavItem({ path, icon, label, onNavigate }: { path: string; icon: string; label: string; onNavigate: () => void }) {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const [itemPath, itemQuery] = path.split('?')
+  const itemParams = itemQuery ? new URLSearchParams(itemQuery) : null
+  const currentParams = new URLSearchParams(location.search)
+
+  const isActive = itemParams
+    ? location.pathname === itemPath && [...itemParams.entries()].every(([k, v]) => currentParams.get(k) === v)
+    : location.pathname === path
+
+  return (
+    <button
+      onClick={() => { navigate(path); onNavigate() }}
+      className={`w-full flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px]
+                  transition-all duration-150 text-left
+                  ${isActive ? "text-bright" : "text-secondary hover:text-primary"}`}
+      style={{ width: "calc(100% - 16px)" }}
+    >
+      <span
+        className="font-mono text-base leading-none shrink-0 w-4 text-center"
+        style={{ color: isActive ? "var(--c-halogen)" : undefined }}
+      >
+        {icon}
+      </span>
+      <span className="flex-1">{label}</span>
+    </button>
+  )
+}
 
 // ── Test Generator (standalone nav item) ─────────────────────────────────────
 
@@ -291,6 +324,7 @@ export default function NavSidebar({ open, onClose }: Props) {
     location.pathname === "/compound"
   )
   const [calcExpanded,     setCalcExpanded]     = useState(location.pathname === "/calculations")
+  const [stoichExpanded,   setStoichExpanded]   = useState(location.pathname === "/stoichiometry")
   const [structExpanded,   setStructExpanded]   = useState(location.pathname === "/structures")
 
   const isTableActive    = location.pathname === "/table" || location.pathname === "/electron-config"
@@ -298,6 +332,7 @@ export default function NavSidebar({ open, onClose }: Props) {
                            location.pathname === "/empirical" ||
                            location.pathname === "/compound"
   const isCalcActive     = location.pathname === "/calculations"
+  const isStoichActive   = location.pathname === "/stoichiometry"
   const isStructActive   = location.pathname === "/structures"
 
   const inner = (
@@ -354,7 +389,22 @@ export default function NavSidebar({ open, onClose }: Props) {
             <CalcSubItem key={i} item={item} onNavigate={onClose} />
           ))}
         </ExpandableSection>
-        <StoichNavItem onNavigate={onClose} />
+        <ExpandableSection
+          icon="⚖" label="Stoichiometry"
+          isActive={isStoichActive} expanded={stoichExpanded}
+          onToggle={() => setStoichExpanded(e => !e)}
+        >
+          {STOICH_ITEMS.map((item, i) => (
+            <StoichSubItem key={i} item={item} onNavigate={onClose} />
+          ))}
+        </ExpandableSection>
+
+        {/* Practice */}
+        <NavGroup label="Practice" />
+        <PracticeNavItem path="/calculations?tab=practice" icon="⚗" label="Molar Practice" onNavigate={onClose} />
+        <PracticeNavItem path="/stoichiometry?tab=practice" icon="⚖" label="Stoich Practice" onNavigate={onClose} />
+        <PracticeNavItem path="/stoichiometry?tab=balance" icon="⇌" label="Balance Equations" onNavigate={onClose} />
+        <TestNavItem onNavigate={onClose} />
 
         {/* Tools */}
         <NavGroup label="Tools" />
@@ -367,7 +417,6 @@ export default function NavSidebar({ open, onClose }: Props) {
             <StructureSubItem key={i} item={item} onNavigate={onClose} />
           ))}
         </ExpandableSection>
-        <TestNavItem onNavigate={onClose} />
       </nav>
 
       <div className="p-4 border-t border-border shrink-0">
