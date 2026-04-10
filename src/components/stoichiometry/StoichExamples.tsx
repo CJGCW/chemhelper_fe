@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 // ── Colours ────────────────────────────────────────────────────────────────────
 const EC: Record<string, string> = { H:'#9ca3af', C:'#4b5563', N:'#4a7ef5', O:'#e05050', Fe:'#c07040' }
@@ -50,32 +50,6 @@ const SCENES: Scene[] = [
       { a:5, b:0, o:2 }, { a:0, b:6, o:2 },   // CO₂
       { a:7, b:1 },       { a:7, b:2 },         // H₂O #1
       { a:8, b:3 },       { a:8, b:4 },         // H₂O #2
-    ],
-  },
-
-  // ── N₂ + 3H₂ → 2NH₃ ────────────────────────────────────────────────────────
-  // 8 atoms: N×2  H×6
-  {
-    id: 'limiting', title: 'Limiting Reagent', equation: 'N₂ + 3H₂ → 2NH₃',
-    note: 'Here every reactant is fully consumed — the ratio is exactly stoichiometric. If only 2 H₂ were available, H₂ would be the limiting reagent.',
-    vw: 680, vh: 240, arrowX: 305, arrowY: 120,
-    atoms: [
-      { el:'N',  rx: 45, ry:120,  px:430, py:102 },  // 0  N₂ L    → NH₃#1 N
-      { el:'N',  rx: 95, ry:120,  px:575, py:102 },  // 1  N₂ R    → NH₃#2 N
-      { el:'H',  rx:180, ry: 85,  px:402, py:142 },  // 2  H₂#1 L  → NH₃#1 H_L
-      { el:'H',  rx:220, ry: 85,  px:547, py:142 },  // 3  H₂#1 R  → NH₃#2 H_L
-      { el:'H',  rx:180, ry:120,  px:430, py:150 },  // 4  H₂#2 L  → NH₃#1 H_M
-      { el:'H',  rx:220, ry:120,  px:575, py:150 },  // 5  H₂#2 R  → NH₃#2 H_M
-      { el:'H',  rx:180, ry:155,  px:458, py:142 },  // 6  H₂#3 L  → NH₃#1 H_R
-      { el:'H',  rx:220, ry:155,  px:603, py:142 },  // 7  H₂#3 R  → NH₃#2 H_R
-    ],
-    rBonds: [
-      { a:0, b:1, o:3 },                              // N≡N
-      { a:2, b:3 }, { a:4, b:5 }, { a:6, b:7 },      // H–H ×3
-    ],
-    pBonds: [
-      { a:0, b:2 }, { a:0, b:4 }, { a:0, b:6 },      // NH₃ #1
-      { a:1, b:3 }, { a:1, b:5 }, { a:1, b:7 },      // NH₃ #2
     ],
   },
 
@@ -156,11 +130,11 @@ function ReactionViewer({ scene }: { scene: Scene }) {
       </div>
 
       {/* Canvas — keyed on runId so every replay gets a fresh Framer Motion state */}
-      <div className="overflow-x-auto rounded-sm border border-border" style={{ background: '#0e1016' }}>
+      <div className="rounded-sm border border-border" style={{ background: '#0e1016' }}>
         <svg
           key={runId}
           viewBox={`0 0 ${scene.vw} ${scene.vh}`}
-          style={{ display:'block', minWidth: scene.vw, width:'100%', maxWidth: scene.vw }}
+          style={{ display:'block', width:'100%' }}
         >
           {/* Reaction arrow — static */}
           <text
@@ -225,19 +199,457 @@ function ReactionViewer({ scene }: { scene: Scene }) {
   )
 }
 
+// ── Cookie Limiting Reagent Animation ─────────────────────────────────────────
+//
+// Recipe per batch: 1 egg  +  2 flour  +  1 sugar  +  3 chips  →  🍪
+// Available:        3 eggs,   4 flour,    5 sugar,    10 chips
+//
+// Flour limits at 2 batches (4÷2=2). Others have leftovers.
+
+interface IngredientDef {
+  key: string; label: string; short: string
+  color: string; tc: string; sz: number
+  perBatch: number
+  batchOf: number[]  // index → which batch consumes it (0 = leftover)
+}
+
+const COOKIE_INGREDIENTS: IngredientDef[] = [
+  { key:'egg',   label:'Eggs',  short:'E', color:'#f5deb3', tc:'#7a6030', sz:40, perBatch:1, batchOf:[1, 2, 0]              },
+  { key:'flour', label:'Flour', short:'F', color:'#ece4d4', tc:'#7a6848', sz:40, perBatch:2, batchOf:[1, 1, 2, 2]           },
+  { key:'sugar', label:'Sugar', short:'S', color:'#b8d8f0', tc:'#2e6488', sz:40, perBatch:1, batchOf:[1, 2, 0, 0, 0]        },
+  { key:'chip',  label:'Chips', short:'',  color:'#4a2c10', tc:'#c88040', sz:24, perBatch:3, batchOf:[1,1,1,2,2,2,0,0,0,0] },
+]
+
+// Phases: 0=idle  1=batch1-active  2=batch1-done  3=batch2-active  4=batch2-done  5=result
+function dotPhaseState(batchOf: number, phase: number): 'idle' | 'active' | 'consumed' | 'leftover' {
+  if (batchOf === 0) return phase >= 5 ? 'leftover' : 'idle'
+  const activePh  = (batchOf - 1) * 2 + 1  // batch1→1, batch2→3
+  const consumePh = activePh + 1             // batch1→2, batch2→4
+  if (phase >= consumePh) return 'consumed'
+  if (phase >= activePh)  return 'active'
+  return 'idle'
+}
+
+function IngDot({ ing, batchOf, phase }: { ing: IngredientDef; batchOf: number; phase: number }) {
+  const s = dotPhaseState(batchOf, phase)
+  return (
+    <motion.div
+      animate={
+        s === 'consumed' ? { scale: 0,    opacity: 0   } :
+        s === 'active'   ? { scale: 1.25, opacity: 1   } :
+        s === 'leftover' ? { scale: 1,    opacity: 0.4 } :
+                           { scale: 1,    opacity: 1   }
+      }
+      transition={{ type:'spring', stiffness:220, damping:22 }}
+      className="rounded-full flex items-center justify-center shrink-0 font-mono font-bold"
+      style={{
+        width:  ing.sz,
+        height: ing.sz,
+        background: ing.color,
+        border: s === 'active'
+          ? '2px solid rgba(255,255,255,0.85)'
+          : '1.5px solid rgba(0,0,0,0.3)',
+        boxShadow: s === 'active' ? `0 0 10px 3px ${ing.color}90` : 'none',
+        fontSize: ing.sz >= 24 ? 9 : 0,
+        color: ing.tc,
+      }}
+    >
+      {ing.sz >= 24 ? ing.short : null}
+    </motion.div>
+  )
+}
+
+function CookieLimitingAnimation() {
+  const [phase, setPhase] = useState(0)
+  const [runId, setRunId] = useState(0)
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([])
+
+  function play() {
+    timers.current.forEach(clearTimeout)
+    setPhase(0)
+    setRunId(n => n + 1)
+    timers.current = [
+      setTimeout(() => setPhase(1), 120),   // batch 1 highlight
+      setTimeout(() => setPhase(2), 820),   // batch 1 consumed → cookie 1
+      setTimeout(() => setPhase(3), 1900),  // batch 2 highlight
+      setTimeout(() => setPhase(4), 2600),  // batch 2 consumed → cookie 2
+      setTimeout(() => setPhase(5), 3700),  // result labels
+    ]
+  }
+
+  useEffect(() => () => { timers.current.forEach(clearTimeout) }, [])
+
+  return (
+    <div className="flex flex-col gap-3">
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="font-sans text-sm font-semibold text-bright">Limiting Reagent — Baking Cookies</p>
+          <p className="font-mono text-[11px] text-secondary mt-0.5">
+            Recipe per batch: &nbsp;
+            <span style={{ color:'#f5deb3' }}>egg ×1</span>
+            {' + '}
+            <span style={{ color:'#ece4d4' }}>flour ×2</span>
+            {' + '}
+            <span style={{ color:'#b8d8f0' }}>sugar ×1</span>
+            {' + '}
+            <span style={{ color:'#c88040' }}>chips ×3</span>
+            {' → 🍪'}
+          </p>
+        </div>
+        <button onClick={play}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-sm border border-border shrink-0
+                     font-sans text-xs text-secondary hover:text-primary hover:border-muted transition-colors">
+          <span className="font-mono">{phase === 0 ? '▶' : '↺'}</span>
+          <span>{phase === 0 ? 'Play' : 'Replay'}</span>
+        </button>
+      </div>
+
+      {/* Main content — keyed so replay remounts and resets all motion state */}
+      <div key={runId} className="flex items-start gap-5">
+
+        {/* Ingredient rows */}
+        <div className="flex flex-col gap-4 flex-1 min-w-0">
+          {COOKIE_INGREDIENTS.map(ing => {
+            const leftover = ing.batchOf.filter(b => b === 0).length
+            const isLimiting = ing.key === 'flour'
+            return (
+              <div key={ing.key} className="flex items-center gap-2">
+                <span className="font-sans text-xs text-secondary shrink-0 w-10">{ing.label}</span>
+                <div className="flex flex-wrap gap-1 items-center">
+                  {ing.batchOf.map((b, i) => (
+                    <IngDot key={i} ing={ing} batchOf={b} phase={phase} />
+                  ))}
+                </div>
+                {/* Result label */}
+                {phase >= 5 && (
+                  <motion.span
+                    initial={{ opacity:0, x:-4 }}
+                    animate={{ opacity:1, x:0 }}
+                    transition={{ duration:0.25 }}
+                    className="font-mono text-[10px] shrink-0 ml-1"
+                    style={{ color: isLimiting ? 'var(--c-halogen)' : 'rgba(255,255,255,0.3)' }}
+                  >
+                    {isLimiting ? '← limiting!' : `(${leftover} left)`}
+                  </motion.span>
+                )}
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Arrow */}
+        <div className="flex items-center pt-10 shrink-0">
+          <span className="font-mono text-xl" style={{ color:'var(--c-halogen)' }}>→</span>
+        </div>
+
+        {/* Cookie output */}
+        <div className="flex flex-col gap-2 shrink-0">
+          <span className="font-sans text-xs text-secondary">Batches</span>
+          <div className="flex gap-1.5 items-center">
+            <motion.span
+              initial={{ scale:0, opacity:0 }}
+              animate={phase >= 2 ? { scale:1, opacity:1 } : { scale:0, opacity:0 }}
+              transition={{ type:'spring', stiffness:280, damping:18 }}
+              style={{ fontSize:48, lineHeight:1, display:'inline-block' }}
+            >🍪</motion.span>
+            <motion.span
+              initial={{ scale:0, opacity:0 }}
+              animate={phase >= 4 ? { scale:1, opacity:1 } : { scale:0, opacity:0 }}
+              transition={{ type:'spring', stiffness:280, damping:18 }}
+              style={{ fontSize:48, lineHeight:1, display:'inline-block' }}
+            >🍪</motion.span>
+          </div>
+          {phase >= 5 && (
+            <motion.span
+              initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ duration:0.3 }}
+              className="font-mono text-[10px] text-secondary"
+            >2 of 3 possible</motion.span>
+          )}
+        </div>
+      </div>
+
+      {/* Explanation */}
+      <AnimatePresence>
+        {phase >= 5 && (
+          <motion.p
+            initial={{ opacity:0, y:5 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0 }}
+            transition={{ duration:0.3 }}
+            className="font-sans text-xs text-secondary italic border-l-2 border-border pl-3"
+          >
+            Flour is the limiting reagent — all 4 cups are consumed after 2 batches, stopping production even though eggs, sugar, and chips remain.
+          </motion.p>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+// ── Theoretical Yield Animation ───────────────────────────────────────────────
+// Flour: 4 cups, 2/batch → 2 batches max = theoretical yield = 2 cookies
+function TheoreticalYieldCookies() {
+  const [phase, setPhase] = useState(0)
+  const [runId, setRunId] = useState(0)
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([])
+
+  function play() {
+    timers.current.forEach(clearTimeout)
+    setPhase(0)
+    setRunId(n => n + 1)
+    timers.current = [
+      setTimeout(() => setPhase(1), 150),
+      setTimeout(() => setPhase(2), 900),
+      setTimeout(() => setPhase(3), 1800),
+      setTimeout(() => setPhase(4), 2550),
+      setTimeout(() => setPhase(5), 3400),
+    ]
+  }
+
+  useEffect(() => () => { timers.current.forEach(clearTimeout) }, [])
+
+  const FC = '#ece4d4', FT = '#7a6848'
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="font-sans text-sm font-semibold text-bright">Theoretical Yield — Maximum Possible Output</p>
+          <p className="font-mono text-[11px] text-secondary mt-0.5">
+            Limiting reagent (flour): 4 cups ÷ 2 per batch ={' '}
+            <span style={{ color: 'var(--c-halogen)' }}>2 batches max</span>
+          </p>
+        </div>
+        <button onClick={play}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-sm border border-border shrink-0
+                     font-sans text-xs text-secondary hover:text-primary hover:border-muted transition-colors">
+          <span className="font-mono">{phase === 0 ? '▶' : '↺'}</span>
+          <span>{phase === 0 ? 'Play' : 'Replay'}</span>
+        </button>
+      </div>
+
+      <div key={runId} className="flex items-center gap-8">
+        {/* Flour grouped by batch */}
+        <div className="flex flex-col gap-2">
+          <span className="font-sans text-xs text-secondary">Flour (4 cups)</span>
+          <div className="flex gap-4">
+            {([1, 2] as const).map(batch => {
+              const consumed = batch === 1 ? phase >= 2 : phase >= 4
+              const active   = batch === 1 ? phase >= 1 && phase < 2 : phase >= 3 && phase < 4
+              return (
+                <div key={batch} className="flex flex-col items-center gap-1.5">
+                  <div className="flex gap-1.5">
+                    {[0, 1].map(i => (
+                      <motion.div
+                        key={i}
+                        animate={{ scale: consumed ? 0 : active ? 1.2 : 1, opacity: consumed ? 0 : 1 }}
+                        transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+                        className="rounded-full flex items-center justify-center font-mono font-bold"
+                        style={{
+                          width: 40, height: 40,
+                          background: FC, color: FT, fontSize: 9,
+                          border: active ? '2px solid rgba(255,255,255,0.85)' : '1.5px solid rgba(0,0,0,0.3)',
+                          boxShadow: active ? `0 0 10px 3px ${FC}90` : 'none',
+                        }}
+                      >F</motion.div>
+                    ))}
+                  </div>
+                  <span className="font-mono text-[9px] text-dim">batch {batch}</span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Arrow */}
+        <span className="font-mono text-xl shrink-0" style={{ color: 'var(--c-halogen)' }}>→</span>
+
+        {/* Cookie output */}
+        <div className="flex flex-col gap-2">
+          <span className="font-sans text-xs text-secondary">Output</span>
+          <div className="flex gap-3 items-center">
+            {([2, 4] as const).map((minPhase, i) => (
+              <motion.span
+                key={i}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={phase >= minPhase ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 280, damping: 18 }}
+                style={{ fontSize: 48, lineHeight: 1, display: 'inline-block' }}
+              >🍪</motion.span>
+            ))}
+          </div>
+          <AnimatePresence>
+            {phase >= 5 && (
+              <motion.p
+                initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
+                className="font-mono text-xs font-semibold"
+                style={{ color: 'var(--c-halogen)' }}
+              >Theoretical yield = 2 🍪</motion.p>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {phase >= 5 && (
+          <motion.p
+            initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            className="font-sans text-xs text-secondary italic border-l-2 border-border pl-3"
+          >
+            Theoretical yield is the maximum product possible assuming the limiting reagent reacts completely with zero loss.
+          </motion.p>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+// ── Percent Yield Animation ────────────────────────────────────────────────────
+// Theoretical = 2 cookies, one burns → actual = 1, % yield = 50%
+function PercentYieldCookies() {
+  const [phase, setPhase] = useState(0)
+  const [runId, setRunId] = useState(0)
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([])
+
+  // 0=idle  1=both appear  2=fire on cookie1  3=cookie1 exits  4=results
+  function play() {
+    timers.current.forEach(clearTimeout)
+    setPhase(0)
+    setRunId(n => n + 1)
+    timers.current = [
+      setTimeout(() => setPhase(1), 200),
+      setTimeout(() => setPhase(2), 1100),
+      setTimeout(() => setPhase(3), 2200),
+      setTimeout(() => setPhase(4), 3000),
+    ]
+  }
+
+  useEffect(() => () => { timers.current.forEach(clearTimeout) }, [])
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="font-sans text-sm font-semibold text-bright">Percent Yield — Actual vs. Theoretical</p>
+          <p className="font-mono text-[11px] text-secondary mt-0.5">
+            Theoretical: 2 cookies — but one burns in the oven 🔥
+          </p>
+        </div>
+        <button onClick={play}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-sm border border-border shrink-0
+                     font-sans text-xs text-secondary hover:text-primary hover:border-muted transition-colors">
+          <span className="font-mono">{phase === 0 ? '▶' : '↺'}</span>
+          <span>{phase === 0 ? 'Play' : 'Replay'}</span>
+        </button>
+      </div>
+
+      <div key={runId} className="flex flex-col gap-5">
+        <div className="flex items-end gap-8">
+          {/* Cookie 1 — burns and exits */}
+          <div className="flex flex-col items-center gap-1">
+            <div className="relative" style={{ height: 64 }}>
+              {/* Fire */}
+              <AnimatePresence>
+                {phase === 2 && (
+                  <motion.span
+                    initial={{ opacity: 0, scale: 0.5, y: 10 }}
+                    animate={{ opacity: 1, scale: 1.2, y: -4 }}
+                    exit={{ opacity: 0, scale: 0.5 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                    style={{
+                      position: 'absolute', bottom: '100%', left: '50%',
+                      transform: 'translateX(-50%)',
+                      fontSize: 28, lineHeight: 1,
+                    }}
+                  >🔥</motion.span>
+                )}
+              </AnimatePresence>
+              {/* Cookie */}
+              <motion.span
+                initial={{ scale: 0, opacity: 0, y: 0, rotate: 0 }}
+                animate={
+                  phase >= 3 ? { scale: 0, opacity: 0, y: -50, rotate: 90 } :
+                  phase >= 2 ? { scale: 1, opacity: 0.5, y: 0, rotate: 0 } :
+                  phase >= 1 ? { scale: 1, opacity: 1,  y: 0, rotate: 0 } :
+                               { scale: 0, opacity: 0,  y: 0, rotate: 0 }
+                }
+                transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+                style={{ fontSize: 48, lineHeight: 1, display: 'inline-block' }}
+              >🍪</motion.span>
+            </div>
+            <AnimatePresence>
+              {phase >= 2 && phase < 4 && (
+                <motion.span
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  className="font-mono text-[9px]" style={{ color: '#e05050' }}
+                >burned!</motion.span>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Cookie 2 — survives */}
+          <motion.span
+            initial={{ scale: 0, opacity: 0 }}
+            animate={phase >= 1 ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 280, damping: 18, delay: 0.15 }}
+            style={{ fontSize: 48, lineHeight: 1, display: 'inline-block' }}
+          >🍪</motion.span>
+        </div>
+
+        {/* Result breakdown */}
+        <AnimatePresence>
+          {phase >= 4 && (
+            <motion.div
+              initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+              className="flex flex-wrap gap-6"
+            >
+              <div>
+                <p className="font-mono text-[10px] text-dim uppercase tracking-widest">Theoretical</p>
+                <p className="font-mono text-sm text-primary">2 cookies</p>
+              </div>
+              <div>
+                <p className="font-mono text-[10px] text-dim uppercase tracking-widest">Actual</p>
+                <p className="font-mono text-sm text-primary">1 cookie</p>
+              </div>
+              <div>
+                <p className="font-mono text-[10px] text-dim uppercase tracking-widest">% Yield</p>
+                <p className="font-mono text-sm font-semibold" style={{ color: 'var(--c-halogen)' }}>
+                  (1 ÷ 2) × 100 = 50%
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {phase >= 4 && (
+            <motion.p
+              initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+              className="font-sans text-xs text-secondary italic border-l-2 border-border pl-3"
+            >
+              Percent yield measures real-world efficiency — burns, spills, and impure collection all reduce it below 100%.
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  )
+}
+
 // ── Page ───────────────────────────────────────────────────────────────────────
 const TABS = [
-  { id:'stoich',   label:'Stoichiometry'   },
-  { id:'limiting', label:'Limiting Reagent' },
-  { id:'balance',  label:'Balancing'        },
+  { id:'stoich',      label:'Stoichiometry'    },
+  { id:'limiting',    label:'Limiting Reagent'  },
+  { id:'theoretical', label:'Theoretical Yield' },
+  { id:'percent',     label:'Percent Yield'     },
+  { id:'balance',     label:'Balancing'         },
 ]
 
 export default function StoichExamples() {
   const [active, setActive] = useState('stoich')
-  const scene = SCENES.find(s => s.id === active)!
+  const scene = SCENES.find(s => s.id === active)
 
   return (
-    <div className="flex flex-col gap-5 max-w-3xl">
+    <div className="flex flex-col gap-5 max-w-2xl">
       {/* Tab bar */}
       <div className="flex items-center gap-1 p-1 rounded-sm self-start flex-wrap"
         style={{ background:'#0e1016', border:'1px solid #1c1f2e' }}>
@@ -264,12 +676,16 @@ export default function StoichExamples() {
 
       {/* Viewer — remount on tab change to reset animation state */}
       <div className="rounded-sm border border-border bg-surface p-5">
-        <ReactionViewer key={active} scene={scene} />
+        {active === 'limiting'
+          ? <CookieLimitingAnimation key="limiting" />
+          : active === 'theoretical'
+          ? <TheoreticalYieldCookies key="theoretical" />
+          : active === 'percent'
+          ? <PercentYieldCookies key="percent" />
+          : <ReactionViewer key={active} scene={scene!} />
+        }
       </div>
 
-      <p className="font-mono text-[10px] text-dim">
-        More examples coming — Theoretical Yield and Percent Yield
-      </p>
     </div>
   )
 }
