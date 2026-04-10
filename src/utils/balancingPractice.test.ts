@@ -5,8 +5,59 @@ import {
   checkBalanced,
   pickEquation,
   formatEquation,
+  balanceReaction,
   type BalancingEquation,
 } from './balancingPractice'
+
+// ── balanceReaction ───────────────────────────────────────────────────────────
+
+describe('balanceReaction', () => {
+  it('balances H₂ + O₂ → H₂O as [2, 1, 2]', () => {
+    expect(balanceReaction(['H2', 'O2'], ['H2O'])).toEqual([2, 1, 2])
+  })
+
+  it('balances Fe + O₂ → Fe₂O₃ as [4, 3, 2]', () => {
+    expect(balanceReaction(['Fe', 'O2'], ['Fe2O3'])).toEqual([4, 3, 2])
+  })
+
+  it('balances CH₄ + O₂ → CO₂ + H₂O as [1, 2, 1, 2]', () => {
+    expect(balanceReaction(['CH4', 'O2'], ['CO2', 'H2O'])).toEqual([1, 2, 1, 2])
+  })
+
+  it('balances N₂ + H₂ → NH₃ as [1, 3, 2]', () => {
+    expect(balanceReaction(['N2', 'H2'], ['NH3'])).toEqual([1, 3, 2])
+  })
+
+  it('balances C₃H₈ + O₂ → CO₂ + H₂O as [1, 5, 3, 4]', () => {
+    expect(balanceReaction(['C3H8', 'O2'], ['CO2', 'H2O'])).toEqual([1, 5, 3, 4])
+  })
+
+  it('balances C₄H₁₀ + O₂ → CO₂ + H₂O as [2, 13, 8, 10]', () => {
+    expect(balanceReaction(['C4H10', 'O2'], ['CO2', 'H2O'])).toEqual([2, 13, 8, 10])
+  })
+
+  it('balances C₆H₁₂O₆ + O₂ → CO₂ + H₂O as [1, 6, 6, 6]', () => {
+    expect(balanceReaction(['C6H12O6', 'O2'], ['CO2', 'H2O'])).toEqual([1, 6, 6, 6])
+  })
+
+  it('balances 3-reactant case: NO₂ + H₂O + O₂ → HNO₃ as [4, 2, 1, 4]', () => {
+    expect(balanceReaction(['NO2', 'H2O', 'O2'], ['HNO3'])).toEqual([4, 2, 1, 4])
+  })
+
+  it('balances simple decomposition: KClO₃ → KCl + O₂ as [2, 2, 3]', () => {
+    expect(balanceReaction(['KClO3'], ['KCl', 'O2'])).toEqual([2, 2, 3])
+  })
+
+  it('balances Fe₂O₃ + CO → Fe + CO₂ as [1, 3, 2, 3]', () => {
+    expect(balanceReaction(['Fe2O3', 'CO'], ['Fe', 'CO2'])).toEqual([1, 3, 2, 3])
+  })
+
+  it('returns null for an underdetermined system (two free variables)', () => {
+    // H + O → H2O + O2: two unknowns with only one element equation each isn't uniquely solvable
+    // Use a genuinely underdetermined case
+    expect(balanceReaction(['H2', 'O2'], ['H2O', 'H2O2'])).toBeNull()
+  })
+})
 
 // ── parseAtoms ────────────────────────────────────────────────────────────────
 
