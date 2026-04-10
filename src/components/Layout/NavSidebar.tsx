@@ -151,6 +151,7 @@ const STOICH_ITEMS: { tab: string; label: string; formula: string }[] = [
   { tab: 'theoretical', label: 'Theoretical Yield',formula: 'T.Y.'  },
   { tab: 'percent',     label: 'Percent Yield',    formula: '%Y'    },
   { tab: 'reference',   label: 'Reference',        formula: '≡'     },
+  { tab: 'examples',    label: 'Examples',         formula: '▶'     },
 ]
 
 function StoichSubItem({ item, onNavigate }: { item: typeof STOICH_ITEMS[0]; onNavigate: () => void }) {

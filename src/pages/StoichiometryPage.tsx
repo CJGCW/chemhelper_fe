@@ -7,17 +7,22 @@ import PercentYieldSolver from '../components/stoichiometry/PercentYieldSolver'
 import StoichiometryPractice from '../components/stoichiometry/StoichiometryPractice'
 import BalancingPractice from '../components/stoichiometry/BalancingPractice'
 import StoichReference from '../components/stoichiometry/StoichReference'
+import StoichExamples from '../components/stoichiometry/StoichExamples'
 
-type Tab = 'stoich' | 'limiting' | 'theoretical' | 'percent' | 'practice' | 'balance' | 'reference'
+type Tab = 'stoich' | 'limiting' | 'theoretical' | 'percent' | 'practice' | 'balance' | 'reference' | 'examples'
 
-const TABS: { id: Tab; label: string; formula: string }[] = [
+const SOLVER_TABS: { id: Tab; label: string; formula: string }[] = [
   { id: 'stoich',      label: 'Stoichiometry',    formula: 'g ↔ mol' },
+  { id: 'balance',     label: 'Balance',          formula: '_□_'     },
   { id: 'limiting',    label: 'Limiting Reagent', formula: 'LR'      },
   { id: 'theoretical', label: 'Theoretical Yield',formula: 'T.Y.'    },
   { id: 'percent',     label: 'Percent Yield',    formula: '%Y'      },
-  { id: 'practice',    label: 'Practice',         formula: '✎'       },
-  { id: 'balance',     label: 'Balance',          formula: '_□_'     },
+]
+
+const RESOURCE_TABS: { id: Tab; label: string; formula: string }[] = [
   { id: 'reference',   label: 'Reference',        formula: '≡'       },
+  { id: 'examples',    label: 'Examples',         formula: '▶'       },
+  { id: 'practice',    label: 'Practice',         formula: '✎'       },
 ]
 
 export default function StoichiometryPage() {
@@ -39,17 +44,41 @@ export default function StoichiometryPage() {
       <div className="flex flex-col gap-3">
         <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Stoichiometry</h2>
 
-        {/* Tab pills */}
+        {/* Solver tabs */}
         <div className="flex items-center gap-1 p-1 rounded-sm self-start flex-wrap"
           style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
-          {TABS.map(tab => {
+          {SOLVER_TABS.map(tab => {
             const isActive = activeTab === tab.id
             return (
               <button key={tab.id} onClick={() => setTab(tab.id)}
                 className="relative flex-shrink-0 px-3.5 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
                 style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
                 {isActive && (
-                  <motion.div layoutId="stoich-pill-bg" className="absolute inset-0 rounded-sm"
+                  <motion.div layoutId="stoich-solver-pill" className="absolute inset-0 rounded-sm"
+                    style={{
+                      background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                      border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                    }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
+                )}
+                <span className="relative z-10">{tab.label}</span>
+                <span className="relative z-10 font-mono text-[10px] ml-1.5 opacity-50">{tab.formula}</span>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Resource tabs */}
+        <div className="flex items-center gap-1 p-1 rounded-sm self-start flex-wrap"
+          style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+          {RESOURCE_TABS.map(tab => {
+            const isActive = activeTab === tab.id
+            return (
+              <button key={tab.id} onClick={() => setTab(tab.id)}
+                className="relative flex-shrink-0 px-3.5 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
+                style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
+                {isActive && (
+                  <motion.div layoutId="stoich-resource-pill" className="absolute inset-0 rounded-sm"
                     style={{
                       background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
                       border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
@@ -113,6 +142,13 @@ export default function StoichiometryPage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <StoichReference />
+          </motion.div>
+        )}
+        {activeTab === 'examples' && (
+          <motion.div key="examples"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <StoichExamples />
           </motion.div>
         )}
       </AnimatePresence>
