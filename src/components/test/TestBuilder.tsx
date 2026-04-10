@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import type { MolarCalcType, ProblemStyle } from '../../utils/molarPractice'
 import { generateMolarProblem } from '../../utils/molarPractice'
 import { generateSigFigProblem } from '../../utils/sigfigPractice'
@@ -235,44 +235,55 @@ export default function TestBuilder({ onGenerate }: Props) {
                   </span>
                 </div>
 
-                {/* Topic rows */}
-                {groupRows.map((row, i) => (
-                  <div
-                    key={row.def.id}
-                    className={`grid grid-cols-[auto_1fr_auto] gap-x-4 items-center
-                                px-4 py-3 border-b border-border transition-opacity bg-surface
-                                ${i === groupRows.length - 1 ? '' : ''}
-                                ${row.enabled ? '' : 'opacity-40'}`}
-                  >
-                    {/* Checkbox */}
-                    <CheckBtn checked={row.enabled} onClick={() => toggleRow(row.def.id)} />
+                {/* Topic rows — collapse when group is fully unchecked */}
+                <AnimatePresence initial={false}>
+                  {someOn && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2, ease: 'easeInOut' }}
+                      style={{ overflow: 'hidden' }}
+                    >
+                      {groupRows.map((row) => (
+                        <div
+                          key={row.def.id}
+                          className={`grid grid-cols-[auto_1fr_auto] gap-x-4 items-center
+                                      px-4 py-3 border-b border-border transition-opacity bg-surface
+                                      ${row.enabled ? '' : 'opacity-40'}`}
+                        >
+                          {/* Checkbox */}
+                          <CheckBtn checked={row.enabled} onClick={() => toggleRow(row.def.id)} />
 
-                    {/* Label */}
-                    <div className="flex flex-col gap-0.5 min-w-0 pl-1">
-                      <span className="font-sans text-sm text-primary">{row.def.label}</span>
-                      <span className="font-mono text-[10px] text-dim">{row.def.formula}</span>
-                    </div>
+                          {/* Label */}
+                          <div className="flex flex-col gap-0.5 min-w-0 pl-1">
+                            <span className="font-sans text-sm text-primary">{row.def.label}</span>
+                            <span className="font-mono text-[10px] text-dim">{row.def.formula}</span>
+                          </div>
 
-                    {/* Count stepper */}
-                    <div className={`flex items-center gap-1 w-20 justify-end shrink-0 ${!row.enabled ? 'pointer-events-none' : ''}`}>
-                      <button
-                        onClick={() => setCount(row.def.id, row.count - 1)}
-                        disabled={!row.enabled || row.count <= 1}
-                        className="w-6 h-6 rounded-sm border border-border font-mono text-sm text-dim
-                                   hover:text-primary hover:border-muted transition-colors
-                                   disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
-                      >−</button>
-                      <span className="font-mono text-sm text-primary w-5 text-center">{row.count}</span>
-                      <button
-                        onClick={() => setCount(row.def.id, row.count + 1)}
-                        disabled={!row.enabled || row.count >= 20}
-                        className="w-6 h-6 rounded-sm border border-border font-mono text-sm text-dim
-                                   hover:text-primary hover:border-muted transition-colors
-                                   disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
-                      >+</button>
-                    </div>
-                  </div>
-                ))}
+                          {/* Count stepper */}
+                          <div className={`flex items-center gap-1 w-20 justify-end shrink-0 ${!row.enabled ? 'pointer-events-none' : ''}`}>
+                            <button
+                              onClick={() => setCount(row.def.id, row.count - 1)}
+                              disabled={!row.enabled || row.count <= 1}
+                              className="w-6 h-6 rounded-sm border border-border font-mono text-sm text-dim
+                                         hover:text-primary hover:border-muted transition-colors
+                                         disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
+                            >−</button>
+                            <span className="font-mono text-sm text-primary w-5 text-center">{row.count}</span>
+                            <button
+                              onClick={() => setCount(row.def.id, row.count + 1)}
+                              disabled={!row.enabled || row.count >= 20}
+                              className="w-6 h-6 rounded-sm border border-border font-mono text-sm text-dim
+                                         hover:text-primary hover:border-muted transition-colors
+                                         disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
+                            >+</button>
+                          </div>
+                        </div>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             )
           })}

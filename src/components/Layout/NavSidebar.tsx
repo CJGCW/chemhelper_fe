@@ -409,6 +409,7 @@ export default function NavSidebar({ open, onClose }: Props) {
 
         {/* Tools */}
         <NavGroup label="Tools" />
+        <PracticeNavItem path="/reference" icon="≡" label="Reference" onNavigate={onClose} />
         <ExpandableSection
           icon="⬡" label="Structures"
           isActive={isStructActive} expanded={structExpanded}

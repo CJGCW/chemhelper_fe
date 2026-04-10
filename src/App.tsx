@@ -10,6 +10,7 @@ import PlaceholderPage from './pages/PlaceholderPage'
 import EmpiricalPage from './pages/EmpiricalPage'
 import TestPage from './pages/TestPage'
 import StoichiometryPage from './pages/StoichiometryPage'
+import ReferencePage from './pages/ReferencePage'
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
         <Route path="/compound"              element={<CompoundPage />} />
         <Route path="/electron-config"       element={<ElectronConfigPage />} />
         <Route path="/empirical"             element={<EmpiricalPage />} />
+        <Route path="/reference"             element={<ReferencePage />} />
         <Route path="*" element={<Navigate to="/table" replace />} />
       </Route>
     </Routes>
