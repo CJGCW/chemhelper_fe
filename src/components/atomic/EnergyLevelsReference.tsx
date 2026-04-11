@@ -72,19 +72,6 @@ export default function EnergyLevelsReference() {
   return (
     <div className="flex flex-col gap-8 max-w-3xl">
 
-      {/* Print controls */}
-      <div className="flex items-center justify-between print:hidden">
-        <p className="font-mono text-xs text-dim">Energy Levels — printable reference</p>
-        <button
-          onClick={() => window.print()}
-          className="flex items-center gap-2 px-4 py-1.5 rounded-sm font-sans text-sm border border-border
-                     text-secondary hover:text-primary hover:border-muted transition-colors"
-        >
-          <span>⎙</span>
-          <span>Print</span>
-        </button>
-      </div>
-
       {/* Print-only title */}
       <div className="hidden print:block print:mb-4">
         <h2 className="font-sans font-bold text-2xl text-gray-900">Energy Levels — Reference Sheet</h2>

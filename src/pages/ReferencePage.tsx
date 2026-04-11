@@ -12,10 +12,15 @@ import NetIonicTool from '../components/tools/NetIonicTool'
 import ActivitySeries from '../components/tools/ActivitySeries'
 import IdealGasReference from '../components/idealgas/IdealGasReference'
 import EmpiricalVisual from '../components/empirical/EmpiricalVisual'
+import LewisReference from '../components/lewis/LewisReference'
+import VsepReference from '../components/vsepr/VsepReference'
+import LewisPage from './LewisPage'
+import VsepPage from './VsepPage'
 
 type Tab =
   | 'stoich' | 'molar' | 'solubility' | 'quantum' | 'energy' | 'naming'
   | 'classifier' | 'electrolyte' | 'net-ionic' | 'activity' | 'ideal-gas' | 'empirical'
+  | 'lewis' | 'vsepr'
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'stoich',      label: 'Stoichiometry'       },
@@ -24,6 +29,8 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'quantum',     label: 'Quantum Numbers'     },
   { id: 'energy',      label: 'Energy Levels'       },
   { id: 'naming',      label: 'Naming'              },
+  { id: 'lewis',       label: 'Lewis Structures'    },
+  { id: 'vsepr',       label: 'VSEPR'               },
   { id: 'classifier',  label: 'Reaction Classifier' },
   { id: 'electrolyte', label: 'Electrolyte'         },
   { id: 'net-ionic',   label: 'Net Ionic Equations' },
@@ -41,10 +48,22 @@ export default function ReferencePage() {
   return (
     <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
 
-      {/* Header — title only, navigation is in the sidebar */}
-      <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl print:hidden">
-        {pageLabel}
-      </h2>
+      {/* Header */}
+      <div className="flex items-center gap-3 print:hidden">
+        <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">
+          {pageLabel}
+        </h2>
+        {(['stoich','molar','solubility','quantum','energy'] as Tab[]).includes(activeTab) && (
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-2 px-3 py-1 rounded-sm font-sans text-sm border border-border
+                       text-secondary hover:text-primary hover:border-muted transition-colors"
+          >
+            <span>⎙</span>
+            <span>Print</span>
+          </button>
+        )}
+      </div>
 
       {/* Content */}
       <AnimatePresence mode="wait">
@@ -88,6 +107,28 @@ export default function ReferencePage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <NamingReference />
+          </motion.div>
+        )}
+        {activeTab === 'lewis' && (
+          <motion.div key="lewis"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}
+            className="flex flex-col gap-8">
+            <LewisPage embedded />
+            <div className="border-t border-border pt-6">
+              <LewisReference />
+            </div>
+          </motion.div>
+        )}
+        {activeTab === 'vsepr' && (
+          <motion.div key="vsepr"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}
+            className="flex flex-col gap-8">
+            <VsepPage />
+            <div className="border-t border-border pt-6">
+              <VsepReference />
+            </div>
           </motion.div>
         )}
         {activeTab === 'classifier' && (

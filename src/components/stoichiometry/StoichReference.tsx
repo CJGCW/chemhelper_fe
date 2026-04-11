@@ -153,18 +153,6 @@ export default function StoichReference() {
   return (
     <div className="flex flex-col gap-5 print:max-w-none print:gap-4">
 
-      {/* Print controls */}
-      <div className="flex items-center justify-between print:hidden">
-        <p className="font-mono text-xs text-dim">Stoichiometry — printable reference</p>
-        <button
-          onClick={() => window.print()}
-          className="flex items-center gap-2 px-4 py-1.5 rounded-sm font-sans text-sm border border-border
-                     text-secondary hover:text-primary hover:border-muted transition-colors"
-        >
-          <span>⎙</span>
-          <span>Print</span>
-        </button>
-      </div>
 
       {/* Print-only title */}
       <div className="hidden print:block print:mb-4">

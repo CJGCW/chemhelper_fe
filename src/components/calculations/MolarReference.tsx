@@ -160,19 +160,6 @@ export default function MolarReference() {
   return (
     <div className="flex flex-col gap-5 print:max-w-none print:gap-4">
 
-      {/* Print controls */}
-      <div className="flex items-center justify-between print:hidden">
-        <p className="font-mono text-xs text-dim">Molar Calculations — printable reference</p>
-        <button
-          onClick={() => window.print()}
-          className="flex items-center gap-2 px-4 py-1.5 rounded-sm font-sans text-sm border border-border
-                     text-secondary hover:text-primary hover:border-muted transition-colors"
-        >
-          <span>⎙</span>
-          <span>Print</span>
-        </button>
-      </div>
-
       {/* Print-only title */}
       <div className="hidden print:block print:mb-4">
         <h2 className="font-sans font-bold text-2xl text-gray-900">Molar Calculations — Reference Sheet</h2>
@@ -238,6 +225,25 @@ export default function MolarReference() {
               {
                 heading: 'When to use it',
                 body: 'Use molality whenever the problem involves freezing point depression, boiling point elevation, or any other colligative property.',
+              },
+            ]}
+          />
+          <ConceptCard
+            title="Molar Volume"
+            formula="V = n × Vm"
+            tagline="At a given temperature and pressure, one mole of any ideal gas occupies the same volume — the molar volume (Vm)."
+            points={[
+              {
+                heading: 'STP vs SATP',
+                body: 'STP (0 °C, 1 atm) gives Vm = 22.414 L/mol. SATP (25 °C, 100 kPa) gives Vm = 24.789 L/mol. SATP is the modern IUPAC standard for ambient lab conditions.',
+              },
+              {
+                heading: 'Why all gases?',
+                body: "Ideal gases obey PV = nRT. At fixed T and P, V/n = RT/P is the same regardless of the gas's identity or mass — only the number of moles matters.",
+              },
+              {
+                heading: 'Using it',
+                body: 'Multiply moles by the molar volume to get litres: V = n × Vm. Divide a gas volume by the molar volume to get moles: n = V / Vm. Always confirm which standard conditions apply.',
               },
             ]}
           />
@@ -345,6 +351,26 @@ export default function MolarReference() {
               'b = 0.05549 / 0.2000',
             ],
             result: 'b = 0.2775 mol/kg',
+          }}
+        />
+
+        <RefCard
+          title="Molar Volume at STP / SATP"
+          formula="V = n × Vm"
+          rearranged={['n = V / Vm', 'Vm(STP) = 22.414 L/mol', 'Vm(SATP) = 24.789 L/mol']}
+          vars={[
+            { symbol: 'V',  meaning: 'Volume of gas',    unit: 'L'       },
+            { symbol: 'n',  meaning: 'Amount of gas',    unit: 'mol'     },
+            { symbol: 'Vm', meaning: 'Molar volume',     unit: 'L/mol'   },
+          ]}
+          example={{
+            scenario: 'What volume does 3.00 mol of O₂ occupy at STP?',
+            steps: [
+              'V = n × Vm',
+              'V = 3.00 mol × 22.414 L/mol',
+              'V = 67.2 L',
+            ],
+            result: 'V = 67.2 L at STP',
           }}
         />
 

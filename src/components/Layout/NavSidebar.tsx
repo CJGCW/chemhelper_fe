@@ -218,21 +218,9 @@ function RedoxSubItem({ item, onNavigate }: { item: typeof REDOX_ITEMS[0]; onNav
 // ── Structures sub-items ──────────────────────────────────────────────────────
 
 const STRUCTURE_ITEMS = [
-  { tab: "lewis", label: "Lewis Structure", formula: "⌬" },
-  { tab: "vsepr", label: "VSEPR",           formula: "⬡" },
+  { path: "/reference?tab=lewis", label: "Lewis Structure", formula: "⌬" },
+  { path: "/reference?tab=vsepr", label: "VSEPR",           formula: "⬡" },
 ]
-
-function StructureSubItem({ item, onNavigate }: { item: typeof STRUCTURE_ITEMS[0]; onNavigate: () => void }) {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const currentTab = new URLSearchParams(location.search).get("tab") ?? "lewis"
-  const isActive = location.pathname === "/structures" && currentTab === item.tab
-
-  return (
-    <SubItem formula={item.formula} label={item.label} isActive={isActive}
-      onClick={() => { navigate(`/structures?tab=${item.tab}`); onNavigate() }} />
-  )
-}
 
 // ── Practice / top-level nav items ────────────────────────────────────────────
 
@@ -342,14 +330,13 @@ export default function NavSidebar({ open, onClose }: Props) {
 
   const [refCalcOpen,        setRefCalcOpen]        = useState(true)
   const [pracSectionOpen,    setPracSectionOpen]    = useState(true)
-  const [toolSectionOpen,    setToolSectionOpen]    = useState(true)
 
   const [tableExpanded,       setTableExpanded]       = useState(currentPath === "/table" || currentPath === "/electron-config")
   const [baseCalcExpanded,    setBaseCalcExpanded]    = useState(currentPath === "/base-calculations")
   const [calcExpanded,        setCalcExpanded]        = useState(currentPath === "/calculations" && currentTab !== 'ideal-gas')
   const [stoichExpanded,      setStoichExpanded]      = useState(currentPath === "/stoichiometry")
   const [redoxExpanded,       setRedoxExpanded]       = useState(currentPath === "/redox")
-  const [structExpanded,      setStructExpanded]      = useState(currentPath === "/structures")
+  const [structExpanded,      setStructExpanded]      = useState(currentPath === "/structures" || (currentPath === '/reference' && (currentTab === 'lewis' || currentTab === 'vsepr')))
   const [empiricalExpanded,   setEmpiricalExpanded]   = useState(
     currentPath === '/empirical' || (currentPath === '/reference' && currentTab === 'empirical')
   )
@@ -363,7 +350,7 @@ export default function NavSidebar({ open, onClose }: Props) {
   const isMolarCalcActive  = currentPath === "/calculations" && currentTab !== 'ideal-gas'
   const isStoichActive     = currentPath === "/stoichiometry"
   const isRedoxActive      = currentPath === "/redox"
-  const isStructActive     = currentPath === "/structures"
+  const isStructActive     = currentPath === "/structures" || (currentPath === '/reference' && (currentTab === 'lewis' || currentTab === 'vsepr'))
   const isEmpiricalActive  = currentPath === '/empirical' || (currentPath === '/reference' && currentTab === 'empirical')
   const isIdealGasNavActive = (currentPath === '/calculations' && currentTab === 'ideal-gas') ||
                               (currentPath === '/reference'    && currentTab === 'ideal-gas')
@@ -458,6 +445,16 @@ export default function NavSidebar({ open, onClose }: Props) {
                 {STOICH_ITEMS.map((item, i) => <StoichSubItem key={i} item={item} onNavigate={onClose} />)}
               </ExpandableSection>
 
+              <ExpandableSection
+                icon="⬡" label="Structures"
+                isActive={isStructActive} expanded={structExpanded}
+                onToggle={() => setStructExpanded(e => !e)}
+              >
+                {STRUCTURE_ITEMS.map((item, i) => (
+                  <PathSubItem key={i} path={item.path} formula={item.formula} label={item.label} onNavigate={onClose} />
+                ))}
+              </ExpandableSection>
+
             </motion.div>
           )}
         </AnimatePresence>
@@ -482,25 +479,6 @@ export default function NavSidebar({ open, onClose }: Props) {
           )}
         </AnimatePresence>
 
-        {/* Tools */}
-        <NavGroup label="Tools" expanded={toolSectionOpen} onToggle={() => setToolSectionOpen(e => !e)} />
-        <AnimatePresence initial={false}>
-          {toolSectionOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }}
-              style={{ overflow: 'hidden' }}
-            >
-              <ExpandableSection
-                icon="⬡" label="Structures"
-                isActive={isStructActive} expanded={structExpanded}
-                onToggle={() => setStructExpanded(e => !e)}
-              >
-                {STRUCTURE_ITEMS.map((item, i) => <StructureSubItem key={i} item={item} onNavigate={onClose} />)}
-              </ExpandableSection>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
       </nav>
 

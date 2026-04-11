@@ -387,7 +387,7 @@ export default function SolubilityReference() {
         <hr className="border-gray-300 mt-3" />
       </div>
 
-      {/* View toggle + print button */}
+      {/* View toggle */}
       <div className="flex items-center gap-2 print:hidden">
         <div className="flex items-center gap-1 p-1 rounded-sm"
           style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
@@ -410,14 +410,6 @@ export default function SolubilityReference() {
           )
         })}
         </div>
-        <button
-          onClick={() => window.print()}
-          className="flex items-center gap-2 px-4 py-1.5 rounded-sm font-sans text-sm border border-border
-                     text-secondary hover:text-primary hover:border-muted transition-colors"
-        >
-          <span>⎙</span>
-          <span>Print</span>
-        </button>
       </div>
 
       {/* Interactive lookup — hidden on print */}

@@ -8,18 +8,20 @@ import MolalityCalc from '../../components/calculations/MolalityCalc'
 import ColligativeCalc from '../../components/calculations/ColligativeCalc'
 import MolarPractice from '../../components/calculations/MolarPractice'
 import MolarReference from '../../components/calculations/MolarReference'
+import MolarVolumeCalc from '../../components/calculations/MolarVolumeCalc'
 import IdealGasCalc from '../../components/idealgas/IdealGasCalc'
 import { useState } from 'react'
 
-type CalcType = 'moles' | 'molarity' | 'molality' | 'colligative' | 'practice' | 'reference' | 'ideal-gas'
+type CalcType = 'moles' | 'molarity' | 'molality' | 'colligative' | 'molar-volume' | 'practice' | 'reference' | 'ideal-gas'
 type ColligativeMode = 'bpe' | 'fpd'
 
 const PILLS: { value: CalcType; label: string; formula: string }[] = [
   { value: 'moles',       label: 'Moles',       formula: 'n = m / M'  },
   { value: 'molarity',    label: 'Molarity',    formula: 'C = n / V'  },
   { value: 'molality',    label: 'Molality',    formula: 'b = n / m'  },
-  { value: 'colligative', label: 'Colligative', formula: 'ΔT = i·K·b' },
-  { value: 'practice',    label: 'Practice',    formula: '✎'           },
+  { value: 'colligative',  label: 'Colligative',  formula: 'ΔT = i·K·b' },
+  { value: 'molar-volume', label: 'Molar Volume', formula: 'V = nVm'    },
+  { value: 'practice',     label: 'Practice',     formula: '✎'          },
   { value: 'reference',   label: 'Reference',   formula: '⎙'           },
 ]
 
@@ -115,6 +117,16 @@ export default function CalculationsPage() {
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-3">
           <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Molar Calculations</h2>
+          {activeTab === 'reference' && (
+            <button
+              onClick={() => window.print()}
+              className="flex items-center gap-2 px-3 py-1 rounded-sm font-sans text-sm border border-border
+                         text-secondary hover:text-primary hover:border-muted transition-colors print:hidden"
+            >
+              <span>⎙</span>
+              <span>Print</span>
+            </button>
+          )}
           {showExplanationButton && (
             <button
               onClick={() => setShowExplanation(true)}
@@ -169,8 +181,9 @@ export default function CalculationsPage() {
           {activeTab === 'moles'       && <MolesCalc />}
           {activeTab === 'molarity'    && <MolarityCalc />}
           {activeTab === 'molality'    && <MolalityCalc />}
-          {activeTab === 'colligative' && <ColligativeCalc initialMode={colligativeMode} />}
-          {activeTab === 'practice'    && <MolarPractice />}
+          {activeTab === 'colligative'  && <ColligativeCalc initialMode={colligativeMode} />}
+          {activeTab === 'molar-volume' && <MolarVolumeCalc />}
+          {activeTab === 'practice'     && <MolarPractice />}
           {activeTab === 'reference'   && <MolarReference />}
           {activeTab === 'ideal-gas'   && <IdealGasCalc />}
         </motion.div>
