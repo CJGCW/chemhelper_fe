@@ -11,6 +11,8 @@ import EmpiricalPage from './pages/EmpiricalPage'
 import TestPage from './pages/TestPage'
 import StoichiometryPage from './pages/StoichiometryPage'
 import ReferencePage from './pages/ReferencePage'
+import ClassifierPage from './pages/ClassifierPage'
+import ElectrolytePage from './pages/ElectrolytePage'
 
 export default function App() {
   return (
@@ -34,6 +36,8 @@ export default function App() {
         <Route path="/electron-config"       element={<ElectronConfigPage />} />
         <Route path="/empirical"             element={<EmpiricalPage />} />
         <Route path="/reference"             element={<ReferencePage />} />
+        <Route path="/classifier"            element={<ClassifierPage />} />
+        <Route path="/electrolyte"           element={<ElectrolytePage />} />
         <Route path="*" element={<Navigate to="/table" replace />} />
       </Route>
     </Routes>
