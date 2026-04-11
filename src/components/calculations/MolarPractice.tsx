@@ -92,6 +92,12 @@ export default function MolarPractice() {
     if (e.key === 'Enter') handleSubmit()
   }
 
+  function handleTryAgain() {
+    setAnswer('')
+    setSubmitted(false)
+    setShowSteps(false)
+  }
+
   const correct = submitted && isCorrect(parseFloat(answer), problem.answer)
 
   return (
@@ -250,17 +256,24 @@ export default function MolarPractice() {
                 Check
               </button>
             ) : (
-              <button
-                onClick={() => nextProblem(typeFilter, style)}
-                className="px-4 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
-                style={{
-                  background: '#141620',
-                  border: '1px solid #2a2e42',
-                  color: 'rgba(255,255,255,0.75)',
-                }}
-              >
-                Next →
-              </button>
+              <div className="flex items-center gap-2">
+                {!correct && (
+                  <button
+                    onClick={handleTryAgain}
+                    className="px-4 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
+                    style={{ background: '#141620', border: '1px solid #2a2e42', color: 'rgba(255,255,255,0.55)' }}
+                  >
+                    Try Again
+                  </button>
+                )}
+                <button
+                  onClick={() => nextProblem(typeFilter, style)}
+                  className="px-4 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
+                  style={{ background: '#141620', border: '1px solid #2a2e42', color: 'rgba(255,255,255,0.75)' }}
+                >
+                  Next →
+                </button>
+              </div>
             )}
           </div>
 
@@ -284,7 +297,7 @@ export default function MolarPractice() {
                     <span className="font-mono">{correct ? '✓' : '✗'}</span>
                     {correct
                       ? 'Correct!'
-                      : <>Incorrect. Answer: <span className="font-mono ml-1">{problem.answer} {problem.answerUnit}</span></>
+                      : <>Incorrect. Answer: <span className="font-mono ml-1">{problem.answer.toPrecision(4)} {problem.answerUnit}</span></>
                     }
                   </div>
 

@@ -26,11 +26,19 @@ export default function IdealGasPractice() {
     setShowSteps(false)
   }
 
+  function handleTryAgain() {
+    setInput('')
+    setChecked(false)
+    setCorrect(false)
+    setShowSteps(false)
+  }
+
+  const sf3str = (v: number) => v.toPrecision(3)
   const given: { label: string; value: string }[] = [
-    ...(problem.givenP !== undefined ? [{ label: 'P', value: `${problem.givenP} ${problem.pUnit}` }] : []),
-    ...(problem.givenV !== undefined ? [{ label: 'V', value: `${problem.givenV} L` }] : []),
-    ...(problem.givenN !== undefined ? [{ label: 'n', value: `${problem.givenN} mol` }] : []),
-    ...(problem.givenT !== undefined ? [{ label: 'T', value: `${problem.givenT} K` }] : []),
+    ...(problem.givenP !== undefined ? [{ label: 'P', value: `${sf3str(problem.givenP)} ${problem.pUnit}` }] : []),
+    ...(problem.givenV !== undefined ? [{ label: 'V', value: `${sf3str(problem.givenV)} L` }] : []),
+    ...(problem.givenN !== undefined ? [{ label: 'n', value: `${sf3str(problem.givenN)} mol` }] : []),
+    ...(problem.givenT !== undefined ? [{ label: 'T', value: `${sf3str(problem.givenT)} K` }] : []),
   ]
 
   const steps = checked ? gasSolutionSteps(problem) : []
@@ -110,7 +118,7 @@ export default function IdealGasPractice() {
               }`}
             >
               <span className="font-mono text-sm font-semibold">
-                {correct ? '✓ Correct!' : `✗ Answer: ${problem.answer} ${problem.answerUnit}`}
+                {correct ? '✓ Correct!' : `✗ Answer: ${problem.answer.toPrecision(3)} ${problem.answerUnit}`}
               </span>
             </motion.div>
           )}
@@ -164,15 +172,24 @@ export default function IdealGasPractice() {
             }}
           >Check →</button>
         ) : (
-          <button
-            onClick={handleNext}
-            className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
-            style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
-              border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
-              color: 'var(--c-halogen)',
-            }}
-          >Next →</button>
+          <>
+            {!correct && (
+              <button
+                onClick={handleTryAgain}
+                className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
+                style={{ background: '#141620', border: '1px solid #2a2e42', color: 'rgba(255,255,255,0.55)' }}
+              >Try Again</button>
+            )}
+            <button
+              onClick={handleNext}
+              className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
+              style={{
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                color: 'var(--c-halogen)',
+              }}
+            >Next →</button>
+          </>
         )}
       </div>
 

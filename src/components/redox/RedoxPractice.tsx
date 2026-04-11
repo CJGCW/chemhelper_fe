@@ -6,15 +6,16 @@ import { generateRedoxProblem, checkRedoxAnswer } from '../../utils/redoxPractic
 type Selection = RedoxSubtype | 'random'
 
 const TYPES: { id: Selection; label: string; formula: string }[] = [
-  { id: 'random',         label: 'Random',                    formula: '?'     },
-  { id: 'ox_state',       label: 'Oxidation Numbers',         formula: 'ox. #' },
-  { id: 'identify_redox', label: 'Identify Oxidised/Reduced', formula: 'OA/RA' },
-  { id: 'ox_change',      label: 'Oxidation State Change',    formula: 'Δox'   },
+  { id: 'random',          label: 'Random',                    formula: '?'     },
+  { id: 'ox_state',        label: 'Oxidation Numbers',         formula: 'ox. #' },
+  { id: 'identify_redox',  label: 'Identify Oxidised/Reduced', formula: 'OA/RA' },
+  { id: 'ox_change',       label: 'Oxidation State Change',    formula: 'Δox'   },
+  { id: 'charge_balance',  label: 'Charge Balancing',          formula: 'q⁺/q⁻' },
 ]
 
 function freshProblem(sel: Selection) {
   const t: RedoxSubtype = sel === 'random'
-    ? (['ox_state', 'identify_redox', 'ox_change'] as RedoxSubtype[])[Math.floor(Math.random() * 3)]
+    ? (['ox_state', 'identify_redox', 'ox_change', 'charge_balance'] as RedoxSubtype[])[Math.floor(Math.random() * 4)]
     : sel
   return generateRedoxProblem(t)
 }
@@ -32,6 +33,13 @@ export default function RedoxPractice() {
     setProblem(freshProblem(sel))
     setAnswer('')
     setChecked(false)
+    setShowSteps(false)
+  }
+
+  function handleTryAgain() {
+    setAnswer('')
+    setChecked(false)
+    setCorrect(false)
     setShowSteps(false)
   }
 
@@ -60,7 +68,9 @@ export default function RedoxPractice() {
 
   const placeholder = problem.isTextAnswer
     ? 'formula, e.g. Zn'
-    : 'e.g. +6 or −2'
+    : problem.subtype === 'charge_balance'
+      ? 'e.g. 2'
+      : 'e.g. +6 or −2'
 
   return (
     <div className="flex flex-col gap-5 max-w-2xl">
@@ -213,17 +223,30 @@ export default function RedoxPractice() {
         </AnimatePresence>
       </motion.div>
 
-      {/* Next button */}
+      {/* Next / Try Again buttons */}
       {checked && (
-        <motion.button
+        <motion.div
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
-          onClick={() => nextProblem()}
-          className="self-start px-4 py-2 rounded-sm font-sans text-sm border border-border
-                     text-secondary hover:text-primary hover:border-muted transition-colors"
+          className="flex gap-2"
         >
-          Next →
-        </motion.button>
+          {!correct && (
+            <button
+              onClick={handleTryAgain}
+              className="px-4 py-2 rounded-sm font-sans text-sm border border-border
+                         text-dim hover:text-secondary transition-colors"
+            >
+              Try Again
+            </button>
+          )}
+          <button
+            onClick={() => nextProblem()}
+            className="px-4 py-2 rounded-sm font-sans text-sm border border-border
+                       text-secondary hover:text-primary hover:border-muted transition-colors"
+          >
+            Next →
+          </button>
+        </motion.div>
       )}
     </div>
   )

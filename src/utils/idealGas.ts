@@ -39,7 +39,7 @@ export const EXAMPLES = [
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-export const sf   = (v: number, n = 4) => parseFloat(v.toPrecision(n)).toString()
+export const sf   = (v: number, n = 4) => v.toPrecision(n)
 export const sf3  = (v: number) => parseFloat(v.toPrecision(3))
 export const toK  = (v: number, u: TUnit) => u === 'C' ? v + 273.15 : v
 export const fromK = (v: number, u: TUnit) => u === 'C' ? v - 273.15 : v
@@ -77,22 +77,22 @@ export function genGasProblem(): GasProblem {
     case 'P': return {
       solveFor, pUnit, givenV: V, givenN: n, givenT: T,
       answer: sf3(fromAtm((n * R * T) / V, pUnit)), answerUnit: pUnit,
-      question: `A gas sample contains ${n} mol and occupies ${V} L at ${T} K. Find the pressure in ${pUnit}.`,
+      question: `A gas sample contains ${sf(n, 3)} mol and occupies ${sf(V, 3)} L at ${sf(T, 3)} K. Find the pressure in ${pUnit}.`,
     }
     case 'V': return {
       solveFor, pUnit, givenP: P, givenN: n, givenT: T,
       answer: sf3((n * R * T) / toAtm(P, pUnit)), answerUnit: 'L',
-      question: `A gas contains ${n} mol at ${P} ${pUnit} and ${T} K. Find the volume in L.`,
+      question: `A gas contains ${sf(n, 3)} mol at ${sf(P, 3)} ${pUnit} and ${sf(T, 3)} K. Find the volume in L.`,
     }
     case 'n': return {
       solveFor, pUnit, givenP: P, givenV: V, givenT: T,
       answer: sf3((toAtm(P, pUnit) * V) / (R * T)), answerUnit: 'mol',
-      question: `A ${V} L container holds a gas at ${P} ${pUnit} and ${T} K. How many moles are present?`,
+      question: `A ${sf(V, 3)} L container holds a gas at ${sf(P, 3)} ${pUnit} and ${sf(T, 3)} K. How many moles are present?`,
     }
     case 'T': return {
       solveFor, pUnit, givenP: P, givenV: V, givenN: n,
       answer: sf3((toAtm(P, pUnit) * V) / (n * R)), answerUnit: 'K',
-      question: `A gas exerts ${P} ${pUnit} in a ${V} L container with ${n} mol. Find the temperature in K.`,
+      question: `A gas exerts ${sf(P, 3)} ${pUnit} in a ${sf(V, 3)} L container with ${sf(n, 3)} mol. Find the temperature in K.`,
     }
   }
 }
@@ -107,28 +107,28 @@ export function gasSolutionSteps(problem: GasProblem): string[] {
   const { solveFor, pUnit } = problem
   const Patm = problem.givenP !== undefined ? toAtm(problem.givenP, pUnit) : undefined
   const conv = pUnit !== 'atm' && Patm !== undefined
-    ? [`Convert P: ${problem.givenP} ${pUnit} = ${sf(Patm)} atm`] : []
+    ? [`Convert P: ${sf(problem.givenP!, 3)} ${pUnit} = ${sf(Patm)} atm`] : []
 
   switch (solveFor) {
     case 'P': return [
       'P = nRT / V',
-      `P = (${problem.givenN} mol × ${R} × ${problem.givenT} K) / ${problem.givenV} L`,
-      `P = ${sf(problem.answer)} ${pUnit}`,
+      `P = (${sf(problem.givenN!, 3)} mol × ${R} × ${sf(problem.givenT!, 3)} K) / ${sf(problem.givenV!, 3)} L`,
+      `P = ${sf(problem.answer, 3)} ${pUnit}`,
     ]
     case 'V': return [
       'V = nRT / P', ...conv,
-      `V = (${problem.givenN} mol × ${R} × ${problem.givenT} K) / ${sf(Patm!)} atm`,
-      `V = ${sf(problem.answer)} L`,
+      `V = (${sf(problem.givenN!, 3)} mol × ${R} × ${sf(problem.givenT!, 3)} K) / ${sf(Patm!)} atm`,
+      `V = ${sf(problem.answer, 3)} L`,
     ]
     case 'n': return [
       'n = PV / RT', ...conv,
-      `n = (${sf(Patm!)} atm × ${problem.givenV} L) / (${R} × ${problem.givenT} K)`,
-      `n = ${sf(problem.answer)} mol`,
+      `n = (${sf(Patm!)} atm × ${sf(problem.givenV!, 3)} L) / (${R} × ${sf(problem.givenT!, 3)} K)`,
+      `n = ${sf(problem.answer, 3)} mol`,
     ]
     case 'T': return [
       'T = PV / nR', ...conv,
-      `T = (${sf(Patm!)} atm × ${problem.givenV} L) / (${problem.givenN} mol × ${R})`,
-      `T = ${sf(problem.answer)} K`,
+      `T = (${sf(Patm!)} atm × ${sf(problem.givenV!, 3)} L) / (${sf(problem.givenN!, 3)} mol × ${R})`,
+      `T = ${sf(problem.answer, 3)} K`,
     ]
   }
 }

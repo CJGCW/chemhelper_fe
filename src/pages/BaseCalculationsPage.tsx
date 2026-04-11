@@ -5,6 +5,7 @@ import { countSigFigs, formatSigFigs, lowestSigFigs } from '../utils/sigfigs'
 import SigFigPractice from '../components/calculations/SigFigPractice'
 import UnitConversions from '../components/calculations/UnitConversions'
 import ScientificNotation from '../components/calculations/ScientificNotation'
+import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 
 // ── Digit annotation ──────────────────────────────────────────────────────────
 
@@ -163,12 +164,78 @@ const OP_EXAMPLES = [
   },
 ]
 
+// ── Explanations ─────────────────────────────────────────────────────────────
+
+const EXPLANATIONS: Record<string, ExplanationContent> = {
+  'sig-figs': {
+    title: 'Significant Figures',
+    formula: '× / ÷ → fewest sig figs   ·   + / − → fewest decimal places',
+    formulaVars: [
+      { symbol: 'sf',   meaning: 'Significant figures in a measurement', unit: '—' },
+      { symbol: 'd.p.', meaning: 'Decimal places',                       unit: '—' },
+    ],
+    description:
+      'Significant figures express the precision of a measurement. Non-zero digits are always significant; zeros between non-zero digits are significant; trailing zeros after a decimal point are significant; leading zeros are never significant. ' +
+      'For multiplication and division, round to the fewest sig figs among the inputs. For addition and subtraction, round to the fewest decimal places.',
+    example: {
+      scenario: 'Calculate 4.56 × 1.4',
+      steps: [
+        '4.56 has 3 sig figs,  1.4 has 2 sig figs',
+        '4.56 × 1.4 = 6.384',
+        'Round to 2 sig figs (limited by 1.4)',
+      ],
+      result: '6.4',
+    },
+  },
+  'sci-notation': {
+    title: 'Scientific Notation',
+    formula: 'a × 10ⁿ   (1 ≤ a < 10)',
+    formulaVars: [
+      { symbol: 'a', meaning: 'Coefficient (mantissa)', unit: '1 ≤ a < 10' },
+      { symbol: 'n', meaning: 'Exponent (power of 10)', unit: 'integer'     },
+    ],
+    description:
+      'Scientific notation expresses any number as a coefficient between 1 and 10 multiplied by a power of 10. ' +
+      'It clearly conveys significant figures and handles very large or very small values. ' +
+      'Moving the decimal right decreases the exponent; moving it left increases it.',
+    example: {
+      scenario: 'Express 0.000342 in scientific notation.',
+      steps: [
+        'Move decimal right until coefficient is between 1 and 10: 3.42',
+        'Decimal moved 4 places right → exponent is −4',
+      ],
+      result: '3.42 × 10⁻⁴',
+    },
+  },
+  'conversions': {
+    title: 'Unit Conversions',
+    formula: 'value × (desired unit / given unit)',
+    formulaVars: [
+      { symbol: 'CF', meaning: 'Conversion factor — a fraction equal to 1', unit: 'numerator = denominator' },
+    ],
+    description:
+      'Unit conversion multiplies by a fraction equal to 1, changing only the units, not the value. ' +
+      'Choose a factor where the unwanted unit cancels (appears in the denominator). ' +
+      'Chain multiple factors for multi-step conversions (dimensional analysis).',
+    example: {
+      scenario: 'Convert 55 miles/hour to m/s.',
+      steps: [
+        '55 mi/h × (1609 m / 1 mi) × (1 h / 3600 s)',
+        '= (55 × 1609) / 3600',
+        '= 88 495 / 3600',
+      ],
+      result: '≈ 24.6 m/s',
+    },
+  },
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 type OpType = '×' | '÷' | '+' | '−'
 
 export default function BaseCalculationsPage() {
   const [searchParams] = useSearchParams()
+  const [showExplanation, setShowExplanation] = useState(false)
   const pageTab = searchParams.get('tab') ?? 'sig-figs'
   const [sigFigTab, setSigFigTab] = useState<'reference' | 'practice'>('reference')
   const [convTab, setConvTab] = useState<'converter' | 'dimensional'>('converter')
@@ -229,9 +296,19 @@ export default function BaseCalculationsPage() {
 
       {/* Header */}
       <div className="flex flex-col gap-3">
-        <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">
-          {pageTab === 'conversions' ? 'Unit Conversions' : pageTab === 'sci-notation' ? 'Scientific Notation' : 'Sig Figs'}
-        </h2>
+        <div className="flex items-center gap-3">
+          <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">
+            {pageTab === 'conversions' ? 'Unit Conversions' : pageTab === 'sci-notation' ? 'Scientific Notation' : 'Sig Figs'}
+          </h2>
+          <button
+            onClick={() => setShowExplanation(true)}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm border border-border
+                       font-sans text-xs text-secondary hover:text-primary hover:border-muted transition-colors"
+          >
+            <span className="font-mono">?</span>
+            <span>What is this</span>
+          </button>
+        </div>
 
         {/* Converter / Dimensional Analysis pills — only shown on conversions tab */}
         {pageTab === 'conversions' && (
@@ -623,6 +700,11 @@ export default function BaseCalculationsPage() {
       )}
       </AnimatePresence>
 
+      <ExplanationModal
+        content={EXPLANATIONS[pageTab]}
+        open={showExplanation}
+        onClose={() => setShowExplanation(false)}
+      />
     </div>
   )
 }

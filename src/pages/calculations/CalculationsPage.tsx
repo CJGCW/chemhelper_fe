@@ -19,7 +19,6 @@ const PILLS: { value: CalcType; label: string; formula: string }[] = [
   { value: 'molarity',    label: 'Molarity',    formula: 'C = n / V'  },
   { value: 'molality',    label: 'Molality',    formula: 'b = n / m'  },
   { value: 'colligative', label: 'Colligative', formula: 'ΔT = i·K·b' },
-  { value: 'ideal-gas',  label: 'Ideal Gas',  formula: 'PV=nRT' },
 ]
 
 const EXPLANATIONS: Partial<Record<CalcType, ExplanationContent>> = {
@@ -113,7 +112,7 @@ export default function CalculationsPage() {
       {/* Header */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-3">
-          <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Calculations</h2>
+          <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Molar Calculations</h2>
           {showExplanationButton && (
             <button
               onClick={() => setShowExplanation(true)}

@@ -154,7 +154,7 @@ export const REACTIONS: Reaction[] = RAW_REACTIONS.map(r => ({ ...r, equation: m
 
 function pick<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)] }
 function rnd(lo: number, hi: number) { return Math.floor(Math.random() * (hi - lo + 1)) + lo }
-function sig(n: number, sf = 3): string { return parseFloat(n.toPrecision(sf)).toString() }
+function sig(n: number, sf = 3): string { return n.toPrecision(sf) }
 
 const MASS_POOLS = [2, 5, 8, 10, 12, 15, 20, 25, 30, 40, 50, 75, 100]
 const MOLE_POOLS = [0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]
@@ -186,19 +186,20 @@ function genMoleRatio(): StoichProblem {
   const rxn = pick(REACTIONS)
   const [from, to] = pickTwo(allSpecies(rxn))
   const givenMol = pickMoles()
-  const answerMol = parseFloat(sig(givenMol * (to.coeff / from.coeff)))
+  const answerMol = sig(givenMol * (to.coeff / from.coeff))
+  const givenMolStr = sig(givenMol)
   const toAction   = rxn.products.includes(to)   ? 'produced' : 'consumed'
   const fromAction = rxn.products.includes(from) ? 'is produced' : 'reacts'
 
   return {
     type: 'mole_ratio', equation: rxn.equation,
     question: `Reaction: ${rxn.equation}\n` +
-      `How many moles of ${to.display} are ${toAction} when ${givenMol} mol of ${from.display} ${fromAction}?`,
-    answer: String(answerMol), answerUnit: 'mol', isTextAnswer: false,
+      `How many moles of ${to.display} are ${toAction} when ${givenMolStr} mol of ${from.display} ${fromAction}?`,
+    answer: answerMol, answerUnit: 'mol', isTextAnswer: false,
     steps: [
       `Balanced equation: ${rxn.equation}`,
       `Mole ratio: ${from.coeff} mol ${from.display} : ${to.coeff} mol ${to.display}`,
-      `mol ${to.display} = ${givenMol} mol ${from.display} × (${to.coeff} / ${from.coeff})`,
+      `mol ${to.display} = ${givenMolStr} mol ${from.display} × (${to.coeff} / ${from.coeff})`,
       `= ${answerMol} mol ${to.display}`,
     ],
   }
@@ -215,16 +216,17 @@ function genMassToMass(): StoichProblem {
   const molFrom  = givenMass / from.molarMass
   const molTo    = molFrom * (to.coeff / from.coeff)
   const massTo   = molTo * to.molarMass
-  const answerMass = parseFloat(sig(massTo))
+  const answerMass = sig(massTo)
+  const givenMassStr = sig(givenMass)
 
   return {
     type: 'mass_to_mass', equation: rxn.equation,
     question: `Reaction: ${rxn.equation}\n` +
-      `Calculate the mass of ${to.display} produced when ${givenMass} g of ${from.display} reacts completely (excess of other reagents).`,
-    answer: String(answerMass), answerUnit: 'g', isTextAnswer: false,
+      `Calculate the mass of ${to.display} produced when ${givenMassStr} g of ${from.display} reacts completely (excess of other reagents).`,
+    answer: answerMass, answerUnit: 'g', isTextAnswer: false,
     steps: [
       `Balanced equation: ${rxn.equation}`,
-      `Step 1 — g ${from.display} → mol ${from.display}:  ${givenMass} g ÷ ${from.molarMass} g/mol = ${sig(molFrom)} mol`,
+      `Step 1 — g ${from.display} → mol ${from.display}:  ${givenMassStr} g ÷ ${from.molarMass} g/mol = ${sig(molFrom)} mol`,
       `Step 2 — mol ${from.display} → mol ${to.display}:  ${sig(molFrom)} mol × (${to.coeff}/${from.coeff}) = ${sig(molTo)} mol`,
       `Step 3 — mol ${to.display} → g ${to.display}:  ${sig(molTo)} mol × ${to.molarMass} g/mol = ${answerMass} g`,
     ],
@@ -244,7 +246,9 @@ function genLimitingReagent(): StoichProblem {
   const stoichMolB = molA * (rB.coeff / rA.coeff)
   // Make B slightly less than stoichiometric (50–85%) so B is limiting
   const actualMolB = stoichMolB * (rnd(50, 85) / 100)
-  const massB = parseFloat(sig(actualMolB * rB.molarMass))
+  const massBStr = sig(actualMolB * rB.molarMass)
+  const massB = parseFloat(massBStr)
+  const massAStr = sig(massA)
 
   // Confirm limiting reagent
   const reqBForA = (massA / rA.molarMass) * (rB.coeff / rA.coeff) * rB.molarMass
@@ -256,7 +260,7 @@ function genLimitingReagent(): StoichProblem {
   return {
     type: 'limiting_reagent', equation: rxn.equation,
     question: `Reaction: ${rxn.equation}\n` +
-      `${massA} g of ${rA.display} is mixed with ${massB} g of ${rB.display}.\n` +
+      `${massAStr} g of ${rA.display} is mixed with ${massBStr} g of ${rB.display}.\n` +
       `Which is the limiting reagent?`,
     answer: limiting.formula, answerUnit: '', isTextAnswer: true,
     choices: [
@@ -265,8 +269,8 @@ function genLimitingReagent(): StoichProblem {
     ],
     steps: [
       `Balanced equation: ${rxn.equation}`,
-      `mol ${rA.display} = ${massA} g ÷ ${rA.molarMass} g/mol = ${sig(massA / rA.molarMass)} mol`,
-      `mol ${rB.display} = ${massB} g ÷ ${rB.molarMass} g/mol = ${sig(massB / rB.molarMass)} mol`,
+      `mol ${rA.display} = ${massAStr} g ÷ ${rA.molarMass} g/mol = ${sig(massA / rA.molarMass)} mol`,
+      `mol ${rB.display} = ${massBStr} g ÷ ${rB.molarMass} g/mol = ${sig(massB / rB.molarMass)} mol`,
       `${rB.coeff} mol ${rB.display} needed per ${rA.coeff} mol ${rA.display}`,
       `${rA.display} would need ${sig(molA * (rB.coeff / rA.coeff))} mol ${rB.display}; only ${sig(massB / rB.molarMass)} mol available`,
       `→ ${limiting.display} is the limiting reagent (${excess.display} is in excess)`,
@@ -281,9 +285,11 @@ function genTheoreticalYield(): StoichProblem {
   const product = pick(rxn.products)
 
   const massA = pickMass()
-  const massB = parseFloat(sig(
+  const massBStr = sig(
     (massA / rA.molarMass) * (rB.coeff / rA.coeff) * rB.molarMass * (rnd(50, 85) / 100)
-  ))
+  )
+  const massB = parseFloat(massBStr)
+  const massAStr = sig(massA)
 
   const molA  = massA / rA.molarMass
   const molB  = massB / rB.molarMass
@@ -295,18 +301,18 @@ function genTheoreticalYield(): StoichProblem {
   const limitingMass = isAlimiting ? massA : massB
   const limitingMol = limitingMass / limiting.molarMass
   const yieldMol  = limitingMol * (product.coeff / limiting.coeff)
-  const yieldMass = parseFloat(sig(yieldMol * product.molarMass))
+  const yieldMass = sig(yieldMol * product.molarMass)
 
   return {
     type: 'theoretical_yield', equation: rxn.equation,
     question: `Reaction: ${rxn.equation}\n` +
-      `${massA} g of ${rA.display} reacts with ${massB} g of ${rB.display}.\n` +
+      `${massAStr} g of ${rA.display} reacts with ${massBStr} g of ${rB.display}.\n` +
       `What is the theoretical yield of ${product.display} in grams?`,
-    answer: String(yieldMass), answerUnit: 'g', isTextAnswer: false,
+    answer: yieldMass, answerUnit: 'g', isTextAnswer: false,
     steps: [
       `Balanced equation: ${rxn.equation}`,
-      `mol ${rA.display} = ${massA} g ÷ ${rA.molarMass} g/mol = ${sig(molA)} mol`,
-      `mol ${rB.display} = ${massB} g ÷ ${rB.molarMass} g/mol = ${sig(molB)} mol`,
+      `mol ${rA.display} = ${massAStr} g ÷ ${rA.molarMass} g/mol = ${sig(molA)} mol`,
+      `mol ${rB.display} = ${massBStr} g ÷ ${rB.molarMass} g/mol = ${sig(molB)} mol`,
       `Limiting reagent: ${limiting.display}`,
       `mol ${product.display} = ${sig(limitingMol)} mol ${limiting.display} × (${product.coeff}/${limiting.coeff}) = ${sig(yieldMol)} mol`,
       `Theoretical yield = ${sig(yieldMol)} mol × ${product.molarMass} g/mol = ${yieldMass} g`,
@@ -321,21 +327,24 @@ function genPercentYield(): StoichProblem {
   const to   = pick(rxn.products)
   const givenMass = pickMass()
 
-  const theoretical = parseFloat(sig(
+  const theoreticalStr = sig(
     (givenMass / from.molarMass) * (to.coeff / from.coeff) * to.molarMass
-  ))
-  const pct    = rnd(58, 95)
-  const actual = parseFloat(sig(theoretical * pct / 100))
+  )
+  const theoretical = parseFloat(theoreticalStr)
+  const pct = rnd(58, 95)
+  const actualStr = sig(theoretical * pct / 100)
+  const actual = parseFloat(actualStr)
+  const givenMassStr = sig(givenMass)
 
   return {
     type: 'percent_yield', equation: rxn.equation,
     question: `Reaction: ${rxn.equation}\n` +
-      `Starting from ${givenMass} g of ${from.display}, the theoretical yield of ${to.display} is ${theoretical} g.\n` +
-      `If ${actual} g of ${to.display} was actually collected, what is the percent yield?`,
+      `Starting from ${givenMassStr} g of ${from.display}, the theoretical yield of ${to.display} is ${theoreticalStr} g.\n` +
+      `If ${actualStr} g of ${to.display} was actually collected, what is the percent yield?`,
     answer: sig(pct, 3), answerUnit: '%', isTextAnswer: false,
     steps: [
       `Percent yield = (actual yield / theoretical yield) × 100`,
-      `= (${actual} g / ${theoretical} g) × 100`,
+      `= (${actualStr} g / ${theoreticalStr} g) × 100`,
       `= ${sig(actual / theoretical * 100, 3)} %`,
     ],
   }

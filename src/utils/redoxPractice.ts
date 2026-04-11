@@ -1,6 +1,6 @@
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-export type RedoxSubtype = 'ox_state' | 'identify_redox' | 'ox_change'
+export type RedoxSubtype = 'ox_state' | 'identify_redox' | 'ox_change' | 'charge_balance'
 
 export interface RedoxProblem {
   subtype:      RedoxSubtype
@@ -574,11 +574,72 @@ function genOxChange(): RedoxProblem {
   }
 }
 
+// ── 4. Charge balancing ───────────────────────────────────────────────────────
+
+interface Anion {
+  sym:     string   // display symbol with Unicode superscript, e.g. 'NO₃⁻'
+  name:    string   // e.g. 'nitrate'
+  charge:  number   // magnitude, positive (e.g. 1 for NO₃⁻, 2 for SO₄²⁻)
+}
+
+const ANION_POOL: Anion[] = [
+  { sym: 'NO₃⁻',  name: 'nitrate',    charge: 1 },
+  { sym: 'Cl⁻',   name: 'chloride',   charge: 1 },
+  { sym: 'OH⁻',   name: 'hydroxide',  charge: 1 },
+  { sym: 'I⁻',    name: 'iodide',     charge: 1 },
+  { sym: 'Br⁻',   name: 'bromide',    charge: 1 },
+  { sym: 'SO₄²⁻', name: 'sulfate',    charge: 2 },
+  { sym: 'CO₃²⁻', name: 'carbonate',  charge: 2 },
+  { sym: 'O²⁻',   name: 'oxide',      charge: 2 },
+  { sym: 'PO₄³⁻', name: 'phosphate',  charge: 3 },
+]
+
+/** Superscript helper for ion display */
+function ionSup(n: number): string {
+  if (n === 1) return '⁺'
+  if (n === 2) return '²⁺'
+  if (n === 3) return '³⁺'
+  return `${n}⁺`
+}
+
+function genChargeBalance(): RedoxProblem {
+  const metal = pick(POOL_METALS)
+  const anion = pick(ANION_POOL)
+  const g = gcdInt(metal.charge, anion.charge)
+  const numAnions  = metal.charge / g
+  const numCations = anion.charge / g
+
+  const cationDisplay = `${metal.sym}${ionSup(metal.charge)}`
+  const question = numCations === 1
+    ? `How many ${anion.sym} ions are needed to form a neutral ionic compound with one ${cationDisplay}?`
+    : `How many ${anion.sym} ions are needed to form a neutral ionic compound with ${numCations} ${cationDisplay}?`
+
+  const steps: string[] = [
+    `${cationDisplay} carries a charge of +${metal.charge}.`,
+    `${anion.sym} carries a charge of −${anion.charge}.`,
+    numCations > 1
+      ? `Total positive charge from ${numCations} × ${cationDisplay} = +${numCations * metal.charge}.`
+      : `Need the total negative charge to equal +${metal.charge}.`,
+    `Number of ${anion.sym} needed = ${numCations * metal.charge} ÷ ${anion.charge} = ${numAnions}.`,
+    `${numCations > 1 ? `${numCations}(${cationDisplay})` : cationDisplay}(${numAnions > 1 ? `${numAnions}` : ''}${anion.sym}) is neutral. ✓`,
+  ]
+
+  return {
+    subtype:      'charge_balance',
+    question,
+    answer:       String(numAnions),
+    answerUnit:   '',
+    isTextAnswer: false,
+    steps,
+  }
+}
+
 // ── Public API ────────────────────────────────────────────────────────────────
 
 export function generateRedoxProblem(subtype: RedoxSubtype): RedoxProblem {
-  if (subtype === 'ox_state')      return genOxState()
+  if (subtype === 'ox_state')       return genOxState()
   if (subtype === 'identify_redox') return genIdentifyRedox()
+  if (subtype === 'charge_balance') return genChargeBalance()
   return genOxChange()
 }
 

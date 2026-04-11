@@ -57,9 +57,9 @@ function sig(x: number, n = 4): number {
   return Math.round(x * pow) / pow
 }
 
-/** Format a number to at most `dp` decimal places, stripping trailing zeros. */
+/** Format a number to exactly `dp` decimal places (preserving trailing zeros for sig fig clarity). */
 function f(x: number, dp = 4): string {
-  return parseFloat(x.toFixed(dp)).toString()
+  return x.toFixed(dp)
 }
 
 // ── Moles ─────────────────────────────────────────────────────────────────────

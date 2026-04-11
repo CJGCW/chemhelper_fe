@@ -29,6 +29,13 @@ export default function StoichiometryPractice() {
     setShowSteps(false)
   }
 
+  function handleTryAgain() {
+    setAnswer('')
+    setChecked(false)
+    setCorrect(false)
+    setShowSteps(false)
+  }
+
   function handleTypeChange(type: StoichProblemType | 'random') {
     setSelectedType(type)
     const t = type === 'random' ? undefined : type
@@ -256,17 +263,30 @@ export default function StoichiometryPractice() {
         </AnimatePresence>
       </motion.div>
 
-      {/* Next */}
+      {/* Next / Try Again buttons */}
       {checked && (
-        <motion.button
+        <motion.div
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
-          onClick={() => nextProblem()}
-          className="self-start px-4 py-2 rounded-sm font-sans text-sm border border-border
-                     text-secondary hover:text-primary hover:border-muted transition-colors"
+          className="flex gap-2"
         >
-          Next →
-        </motion.button>
+          {!correct && (
+            <button
+              onClick={handleTryAgain}
+              className="px-4 py-2 rounded-sm font-sans text-sm border border-border
+                         text-dim hover:text-secondary transition-colors"
+            >
+              Try Again
+            </button>
+          )}
+          <button
+            onClick={() => nextProblem()}
+            className="px-4 py-2 rounded-sm font-sans text-sm border border-border
+                       text-secondary hover:text-primary hover:border-muted transition-colors"
+          >
+            Next →
+          </button>
+        </motion.div>
       )}
     </div>
   )

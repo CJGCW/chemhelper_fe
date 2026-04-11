@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchParams } from 'react-router-dom'
 import StoichiometrySolver from '../components/stoichiometry/StoichiometrySolver'
@@ -7,6 +8,7 @@ import PercentYieldSolver from '../components/stoichiometry/PercentYieldSolver'
 import StoichiometryPractice from '../components/stoichiometry/StoichiometryPractice'
 import BalancingPractice from '../components/stoichiometry/BalancingPractice'
 import StoichReference from '../components/stoichiometry/StoichReference'
+import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 
 type Tab = 'stoich' | 'limiting' | 'theoretical' | 'percent' | 'practice' | 'balance' | 'reference'
 
@@ -23,8 +25,94 @@ const RESOURCE_TABS: { id: Tab; label: string; formula: string }[] = [
   { id: 'practice',    label: 'Practice',         formula: '✎'       },
 ]
 
+const EXPLANATIONS: Partial<Record<Tab, ExplanationContent>> = {
+  stoich: {
+    title: 'Stoichiometric Conversion',
+    formula: 'g → mol → mol → g',
+    formulaVars: [
+      { symbol: 'M',     meaning: 'Molar mass',                              unit: 'g/mol'          },
+      { symbol: 'n',     meaning: 'Moles',                                   unit: 'mol'            },
+      { symbol: 'ratio', meaning: 'Mole ratio from balanced equation',        unit: 'mol A / mol B'  },
+    ],
+    description:
+      'Stoichiometry uses the mole ratios from a balanced equation to convert between reactant and product amounts. ' +
+      'The pathway is: convert grams to moles (÷ molar mass), apply the mole ratio, then convert back to grams (× molar mass).',
+    example: {
+      scenario: 'How many grams of H₂O form from 4.00 g of H₂?  (2H₂ + O₂ → 2H₂O)',
+      steps: [
+        'n(H₂) = 4.00 g ÷ 2.016 g/mol = 1.98 mol',
+        'Mole ratio H₂O : H₂ = 2 : 2 = 1 : 1',
+        'n(H₂O) = 1.98 mol',
+        'm(H₂O) = 1.98 mol × 18.015 g/mol = 35.7 g',
+      ],
+      result: '35.7 g H₂O',
+    },
+  },
+  limiting: {
+    title: 'Limiting Reagent',
+    formula: 'LR = reactant producing least product',
+    formulaVars: [
+      { symbol: 'n_A, n_B', meaning: 'Moles of each reactant',                        unit: 'mol' },
+      { symbol: 'coeff',    meaning: 'Stoichiometric coefficient (balanced equation)', unit: '—'   },
+    ],
+    description:
+      'The limiting reagent is the reactant that runs out first and caps the amount of product. ' +
+      'Divide the moles of each reactant by its coefficient; the smallest quotient identifies the limiting reagent.',
+    example: {
+      scenario: '4.00 g H₂ and 32.0 g O₂ react: 2H₂ + O₂ → 2H₂O. Which is limiting?',
+      steps: [
+        'n(H₂) = 4.00 / 2.016 = 1.98 mol  →  1.98 / 2 = 0.992',
+        'n(O₂) = 32.0 / 32.00 = 1.00 mol  →  1.00 / 1 = 1.00',
+        'H₂ gives the smaller quotient (0.992)',
+      ],
+      result: 'H₂ is the limiting reagent',
+    },
+  },
+  theoretical: {
+    title: 'Theoretical Yield',
+    formula: 'T.Y. = mol(LR) × ratio × M(product)',
+    formulaVars: [
+      { symbol: 'mol(LR)', meaning: 'Moles of limiting reagent',              unit: 'mol'   },
+      { symbol: 'ratio',   meaning: 'Mole ratio: product / limiting reagent', unit: '—'     },
+      { symbol: 'M',       meaning: 'Molar mass of product',                  unit: 'g/mol' },
+    ],
+    description:
+      'The theoretical yield is the maximum mass of product obtainable from the limiting reagent, ' +
+      'assuming complete reaction with no losses. It is always the ideal upper bound — actual yields are lower.',
+    example: {
+      scenario: '1.98 mol H₂ is limiting in 2H₂ + O₂ → 2H₂O  (M(H₂O) = 18.015 g/mol).',
+      steps: [
+        'Mole ratio H₂O : H₂ = 2 : 2 = 1',
+        'n(H₂O) = 1.98 mol × 1 = 1.98 mol',
+        'T.Y. = 1.98 mol × 18.015 g/mol',
+      ],
+      result: 'T.Y. = 35.7 g H₂O',
+    },
+  },
+  percent: {
+    title: 'Percent Yield',
+    formula: '%Y = (actual / theoretical) × 100',
+    formulaVars: [
+      { symbol: 'actual',      meaning: 'Mass of product actually obtained', unit: 'g' },
+      { symbol: 'theoretical', meaning: 'Maximum possible mass of product',  unit: 'g' },
+    ],
+    description:
+      'Percent yield measures reaction efficiency. Values below 100% are normal — losses come from incomplete reactions, side reactions, or product lost during isolation. ' +
+      'A value above 100% signals experimental error such as impurities in the collected product.',
+    example: {
+      scenario: 'Theoretical yield is 35.7 g H₂O. The experiment collects 29.3 g.',
+      steps: [
+        '%Y = (actual / theoretical) × 100',
+        '%Y = (29.3 / 35.7) × 100',
+      ],
+      result: '%Y = 82.1%',
+    },
+  },
+}
+
 export default function StoichiometryPage() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const [showExplanation, setShowExplanation] = useState(false)
   const activeTab = (searchParams.get('tab') as Tab) ?? 'stoich'
 
   function setTab(tab: Tab) {
@@ -40,7 +128,19 @@ export default function StoichiometryPage() {
 
       {/* Header */}
       <div className="flex flex-col gap-3">
-        <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Stoichiometry</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Stoichiometry</h2>
+          {EXPLANATIONS[activeTab] && (
+            <button
+              onClick={() => setShowExplanation(true)}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm border border-border
+                         font-sans text-xs text-secondary hover:text-primary hover:border-muted transition-colors"
+            >
+              <span className="font-mono">?</span>
+              <span>What is this</span>
+            </button>
+          )}
+        </div>
 
         {/* Solver tabs */}
         <div className="flex items-center gap-1 p-1 rounded-sm self-start flex-wrap"
@@ -143,6 +243,14 @@ export default function StoichiometryPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {EXPLANATIONS[activeTab] && (
+        <ExplanationModal
+          content={EXPLANATIONS[activeTab]!}
+          open={showExplanation}
+          onClose={() => setShowExplanation(false)}
+        />
+      )}
     </div>
   )
 }

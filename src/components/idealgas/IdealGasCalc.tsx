@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { R, P_UNITS, type PUnit, type TUnit, type GasVar, toK, fromK, toAtm, fromAtm } from '../../utils/idealGas'
+import ExplanationModal, { type ExplanationContent } from '../calculations/ExplanationModal'
 
 const sf = (v: number, n = 4) => parseFloat(v.toPrecision(n)).toString()
 
@@ -261,6 +262,57 @@ function CombinedGasCalc() {
   )
 }
 
+// ── Explanations ─────────────────────────────────────────────────────────────
+
+const GAS_EXPLANATIONS: Record<'ideal' | 'combined', ExplanationContent> = {
+  ideal: {
+    title: 'Ideal Gas Law',
+    formula: 'PV = nRT',
+    formulaVars: [
+      { symbol: 'P', meaning: 'Pressure',           unit: 'atm (or kPa, mmHg, torr)' },
+      { symbol: 'V', meaning: 'Volume',             unit: 'L'                        },
+      { symbol: 'n', meaning: 'Amount of gas',      unit: 'mol'                      },
+      { symbol: 'R', meaning: 'Gas constant',       unit: '0.08206 L·atm/(mol·K)'   },
+      { symbol: 'T', meaning: 'Absolute temperature', unit: 'K'                      },
+    ],
+    description:
+      "Combines Boyle's law (P ∝ 1/V), Charles' law (V ∝ T), and Avogadro's law (V ∝ n) into one equation. " +
+      "Assumes gas particles have negligible volume and no intermolecular forces. " +
+      "Real gases approach ideal behaviour at low pressure and high temperature.",
+    example: {
+      scenario: '2.00 mol N₂ at 1.50 atm and 298 K — find the volume.',
+      steps: [
+        'V = nRT / P',
+        'V = (2.00 mol × 0.08206 L·atm/(mol·K) × 298 K) / 1.50 atm',
+        'V = 48.9 / 1.50',
+      ],
+      result: 'V = 32.6 L',
+    },
+  },
+  combined: {
+    title: 'Combined Gas Law',
+    formula: 'P₁V₁ / T₁ = P₂V₂ / T₂',
+    formulaVars: [
+      { symbol: 'P₁, P₂', meaning: 'Initial and final pressure',    unit: 'atm (units must match)' },
+      { symbol: 'V₁, V₂', meaning: 'Initial and final volume',      unit: 'L'                      },
+      { symbol: 'T₁, T₂', meaning: 'Initial and final temperature', unit: 'K'                      },
+    ],
+    description:
+      'Derived from the ideal gas law with n held constant: PV/T = nR = constant. ' +
+      'Use when a gas sample undergoes simultaneous changes in pressure, volume, and temperature. ' +
+      "Boyle's (T constant), Charles' (P constant), and Gay-Lussac's (V constant) laws are all special cases.",
+    example: {
+      scenario: 'Gas at 3.00 atm, 2.00 L, 300 K is heated to 450 K while pressure drops to 1.50 atm. Find V₂.',
+      steps: [
+        'V₂ = P₁V₁T₂ / (T₁P₂)',
+        'V₂ = (3.00 × 2.00 × 450) / (300 × 1.50)',
+        'V₂ = 2700 / 450',
+      ],
+      result: 'V₂ = 6.00 L',
+    },
+  },
+}
+
 // ── Ideal Gas Law calculator (PV = nRT) ───────────────────────────────────────
 
 export default function IdealGasCalc() {
@@ -272,6 +324,7 @@ export default function IdealGasCalc() {
   const [T, setT]         = useState('')
   const [tUnit, setTUnit] = useState<TUnit>('K')
 
+  const [showExplanation, setShowExplanation] = useState(false)
   const [result, setResult] = useState<{ variable: GasVar; value: string; unit: string; steps: string[] } | null>(null)
   const [error, setError]   = useState('')
 
@@ -341,7 +394,8 @@ export default function IdealGasCalc() {
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
 
-      {/* Mode toggle */}
+      {/* Mode toggle + explanation button */}
+      <div className="flex items-center gap-3 flex-wrap">
       <div className="flex gap-1 p-1 rounded-sm self-start"
         style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
         {(['ideal', 'combined'] as const).map(m => (
@@ -361,6 +415,15 @@ export default function IdealGasCalc() {
             </span>
           </button>
         ))}
+      </div>
+      <button
+        onClick={() => setShowExplanation(true)}
+        className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm border border-border
+                   font-sans text-xs text-secondary hover:text-primary hover:border-muted transition-colors"
+      >
+        <span className="font-mono">?</span>
+        <span>What is this</span>
+      </button>
       </div>
 
       <AnimatePresence mode="wait">
@@ -450,6 +513,12 @@ export default function IdealGasCalc() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ExplanationModal
+        content={GAS_EXPLANATIONS[mode]}
+        open={showExplanation}
+        onClose={() => setShowExplanation(false)}
+      />
     </div>
   )
 }
