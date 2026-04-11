@@ -1,3 +1,5 @@
+import StoichExamples from './StoichExamples'
+
 // ── Shared card primitives ────────────────────────────────────────────────────
 
 function FormulaBox({ lines }: { lines: string[] }) {
@@ -353,6 +355,9 @@ export default function StoichReference() {
         />
 
       </div>
+
+      {/* Animated examples */}
+      <StoichExamples />
     </div>
   )
 }

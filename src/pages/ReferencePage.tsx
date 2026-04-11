@@ -10,10 +10,12 @@ import ReactionClassifier from '../components/tools/ReactionClassifier'
 import ElectrolyteClassifier from '../components/tools/ElectrolyteClassifier'
 import NetIonicTool from '../components/tools/NetIonicTool'
 import ActivitySeries from '../components/tools/ActivitySeries'
+import IdealGasReference from '../components/idealgas/IdealGasReference'
+import EmpiricalVisual from '../components/empirical/EmpiricalVisual'
 
 type Tab =
   | 'stoich' | 'molar' | 'solubility' | 'quantum' | 'energy' | 'naming'
-  | 'classifier' | 'electrolyte' | 'net-ionic' | 'activity'
+  | 'classifier' | 'electrolyte' | 'net-ionic' | 'activity' | 'ideal-gas' | 'empirical'
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'stoich',      label: 'Stoichiometry'       },
@@ -26,6 +28,8 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'electrolyte', label: 'Electrolyte'         },
   { id: 'net-ionic',   label: 'Net Ionic Equations' },
   { id: 'activity',    label: 'Activity Series'     },
+  { id: 'ideal-gas',   label: 'Ideal Gas Law'       },
+  { id: 'empirical',   label: 'Empirical Formula'   },
 ]
 
 export default function ReferencePage() {
@@ -112,6 +116,20 @@ export default function ReferencePage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <ActivitySeries />
+          </motion.div>
+        )}
+        {activeTab === 'ideal-gas' && (
+          <motion.div key="ideal-gas"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <IdealGasReference />
+          </motion.div>
+        )}
+        {activeTab === 'empirical' && (
+          <motion.div key="empirical"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <EmpiricalVisual />
           </motion.div>
         )}
       </AnimatePresence>

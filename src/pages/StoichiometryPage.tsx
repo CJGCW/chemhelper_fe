@@ -7,9 +7,8 @@ import PercentYieldSolver from '../components/stoichiometry/PercentYieldSolver'
 import StoichiometryPractice from '../components/stoichiometry/StoichiometryPractice'
 import BalancingPractice from '../components/stoichiometry/BalancingPractice'
 import StoichReference from '../components/stoichiometry/StoichReference'
-import StoichExamples from '../components/stoichiometry/StoichExamples'
 
-type Tab = 'stoich' | 'limiting' | 'theoretical' | 'percent' | 'practice' | 'balance' | 'reference' | 'examples'
+type Tab = 'stoich' | 'limiting' | 'theoretical' | 'percent' | 'practice' | 'balance' | 'reference'
 
 const SOLVER_TABS: { id: Tab; label: string; formula: string }[] = [
   { id: 'stoich',      label: 'Stoichiometry',    formula: 'g ↔ mol' },
@@ -21,7 +20,6 @@ const SOLVER_TABS: { id: Tab; label: string; formula: string }[] = [
 
 const RESOURCE_TABS: { id: Tab; label: string; formula: string }[] = [
   { id: 'reference',   label: 'Reference',        formula: '≡'       },
-  { id: 'examples',    label: 'Examples',         formula: '▶'       },
   { id: 'practice',    label: 'Practice',         formula: '✎'       },
 ]
 
@@ -142,13 +140,6 @@ export default function StoichiometryPage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <StoichReference />
-          </motion.div>
-        )}
-        {activeTab === 'examples' && (
-          <motion.div key="examples"
-            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <StoichExamples />
           </motion.div>
         )}
       </AnimatePresence>

@@ -7,13 +7,23 @@ interface Props {
   onClose: () => void;
 }
 
-function NavGroup({ label }: { label: string }) {
+function NavGroup({ label, expanded, onToggle }: { label: string; expanded: boolean; onToggle: () => void }) {
   return (
-    <div className="px-4 pt-5 pb-1.5">
-      <span className="font-mono text-[9px] tracking-[0.15em] text-dim uppercase">
+    <button
+      onClick={onToggle}
+      className="w-full flex items-center justify-between px-4 pt-5 pb-1.5 group"
+    >
+      <span className="font-mono text-xs tracking-[0.12em] text-secondary uppercase">
         {label}
       </span>
-    </div>
+      <motion.span
+        animate={{ rotate: expanded ? 90 : 0 }}
+        transition={{ duration: 0.15 }}
+        className="font-mono text-[9px] text-dim group-hover:text-secondary transition-colors mr-1"
+      >
+        ▶
+      </motion.span>
+    </button>
   );
 }
 
@@ -117,7 +127,6 @@ const CALC_ITEMS: { tab: string; label: string; formula: string; mode?: string }
   { tab: "molality",    label: "Molality",                formula: "b = n/m" },
   { tab: "colligative", label: "Boiling Point Elevation", formula: "ΔTb", mode: "bpe" },
   { tab: "colligative", label: "Freezing Point Depression", formula: "ΔTf", mode: "fpd" },
-  { tab: "reference",   label: "Reference",               formula: "≡" },
 ]
 
 function CalcSubItem({ item, onNavigate }: { item: typeof CALC_ITEMS[0]; onNavigate: () => void }) {
@@ -151,7 +160,6 @@ const STOICH_ITEMS: { tab: string; label: string; formula: string }[] = [
   { tab: 'theoretical', label: 'Theoretical Yield',formula: 'T.Y.'  },
   { tab: 'percent',     label: 'Percent Yield',    formula: '%Y'    },
   { tab: 'reference',   label: 'Reference',        formula: '≡'     },
-  { tab: 'examples',    label: 'Examples',         formula: '▶'     },
 ]
 
 function StoichSubItem({ item, onNavigate }: { item: typeof STOICH_ITEMS[0]; onNavigate: () => void }) {
@@ -369,6 +377,12 @@ function ExpandableSection({
 export default function NavSidebar({ open, onClose }: Props) {
   const location = useLocation()
 
+  // Section collapse state (all open by default)
+  const [refSectionOpen,   setRefSectionOpen]   = useState(true)
+  const [calcSectionOpen,  setCalcSectionOpen]  = useState(true)
+  const [pracSectionOpen,  setPracSectionOpen]  = useState(true)
+  const [toolSectionOpen,  setToolSectionOpen]  = useState(true)
+
   const [tableExpanded,    setTableExpanded]    = useState(
     location.pathname === "/table" || location.pathname === "/electron-config"
   )
@@ -418,90 +432,136 @@ export default function NavSidebar({ open, onClose }: Props) {
       </div>
 
       <nav className="flex-1 overflow-y-auto py-2">
+
         {/* Reference */}
-        <NavGroup label="Reference" />
-        <PracticeNavItem path="/reference?tab=molar"      icon="⚗"  label="Molar"         onNavigate={onClose} />
-        <PracticeNavItem path="/reference?tab=naming"     icon="Nm" label="Naming"        onNavigate={onClose} />
-        <ExpandableSection
-          icon="⬡" label="Periodic Table"
-          isActive={isTableActive} expanded={tableExpanded}
-          onToggle={() => setTableExpanded(e => !e)}
-        >
-          {TABLE_ITEMS.map((item, i) => (
-            <TableSubItem key={i} item={item} onNavigate={onClose} />
-          ))}
-        </ExpandableSection>
-        <ExpandableSection
-          icon="⇌" label="Reactions"
-          isActive={isRxnRefActive} expanded={rxnRefExpanded}
-          onToggle={() => setRxnRefExpanded(e => !e)}
-        >
-          {RXN_REF_ITEMS.map((item, i) => (
-            <ReferenceSubItem key={i} item={item} onNavigate={onClose} />
-          ))}
-        </ExpandableSection>
-        <PracticeNavItem path="/reference?tab=solubility" icon="S/I" label="Solubility"    onNavigate={onClose} />
-        <PracticeNavItem path="/reference?tab=stoich"     icon="⚖"  label="Stoichiometry" onNavigate={onClose} />
+        <NavGroup label="Reference" expanded={refSectionOpen} onToggle={() => setRefSectionOpen(e => !e)} />
+        <AnimatePresence initial={false}>
+          {refSectionOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }}
+              style={{ overflow: 'hidden' }}
+            >
+              <PracticeNavItem path="/reference?tab=molar"      icon="⚗"  label="Molar"         onNavigate={onClose} />
+              <PracticeNavItem path="/reference?tab=naming"     icon="Nm" label="Naming"        onNavigate={onClose} />
+              <ExpandableSection
+                icon="⬡" label="Periodic Table"
+                isActive={isTableActive} expanded={tableExpanded}
+                onToggle={() => setTableExpanded(e => !e)}
+              >
+                {TABLE_ITEMS.map((item, i) => (
+                  <TableSubItem key={i} item={item} onNavigate={onClose} />
+                ))}
+              </ExpandableSection>
+              <ExpandableSection
+                icon="⇌" label="Reactions"
+                isActive={isRxnRefActive} expanded={rxnRefExpanded}
+                onToggle={() => setRxnRefExpanded(e => !e)}
+              >
+                {RXN_REF_ITEMS.map((item, i) => (
+                  <ReferenceSubItem key={i} item={item} onNavigate={onClose} />
+                ))}
+              </ExpandableSection>
+              <PracticeNavItem path="/reference?tab=empirical"   icon="⌬"  label="Empirical Formula" onNavigate={onClose} />
+              <PracticeNavItem path="/reference?tab=ideal-gas"  icon="PV" label="Ideal Gas Law"  onNavigate={onClose} />
+              <PracticeNavItem path="/reference?tab=solubility" icon="S/I" label="Solubility"    onNavigate={onClose} />
+              <PracticeNavItem path="/reference?tab=stoich"     icon="⚖"  label="Stoichiometry" onNavigate={onClose} />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Calculations */}
-        <NavGroup label="Calculations" />
-        <ExpandableSection
-          icon="±" label="Base Calculations"
-          isActive={isBaseCalcActive} expanded={baseCalcExpanded}
-          onToggle={() => setBaseCalcExpanded(e => !e)}
-        >
-          {BASE_CALC_ITEMS.map((item, i) => (
-            <BaseCalcSubItem key={i} item={item} onNavigate={onClose} />
-          ))}
-        </ExpandableSection>
-
-        <ExpandableSection
-          icon="⚗" label="Molar Calculations"
-          isActive={isCalcActive} expanded={calcExpanded}
-          onToggle={() => setCalcExpanded(e => !e)}
-        >
-          {CALC_ITEMS.map((item, i) => (
-            <CalcSubItem key={i} item={item} onNavigate={onClose} />
-          ))}
-        </ExpandableSection>
-        <ExpandableSection
-          icon="⚖" label="Stoichiometry"
-          isActive={isStoichActive} expanded={stoichExpanded}
-          onToggle={() => setStoichExpanded(e => !e)}
-        >
-          {STOICH_ITEMS.map((item, i) => (
-            <StoichSubItem key={i} item={item} onNavigate={onClose} />
-          ))}
-        </ExpandableSection>
-        <ExpandableSection
-          icon="e⁻" label="Redox"
-          isActive={isRedoxActive} expanded={redoxExpanded}
-          onToggle={() => setRedoxExpanded(e => !e)}
-        >
-          {REDOX_ITEMS.map((item, i) => (
-            <RedoxSubItem key={i} item={item} onNavigate={onClose} />
-          ))}
-        </ExpandableSection>
+        <NavGroup label="Calculations" expanded={calcSectionOpen} onToggle={() => setCalcSectionOpen(e => !e)} />
+        <AnimatePresence initial={false}>
+          {calcSectionOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }}
+              style={{ overflow: 'hidden' }}
+            >
+              <ExpandableSection
+                icon="±" label="Base Calculations"
+                isActive={isBaseCalcActive} expanded={baseCalcExpanded}
+                onToggle={() => setBaseCalcExpanded(e => !e)}
+              >
+                {BASE_CALC_ITEMS.map((item, i) => (
+                  <BaseCalcSubItem key={i} item={item} onNavigate={onClose} />
+                ))}
+              </ExpandableSection>
+              <ExpandableSection
+                icon="⚗" label="Molar Calculations"
+                isActive={isCalcActive} expanded={calcExpanded}
+                onToggle={() => setCalcExpanded(e => !e)}
+              >
+                {CALC_ITEMS.map((item, i) => (
+                  <CalcSubItem key={i} item={item} onNavigate={onClose} />
+                ))}
+              </ExpandableSection>
+              <ExpandableSection
+                icon="⚖" label="Stoichiometry"
+                isActive={isStoichActive} expanded={stoichExpanded}
+                onToggle={() => setStoichExpanded(e => !e)}
+              >
+                {STOICH_ITEMS.map((item, i) => (
+                  <StoichSubItem key={i} item={item} onNavigate={onClose} />
+                ))}
+              </ExpandableSection>
+              <ExpandableSection
+                icon="e⁻" label="Redox"
+                isActive={isRedoxActive} expanded={redoxExpanded}
+                onToggle={() => setRedoxExpanded(e => !e)}
+              >
+                {REDOX_ITEMS.map((item, i) => (
+                  <RedoxSubItem key={i} item={item} onNavigate={onClose} />
+                ))}
+              </ExpandableSection>
+              <PracticeNavItem path="/calculations?tab=ideal-gas" icon="PV" label="Ideal Gas Law" onNavigate={onClose} />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Practice */}
-        <NavGroup label="Practice" />
-        <PracticeNavItem path="/calculations?tab=practice"  icon="⚗" label="Molar Practice"    onNavigate={onClose} />
-        <PracticeNavItem path="/stoichiometry?tab=practice" icon="⚖" label="Stoich Practice"   onNavigate={onClose} />
-        <PracticeNavItem path="/stoichiometry?tab=balance"  icon="⇌" label="Balance Equations" onNavigate={onClose} />
-        <PracticeNavItem path="/redox-practice"             icon="e⁻" label="Redox Practice"   onNavigate={onClose} />
-        <TestNavItem onNavigate={onClose} />
+        <NavGroup label="Practice" expanded={pracSectionOpen} onToggle={() => setPracSectionOpen(e => !e)} />
+        <AnimatePresence initial={false}>
+          {pracSectionOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }}
+              style={{ overflow: 'hidden' }}
+            >
+              <PracticeNavItem path="/calculations?tab=practice"  icon="⚗" label="Molar Practice"    onNavigate={onClose} />
+              <PracticeNavItem path="/stoichiometry?tab=practice" icon="⚖" label="Stoich Practice"   onNavigate={onClose} />
+              <PracticeNavItem path="/stoichiometry?tab=balance"  icon="⇌" label="Balance Equations" onNavigate={onClose} />
+              <PracticeNavItem path="/redox-practice"             icon="e⁻" label="Redox Practice"    onNavigate={onClose} />
+              <PracticeNavItem path="/ideal-gas-practice"         icon="PV" label="Ideal Gas Practice"    onNavigate={onClose} />
+              <PracticeNavItem path="/empirical-practice"         icon="⌬"  label="Empirical Practice"   onNavigate={onClose} />
+              <TestNavItem onNavigate={onClose} />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Tools */}
-        <NavGroup label="Tools" />
-        <ExpandableSection
-          icon="⬡" label="Structures"
-          isActive={isStructActive} expanded={structExpanded}
-          onToggle={() => setStructExpanded(e => !e)}
-        >
-          {STRUCTURE_ITEMS.map((item, i) => (
-            <StructureSubItem key={i} item={item} onNavigate={onClose} />
-          ))}
-        </ExpandableSection>
+        <NavGroup label="Tools" expanded={toolSectionOpen} onToggle={() => setToolSectionOpen(e => !e)} />
+        <AnimatePresence initial={false}>
+          {toolSectionOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }}
+              style={{ overflow: 'hidden' }}
+            >
+              <ExpandableSection
+                icon="⬡" label="Structures"
+                isActive={isStructActive} expanded={structExpanded}
+                onToggle={() => setStructExpanded(e => !e)}
+              >
+                {STRUCTURE_ITEMS.map((item, i) => (
+                  <StructureSubItem key={i} item={item} onNavigate={onClose} />
+                ))}
+              </ExpandableSection>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
       </nav>
 
       <div className="p-4 border-t border-border shrink-0">

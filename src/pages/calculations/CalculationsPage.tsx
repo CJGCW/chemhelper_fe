@@ -8,9 +8,10 @@ import MolalityCalc from '../../components/calculations/MolalityCalc'
 import ColligativeCalc from '../../components/calculations/ColligativeCalc'
 import MolarPractice from '../../components/calculations/MolarPractice'
 import MolarReference from '../../components/calculations/MolarReference'
+import IdealGasCalc from '../../components/idealgas/IdealGasCalc'
 import { useState } from 'react'
 
-type CalcType = 'moles' | 'molarity' | 'molality' | 'colligative' | 'practice' | 'reference'
+type CalcType = 'moles' | 'molarity' | 'molality' | 'colligative' | 'practice' | 'reference' | 'ideal-gas'
 type ColligativeMode = 'bpe' | 'fpd'
 
 const PILLS: { value: CalcType; label: string; formula: string }[] = [
@@ -18,8 +19,7 @@ const PILLS: { value: CalcType; label: string; formula: string }[] = [
   { value: 'molarity',    label: 'Molarity',    formula: 'C = n / V'  },
   { value: 'molality',    label: 'Molality',    formula: 'b = n / m'  },
   { value: 'colligative', label: 'Colligative', formula: 'ΔT = i·K·b' },
-  { value: 'practice',   label: 'Practice',   formula: '✎' },
-  { value: 'reference',  label: 'Reference',  formula: '≡' },
+  { value: 'ideal-gas',  label: 'Ideal Gas',  formula: 'PV=nRT' },
 ]
 
 const EXPLANATIONS: Partial<Record<CalcType, ExplanationContent>> = {
@@ -105,7 +105,7 @@ export default function CalculationsPage() {
     })
   }
 
-  const showExplanationButton = activeTab !== 'practice' && activeTab !== 'reference'
+  const showExplanationButton = !!EXPLANATIONS[activeTab]
 
   return (
     <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
@@ -171,6 +171,7 @@ export default function CalculationsPage() {
           {activeTab === 'colligative' && <ColligativeCalc initialMode={colligativeMode} />}
           {activeTab === 'practice'    && <MolarPractice />}
           {activeTab === 'reference'   && <MolarReference />}
+          {activeTab === 'ideal-gas'   && <IdealGasCalc />}
         </motion.div>
       </AnimatePresence>
 

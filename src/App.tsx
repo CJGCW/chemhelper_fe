@@ -17,6 +17,8 @@ import NetIonicPage from './pages/NetIonicPage'
 import ActivitySeriesPage from './pages/ActivitySeriesPage'
 import RedoxPage from './pages/RedoxPage'
 import RedoxPracticePage from './pages/RedoxPracticePage'
+import IdealGasPracticePage from './pages/IdealGasPracticePage'
+import EmpiricalPracticePage from './pages/EmpiricalPracticePage'
 
 export default function App() {
   return (
@@ -46,6 +48,8 @@ export default function App() {
         <Route path="/activity-series"       element={<ActivitySeriesPage />} />
         <Route path="/redox"                 element={<RedoxPage />} />
         <Route path="/redox-practice"        element={<RedoxPracticePage />} />
+        <Route path="/ideal-gas-practice"      element={<IdealGasPracticePage />} />
+        <Route path="/empirical-practice"      element={<EmpiricalPracticePage />} />
         <Route path="*" element={<Navigate to="/table" replace />} />
       </Route>
     </Routes>
