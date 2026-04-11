@@ -411,7 +411,9 @@ export default function NavSidebar({ open, onClose }: Props) {
         <NavGroup label="Tools" />
         <PracticeNavItem path="/reference"   icon="≡" label="Reference"           onNavigate={onClose} />
         <PracticeNavItem path="/classifier"  icon="⇄" label="Reaction Classifier"    onNavigate={onClose} />
-        <PracticeNavItem path="/electrolyte" icon="⚡" label="Electrolyte Classifier" onNavigate={onClose} />
+        <PracticeNavItem path="/electrolyte" icon="⚡" label="Electrolyte Classifier"    onNavigate={onClose} />
+        <PracticeNavItem path="/net-ionic"       icon="⇌" label="Net Ionic Equations"   onNavigate={onClose} />
+        <PracticeNavItem path="/activity-series" icon="↕" label="Activity Series"       onNavigate={onClose} />
         <ExpandableSection
           icon="⬡" label="Structures"
           isActive={isStructActive} expanded={structExpanded}

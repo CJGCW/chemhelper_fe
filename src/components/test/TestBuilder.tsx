@@ -9,12 +9,14 @@ import { generateAtomicProblem } from '../../utils/atomicPractice'
 import { generateLewisProblem, generateVseprProblem } from '../../utils/lewisPractice'
 import type { StoichProblemType } from '../../utils/stoichiometryPractice'
 import { generateStoichProblem } from '../../utils/stoichiometryPractice'
+import type { RedoxSubtype } from '../../utils/redoxPractice'
+import { generateRedoxProblem } from '../../utils/redoxPractice'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
 // ── Topic definitions ─────────────────────────────────────────────────────────
 
-type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'vsepr' | 'stoich'
-type TopicGroup = 'core' | 'atomic_molecular' | 'structures' | 'molar_solutions' | 'stoichiometry'
+type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'vsepr' | 'stoich' | 'redox'
+type TopicGroup = 'core' | 'atomic_molecular' | 'structures' | 'molar_solutions' | 'stoichiometry' | 'redox'
 
 const GROUP_LABELS: Record<TopicGroup, string> = {
   core:             'Core Skills',
@@ -22,17 +24,19 @@ const GROUP_LABELS: Record<TopicGroup, string> = {
   structures:       'Structures',
   molar_solutions:  'Molar & Solutions',
   stoichiometry:    'Stoichiometry',
+  redox:            'Redox',
 }
-const GROUP_ORDER: TopicGroup[] = ['core', 'atomic_molecular', 'structures', 'molar_solutions', 'stoichiometry']
+const GROUP_ORDER: TopicGroup[] = ['core', 'atomic_molecular', 'structures', 'molar_solutions', 'stoichiometry', 'redox']
 
 interface TopicDef {
-  id:         string
-  kind:       TopicKind
-  group:      TopicGroup
-  label:      string
-  formula:    string
-  molarType?: MolarCalcType
+  id:          string
+  kind:        TopicKind
+  group:       TopicGroup
+  label:       string
+  formula:     string
+  molarType?:  MolarCalcType
   stoichType?: StoichProblemType
+  redoxType?:  RedoxSubtype
 }
 
 const ALL_TOPICS: TopicDef[] = [
@@ -52,6 +56,9 @@ const ALL_TOPICS: TopicDef[] = [
   { id: 'stoich-lr',  kind: 'stoich',     group: 'stoichiometry',    label: 'Limiting Reagent',        formula: 'LR',                    stoichType: 'limiting_reagent'  },
   { id: 'stoich-ty',  kind: 'stoich',     group: 'stoichiometry',    label: 'Theoretical Yield',       formula: 'TY (g)',                stoichType: 'theoretical_yield' },
   { id: 'stoich-py',  kind: 'stoich',     group: 'stoichiometry',    label: 'Percent Yield',           formula: '% yield',               stoichType: 'percent_yield'     },
+  { id: 'redox-ox',   kind: 'redox',      group: 'redox',            label: 'Oxidation Numbers',        formula: 'ox. #',                 redoxType: 'ox_state'           },
+  { id: 'redox-id',   kind: 'redox',      group: 'redox',            label: 'Identify Oxidised/Reduced', formula: 'OA / RA',              redoxType: 'identify_redox'     },
+  { id: 'redox-chg',  kind: 'redox',      group: 'redox',            label: 'Oxidation State Change',   formula: 'Δox',                   redoxType: 'ox_change'          },
 ]
 
 const STYLES: ProblemStyle[] = ['word', 'arithmetic']
@@ -145,6 +152,8 @@ export default function TestBuilder({ onGenerate }: Props) {
       }
       if (t.kind === 'stoich')
         return { topic: t.label, topicFormula: t.formula, problem: { kind: 'stoich', data: generateStoichProblem(t.stoichType!) } }
+      if (t.kind === 'redox')
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'redox', data: generateRedoxProblem(t.redoxType!) } }
       return { topic: t.label, topicFormula: t.formula, problem: { kind: 'molar', data: generateMolarProblem(t.molarType!, randomStyle()) } }
     }
 

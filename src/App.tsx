@@ -13,6 +13,8 @@ import StoichiometryPage from './pages/StoichiometryPage'
 import ReferencePage from './pages/ReferencePage'
 import ClassifierPage from './pages/ClassifierPage'
 import ElectrolytePage from './pages/ElectrolytePage'
+import NetIonicPage from './pages/NetIonicPage'
+import ActivitySeriesPage from './pages/ActivitySeriesPage'
 
 export default function App() {
   return (
@@ -38,6 +40,8 @@ export default function App() {
         <Route path="/reference"             element={<ReferencePage />} />
         <Route path="/classifier"            element={<ClassifierPage />} />
         <Route path="/electrolyte"           element={<ElectrolytePage />} />
+        <Route path="/net-ionic"             element={<NetIonicPage />} />
+        <Route path="/activity-series"       element={<ActivitySeriesPage />} />
         <Route path="*" element={<Navigate to="/table" replace />} />
       </Route>
     </Routes>

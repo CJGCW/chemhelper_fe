@@ -5,8 +5,9 @@ import type { ConversionProblem } from '../../utils/conversionPractice'
 import type { AtomicProblem } from '../../utils/atomicPractice'
 import type { LewisProblem, VseprProblem } from '../../utils/lewisPractice'
 import type { StoichProblem } from '../../utils/stoichiometryPractice'
+import type { RedoxProblem } from '../../utils/redoxPractice'
 
-export type { SigFigProblem, EmpiricalProblem, ConversionProblem, AtomicProblem, LewisProblem, VseprProblem, StoichProblem }
+export type { SigFigProblem, EmpiricalProblem, ConversionProblem, AtomicProblem, LewisProblem, VseprProblem, StoichProblem, RedoxProblem }
 
 export interface MolarTestProblem      { kind: 'molar';      data: MolarProblem      }
 export interface SigFigTestProblem     { kind: 'sigfig';     data: SigFigProblem     }
@@ -16,6 +17,7 @@ export interface AtomicTestProblem     { kind: 'atomic';     data: AtomicProblem
 export interface LewisTestProblem      { kind: 'lewis';      data: LewisProblem      }
 export interface VseprTestProblem      { kind: 'vsepr';      data: VseprProblem      }
 export interface StoichTestProblem     { kind: 'stoich';     data: StoichProblem     }
+export interface RedoxTestProblem      { kind: 'redox';      data: RedoxProblem      }
 
 export type TestProblem =
   | MolarTestProblem
@@ -26,6 +28,7 @@ export type TestProblem =
   | LewisTestProblem
   | VseprTestProblem
   | StoichTestProblem
+  | RedoxTestProblem
 
 export interface TestQuestion {
   id:           number

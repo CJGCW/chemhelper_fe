@@ -6,6 +6,7 @@ import { checkConversionAnswer } from '../../utils/conversionPractice'
 import { checkAtomicAnswer } from '../../utils/atomicPractice'
 import { checkLewisProblem, checkVseprProblem } from '../../utils/lewisPractice'
 import { checkStoichAnswer } from '../../utils/stoichiometryPractice'
+import { checkRedoxAnswer } from '../../utils/redoxPractice'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
 // ── Answer checking ───────────────────────────────────────────────────────────
@@ -33,6 +34,8 @@ function checkQuestion(q: TestQuestion, answer: string): Result {
     return checkVseprProblem(answer, q.problem.data) ? 'correct' : 'wrong'
   if (q.problem.kind === 'stoich')
     return checkStoichAnswer(answer, q.problem.data) ? 'correct' : 'wrong'
+  if (q.problem.kind === 'redox')
+    return checkRedoxAnswer(answer, q.problem.data) ? 'correct' : 'wrong'
 
   // molar
   const userVal = parseFloat(answer)
@@ -95,6 +98,19 @@ function buildQuestionHtml(q: TestQuestion): string {
     </div>`
   }
 
+  if (q.problem.kind === 'redox') {
+    const p = q.problem.data
+    const rxnHtml = p.reactionEq
+      ? `<p class="q-text" style="font-family:monospace;font-size:10pt;color:#555;">${p.reactionEq}</p>`
+      : ''
+    const hintHtml = p.hint ? `<p class="q-text" style="font-size:10pt;color:#555;font-style:italic">Hint: ${p.hint}</p>` : ''
+    return `<div class="question">${header}
+      ${rxnHtml}
+      <p class="q-text">${p.question}</p>${hintHtml}
+      <div class="answer-row"><span class="solve-for">Answer:</span><span class="answer-line"></span></div>
+    </div>`
+  }
+
   if (q.problem.kind === 'stoich') {
     const p = q.problem.data
     const lines = p.question.split('\n')
@@ -141,6 +157,8 @@ function buildAnswerKeyHtml(q: TestQuestion): string {
     answer = q.problem.data.answerUnit
       ? `${q.problem.data.answer} ${q.problem.data.answerUnit}`
       : q.problem.data.answer
+  else if (q.problem.kind === 'redox')
+    answer = q.problem.data.answer
   else
     answer = `${q.problem.data.answer} ${q.problem.data.answerUnit}`
   return `<div class="key-row"><span class="key-num">${q.id}.</span><span class="key-ans">${answer}</span></div>`
@@ -265,6 +283,7 @@ export default function TestSheet({ test, onBack }: Props) {
     const lewisP      = q.problem.kind === 'lewis'      ? q.problem.data : null
     const vseprP      = q.problem.kind === 'vsepr'      ? q.problem.data : null
     const stoichP     = q.problem.kind === 'stoich'     ? q.problem.data : null
+    const redoxP      = q.problem.kind === 'redox'      ? q.problem.data : null
 
     const questionText = sfProblem
       ? (sfProblem.kind === 'count'
@@ -288,6 +307,13 @@ export default function TestSheet({ test, onBack }: Props) {
               : <p key={i} className="font-sans text-base text-bright leading-relaxed">{line}</p>
           )}
         </div>
+      : redoxP
+      ? <div className="pl-8 flex flex-col gap-1.5">
+          {redoxP.reactionEq && (
+            <p className="font-mono text-xs text-secondary">{redoxP.reactionEq}</p>
+          )}
+          <p className="font-sans text-base text-bright leading-relaxed">{redoxP.question}</p>
+        </div>
       : <p className="font-sans text-base text-bright leading-relaxed pl-8">
           {atomicP?.question ?? lewisP?.question ?? vseprP?.question ?? conversionP?.question ?? molarP!.question}
         </p>
@@ -306,6 +332,8 @@ export default function TestSheet({ test, onBack }: Props) {
       ? (vseprP.answerUnit ? `${vseprP.answer} ${vseprP.answerUnit}` : vseprP.answer)
       : stoichP
       ? (stoichP.answerUnit ? `${stoichP.answer} ${stoichP.answerUnit}` : stoichP.answer)
+      : redoxP
+      ? redoxP.answer
       : `${molarP!.answer} ${molarP!.answerUnit}`
 
     const solutionSteps = sfProblem
@@ -322,6 +350,8 @@ export default function TestSheet({ test, onBack }: Props) {
       ? vseprP.steps
       : stoichP
       ? stoichP.steps
+      : redoxP
+      ? redoxP.steps
       : molarP!.steps
 
     return (
@@ -366,6 +396,11 @@ export default function TestSheet({ test, onBack }: Props) {
           <p className="font-sans text-xs text-dim italic pl-8">Hint: {atomicP.hint}</p>
         )}
 
+        {/* Redox: hint */}
+        {redoxP?.hint && (
+          <p className="font-sans text-xs text-dim italic pl-8">Note: {redoxP.hint}</p>
+        )}
+
         {/* Given chips (molar arithmetic only) */}
         {molarP && molarP.style === 'arithmetic' && molarP.given.length > 0 && (
           <div className="flex flex-wrap gap-2 pl-8">
@@ -388,7 +423,7 @@ export default function TestSheet({ test, onBack }: Props) {
             <span className="font-mono text-base text-secondary whitespace-nowrap">EF =</span>
           )}
           <input
-            type={(sfProblem || empiricalP || atomicP?.isTextAnswer || lewisP?.isTextAnswer || vseprP?.isTextAnswer || stoichP?.isTextAnswer) ? 'text' : 'number'}
+            type={(sfProblem || empiricalP || atomicP?.isTextAnswer || lewisP?.isTextAnswer || vseprP?.isTextAnswer || stoichP?.isTextAnswer || redoxP?.isTextAnswer) ? 'text' : 'number'}
             inputMode={sfProblem?.kind === 'count' ? 'numeric' : 'decimal'}
             value={answers[q.id] ?? ''}
             onChange={e => setAnswer(q.id, e.target.value)}
@@ -400,12 +435,14 @@ export default function TestSheet({ test, onBack }: Props) {
               : lewisP?.isTextAnswer ? 'e.g. Tetrahedral'
               : vseprP?.isTextAnswer ? 'e.g. sp³'
               : stoichP?.isTextAnswer ? 'formula, e.g. H₂'
+              : redoxP?.isTextAnswer  ? 'formula, e.g. Zn'
+              : redoxP               ? 'e.g. +6 or −2'
               : 'answer'
             }
             className={`bg-raised border rounded-sm px-3 py-1.5 font-mono text-base
                         placeholder-dim focus:outline-none focus:border-muted
                         disabled:cursor-not-allowed transition-colors
-                        ${(empiricalP || atomicP?.isTextAnswer || lewisP?.isTextAnswer || vseprP?.isTextAnswer || stoichP?.isTextAnswer) ? 'w-44' : 'w-36'}
+                        ${(empiricalP || atomicP?.isTextAnswer || lewisP?.isTextAnswer || vseprP?.isTextAnswer || stoichP?.isTextAnswer || redoxP?.isTextAnswer) ? 'w-44' : 'w-36'}
                         ${result === 'correct' ? 'border-emerald-700/60 text-emerald-300'
                           : (result === 'wrong' || result === 'wrong_sf') ? 'border-rose-700/60 text-rose-300'
                           : 'border-border text-bright'}`}
