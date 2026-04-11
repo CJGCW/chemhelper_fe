@@ -2,6 +2,9 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { R, P_UNITS, type PUnit, type TUnit, type GasVar, toK, fromK, toAtm, fromAtm } from '../../utils/idealGas'
 import ExplanationModal, { type ExplanationContent } from '../calculations/ExplanationModal'
+import DaltonsLawCalc from './DaltonsLawCalc'
+import GrahamsLawCalc from './GrahamsLawCalc'
+import GasDensityCalc from './GasDensityCalc'
 
 const sf = (v: number, n = 4) => parseFloat(v.toPrecision(n)).toString()
 
@@ -264,7 +267,7 @@ function CombinedGasCalc() {
 
 // ── Explanations ─────────────────────────────────────────────────────────────
 
-const GAS_EXPLANATIONS: Record<'ideal' | 'combined', ExplanationContent> = {
+const GAS_EXPLANATIONS: Record<'ideal' | 'combined' | 'daltons' | 'grahams' | 'density', ExplanationContent> = {
   ideal: {
     title: 'Ideal Gas Law',
     formula: 'PV = nRT',
@@ -311,12 +314,78 @@ const GAS_EXPLANATIONS: Record<'ideal' | 'combined', ExplanationContent> = {
       result: 'V₂ = 6.00 L',
     },
   },
+  grahams: {
+    title: "Graham's Law of Effusion",
+    formula: 'rate₁ / rate₂ = √(M₂ / M₁)',
+    formulaVars: [
+      { symbol: 'rate₁, rate₂', meaning: 'Effusion (or diffusion) rates of gases 1 and 2', unit: 'any consistent unit' },
+      { symbol: 'M₁, M₂',       meaning: 'Molar masses of gases 1 and 2',                   unit: 'g/mol' },
+    ],
+    description:
+      "Lighter gases effuse (escape through a small hole) faster than heavier ones. " +
+      "The ratio of effusion rates is the inverse square root of the ratio of molar masses. " +
+      "For effusion times: t₁/t₂ = √(M₁/M₂) — lighter gas takes less time.",
+    example: {
+      scenario: 'H₂ (M = 2.016 g/mol) vs O₂ (M = 32.00 g/mol). How much faster does H₂ effuse?',
+      steps: [
+        'rate(H₂) / rate(O₂) = √(M(O₂) / M(H₂))',
+        'rate(H₂) / rate(O₂) = √(32.00 / 2.016)',
+        'rate(H₂) / rate(O₂) = √15.87 = 3.984',
+      ],
+      result: 'H₂ effuses ~3.98× faster than O₂',
+    },
+  },
+  density: {
+    title: 'Molar Mass from Gas Density',
+    formula: 'M = ρRT / P',
+    formulaVars: [
+      { symbol: 'M',  meaning: 'Molar mass',   unit: 'g/mol' },
+      { symbol: 'ρ',  meaning: 'Gas density',  unit: 'g/L'   },
+      { symbol: 'R',  meaning: 'Gas constant', unit: '0.08206 L·atm/(mol·K)' },
+      { symbol: 'T',  meaning: 'Temperature',  unit: 'K'     },
+      { symbol: 'P',  meaning: 'Pressure',     unit: 'atm'   },
+    ],
+    description:
+      "Derived from PV = nRT by substituting n = m/M and ρ = m/V. " +
+      "Allows experimental determination of molar mass by measuring gas density at known T and P. " +
+      "Can also solve for ρ, T, or P when M is known.",
+    example: {
+      scenario: 'A gas has density 1.428 g/L at 25 °C (298 K) and 1.00 atm. Find the molar mass.',
+      steps: [
+        'M = ρRT / P',
+        'M = (1.428 g/L × 0.08206 L·atm/(mol·K) × 298 K) / 1.00 atm',
+        'M = 34.94 / 1.00',
+      ],
+      result: 'M = 34.9 g/mol (approximately H₂S or Cl₂)',
+    },
+  },
+  daltons: {
+    title: "Dalton's Law of Partial Pressures",
+    formula: 'P_total = P₁ + P₂ + … + Pₙ',
+    formulaVars: [
+      { symbol: 'P_total', meaning: 'Total pressure of the gas mixture', unit: 'atm / kPa / mmHg' },
+      { symbol: 'Pᵢ',      meaning: 'Partial pressure of gas i',         unit: 'same as P_total'  },
+      { symbol: 'χᵢ',      meaning: 'Mole fraction of gas i (nᵢ / n_total)', unit: 'dimensionless' },
+    ],
+    description:
+      "In a mixture of non-reacting gases, each gas exerts a pressure independently of the others. " +
+      "The total pressure equals the sum of the partial pressures. " +
+      "The partial pressure of gas i equals its mole fraction times the total pressure: Pᵢ = χᵢ × P_total.",
+    example: {
+      scenario: 'A flask contains N₂ (χ = 0.60) and O₂ (χ = 0.40) at P_total = 1.50 atm. Find each partial pressure.',
+      steps: [
+        'P(N₂) = χ(N₂) × P_total = 0.60 × 1.50 atm',
+        'P(O₂) = χ(O₂) × P_total = 0.40 × 1.50 atm',
+      ],
+      result: 'P(N₂) = 0.90 atm · P(O₂) = 0.60 atm',
+    },
+  },
 }
 
 // ── Ideal Gas Law calculator (PV = nRT) ───────────────────────────────────────
 
 export default function IdealGasCalc() {
-  const [mode, setMode]   = useState<'ideal' | 'combined'>('ideal')
+  const [mode, setMode]   = useState<'ideal' | 'combined' | 'daltons' | 'grahams' | 'density'>('ideal')
   const [P, setP]         = useState('')
   const [pUnit, setPUnit] = useState<PUnit>('atm')
   const [V, setV]         = useState('')
@@ -396,13 +465,19 @@ export default function IdealGasCalc() {
 
       {/* Mode toggle + explanation button */}
       <div className="flex items-center gap-3 flex-wrap">
-      <div className="flex gap-1 p-1 rounded-sm self-start"
+      <div className="flex gap-1 p-1 rounded-sm self-start flex-wrap"
         style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
-        {(['ideal', 'combined'] as const).map(m => (
-          <button key={m} onClick={() => setMode(m)}
+        {([
+          { id: 'ideal',    label: 'PV = nRT'            },
+          { id: 'combined', label: 'P₁V₁/T₁ = P₂V₂/T₂'  },
+          { id: 'daltons',  label: "Dalton's Law"         },
+          { id: 'grahams',  label: "Graham's Law"         },
+          { id: 'density',  label: 'Gas Density'          },
+        ] as const).map(m => (
+          <button key={m.id} onClick={() => setMode(m.id)}
             className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
-            style={{ color: mode === m ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
-            {mode === m && (
+            style={{ color: mode === m.id ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
+            {mode === m.id && (
               <motion.div layoutId="gas-calc-mode-pill" className="absolute inset-0 rounded-sm"
                 style={{
                   background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
@@ -410,9 +485,7 @@ export default function IdealGasCalc() {
                 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
             )}
-            <span className="relative z-10">
-              {m === 'ideal' ? 'PV = nRT' : 'P₁V₁/T₁ = P₂V₂/T₂'}
-            </span>
+            <span className="relative z-10">{m.label}</span>
           </button>
         ))}
       </div>
@@ -427,7 +500,25 @@ export default function IdealGasCalc() {
       </div>
 
       <AnimatePresence mode="wait">
-        {mode === 'combined' ? (
+        {mode === 'daltons' ? (
+          <motion.div key="daltons"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.15 }}>
+            <DaltonsLawCalc />
+          </motion.div>
+        ) : mode === 'grahams' ? (
+          <motion.div key="grahams"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.15 }}>
+            <GrahamsLawCalc />
+          </motion.div>
+        ) : mode === 'density' ? (
+          <motion.div key="density"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.15 }}>
+            <GasDensityCalc />
+          </motion.div>
+        ) : mode === 'combined' ? (
           <motion.div key="combined"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.15 }}>

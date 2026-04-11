@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import NavSidebar from "./NavSidebar";
 import { useElementStore } from "../../stores/elementStore";
@@ -17,11 +17,17 @@ export default function AppLayout() {
   const [navOpen, setNavOpen] = useState(false);
   const location = useLocation();
   const selectElement = useElementStore((s) => s.selectElement);
+  const mainRef = useRef<HTMLElement>(null);
 
   // Clear any selected element when navigating away from the table
   useEffect(() => {
     selectElement(null);
   }, [location.pathname, selectElement]);
+
+  // Reset scroll position on every page navigation
+  useEffect(() => {
+    mainRef.current?.scrollTo(0, 0);
+  }, [location.pathname]);
   const title = PAGE_TITLES[location.pathname] ?? "ChemHelper";
 
   return (
@@ -58,7 +64,7 @@ export default function AppLayout() {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden print:overflow-visible">
+        <main ref={mainRef} className="flex-1 overflow-y-auto overflow-x-hidden print:overflow-visible">
           <Outlet />
         </main>
       </div>

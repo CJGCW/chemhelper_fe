@@ -1,12 +1,13 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchParams } from 'react-router-dom'
 import RedoxPractice from '../components/redox/RedoxPractice'
+import RedoxReference from '../components/redox/RedoxReference'
 import ReactionClassifier from '../components/tools/ReactionClassifier'
 import ElectrolyteClassifier from '../components/tools/ElectrolyteClassifier'
 import NetIonicTool from '../components/tools/NetIonicTool'
 import ActivitySeries from '../components/tools/ActivitySeries'
 
-type Tab = 'practice' | 'classifier' | 'electrolyte' | 'net-ionic' | 'activity'
+type Tab = 'practice' | 'classifier' | 'electrolyte' | 'net-ionic' | 'activity' | 'reference'
 
 const TABS: { id: Tab; label: string; formula: string }[] = [
   { id: 'practice',    label: 'Practice',             formula: '✎'  },
@@ -14,6 +15,7 @@ const TABS: { id: Tab; label: string; formula: string }[] = [
   { id: 'electrolyte', label: 'Electrolyte',          formula: '⚡' },
   { id: 'net-ionic',   label: 'Net Ionic',            formula: '⇌'  },
   { id: 'activity',    label: 'Activity Series',      formula: '↕'  },
+  { id: 'reference',   label: 'Printable Reference',  formula: '⎙'  },
 ]
 
 export default function RedoxPage() {
@@ -33,10 +35,23 @@ export default function RedoxPage() {
 
       {/* Header */}
       <div className="flex flex-col gap-3">
-        <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Redox</h2>
+        <div className="flex items-center gap-3 print:hidden">
+          <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Redox</h2>
+          {activeTab === 'reference' && (
+            <button
+              onClick={() => window.print()}
+              className="flex items-center gap-2 px-3 py-1 rounded-sm font-sans text-sm border border-border
+                         text-secondary hover:text-primary hover:border-muted transition-colors"
+            >
+              <span>⎙</span>
+              <span>Print</span>
+            </button>
+          )}
+        </div>
+        <h2 className="hidden print:block font-sans font-semibold text-black text-xl">Redox Reference</h2>
 
         {/* Tab bar */}
-        <div className="flex items-center gap-1 p-1 rounded-sm self-start flex-wrap"
+        <div className="flex items-center gap-1 p-1 rounded-sm self-start flex-wrap print:hidden"
           style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
           {TABS.map(tab => {
             const isActive = activeTab === tab.id
@@ -95,6 +110,13 @@ export default function RedoxPage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <ActivitySeries />
+          </motion.div>
+        )}
+        {activeTab === 'reference' && (
+          <motion.div key="reference"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <RedoxReference />
           </motion.div>
         )}
       </AnimatePresence>
