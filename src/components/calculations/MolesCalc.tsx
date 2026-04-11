@@ -6,8 +6,7 @@ import CompoundInput from './CompoundInput'
 import ResultDisplay from './ResultDisplay'
 import StepsPanel from './StepsPanel'
 import SigFigPanel from './SigFigPanel'
-import Balance from './animations/Balance'
-import { sanitize, hasValue, toStandard, conversionStep, ANIMATION_RESTART_DELAY_MS } from '../../utils/calcHelpers'
+import { sanitize, hasValue, toStandard, conversionStep } from '../../utils/calcHelpers'
 import type { VerifyState } from '../../utils/calcHelpers'
 import {
   buildSigFigBreakdown, countSigFigs, formatSigFigs, lowestSigFigs,
@@ -19,7 +18,7 @@ export default function MolesCalc() {
   const [massUnit, setMassUnit]             = useState<UnitOption>(MASS_UNITS[2])
   const [molarMassValue, setMolarMassValue] = useState('')
   const [molesValue, setMolesValue]         = useState('')
-  const [formula, setFormula]               = useState('')
+  const [_formula, setFormula]              = useState('')  // used by CompoundInput display
 
   const [result, setResult]         = useState<string | null>(null)
   const [resultUnit, setResultUnit] = useState('')
@@ -29,19 +28,8 @@ export default function MolesCalc() {
   const [error, setError]           = useState<string | null>(null)
   const [verified, setVerified]     = useState<VerifyState>(null)
 
-  const [massOnScale, setMassOnScale]           = useState<number | null>(null)
-  const [massDisplayValue, setMassDisplayValue] = useState('')
-  const [calculating, setCalculating]           = useState(false)
-
-  function triggerAnimation() {
-    setCalculating(false)
-    setTimeout(() => setCalculating(true), ANIMATION_RESTART_DELAY_MS)
-  }
-
   function handleMassBlur() {
-    if (!hasValue(massValue)) { setMassOnScale(null); setMassDisplayValue(''); return }
-    setMassOnScale(toStandard(massValue, massUnit))
-    setMassDisplayValue(massValue)
+    // no-op — kept for future use
   }
 
   const hasMass      = hasValue(massValue)
@@ -101,8 +89,6 @@ export default function MolesCalc() {
         setResult(m.toPrecision(8).replace(/\.?0+$/, ''))
         setResultUnit('g'); setResultLabel('Mass (m)')
         setBreakdown(buildSigFigBreakdown([{ label: 'Moles', value: molesValue }, { label: 'Molar Mass', value: molarMassValue }], m, 'g'))
-        setMassOnScale(m); setMassDisplayValue(m.toPrecision(6).replace(/\.?0+$/, ''))
-        triggerAnimation()
       }
     } catch { setError('An unexpected error occurred.') }
   }
@@ -110,13 +96,12 @@ export default function MolesCalc() {
   const sigFigsResult = breakdown ? formatSigFigs(breakdown.rawResult, breakdown.limiting) : null
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-      {/* Form */}
+    <div className="flex flex-col gap-5 max-w-lg">
       <div className="flex flex-col gap-5">
         <NumberField label="Mass (m)" value={massValue}
           onChange={v => { setMassValue(sanitize(v)); setResult(null) }}
           onBlur={handleMassBlur} placeholder="e.g. 18.015"
-          unit={<UnitSelect options={MASS_UNITS} value={massUnit} onChange={u => { setMassUnit(u); setMassOnScale(null) }} />}
+          unit={<UnitSelect options={MASS_UNITS} value={massUnit} onChange={u => setMassUnit(u)} />}
         />
 
         <div className="flex flex-col gap-1.5">
@@ -146,17 +131,8 @@ export default function MolesCalc() {
         </button>
       </div>
 
-      {/* Balance */}
-      <div className="self-start mt-[27px]">
-        <Balance massOnScale={massOnScale} massDisplayValue={massDisplayValue}
-          massUnitLabel={massUnit.label} formula={formula}
-          calculating={calculating} onCalcComplete={() => setCalculating(false)}
-        />
-      </div>
-
-      {/* Results span full width */}
       {(steps.length > 0 || result) && (
-        <div className="lg:col-span-2 flex flex-col gap-4">
+        <div className="flex flex-col gap-4">
           <StepsPanel steps={steps} />
           <SigFigPanel breakdown={breakdown} />
           <ResultDisplay label={resultLabel} value={result} unit={resultUnit}
@@ -168,3 +144,4 @@ export default function MolesCalc() {
     </div>
   )
 }
+

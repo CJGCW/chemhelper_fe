@@ -19,6 +19,8 @@ const PILLS: { value: CalcType; label: string; formula: string }[] = [
   { value: 'molarity',    label: 'Molarity',    formula: 'C = n / V'  },
   { value: 'molality',    label: 'Molality',    formula: 'b = n / m'  },
   { value: 'colligative', label: 'Colligative', formula: 'ΔT = i·K·b' },
+  { value: 'practice',    label: 'Practice',    formula: '✎'           },
+  { value: 'reference',   label: 'Reference',   formula: '⎙'           },
 ]
 
 const EXPLANATIONS: Partial<Record<CalcType, ExplanationContent>> = {

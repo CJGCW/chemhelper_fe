@@ -1,3 +1,34 @@
+import { MolesExample, MolarityExample, MolalityExample } from './animations/MolarExamples'
+
+// ── Concept cards ─────────────────────────────────────────────────────────────
+
+interface ConceptItem { heading: string; body: string }
+
+function ConceptCard({ title, formula, tagline, points }: {
+  title: string
+  formula: string
+  tagline: string
+  points: ConceptItem[]
+}) {
+  return (
+    <div className="rounded-sm border border-border bg-surface p-5 flex flex-col gap-4">
+      <div className="flex items-baseline gap-3">
+        <h3 className="font-sans font-semibold text-bright">{title}</h3>
+        <span className="font-mono text-sm text-secondary">{formula}</span>
+      </div>
+      <p className="font-sans text-sm text-primary leading-relaxed">{tagline}</p>
+      <div className="flex flex-col gap-3">
+        {points.map((p, i) => (
+          <div key={i} className="flex flex-col gap-0.5">
+            <p className="font-sans text-xs font-semibold text-secondary uppercase tracking-wide">{p.heading}</p>
+            <p className="font-sans text-sm text-primary leading-relaxed">{p.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // ── Shared card primitives ────────────────────────────────────────────────────
 
 interface VarRow { symbol: string; meaning: string; unit: string }
@@ -147,6 +178,111 @@ export default function MolarReference() {
         <h2 className="font-sans font-bold text-2xl text-gray-900">Molar Calculations — Reference Sheet</h2>
         <p className="font-mono text-sm text-gray-500 mt-1">ChemHelper</p>
         <hr className="border-gray-300 mt-3" />
+      </div>
+
+      {/* Concept explanations */}
+      <div>
+        <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3">Concepts</p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-5">
+          <ConceptCard
+            title="The Mole"
+            formula="n"
+            tagline="A mole is a counting unit — just like a dozen means 12, a mole means 6.022 × 10²³ particles (Avogadro's number)."
+            points={[
+              {
+                heading: 'Why use it?',
+                body: 'Atoms and molecules are far too small to count individually. The mole lets us work with a measurable mass of a substance while knowing exactly how many particles are present.',
+              },
+              {
+                heading: 'Molar mass',
+                body: 'The molar mass (M) is the mass of exactly one mole of a substance, in g/mol. It equals the formula mass in atomic mass units (u). Water (H₂O) has M = 18.02 g/mol, so 18.02 g of water contains 6.022 × 10²³ molecules.',
+              },
+              {
+                heading: 'From mass to moles',
+                body: 'Divide the mass you have by the molar mass: n = m / M. Weigh out 36.04 g of water → 36.04 ÷ 18.02 = 2.000 mol.',
+              },
+            ]}
+          />
+          <ConceptCard
+            title="Molarity"
+            formula="C = n / V"
+            tagline="Molarity (C) measures how concentrated a solution is — specifically, how many moles of solute are dissolved in each litre of solution."
+            points={[
+              {
+                heading: 'What it tells you',
+                body: 'A 1.0 mol/L NaCl solution contains exactly 1 mole of NaCl in every litre of solution. If you pour out 500 mL, you have 0.500 mol of NaCl.',
+              },
+              {
+                heading: 'Solution vs. solvent',
+                body: 'The volume in molarity is the total volume of the final solution — not just the volume of water added. You dissolve the solute first, then top up to the target volume.',
+              },
+              {
+                heading: 'Temperature dependence',
+                body: 'Because liquids expand when heated, the volume changes with temperature, so molarity is temperature-dependent. For reactions at a fixed temperature this is rarely a problem.',
+              },
+            ]}
+          />
+          <ConceptCard
+            title="Molality"
+            formula="b = n / m"
+            tagline="Molality (b) measures concentration in terms of moles of solute per kilogram of solvent — not per litre of solution."
+            points={[
+              {
+                heading: 'Why not molarity?',
+                body: 'Volume changes with temperature; mass does not. Molality stays constant regardless of temperature, making it essential for colligative property calculations (boiling point, freezing point).',
+              },
+              {
+                heading: 'Solvent, not solution',
+                body: 'The denominator is the mass of the solvent alone — not the total mass of the solution. Dissolving 1 mol of NaCl in 1 kg of water gives b = 1.00 mol/kg, even though the solution now weighs more than 1 kg.',
+              },
+              {
+                heading: 'When to use it',
+                body: 'Use molality whenever the problem involves freezing point depression, boiling point elevation, or any other colligative property.',
+              },
+            ]}
+          />
+          <ConceptCard
+            title="Colligative Properties"
+            formula="ΔT = i · K · b"
+            tagline="Colligative properties depend only on the number of dissolved particles, not on what those particles are."
+            points={[
+              {
+                heading: 'Core idea',
+                body: "Adding any solute to a solvent disrupts the solvent's ability to form an ordered solid (raises melting point depression) or escape into the gas phase (raises boiling point). More particles = bigger effect.",
+              },
+              {
+                heading: "Van't Hoff factor (i)",
+                body: "i accounts for dissociation. NaCl splits into Na⁺ and Cl⁻, so i ≈ 2. Glucose doesn't dissociate, so i = 1. CaCl₂ gives 3 ions, i ≈ 3.",
+              },
+              {
+                heading: 'BPE vs. FPD',
+                body: 'Boiling point elevation (ΔTb = i·Kb·b) raises the boiling point. Freezing point depression (ΔTf = i·Kf·b) lowers the freezing point. Both use the same molality and van\'t Hoff factor; only the constant (Kb or Kf) differs.',
+              },
+            ]}
+          />
+        </div>
+      </div>
+
+      {/* Visual examples */}
+      <div className="print:hidden">
+        <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3">Visual Examples</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
+            <p className="font-sans text-sm font-semibold text-bright">Moles from Mass</p>
+            <p className="font-mono text-xs text-secondary">n = m / M</p>
+            <MolesExample />
+          </div>
+          <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
+            <p className="font-sans text-sm font-semibold text-bright">Molarity</p>
+            <p className="font-mono text-xs text-secondary">C = n / V</p>
+            <MolarityExample />
+          </div>
+          <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
+            <p className="font-sans text-sm font-semibold text-bright">Molality</p>
+            <p className="font-mono text-xs text-secondary">b = n / m</p>
+            <MolalityExample />
+          </div>
+        </div>
       </div>
 
       {/* Cards grid */}

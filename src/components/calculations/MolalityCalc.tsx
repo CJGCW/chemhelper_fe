@@ -6,8 +6,7 @@ import MassToMolesHelper from "./MassToMolesHelper";
 import ResultDisplay from "./ResultDisplay";
 import StepsPanel from "./StepsPanel";
 import SigFigPanel from "./SigFigPanel";
-import Beaker from "./animations/Beaker";
-import { sanitize, hasValue, toStandard, ANIMATION_RESTART_DELAY_MS } from "../../utils/calcHelpers";
+import { sanitize, hasValue, toStandard } from "../../utils/calcHelpers";
 import type { VerifyState } from "../../utils/calcHelpers";
 import {
   buildSigFigBreakdown,
@@ -31,11 +30,6 @@ export default function MolalityCalc() {
   const [breakdown, setBreakdown] = useState<SigFigBreakdown | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [verified, setVerified] = useState<VerifyState>(null);
-  const [beakerKg, setBeakerKg] = useState<number | null>(null);
-  const [beakerMolality, setBeakerMolality] = useState<number | null>(null);
-  const [beakerMoles, setBeakerMoles] = useState<number | null>(null);
-  const [beakerPlaying, setBeakerPlaying] = useState(false);
-
   function handleMassToMolesResolved(moles: string, mSteps: string[]) {
     setMolesValue(moles);
     setMolesFromMass(true);
@@ -49,19 +43,8 @@ export default function MolalityCalc() {
   }
 
   function handleSolventBlur() {
-    if (!hasValue(solventMass)) {
-      setBeakerKg(null);
-      return;
-    }
-    setBeakerKg(toStandard(solventMass, solventUnit) / 1000);
-  }
-
-  function triggerBeaker(molality: number, n: number, kg: number) {
-    setBeakerKg(kg);
-    setBeakerMolality(molality);
-    setBeakerMoles(n);
-    setBeakerPlaying(false);
-    setTimeout(() => setBeakerPlaying(true), ANIMATION_RESTART_DELAY_MS);
+    if (!hasValue(solventMass)) return
+    toStandard(solventMass, solventUnit) // validate only
   }
 
   const hasMoles = hasValue(molesValue);
@@ -87,7 +70,6 @@ export default function MolalityCalc() {
     const b = hasMolality ? parseFloat(molalityValue) : 0;
     const solStr = `${solventMass} ${solventUnit.label} = ${mG} g = ${mKg} kg`;
     const prefix = molesFromMass ? [...massSteps] : [];
-    if (mKg > 0) setBeakerKg(mKg);
     try {
       if (filledCount === 3) {
         if (isNaN(n) || isNaN(mKg) || isNaN(b) || mKg === 0) {
@@ -116,7 +98,6 @@ export default function MolalityCalc() {
         setResult(formatSigFigs(expected, limSF));
         setResultUnit("mol/kg");
         setResultLabel("Molality (b)");
-        triggerBeaker(expected, n, mKg);
         return;
       }
       if (!hasMolality) {
@@ -146,7 +127,6 @@ export default function MolalityCalc() {
             "mol/kg",
           ),
         );
-        triggerBeaker(res, n, mKg);
       } else if (!hasMoles) {
         if (mKg === 0) {
           setError("Invalid values.");
@@ -173,7 +153,6 @@ export default function MolalityCalc() {
             "mol",
           ),
         );
-        triggerBeaker(b, res, mKg);
       } else {
         if (b === 0) {
           setError("Invalid values.");
@@ -200,7 +179,6 @@ export default function MolalityCalc() {
             "g",
           ),
         );
-        triggerBeaker(b, n, resKg);
       }
     } catch {
       setError("An unexpected error occurred.");
@@ -212,7 +190,7 @@ export default function MolalityCalc() {
     : null;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+    <div className="flex flex-col gap-5 max-w-lg">
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-1.5">
           <label className="font-sans text-sm font-medium text-primary">
@@ -266,10 +244,7 @@ export default function MolalityCalc() {
             <UnitSelect
               options={MASS_UNITS}
               value={solventUnit}
-              onChange={(u) => {
-                setSolventUnit(u);
-                setBeakerKg(null);
-              }}
+              onChange={(u) => setSolventUnit(u)}
             />
           }
         />
@@ -301,24 +276,8 @@ export default function MolalityCalc() {
           {filledCount === 3 ? "Verify" : "Calculate"}
         </button>
       </div>
-      <div className="self-start flex justify-center">
-        <div className="w-full max-w-[330px]">
-          <Beaker
-            liquidAmount={beakerKg}
-            concentration={beakerMolality}
-            concMax={5}
-            concUnit="mol/kg"
-            concDisplay={
-              resultUnit === "mol/kg" ? (sigFigsResult ?? result) : null
-            }
-            moles={beakerMoles}
-            playing={beakerPlaying}
-            onComplete={() => setBeakerPlaying(false)}
-          />
-        </div>
-      </div>
       {(steps.length > 0 || result) && (
-        <div className="lg:col-span-2 flex flex-col gap-4 border-t border-border pt-4">
+        <div className="flex flex-col gap-4 border-t border-border pt-4">
           <StepsPanel steps={steps} />
           <SigFigPanel breakdown={breakdown} />
           <ResultDisplay

@@ -6,13 +6,11 @@ import MassToMolesHelper from "./MassToMolesHelper";
 import ResultDisplay from "./ResultDisplay";
 import StepsPanel from "./StepsPanel";
 import SigFigPanel from "./SigFigPanel";
-import Beaker from "./animations/Beaker";
 import {
   sanitize,
   hasValue,
   toStandard,
   conversionStep,
-  ANIMATION_RESTART_DELAY_MS,
 } from "../../utils/calcHelpers";
 import type { VerifyState } from "../../utils/calcHelpers";
 import {
@@ -37,10 +35,6 @@ export default function MolarityCalc() {
   const [breakdown, setBreakdown] = useState<SigFigBreakdown | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [verified, setVerified] = useState<VerifyState>(null);
-  const [beakerVolL, setBeakerVolL] = useState<number | null>(null);
-  const [beakerConc, setBeakerConc] = useState<number | null>(null);
-  const [beakerMoles, setBeakerMoles] = useState<number | null>(null);
-  const [beakerPlaying, setBeakerPlaying] = useState(false);
 
   function handleMassToMolesResolved(moles: string, mSteps: string[]) {
     setMolesValue(moles);
@@ -55,19 +49,8 @@ export default function MolarityCalc() {
   }
 
   function handleVolBlur() {
-    if (!hasValue(volValue)) {
-      setBeakerVolL(null);
-      return;
-    }
-    setBeakerVolL(toStandard(volValue, volUnit));
-  }
-
-  function triggerBeaker(conc: number, n: number, vol: number) {
-    setBeakerVolL(vol);
-    setBeakerConc(conc);
-    setBeakerMoles(n);
-    setBeakerPlaying(false);
-    setTimeout(() => setBeakerPlaying(true), ANIMATION_RESTART_DELAY_MS);
+    if (!hasValue(volValue)) return
+    toStandard(volValue, volUnit) // validate only
   }
 
   const hasMoles = hasValue(molesValue);
@@ -89,7 +72,6 @@ export default function MolarityCalc() {
     const n = hasMoles ? parseFloat(molesValue) : 0;
     const C = hasConc ? parseFloat(concValue) : 0;
     const prefix = molesFromMass ? [...massSteps] : [];
-    if (V > 0) setBeakerVolL(V);
     try {
       if (filledCount === 3) {
         if (isNaN(n) || isNaN(V) || isNaN(C) || V === 0) {
@@ -120,7 +102,6 @@ export default function MolarityCalc() {
         setResult(formatSigFigs(expected, limSF));
         setResultUnit("mol/L");
         setResultLabel("Concentration (C)");
-        triggerBeaker(expected, n, V);
         return;
       }
       if (!hasConc) {
@@ -152,7 +133,6 @@ export default function MolarityCalc() {
             "mol/L",
           ),
         );
-        triggerBeaker(res, n, V);
       } else if (!hasMoles) {
         if (V === 0) {
           setError("Invalid values.");
@@ -181,7 +161,6 @@ export default function MolarityCalc() {
             "mol",
           ),
         );
-        triggerBeaker(C, res, V);
       } else {
         if (C === 0) {
           setError("Invalid values.");
@@ -207,7 +186,6 @@ export default function MolarityCalc() {
             "L",
           ),
         );
-        triggerBeaker(C, n, res);
       }
     } catch {
       setError("An unexpected error occurred.");
@@ -219,7 +197,7 @@ export default function MolarityCalc() {
     : null;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+    <div className="flex flex-col gap-5 max-w-lg">
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-1.5">
           <label className="font-sans text-sm font-medium text-primary">
@@ -273,10 +251,7 @@ export default function MolarityCalc() {
             <UnitSelect
               options={VOLUME_UNITS}
               value={volUnit}
-              onChange={(u) => {
-                setVolUnit(u);
-                setBeakerVolL(null);
-              }}
+              onChange={(u) => setVolUnit(u)}
             />
           }
         />
@@ -306,24 +281,8 @@ export default function MolarityCalc() {
           {filledCount === 3 ? "Verify" : "Calculate"}
         </button>
       </div>
-      <div className="self-start flex justify-center">
-        <div className="w-full max-w-[330px]">
-          <Beaker
-            liquidAmount={beakerVolL}
-            concentration={beakerConc}
-            concMax={5}
-            concUnit="mol/L"
-            concDisplay={
-              resultUnit === "mol/L" ? (sigFigsResult ?? result) : null
-            }
-            moles={beakerMoles}
-            playing={beakerPlaying}
-            onComplete={() => setBeakerPlaying(false)}
-          />
-        </div>
-      </div>
       {(steps.length > 0 || result) && (
-        <div className="lg:col-span-2 flex flex-col gap-4 border-t border-border pt-4">
+        <div className="flex flex-col gap-4 border-t border-border pt-4">
           <StepsPanel steps={steps} />
           <SigFigPanel breakdown={breakdown} />
           <ResultDisplay
