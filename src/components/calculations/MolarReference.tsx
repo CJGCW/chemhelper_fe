@@ -127,7 +127,7 @@ function SolventTable() {
 
 export default function MolarReference() {
   return (
-    <div className="flex flex-col gap-5 max-w-4xl print:max-w-none print:gap-4">
+    <div className="flex flex-col gap-5 print:max-w-none print:gap-4">
 
       {/* Print controls */}
       <div className="flex items-center justify-between print:hidden">
@@ -150,7 +150,7 @@ export default function MolarReference() {
       </div>
 
       {/* Cards grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 print:grid-cols-2 print:gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5 print:grid-cols-2 print:gap-4">
 
         <RefCard
           title="Mole Calculations"
@@ -194,18 +194,18 @@ export default function MolarReference() {
 
         <RefCard
           title="Molality"
-          formula="b = n / m\u2099"
-          rearranged={['n = b × m\u2099', 'm\u2099 = n / b']}
+          formula="b = n / m"
+          rearranged={['n = b × m', 'm = n / b']}
           vars={[
             { symbol: 'b',  meaning: 'Molality',             unit: 'mol/kg' },
             { symbol: 'n',  meaning: 'Moles of solute',      unit: 'mol'    },
-            { symbol: 'mₙ', meaning: 'Mass of solvent',      unit: 'kg'     },
+            { symbol: 'm',  meaning: 'Mass of solvent',      unit: 'kg'     },
           ]}
           example={{
             scenario: '10.0 g of glucose (M = 180.2 g/mol) in 200.0 g of water. Find molality.',
             steps: [
               'n = 10.0 / 180.2 = 0.05549 mol glucose',
-              'm\u2099 = 200.0 g = 0.2000 kg',
+              'm = 200.0 g = 0.2000 kg',
               'b = 0.05549 / 0.2000',
             ],
             result: 'b = 0.2775 mol/kg',

@@ -149,7 +149,7 @@ function RoadmapCard() {
 
 export default function StoichReference() {
   return (
-    <div className="flex flex-col gap-5 max-w-4xl print:max-w-none print:gap-4">
+    <div className="flex flex-col gap-5 print:max-w-none print:gap-4">
 
       {/* Print controls */}
       <div className="flex items-center justify-between print:hidden">
@@ -172,7 +172,7 @@ export default function StoichReference() {
       </div>
 
       {/* Cards grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 print:grid-cols-2 print:gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5 print:grid-cols-2 print:gap-4">
 
         <RefCard
           title="Stoichiometry (Mole Ratio)"

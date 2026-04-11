@@ -396,7 +396,7 @@ export default function ElectrolyteClassifier() {
           const items = COMPOUNDS.filter(c => group.cats.includes(c.category))
           return (
             <div key={group.label} className="flex flex-col gap-1.5">
-              <span className="font-mono text-[10px] text-dim tracking-widest uppercase">{group.label}</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase">{group.label}</span>
               <div className="flex flex-wrap gap-1.5">
                 {items.map(c => {
                   const isSelected = selected?.id === c.id
@@ -407,7 +407,7 @@ export default function ElectrolyteClassifier() {
                       key={c.id}
                       onClick={() => setSelected(c)}
                       title={c.name}
-                      className="px-2.5 py-1 rounded-sm font-mono text-xs transition-colors"
+                      className="px-2.5 py-1 rounded-sm font-mono text-sm transition-colors"
                       style={isSelected ? {
                         background: `color-mix(in srgb, ${btnColor} 18%, #141620)`,
                         border: `1px solid color-mix(in srgb, ${btnColor} 45%, transparent)`,
@@ -441,9 +441,9 @@ export default function ElectrolyteClassifier() {
               <span className="font-mono text-base font-semibold" style={{ color }}>
                 {selected.formula}
               </span>
-              <span className="font-sans text-sm text-secondary">{selected.name}</span>
+              <span className="font-sans text-base text-secondary">{selected.name}</span>
               <div className="flex flex-wrap gap-2 ml-auto">
-                <span className="px-2.5 py-0.5 rounded-sm font-mono text-xs font-semibold"
+                <span className="px-2.5 py-0.5 rounded-sm font-mono text-sm font-semibold"
                   style={{
                     background: `color-mix(in srgb, ${color} 15%, #141620)`,
                     border: `1px solid color-mix(in srgb, ${color} 35%, transparent)`,
@@ -451,14 +451,14 @@ export default function ElectrolyteClassifier() {
                   }}>
                   {STRENGTH_LABEL[strength]}
                 </span>
-                <span className="px-2.5 py-0.5 rounded-sm font-mono text-xs border border-border text-secondary">
+                <span className="px-2.5 py-0.5 rounded-sm font-mono text-sm border border-border text-secondary">
                   {CATEGORY_LABEL[selected.category]}
                 </span>
               </div>
             </div>
 
             {/* Dissociation equation */}
-            <div className="font-mono text-sm rounded-sm border border-border bg-raised px-4 py-3"
+            <div className="font-mono text-base rounded-sm border border-border bg-raised px-4 py-3"
               style={{ color: 'rgba(255,255,255,0.75)' }}>
               {selected.equation}
             </div>
@@ -466,10 +466,10 @@ export default function ElectrolyteClassifier() {
             {/* Ionization bar */}
             <div className="flex flex-col gap-1.5">
               <div className="flex items-baseline justify-between">
-                <span className="font-mono text-[10px] text-dim tracking-widest uppercase">
+                <span className="font-mono text-xs text-secondary tracking-widest uppercase">
                   Degree of Ionization
                 </span>
-                <span className="font-mono text-xs text-dim">{selected.ionizationLabel}</span>
+                <span className="font-mono text-sm text-secondary">{selected.ionizationLabel}</span>
               </div>
               <IonizationBar pct={selected.ionizationPct} color={color} />
             </div>
@@ -477,7 +477,7 @@ export default function ElectrolyteClassifier() {
             {/* Ions in solution */}
             {selected.ions.length > 0 ? (
               <div className="flex flex-col gap-2">
-                <span className="font-mono text-[10px] text-dim tracking-widest uppercase">
+                <span className="font-mono text-xs text-secondary tracking-widest uppercase">
                   Ions in Solution
                   {strength === 'weak' && (
                     <span className="normal-case font-normal ml-2">(partial — majority remains un-ionized)</span>
@@ -491,20 +491,20 @@ export default function ElectrolyteClassifier() {
                     <div key={i}
                       className="flex items-center gap-2 px-3 py-2 rounded-sm border border-border bg-raised">
                       {ion.coeff > 1 && (
-                        <span className="font-mono text-sm text-dim">{ion.coeff}×</span>
+                        <span className="font-mono text-base text-secondary">{ion.coeff}×</span>
                       )}
                       <span className="font-mono text-base font-semibold" style={{ color }}>
                         {ion.formula}
                       </span>
-                      <span className="font-sans text-xs text-secondary">{ion.name}</span>
-                      <span className="font-mono text-[10px] text-dim">(aq)</span>
+                      <span className="font-sans text-sm text-secondary">{ion.name}</span>
+                      <span className="font-mono text-xs text-secondary">(aq)</span>
                     </div>
                   ))}
                 </div>
               </div>
             ) : (
               <div className="flex items-center gap-2 px-4 py-3 rounded-sm border border-border bg-raised">
-                <span className="font-mono text-sm text-dim">No ions produced — dissolves as neutral molecules.</span>
+                <span className="font-mono text-base text-secondary">No ions produced — dissolves as neutral molecules.</span>
               </div>
             )}
 
@@ -513,14 +513,14 @@ export default function ElectrolyteClassifier() {
               <div className="flex flex-wrap gap-4">
                 {selected.Ka && (
                   <div className="flex items-baseline gap-2">
-                    <span className="font-mono text-xs text-dim">Ka</span>
-                    <span className="font-mono text-sm text-bright">{selected.Ka}</span>
+                    <span className="font-mono text-sm text-secondary">Ka</span>
+                    <span className="font-mono text-base text-bright">{selected.Ka}</span>
                   </div>
                 )}
                 {selected.Kb && (
                   <div className="flex items-baseline gap-2">
-                    <span className="font-mono text-xs text-dim">Kb</span>
-                    <span className="font-mono text-sm text-bright">{selected.Kb}</span>
+                    <span className="font-mono text-sm text-secondary">Kb</span>
+                    <span className="font-mono text-base text-bright">{selected.Kb}</span>
                   </div>
                 )}
               </div>
@@ -528,7 +528,7 @@ export default function ElectrolyteClassifier() {
 
             {/* Note */}
             {selected.note && (
-              <p className="font-sans text-sm text-secondary leading-relaxed border-t border-border pt-4">
+              <p className="font-sans text-base text-secondary leading-relaxed border-t border-border pt-4">
                 {selected.note}
               </p>
             )}

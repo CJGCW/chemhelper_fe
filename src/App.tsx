@@ -15,6 +15,8 @@ import ClassifierPage from './pages/ClassifierPage'
 import ElectrolytePage from './pages/ElectrolytePage'
 import NetIonicPage from './pages/NetIonicPage'
 import ActivitySeriesPage from './pages/ActivitySeriesPage'
+import RedoxPage from './pages/RedoxPage'
+import RedoxPracticePage from './pages/RedoxPracticePage'
 
 export default function App() {
   return (
@@ -42,6 +44,8 @@ export default function App() {
         <Route path="/electrolyte"           element={<ElectrolytePage />} />
         <Route path="/net-ionic"             element={<NetIonicPage />} />
         <Route path="/activity-series"       element={<ActivitySeriesPage />} />
+        <Route path="/redox"                 element={<RedoxPage />} />
+        <Route path="/redox-practice"        element={<RedoxPracticePage />} />
         <Route path="*" element={<Navigate to="/table" replace />} />
       </Route>
     </Routes>

@@ -344,12 +344,12 @@ function CompoundPicker({ label, selected, other, onSelect }: {
 }) {
   return (
     <div className="flex flex-col gap-3 flex-1 min-w-0">
-      <h3 className="font-mono text-xs text-secondary tracking-widest uppercase">{label}</h3>
+      <h3 className="font-mono text-sm text-secondary tracking-widest uppercase">{label}</h3>
       {GROUPS.map(group => {
         const items = COMPOUNDS.filter(c => group.roles.includes(c.role))
         return (
           <div key={group.label} className="flex flex-col gap-1">
-            <span className="font-mono text-[10px] text-dim">{group.label}</span>
+            <span className="font-mono text-xs text-secondary">{group.label}</span>
             <div className="flex flex-wrap gap-1">
               {items.map(c => {
                 const isSelected = selected?.id === c.id
@@ -359,7 +359,7 @@ function CompoundPicker({ label, selected, other, onSelect }: {
                     key={c.id}
                     onClick={() => onSelect(c)}
                     title={c.name}
-                    className="px-2 py-1 rounded-sm font-mono text-xs transition-colors"
+                    className="px-2 py-1 rounded-sm font-mono text-sm transition-colors"
                     style={isSelected ? {
                       background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
                       border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
@@ -473,7 +473,7 @@ export default function ReactionClassifier() {
           >
             {/* Type badge */}
             <div className="flex flex-wrap items-center gap-3">
-              <span className="px-3 py-1 rounded-sm font-mono text-sm font-semibold"
+              <span className="px-3 py-1 rounded-sm font-mono text-base font-semibold"
                 style={{
                   background: `color-mix(in srgb, ${color} 15%, #141620)`,
                   border: `1px solid color-mix(in srgb, ${color} 35%, transparent)`,
@@ -482,13 +482,13 @@ export default function ReactionClassifier() {
                 {TYPE_LABEL[result.type]}
               </span>
               {result.subtype && (
-                <span className="font-mono text-xs text-dim">{result.subtype}</span>
+                <span className="font-mono text-sm text-secondary">{result.subtype}</span>
               )}
             </div>
 
             {/* Equation */}
             {result.equation && (
-              <div className="font-mono text-sm rounded-sm border border-border bg-raised px-4 py-3"
+              <div className="font-mono text-base rounded-sm border border-border bg-raised px-4 py-3"
                 style={{ color: 'rgba(255,255,255,0.75)' }}>
                 {result.equation}
               </div>
@@ -497,13 +497,13 @@ export default function ReactionClassifier() {
             {/* Products */}
             {result.products.length > 0 && (
               <div className="flex flex-col gap-1">
-                <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Products</span>
+                <span className="font-mono text-xs text-secondary tracking-widest uppercase">Products</span>
                 <div className="flex flex-wrap gap-2">
                   {result.products.map((p, i) => (
                     <div key={i} className="flex items-baseline gap-1 px-3 py-1.5 rounded-sm border border-border bg-raised">
-                      <span className="font-mono text-sm text-bright">{p.formula}</span>
-                      <span className="font-mono text-[10px] text-dim">({p.state})</span>
-                      {p.label && <span className="font-sans text-xs text-secondary ml-1">— {p.label}</span>}
+                      <span className="font-mono text-base text-bright">{p.formula}</span>
+                      <span className="font-mono text-xs text-secondary">({p.state})</span>
+                      {p.label && <span className="font-sans text-sm text-secondary ml-1">— {p.label}</span>}
                     </div>
                   ))}
                 </div>
@@ -512,8 +512,8 @@ export default function ReactionClassifier() {
 
             {/* Explanation */}
             <div className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Explanation</span>
-              <p className="font-sans text-sm text-primary leading-relaxed">{result.explanation}</p>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase">Explanation</span>
+              <p className="font-sans text-base text-primary leading-relaxed">{result.explanation}</p>
             </div>
           </motion.div>
         )}

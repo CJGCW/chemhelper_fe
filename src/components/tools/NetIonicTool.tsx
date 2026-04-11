@@ -640,7 +640,7 @@ export default function NetIonicTool() {
       {/* Header */}
       <div className="flex flex-col gap-1">
         <h2 className="font-sans font-semibold text-bright text-xl">Net Ionic Equation Generator</h2>
-        <p className="font-sans text-sm text-secondary">
+        <p className="font-sans text-base text-secondary">
           Select a reaction to see the full molecular → complete ionic → net ionic step-by-step.
         </p>
       </div>
@@ -653,7 +653,7 @@ export default function NetIonicTool() {
           const meta = f === 'all' ? null : CATEGORY_META[f]
           return (
             <button key={f} onClick={() => setFilter(f)}
-              className="relative flex-shrink-0 px-3 py-1.5 rounded-sm font-sans text-xs font-medium transition-colors"
+              className="relative flex-shrink-0 px-3 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
               style={{ color: isActive ? (meta?.color ?? 'var(--c-halogen)') : 'rgba(255,255,255,0.4)' }}>
               {isActive && (
                 <motion.div layoutId="net-ionic-pill" className="absolute inset-0 rounded-sm"
@@ -671,10 +671,10 @@ export default function NetIonicTool() {
         })}
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-row gap-6">
 
         {/* Reaction list */}
-        <div className="flex flex-col gap-1 lg:w-72 shrink-0">
+        <div className="flex flex-col gap-1 w-64 shrink-0 overflow-y-auto max-h-[600px]">
           {visible.map(rxn => {
             const meta = CATEGORY_META[rxn.category]
             const isSelected = selected?.id === rxn.id
@@ -691,11 +691,11 @@ export default function NetIonicTool() {
               >
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ background: meta.color }} />
-                  <span className="font-mono text-xs" style={{ color: isSelected ? meta.color : 'rgba(255,255,255,0.8)' }}>
+                  <span className="font-mono text-sm" style={{ color: isSelected ? meta.color : 'rgba(255,255,255,0.8)' }}>
                     {rxn.title}
                   </span>
                 </div>
-                <span className="font-mono text-[10px] text-dim pl-4 leading-relaxed truncate">
+                <span className="font-mono text-xs text-secondary pl-4 leading-relaxed truncate">
                   {rxn.netIonic}
                 </span>
               </button>
@@ -715,8 +715,8 @@ export default function NetIonicTool() {
               >
                 {/* Title + badge */}
                 <div className="flex flex-wrap items-center gap-3">
-                  <span className="font-sans text-sm font-semibold text-bright">{selected.title}</span>
-                  <span className="px-2 py-0.5 rounded-sm font-mono text-[10px]"
+                  <span className="font-sans text-base font-semibold text-bright">{selected.title}</span>
+                  <span className="px-2 py-0.5 rounded-sm font-mono text-xs"
                     style={{
                       background: `color-mix(in srgb, ${color} 15%, #141620)`,
                       border: `1px solid color-mix(in srgb, ${color} 35%, transparent)`,
@@ -728,11 +728,11 @@ export default function NetIonicTool() {
 
                 {/* Step 1 */}
                 <div className="flex flex-col gap-1.5">
-                  <span className="font-mono text-[10px] text-dim tracking-widest uppercase">
+                  <span className="font-mono text-xs text-secondary tracking-widest uppercase">
                     Step 1 — Molecular Equation
                   </span>
                   <div className="rounded-sm border border-border bg-raised px-4 py-3">
-                    <span className="font-mono text-sm" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                    <span className="font-mono text-base" style={{ color: 'rgba(255,255,255,0.75)' }}>
                       {selected.molecular}
                     </span>
                   </div>
@@ -741,11 +741,11 @@ export default function NetIonicTool() {
                 {/* Step 2 */}
                 <div className="flex flex-col gap-1.5">
                   <div className="flex items-baseline gap-2">
-                    <span className="font-mono text-[10px] text-dim tracking-widest uppercase">
+                    <span className="font-mono text-xs text-secondary tracking-widest uppercase">
                       Step 2 — Complete Ionic Equation
                     </span>
                     {selected.spectatorIons.length > 0 && (
-                      <span className="font-mono text-[10px] text-dim">
+                      <span className="font-mono text-xs text-secondary">
                         (spectators struck through)
                       </span>
                     )}
@@ -762,13 +762,13 @@ export default function NetIonicTool() {
                 {/* Spectator ions */}
                 {selected.spectatorIons.length > 0 ? (
                   <div className="flex flex-col gap-1.5">
-                    <span className="font-mono text-[10px] text-dim tracking-widest uppercase">
+                    <span className="font-mono text-xs text-secondary tracking-widest uppercase">
                       Spectator Ions — cancelled from both sides
                     </span>
                     <div className="flex flex-wrap gap-2">
                       {selected.spectatorIons.map(ion => (
                         <span key={ion}
-                          className="px-2.5 py-1 rounded-sm font-mono text-xs border border-border text-dim"
+                          className="px-2.5 py-1 rounded-sm font-mono text-sm border border-border text-secondary"
                           style={{ textDecoration: 'line-through', textDecorationColor: 'rgba(255,255,255,0.3)' }}>
                           {ion}
                         </span>
@@ -777,13 +777,13 @@ export default function NetIonicTool() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 rounded-sm border border-border bg-raised px-3 py-2">
-                    <span className="font-mono text-[10px] text-dim">No spectator ions — molecular and net ionic equations are identical.</span>
+                    <span className="font-mono text-sm text-secondary">No spectator ions — molecular and net ionic equations are identical.</span>
                   </div>
                 )}
 
                 {/* Step 3 */}
                 <div className="flex flex-col gap-1.5">
-                  <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color }}>
+                  <span className="font-mono text-xs tracking-widest uppercase" style={{ color }}>
                     Step 3 — Net Ionic Equation
                   </span>
                   <div className="rounded-sm border px-4 py-3 overflow-x-auto"
@@ -791,7 +791,7 @@ export default function NetIonicTool() {
                       borderColor: `color-mix(in srgb, ${color} 35%, transparent)`,
                       background: `color-mix(in srgb, ${color} 6%, #141620)`,
                     }}>
-                    <span className="font-mono text-sm font-semibold" style={{ color }}>
+                    <span className="font-mono text-base font-semibold" style={{ color }}>
                       {selected.netIonic}
                     </span>
                   </div>
@@ -799,7 +799,7 @@ export default function NetIonicTool() {
 
                 {/* Note */}
                 {selected.note && (
-                  <p className="font-sans text-sm text-secondary leading-relaxed border-t border-border pt-4">
+                  <p className="font-sans text-base text-secondary leading-relaxed border-t border-border pt-4">
                     {selected.note}
                   </p>
                 )}
@@ -809,7 +809,7 @@ export default function NetIonicTool() {
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className="flex items-center justify-center rounded-sm border border-border bg-surface h-40 lg:h-full"
               >
-                <span className="font-mono text-sm text-dim">Select a reaction to see the breakdown.</span>
+                <span className="font-mono text-base text-secondary">Select a reaction to see the breakdown.</span>
               </motion.div>
             )}
           </AnimatePresence>
@@ -820,10 +820,10 @@ export default function NetIonicTool() {
       <div className="flex flex-col gap-2">
         <button
           onClick={() => setShowRules(v => !v)}
-          className="flex items-center gap-2 font-mono text-xs text-secondary hover:text-primary transition-colors self-start"
+          className="flex items-center gap-2 font-mono text-sm text-secondary hover:text-primary transition-colors self-start"
         >
           <motion.span animate={{ rotate: showRules ? 90 : 0 }} transition={{ duration: 0.15 }}
-            className="text-[10px]">▶</motion.span>
+            className="text-xs">▶</motion.span>
           What gets split into ions vs. kept molecular?
         </button>
         <AnimatePresence initial={false}>
@@ -835,16 +835,16 @@ export default function NetIonicTool() {
             >
               <div className="rounded-sm border border-border overflow-hidden">
                 <div className="grid grid-cols-[auto_1fr_auto] gap-x-4 px-4 py-2 bg-raised border-b border-border">
-                  <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Compound type</span>
-                  <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Examples</span>
-                  <span className="font-mono text-[10px] text-dim tracking-widest uppercase">In ionic eq.</span>
+                  <span className="font-mono text-xs text-secondary tracking-widest uppercase">Compound type</span>
+                  <span className="font-mono text-xs text-secondary tracking-widest uppercase">Examples</span>
+                  <span className="font-mono text-xs text-secondary tracking-widest uppercase">In ionic eq.</span>
                 </div>
                 {SPLIT_RULES.map(r => (
                   <div key={r.label}
                     className="grid grid-cols-[auto_1fr_auto] gap-x-4 items-center px-4 py-2.5 border-b border-border last:border-b-0 bg-surface">
-                    <span className="font-sans text-sm text-primary w-40 shrink-0">{r.label}</span>
-                    <span className="font-mono text-xs text-secondary">{r.examples}</span>
-                    <span className="font-mono text-xs shrink-0 ml-4"
+                    <span className="font-sans text-base text-primary w-44 shrink-0">{r.label}</span>
+                    <span className="font-mono text-sm text-secondary">{r.examples}</span>
+                    <span className="font-mono text-sm shrink-0 ml-4"
                       style={{ color: r.split ? '#4ade80' : '#f87171' }}>
                       {r.split ? 'Split → ions' : 'Keep molecular'}
                     </span>
@@ -856,7 +856,7 @@ export default function NetIonicTool() {
         </AnimatePresence>
       </div>
 
-      <p className="font-mono text-[10px] text-dim">
+      <p className="font-mono text-xs text-secondary">
         Spectator ions appear identically on both sides of the complete ionic equation and are removed to give the net ionic equation.
       </p>
     </div>

@@ -170,6 +170,59 @@ function StoichSubItem({ item, onNavigate }: { item: typeof STOICH_ITEMS[0]; onN
   )
 }
 
+// ── Redox sub-items ───────────────────────────────────────────────────────────
+
+const REDOX_ITEMS: { tab: string; label: string; formula: string }[] = [
+  { tab: 'practice',    label: 'Practice',            formula: '✎'  },
+  { tab: 'classifier',  label: 'Reaction Classifier', formula: '⇄'  },
+  { tab: 'electrolyte', label: 'Electrolyte',         formula: '⚡' },
+  { tab: 'net-ionic',   label: 'Net Ionic',           formula: '⇌'  },
+  { tab: 'activity',    label: 'Activity Series',     formula: '↕'  },
+]
+
+function RedoxSubItem({ item, onNavigate }: { item: typeof REDOX_ITEMS[0]; onNavigate: () => void }) {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'practice'
+  const isActive = location.pathname === '/redox' && currentTab === item.tab
+
+  return (
+    <SubItem
+      formula={item.formula}
+      label={item.label}
+      isActive={isActive}
+      onClick={() => { navigate(`/redox?tab=${item.tab}`); onNavigate() }}
+    />
+  )
+}
+
+// ── Reference sub-items ───────────────────────────────────────────────────────
+
+const RXN_REF_ITEMS: { tab: string; label: string; formula: string }[] = [
+  { tab: 'classifier',  label: 'Reaction Classifier', formula: '⇄'  },
+  { tab: 'electrolyte', label: 'Electrolyte',         formula: '⚡' },
+  { tab: 'net-ionic',   label: 'Net Ionic',           formula: '⇌'  },
+  { tab: 'activity',    label: 'Activity Series',     formula: '↕'  },
+]
+
+const RXN_REF_TABS = new Set(RXN_REF_ITEMS.map(i => i.tab))
+
+function ReferenceSubItem({ item, onNavigate }: { item: typeof RXN_REF_ITEMS[0]; onNavigate: () => void }) {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'stoich'
+  const isActive = location.pathname === '/reference' && currentTab === item.tab
+
+  return (
+    <SubItem
+      formula={item.formula}
+      label={item.label}
+      isActive={isActive}
+      onClick={() => { navigate(`/reference?tab=${item.tab}`); onNavigate() }}
+    />
+  )
+}
+
 // ── Structures sub-items ──────────────────────────────────────────────────────
 
 const STRUCTURE_ITEMS = [
@@ -199,7 +252,7 @@ function PracticeNavItem({ path, icon, label, onNavigate }: { path: string; icon
       style={{ width: "calc(100% - 16px)" }}
     >
       <span
-        className="font-mono text-base leading-none shrink-0 w-4 text-center"
+        className={`font-mono leading-none shrink-0 w-4 text-center ${icon.length > 2 ? 'text-[9px]' : 'text-base'}`}
         style={{ color: isActive ? "var(--c-halogen)" : undefined }}
       >
         {icon}
@@ -326,7 +379,13 @@ export default function NavSidebar({ open, onClose }: Props) {
   )
   const [calcExpanded,     setCalcExpanded]     = useState(location.pathname === "/calculations")
   const [stoichExpanded,   setStoichExpanded]   = useState(location.pathname === "/stoichiometry")
+  const [redoxExpanded,    setRedoxExpanded]    = useState(location.pathname === "/redox")
   const [structExpanded,   setStructExpanded]   = useState(location.pathname === "/structures")
+
+  const currentRefTab = new URLSearchParams(location.search).get('tab') ?? ''
+  const [rxnRefExpanded, setRxnRefExpanded] = useState(
+    location.pathname === '/reference' && RXN_REF_TABS.has(currentRefTab)
+  )
 
   const isTableActive    = location.pathname === "/table" || location.pathname === "/electron-config"
   const isBaseCalcActive = location.pathname === "/base-calculations" ||
@@ -334,6 +393,8 @@ export default function NavSidebar({ open, onClose }: Props) {
                            location.pathname === "/compound"
   const isCalcActive     = location.pathname === "/calculations"
   const isStoichActive   = location.pathname === "/stoichiometry"
+  const isRedoxActive    = location.pathname === "/redox"
+  const isRxnRefActive   = location.pathname === '/reference' && RXN_REF_TABS.has(currentRefTab)
   const isStructActive   = location.pathname === "/structures"
 
   const inner = (
@@ -359,6 +420,8 @@ export default function NavSidebar({ open, onClose }: Props) {
       <nav className="flex-1 overflow-y-auto py-2">
         {/* Reference */}
         <NavGroup label="Reference" />
+        <PracticeNavItem path="/reference?tab=molar"      icon="⚗"  label="Molar"         onNavigate={onClose} />
+        <PracticeNavItem path="/reference?tab=naming"     icon="Nm" label="Naming"        onNavigate={onClose} />
         <ExpandableSection
           icon="⬡" label="Periodic Table"
           isActive={isTableActive} expanded={tableExpanded}
@@ -368,6 +431,17 @@ export default function NavSidebar({ open, onClose }: Props) {
             <TableSubItem key={i} item={item} onNavigate={onClose} />
           ))}
         </ExpandableSection>
+        <ExpandableSection
+          icon="⇌" label="Reactions"
+          isActive={isRxnRefActive} expanded={rxnRefExpanded}
+          onToggle={() => setRxnRefExpanded(e => !e)}
+        >
+          {RXN_REF_ITEMS.map((item, i) => (
+            <ReferenceSubItem key={i} item={item} onNavigate={onClose} />
+          ))}
+        </ExpandableSection>
+        <PracticeNavItem path="/reference?tab=solubility" icon="S/I" label="Solubility"    onNavigate={onClose} />
+        <PracticeNavItem path="/reference?tab=stoich"     icon="⚖"  label="Stoichiometry" onNavigate={onClose} />
 
         {/* Calculations */}
         <NavGroup label="Calculations" />
@@ -399,21 +473,26 @@ export default function NavSidebar({ open, onClose }: Props) {
             <StoichSubItem key={i} item={item} onNavigate={onClose} />
           ))}
         </ExpandableSection>
+        <ExpandableSection
+          icon="e⁻" label="Redox"
+          isActive={isRedoxActive} expanded={redoxExpanded}
+          onToggle={() => setRedoxExpanded(e => !e)}
+        >
+          {REDOX_ITEMS.map((item, i) => (
+            <RedoxSubItem key={i} item={item} onNavigate={onClose} />
+          ))}
+        </ExpandableSection>
 
         {/* Practice */}
         <NavGroup label="Practice" />
-        <PracticeNavItem path="/calculations?tab=practice" icon="⚗" label="Molar Practice" onNavigate={onClose} />
-        <PracticeNavItem path="/stoichiometry?tab=practice" icon="⚖" label="Stoich Practice" onNavigate={onClose} />
-        <PracticeNavItem path="/stoichiometry?tab=balance" icon="⇌" label="Balance Equations" onNavigate={onClose} />
+        <PracticeNavItem path="/calculations?tab=practice"  icon="⚗" label="Molar Practice"    onNavigate={onClose} />
+        <PracticeNavItem path="/stoichiometry?tab=practice" icon="⚖" label="Stoich Practice"   onNavigate={onClose} />
+        <PracticeNavItem path="/stoichiometry?tab=balance"  icon="⇌" label="Balance Equations" onNavigate={onClose} />
+        <PracticeNavItem path="/redox-practice"             icon="e⁻" label="Redox Practice"   onNavigate={onClose} />
         <TestNavItem onNavigate={onClose} />
 
         {/* Tools */}
         <NavGroup label="Tools" />
-        <PracticeNavItem path="/reference"   icon="≡" label="Reference"           onNavigate={onClose} />
-        <PracticeNavItem path="/classifier"  icon="⇄" label="Reaction Classifier"    onNavigate={onClose} />
-        <PracticeNavItem path="/electrolyte" icon="⚡" label="Electrolyte Classifier"    onNavigate={onClose} />
-        <PracticeNavItem path="/net-ionic"       icon="⇌" label="Net Ionic Equations"   onNavigate={onClose} />
-        <PracticeNavItem path="/activity-series" icon="↕" label="Activity Series"       onNavigate={onClose} />
         <ExpandableSection
           icon="⬡" label="Structures"
           isActive={isStructActive} expanded={structExpanded}
