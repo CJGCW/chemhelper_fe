@@ -19,12 +19,17 @@ import type { SolStoichType } from '../../utils/solutionStoichPractice'
 import { generateSolStoichProblem } from '../../utils/solutionStoichPractice'
 import type { Difficulty } from '../../utils/balancingPractice'
 import { pickEquation } from '../../utils/balancingPractice'
+import { genCalorimetryProblem } from '../../utils/calorimetryPractice'
+import { genEnthalpyProblem } from '../../utils/enthalpyPractice'
+import { genHessProblem } from '../../utils/hessLawPractice'
+import { genBondEnthalpyProblem } from '../../utils/bondEnthalpyPractice'
+import { genHeatTransferProblem } from '../../utils/heatTransferPractice'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
 // ── Topic definitions ─────────────────────────────────────────────────────────
 
-type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'lewis_draw' | 'vsepr' | 'vsepr_draw' | 'stoich' | 'redox' | 'perc_comp' | 'gas_stoich' | 'sol_stoich' | 'balancing'
-type TopicGroup = 'core' | 'atomic_molecular' | 'structures' | 'molar_solutions' | 'stoichiometry' | 'redox'
+type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'lewis_draw' | 'vsepr' | 'vsepr_draw' | 'stoich' | 'redox' | 'perc_comp' | 'gas_stoich' | 'sol_stoich' | 'balancing' | 'calorimetry' | 'enthalpy' | 'hess' | 'bond_enthalpy' | 'heat_transfer'
+type TopicGroup = 'core' | 'atomic_molecular' | 'structures' | 'molar_solutions' | 'stoichiometry' | 'redox' | 'thermochemistry'
 
 const GROUP_LABELS: Record<TopicGroup, string> = {
   core:             'Core Skills',
@@ -33,8 +38,9 @@ const GROUP_LABELS: Record<TopicGroup, string> = {
   molar_solutions:  'Molar & Solutions',
   stoichiometry:    'Stoichiometry',
   redox:            'Redox',
+  thermochemistry:  'Thermochemistry',
 }
-const GROUP_ORDER: TopicGroup[] = ['core', 'atomic_molecular', 'structures', 'molar_solutions', 'stoichiometry', 'redox']
+const GROUP_ORDER: TopicGroup[] = ['core', 'atomic_molecular', 'structures', 'molar_solutions', 'stoichiometry', 'redox', 'thermochemistry']
 
 interface TopicDef {
   id:           string
@@ -80,6 +86,11 @@ const ALL_TOPICS: TopicDef[] = [
   { id: 'redox-ox',   kind: 'redox',      group: 'redox',            label: 'Oxidation Numbers',        formula: 'ox. #',                 redoxType: 'ox_state'           },
   { id: 'redox-id',   kind: 'redox',      group: 'redox',            label: 'Identify Oxidised/Reduced', formula: 'OA / RA',              redoxType: 'identify_redox'     },
   { id: 'redox-chg',  kind: 'redox',      group: 'redox',            label: 'Oxidation State Change',   formula: 'Δox',                   redoxType: 'ox_change'          },
+  { id: 'calorimetry',   kind: 'calorimetry',   group: 'thermochemistry', label: 'Calorimetry',          formula: 'q=mcΔT' },
+  { id: 'enthalpy',     kind: 'enthalpy',     group: 'thermochemistry', label: 'Enthalpy of Reaction',   formula: 'ΔHrxn'  },
+  { id: 'hess',         kind: 'hess',         group: 'thermochemistry', label: "Hess's Law",             formula: 'ΣΔH'    },
+  { id: 'bond-enthalpy',  kind: 'bond_enthalpy',  group: 'thermochemistry', label: 'Bond Enthalpy',   formula: 'BE'      },
+  { id: 'heat-transfer',  kind: 'heat_transfer',  group: 'thermochemistry', label: 'Heat Transfer',   formula: 'q₁=−q₂' },
 ]
 
 const STYLES: ProblemStyle[] = ['word', 'arithmetic']
@@ -191,6 +202,16 @@ export default function TestBuilder({ onGenerate }: Props) {
         return { topic: t.label, topicFormula: t.formula, problem: { kind: 'sol_stoich', data: generateSolStoichProblem(t.solStoichType) } }
       if (t.kind === 'balancing')
         return { topic: t.label, topicFormula: t.formula, problem: { kind: 'balancing', data: pickEquation(t.balDifficulty) } }
+      if (t.kind === 'calorimetry')
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'calorimetry', data: genCalorimetryProblem() } }
+      if (t.kind === 'enthalpy')
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'enthalpy', data: genEnthalpyProblem() } }
+      if (t.kind === 'hess')
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'hess', data: genHessProblem() } }
+      if (t.kind === 'bond_enthalpy')
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'bond_enthalpy', data: genBondEnthalpyProblem() } }
+      if (t.kind === 'heat_transfer')
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'heat_transfer', data: genHeatTransferProblem() } }
       return { topic: t.label, topicFormula: t.formula, problem: { kind: 'molar', data: generateMolarProblem(t.molarType!, randomStyle()) } }
     }
 

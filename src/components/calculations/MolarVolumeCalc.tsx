@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import ExampleBox from './ExampleBox'
 import NumberField from './NumberField'
 import ResultDisplay from './ResultDisplay'
 import StepsPanel from './StepsPanel'
@@ -136,6 +137,9 @@ export default function MolarVolumeCalc() {
 
   return (
     <div className="flex flex-col gap-5 max-w-lg">
+
+      <ExampleBox>{`Volume of 3.00 mol CO₂ at STP (Vm = 22.414 L/mol)
+  V = n × Vm = 3.00 mol × 22.414 L/mol = 67.24 L`}</ExampleBox>
 
       {/* Standard toggle */}
       <div className="flex flex-col gap-2">

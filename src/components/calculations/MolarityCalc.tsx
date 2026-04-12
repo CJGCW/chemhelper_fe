@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ExampleBox from "./ExampleBox";
 import NumberField from "./NumberField";
 import UnitSelect, { VOLUME_UNITS } from "./UnitSelect";
 import type { UnitOption } from "./UnitSelect";
@@ -198,6 +199,9 @@ export default function MolarityCalc() {
 
   return (
     <div className="flex flex-col gap-5 max-w-lg">
+      <ExampleBox>{`Find molarity: 0.500 mol HCl dissolved in 250.0 mL solution.
+  V = 250.0 mL → 0.2500 L
+  C = n / V = 0.500 mol ÷ 0.2500 L = 2.000 mol/L`}</ExampleBox>
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-1.5">
           <label className="font-sans text-sm font-medium text-primary">

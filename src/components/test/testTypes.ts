@@ -10,8 +10,13 @@ import type { PercCompProblem } from '../../utils/percentCompositionPractice'
 import type { GasStoichProblem } from '../../utils/gasStoichPractice'
 import type { SolStoichProblem } from '../../utils/solutionStoichPractice'
 import type { BalancingEquation } from '../../utils/balancingPractice'
+import type { CalorimetryProblem } from '../../utils/calorimetryPractice'
+import type { EnthalpyProblem } from '../../utils/enthalpyPractice'
+import type { HessProblem } from '../../utils/hessLawPractice'
+import type { BondEnthalpyProblem } from '../../utils/bondEnthalpyPractice'
+import type { HeatTransferProblem } from '../../utils/heatTransferPractice'
 
-export type { SigFigProblem, EmpiricalProblem, ConversionProblem, AtomicProblem, LewisProblem, LewisDrawProblem, VseprProblem, VseprDrawProblem, StoichProblem, RedoxProblem, PercCompProblem, GasStoichProblem, SolStoichProblem, BalancingEquation }
+export type { SigFigProblem, EmpiricalProblem, ConversionProblem, AtomicProblem, LewisProblem, LewisDrawProblem, VseprProblem, VseprDrawProblem, StoichProblem, RedoxProblem, PercCompProblem, GasStoichProblem, SolStoichProblem, BalancingEquation, CalorimetryProblem, EnthalpyProblem, HessProblem, BondEnthalpyProblem, HeatTransferProblem }
 
 export interface MolarTestProblem      { kind: 'molar';      data: MolarProblem      }
 export interface SigFigTestProblem     { kind: 'sigfig';     data: SigFigProblem     }
@@ -27,7 +32,12 @@ export interface RedoxTestProblem      { kind: 'redox';      data: RedoxProblem 
 export interface PercCompTestProblem   { kind: 'perc_comp';  data: PercCompProblem   }
 export interface GasStoichTestProblem  { kind: 'gas_stoich'; data: GasStoichProblem  }
 export interface SolStoichTestProblem  { kind: 'sol_stoich'; data: SolStoichProblem  }
-export interface BalancingTestProblem  { kind: 'balancing';  data: BalancingEquation }
+export interface BalancingTestProblem    { kind: 'balancing';    data: BalancingEquation  }
+export interface CalorimetryTestProblem { kind: 'calorimetry'; data: CalorimetryProblem }
+export interface EnthalpyTestProblem   { kind: 'enthalpy';    data: EnthalpyProblem   }
+export interface HessTestProblem            { kind: 'hess';         data: HessProblem            }
+export interface BondEnthalpyTestProblem    { kind: 'bond_enthalpy';   data: BondEnthalpyProblem   }
+export interface HeatTransferTestProblem   { kind: 'heat_transfer';   data: HeatTransferProblem   }
 
 export type TestProblem =
   | MolarTestProblem
@@ -45,6 +55,11 @@ export type TestProblem =
   | GasStoichTestProblem
   | SolStoichTestProblem
   | BalancingTestProblem
+  | CalorimetryTestProblem
+  | EnthalpyTestProblem
+  | HessTestProblem
+  | BondEnthalpyTestProblem
+  | HeatTransferTestProblem
 
 export interface TestQuestion {
   id:           number

@@ -260,6 +260,17 @@ const STRUCTURE_ITEMS = [
   { path: "/structures?tab=vsepr", label: "VSEPR",            formula: "⬡" },
 ]
 
+// ── Thermochemistry sub-items ─────────────────────────────────────────────────
+
+const THERMO_ITEMS = [
+  { path: "/thermochemistry?tab=calorimetry", label: "Calorimetry",    formula: "q"   },
+  { path: "/thermochemistry?tab=enthalpy",    label: "Enthalpy ΔHrxn", formula: "ΔH"  },
+  { path: "/thermochemistry?tab=hess",        label: "Hess's Law",     formula: "ΣΔH" },
+  { path: "/thermochemistry?tab=bond",        label: "Bond Enthalpy",  formula: "BE"  },
+  { path: "/thermochemistry?tab=profile",      label: "Rxn Profiles",   formula: "⚡"  },
+  { path: "/thermochemistry?tab=heattransfer", label: "Heat Transfer",   formula: "q₁=−q₂" },
+]
+
 // ── Practice / top-level nav items ────────────────────────────────────────────
 
 function PracticeNavItem({ path, icon, label, onNavigate }: {
@@ -377,6 +388,7 @@ export default function NavSidebar({ open, onClose }: Props) {
   const [stoichExpanded,      setStoichExpanded]      = useState(currentPath === "/stoichiometry")
   const [redoxExpanded,       setRedoxExpanded]       = useState(currentPath === "/redox")
   const [structExpanded,      setStructExpanded]      = useState(currentPath === "/structures")
+  const [thermoExpanded,      setThermoExpanded]      = useState(currentPath === "/thermochemistry")
   const [empiricalExpanded,   setEmpiricalExpanded]   = useState(
     currentPath === '/empirical' || (currentPath === '/reference' && currentTab === 'empirical')
   )
@@ -388,6 +400,7 @@ export default function NavSidebar({ open, onClose }: Props) {
   const isStoichActive     = currentPath === "/stoichiometry"
   const isRedoxActive      = currentPath === "/redox"
   const isStructActive     = currentPath === "/structures"
+  const isThermoActive     = currentPath === "/thermochemistry"
   const isEmpiricalActive  = currentPath === '/empirical' || (currentPath === '/reference' && currentTab === 'empirical')
   const isIdealGasNavActive = currentPath === '/ideal-gas'
 
@@ -486,6 +499,16 @@ export default function NavSidebar({ open, onClose }: Props) {
                 onToggle={() => setStructExpanded(e => !e)}
               >
                 {STRUCTURE_ITEMS.map((item, i) => (
+                  <PathSubItem key={i} path={item.path} formula={item.formula} label={item.label} onNavigate={onClose} />
+                ))}
+              </ExpandableSection>
+
+              <ExpandableSection
+                icon="🌡" label="Thermochemistry"
+                isActive={isThermoActive} expanded={thermoExpanded}
+                onToggle={() => setThermoExpanded(e => !e)}
+              >
+                {THERMO_ITEMS.map((item, i) => (
                   <PathSubItem key={i} path={item.path} formula={item.formula} label={item.label} onNavigate={onClose} />
                 ))}
               </ExpandableSection>

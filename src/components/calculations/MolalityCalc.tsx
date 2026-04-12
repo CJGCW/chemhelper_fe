@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ExampleBox from "./ExampleBox";
 import NumberField from "./NumberField";
 import UnitSelect, { MASS_UNITS } from "./UnitSelect";
 import type { UnitOption } from "./UnitSelect";
@@ -191,6 +192,9 @@ export default function MolalityCalc() {
 
   return (
     <div className="flex flex-col gap-5 max-w-lg">
+      <ExampleBox>{`Find molality: 0.500 mol glucose in 500.0 g of water.
+  m_solvent = 500.0 g → 0.5000 kg
+  b = n / m = 0.500 mol ÷ 0.5000 kg = 1.000 mol/kg`}</ExampleBox>
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-1.5">
           <label className="font-sans text-sm font-medium text-primary">

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import ExampleBox from './ExampleBox'
 import { motion, AnimatePresence } from 'framer-motion'
 import { resolveFormula, resolveSmiles } from '../../api/calculations'
 import { useElementStore } from '../../stores/elementStore'
@@ -107,6 +108,10 @@ export default function PercentCompositionCalc() {
         Enter a compound formula to find the <span className="text-primary">mass percent</span> of each element.
         Mass percent = (element mass contribution / molar mass) × 100.
       </p>
+
+      <ExampleBox>{`H₂O (M = 18.015 g/mol)
+  H: (2 × 1.008) / 18.015 × 100 = 11.19%
+  O:  16.00 / 18.015 × 100       = 88.81%`}</ExampleBox>
 
       {/* Mode tabs */}
       <div className="flex gap-0 rounded-sm overflow-hidden border border-border self-start">

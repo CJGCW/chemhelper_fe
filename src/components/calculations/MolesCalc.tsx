@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import ExampleBox from './ExampleBox'
 import NumberField from './NumberField'
 import UnitSelect, { MASS_UNITS } from './UnitSelect'
 import type { UnitOption } from './UnitSelect'
@@ -97,6 +98,8 @@ export default function MolesCalc() {
 
   return (
     <div className="flex flex-col gap-5 max-w-lg">
+      <ExampleBox>{`How many moles in 117 g of NaCl? (M = 58.44 g/mol)
+  n = m / M = 117 g ÷ 58.44 g/mol = 2.002 mol`}</ExampleBox>
       <div className="flex flex-col gap-5">
         <NumberField label="Mass (m)" value={massValue}
           onChange={v => { setMassValue(sanitize(v)); setResult(null) }}

@@ -15,6 +15,11 @@ import { checkPercCompAnswer } from '../../utils/percentCompositionPractice'
 import { checkGasStoichAnswer } from '../../utils/gasStoichPractice'
 import { checkSolStoichAnswer } from '../../utils/solutionStoichPractice'
 import { checkBalanced, formatEquation } from '../../utils/balancingPractice'
+import { checkCalorimetryAnswer } from '../../utils/calorimetryPractice'
+import { checkEnthalpyAnswer } from '../../utils/enthalpyPractice'
+import { checkHessAnswer } from '../../utils/hessLawPractice'
+import { checkBondEnthalpyAnswer } from '../../utils/bondEnthalpyPractice'
+import { checkHeatTransferAnswer } from '../../utils/heatTransferPractice'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
 // ── Answer checking ───────────────────────────────────────────────────────────
@@ -50,6 +55,16 @@ function checkQuestion(q: TestQuestion, answer: string): Result {
     return checkGasStoichAnswer(q.problem.data, answer) ? 'correct' : 'wrong'
   if (q.problem.kind === 'sol_stoich')
     return checkSolStoichAnswer(q.problem.data, answer) ? 'correct' : 'wrong'
+  if (q.problem.kind === 'calorimetry')
+    return checkCalorimetryAnswer(q.problem.data, answer) ? 'correct' : 'wrong'
+  if (q.problem.kind === 'enthalpy')
+    return checkEnthalpyAnswer(q.problem.data, answer) ? 'correct' : 'wrong'
+  if (q.problem.kind === 'hess')
+    return checkHessAnswer(q.problem.data, answer) ? 'correct' : 'wrong'
+  if (q.problem.kind === 'bond_enthalpy')
+    return checkBondEnthalpyAnswer(q.problem.data, answer) ? 'correct' : 'wrong'
+  if (q.problem.kind === 'heat_transfer')
+    return checkHeatTransferAnswer(q.problem.data, answer) ? 'correct' : 'wrong'
   if (q.problem.kind === 'vsepr-draw' || q.problem.kind === 'lewis-draw') return 'blank'  // scored externally via Ketcher
   if (q.problem.kind === 'balancing') {
     // answer: "2,1,2" — comma/space separated coefficients (reactants then products)
@@ -197,6 +212,76 @@ function buildQuestionHtml(q: TestQuestion): string {
     </div>`
   }
 
+  if (q.problem.kind === 'hess') {
+    const p = q.problem.data
+    const stepsHtml = p.steps.map((s, i) =>
+      `<span class="chip"><span class="label">(${i + 1})</span> ${s.equation} &nbsp; ΔH = ${s.dh > 0 ? '+' : ''}${s.dh} kJ</span>`
+    ).join('')
+    return `<div class="question">${header}
+      <p class="q-text">Use Hess's Law to find ΔH for the target reaction.</p>
+      <p class="q-text" style="font-family:monospace;font-size:10pt;color:#333;font-weight:bold;">Target: ${p.target}</p>
+      <p class="q-text" style="font-size:10pt;color:#555;">Given thermochemical equations:</p>
+      <div class="given" style="flex-direction:column;gap:4px;">${stepsHtml}</div>
+      <div class="answer-row"><span class="solve-for">ΔHrxn =</span><span class="answer-line"></span><span class="unit-label">kJ</span></div>
+    </div>`
+  }
+
+  if (q.problem.kind === 'enthalpy') {
+    const p = q.problem.data
+    const givenRows = [...p.reactants, ...p.products].map(s =>
+      `<span class="chip"><span class="label">ΔHf°[${s.formula}(${s.state})]</span> ${s.dhf} kJ/mol</span>`
+    ).join('')
+    return `<div class="question">${header}
+      <p class="q-text" style="font-family:monospace;font-size:10pt;color:#555;">${p.equation}</p>
+      <p class="q-text">Calculate ΔHrxn using standard enthalpies of formation:</p>
+      <div class="given">${givenRows}</div>
+      <div class="answer-row"><span class="solve-for">ΔHrxn =</span><span class="answer-line"></span><span class="unit-label">kJ</span></div>
+    </div>`
+  }
+
+  if (q.problem.kind === 'bond_enthalpy') {
+    const p = q.problem.data
+    const brokenHtml = p.broken.map(b =>
+      `<span class="chip"><span class="label">${b.bond}</span> ${b.count} × ${b.energy} kJ/mol</span>`
+    ).join('')
+    const formedHtml = p.formed.map(b =>
+      `<span class="chip"><span class="label">${b.bond}</span> ${b.count} × ${b.energy} kJ/mol</span>`
+    ).join('')
+    return `<div class="question">${header}
+      <p class="q-text" style="font-family:monospace;font-size:10pt;color:#333;font-weight:bold;">${p.reaction}</p>
+      <p class="q-text">Estimate ΔH using average bond enthalpies.</p>
+      <p class="q-text" style="font-size:10pt;color:#555;font-weight:bold;">Bonds broken:</p>
+      <div class="given">${brokenHtml}</div>
+      <p class="q-text" style="font-size:10pt;color:#555;font-weight:bold;">Bonds formed:</p>
+      <div class="given">${formedHtml}</div>
+      <div class="answer-row"><span class="solve-for">ΔH ≈</span><span class="answer-line"></span><span class="unit-label">kJ</span></div>
+    </div>`
+  }
+
+  if (q.problem.kind === 'heat_transfer') {
+    const p = q.problem.data
+    const givenHtml = `<div class="given">${p.given.map(g =>
+      `<span class="chip"><span class="label">${g.label} =</span> ${g.value}</span>`
+    ).join('')}</div>`
+    return `<div class="question">${header}
+      <p class="q-text">${p.question}</p>${givenHtml}
+      <div class="answer-row"><span class="solve-for">${p.solveFor} =</span><span class="answer-line"></span><span class="unit-label">${p.answerUnit}</span></div>
+    </div>`
+  }
+
+  if (q.problem.kind === 'calorimetry') {
+    const p = q.problem.data
+    const givenHtml = p.given.length > 0
+      ? `<div class="given">${p.given.map(g =>
+          `<span class="chip"><span class="label">${g.label} =</span> ${g.value} <span class="unit">${g.unit}</span></span>`
+        ).join('')}</div>`
+      : ''
+    return `<div class="question">${header}
+      <p class="q-text">${p.question}</p>${givenHtml}
+      <div class="answer-row"><span class="solve-for">${p.solveFor} =</span><span class="answer-line"></span><span class="unit-label">${p.answerUnit}</span></div>
+    </div>`
+  }
+
   // molar
   const p = q.problem.data
   const givenHtml = p.style === 'arithmetic' && p.given.length > 0
@@ -250,6 +335,16 @@ function buildAnswerKeyHtml(q: TestQuestion): string {
     answer = `${q.problem.data.answer.toPrecision(4)} ${q.problem.data.answerUnit}`
   else if (q.problem.kind === 'balancing')
     answer = formatEquation(q.problem.data)
+  else if (q.problem.kind === 'calorimetry')
+    answer = `${q.problem.data.answer.toPrecision(3)} ${q.problem.data.answerUnit}`
+  else if (q.problem.kind === 'enthalpy')
+    answer = `${q.problem.data.answer} ${q.problem.data.answerUnit}`
+  else if (q.problem.kind === 'hess')
+    answer = `${q.problem.data.answer > 0 ? '+' : ''}${q.problem.data.answer} ${q.problem.data.answerUnit}`
+  else if (q.problem.kind === 'bond_enthalpy')
+    answer = `${q.problem.data.answer > 0 ? '+' : ''}${q.problem.data.answer} ${q.problem.data.answerUnit}`
+  else if (q.problem.kind === 'heat_transfer')
+    answer = `${q.problem.data.answer} ${q.problem.data.answerUnit}`
   else
     answer = `${q.problem.data.answer} ${q.problem.data.answerUnit}`
   return `<div class="key-row"><span class="key-num">${q.id}.</span><span class="key-ans">${answer}</span></div>`

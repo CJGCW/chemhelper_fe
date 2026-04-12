@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ExampleBox from "./ExampleBox";
 import { motion, AnimatePresence } from "framer-motion";
 import NumberField from "./NumberField";
 import UnitSelect, { MASS_UNITS } from "./UnitSelect";
@@ -282,6 +283,14 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
           </button>
         ))}
       </div>
+
+      <ExampleBox>{mode === 'bpe'
+          ? `BPE: 1.000 mol/kg NaCl in water (i = 2, Kb = 0.512 °C·kg/mol)
+  ΔTb = i × Kb × b = 2 × 0.512 × 1.000 = 1.024 °C
+  New b.p. = 100.0 + 1.024 = 101.0 °C`
+          : `FPD: 1.000 mol/kg NaCl in water (i = 2, Kf = 1.86 °C·kg/mol)
+  ΔTf = i × Kf × b = 2 × 1.86 × 1.000 = 3.720 °C
+  New f.p. = 0.0 − 3.720 = −3.720 °C`}</ExampleBox>
 
       {/* Solvent selector */}
       <div className="flex flex-col gap-1.5">
