@@ -390,15 +390,6 @@ export default function NavSidebar({ open, onClose }: Props) {
   const isEmpiricalActive  = currentPath === '/empirical' || (currentPath === '/reference' && currentTab === 'empirical')
   const isIdealGasNavActive = currentPath === '/ideal-gas'
 
-  // ── Practice expandables ─────────────────────────────────────────────────────
-  const isPracEmpiricalActive = currentPath === '/empirical-practice'
-  const isPracMolarActive     = currentPath === '/calculations' && ['practice', 'percent-comp'].includes(currentTab)
-  const isPracStoichActive    = currentPath === '/stoichiometry' && ['practice', 'balance', 'gas-stoich', 'solution'].includes(currentTab)
-  const isPracRedoxActive     = currentPath === '/redox-practice'
-  const [pracEmpiricalExpanded,  setPracEmpiricalExpanded]  = useState(isPracEmpiricalActive)
-  const [pracMolarExpanded,      setPracMolarExpanded]      = useState(isPracMolarActive)
-  const [pracStoichExpanded,     setPracStoichExpanded]     = useState(isPracStoichActive)
-  const [pracRedoxExpanded,      setPracRedoxExpanded]      = useState(isPracRedoxActive)
 
   const inner = (
     <div className="flex flex-col h-full">
@@ -416,7 +407,7 @@ export default function NavSidebar({ open, onClose }: Props) {
       <nav className="flex-1 overflow-y-auto py-2">
 
         {/* Reference / Calculations */}
-        <NavGroup label="Reference / Calculations" expanded={refCalcOpen} onToggle={() => setRefCalcOpen(e => !e)} />
+        <NavGroup label="Topics" expanded={refCalcOpen} onToggle={() => setRefCalcOpen(e => !e)} />
         <AnimatePresence initial={false}>
           {refCalcOpen && (
             <motion.div
@@ -445,6 +436,14 @@ export default function NavSidebar({ open, onClose }: Props) {
               </ExpandableSection>
 
               <ExpandableSection
+                icon="PV" label="Ideal Gas Law"
+                isActive={isIdealGasNavActive} expanded={idealGasNavExpanded}
+                onToggle={() => setIdealGasNavExpanded(e => !e)}
+              >
+                <IdealGasPills onNavigate={onClose} />
+              </ExpandableSection>
+
+              <ExpandableSection
                 icon="⚗" label="Molar Calculations"
                 isActive={isMolarCalcActive} expanded={calcExpanded}
                 onToggle={() => setCalcExpanded(e => !e)}
@@ -468,14 +467,6 @@ export default function NavSidebar({ open, onClose }: Props) {
                 onToggle={() => setRedoxExpanded(e => !e)}
               >
                 {REDOX_ITEMS.map((item, i) => <RedoxSubItem key={i} item={item} onNavigate={onClose} />)}
-              </ExpandableSection>
-
-              <ExpandableSection
-                icon="PV" label="Ideal Gas Law"
-                isActive={isIdealGasNavActive} expanded={idealGasNavExpanded}
-                onToggle={() => setIdealGasNavExpanded(e => !e)}
-              >
-                <IdealGasPills onNavigate={onClose} />
               </ExpandableSection>
 
               <PracticeNavItem path="/reference?tab=solubility" icon="S/I" label="Solubility" onNavigate={onClose} />
@@ -511,42 +502,6 @@ export default function NavSidebar({ open, onClose }: Props) {
               exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }}
               style={{ overflow: 'hidden' }}
             >
-              <ExpandableSection
-                icon="⌬" label="Empirical Formula"
-                isActive={isPracEmpiricalActive} expanded={pracEmpiricalExpanded}
-                onToggle={() => setPracEmpiricalExpanded(e => !e)}
-              >
-                <PathSubItem path="/empirical-practice" formula="⌬" label="Empirical Practice" onNavigate={onClose} />
-              </ExpandableSection>
-
-              <ExpandableSection
-                icon="⚗" label="Molar Calculations"
-                isActive={isPracMolarActive} expanded={pracMolarExpanded}
-                onToggle={() => setPracMolarExpanded(e => !e)}
-              >
-                <PathSubItem path="/calculations?tab=practice"    formula="⚗"  label="Molar Practice"   onNavigate={onClose} />
-                <PathSubItem path="/calculations?tab=percent-comp" formula="% m" label="% Composition"   onNavigate={onClose} />
-              </ExpandableSection>
-
-              <ExpandableSection
-                icon="⇌" label="Reactions / Redox"
-                isActive={isPracRedoxActive} expanded={pracRedoxExpanded}
-                onToggle={() => setPracRedoxExpanded(e => !e)}
-              >
-                <PathSubItem path="/redox-practice" formula="e⁻" label="Redox Practice" onNavigate={onClose} />
-              </ExpandableSection>
-
-              <ExpandableSection
-                icon="⚖" label="Stoichiometry"
-                isActive={isPracStoichActive} expanded={pracStoichExpanded}
-                onToggle={() => setPracStoichExpanded(e => !e)}
-              >
-                <PathSubItem path="/stoichiometry?tab=practice"   formula="⚖"  label="Stoich Practice"   onNavigate={onClose} />
-                <PathSubItem path="/stoichiometry?tab=balance"    formula="⇌"  label="Balance Equations" onNavigate={onClose} />
-                <PathSubItem path="/stoichiometry?tab=gas-stoich" formula="PV" label="Gas Stoich"         onNavigate={onClose} />
-                <PathSubItem path="/stoichiometry?tab=solution"   formula="M·V" label="Solution Stoich"   onNavigate={onClose} />
-              </ExpandableSection>
-
               <TestNavItem onNavigate={onClose} />
             </motion.div>
           )}
