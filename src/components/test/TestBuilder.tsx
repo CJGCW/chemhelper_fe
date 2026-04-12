@@ -6,7 +6,7 @@ import { generateSigFigProblem } from '../../utils/sigfigPractice'
 import { generateEmpiricalProblem } from '../../utils/empiricalPractice'
 import { generateConversionProblem } from '../../utils/conversionPractice'
 import { generateAtomicProblem } from '../../utils/atomicPractice'
-import { generateLewisProblem, generateVseprProblem } from '../../utils/lewisPractice'
+import { generateLewisProblem, generateVseprProblem, generateVseprDrawProblem } from '../../utils/lewisPractice'
 import type { StoichProblemType } from '../../utils/stoichiometryPractice'
 import { generateStoichProblem } from '../../utils/stoichiometryPractice'
 import type { RedoxSubtype } from '../../utils/redoxPractice'
@@ -23,7 +23,7 @@ import type { GeneratedTest, TestQuestion } from './testTypes'
 
 // ── Topic definitions ─────────────────────────────────────────────────────────
 
-type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'vsepr' | 'stoich' | 'redox' | 'perc_comp' | 'gas_stoich' | 'sol_stoich' | 'balancing'
+type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'vsepr' | 'vsepr_draw' | 'stoich' | 'redox' | 'perc_comp' | 'gas_stoich' | 'sol_stoich' | 'balancing'
 type TopicGroup = 'core' | 'atomic_molecular' | 'structures' | 'molar_solutions' | 'stoichiometry' | 'redox'
 
 const GROUP_LABELS: Record<TopicGroup, string> = {
@@ -58,6 +58,7 @@ const ALL_TOPICS: TopicDef[] = [
   { id: 'atomic',     kind: 'atomic',     group: 'atomic_molecular', label: 'Atomic Structure',        formula: 'e⁻ config, QN, Bohr'  },
   { id: 'lewis',      kind: 'lewis',      group: 'structures',       label: 'Lewis Structure',         formula: 'valence e⁻, geometry'  },
   { id: 'vsepr',      kind: 'vsepr',      group: 'structures',       label: 'VSEPR',                   formula: 'geometry, hybrid.'     },
+  { id: 'vsepr-draw', kind: 'vsepr_draw', group: 'structures',       label: 'VSEPR Draw',              formula: '3D structure drawing'  },
   { id: 'moles',      kind: 'molar',      group: 'molar_solutions',  label: 'Moles',                   formula: 'n = m/M',              molarType: 'moles'    },
   { id: 'molarity',   kind: 'molar',      group: 'molar_solutions',  label: 'Molarity',                formula: 'C = n/V',              molarType: 'molarity' },
   { id: 'molality',   kind: 'molar',      group: 'molar_solutions',  label: 'Molality',                formula: 'b = n/m',              molarType: 'molality' },
@@ -168,6 +169,10 @@ export default function TestBuilder({ onGenerate }: Props) {
       if (t.kind === 'vsepr') {
         const data = await generateVseprProblem()
         return data ? { topic: t.label, topicFormula: t.formula, problem: { kind: 'vsepr', data } } : null
+      }
+      if (t.kind === 'vsepr_draw') {
+        const data = await generateVseprDrawProblem()
+        return data ? { topic: t.label, topicFormula: t.formula, problem: { kind: 'vsepr-draw', data } } : null
       }
       if (t.kind === 'stoich')
         return { topic: t.label, topicFormula: t.formula, problem: { kind: 'stoich', data: generateStoichProblem(t.stoichType!) } }

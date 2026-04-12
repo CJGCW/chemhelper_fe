@@ -489,6 +489,95 @@ function AtomNode({
   );
 }
 
+// ── SVG string export (for print answer keys) ────────────────────────────────
+
+function svgBondLines(
+  bond: LewisStructure['bonds'][0],
+  positions: Record<string, { x: number; y: number }>,
+): string {
+  const p1 = positions[bond.from], p2 = positions[bond.to]
+  if (!p1 || !p2) return ''
+
+  const dx = p2.x - p1.x, dy = p2.y - p1.y
+  const len = Math.sqrt(dx * dx + dy * dy) || 1
+  const ux = dx / len, uy = dy / len
+  const px = -uy, py = ux
+  const x1 = p1.x + ux * ATOM_R, y1 = p1.y + uy * ATOM_R
+  const x2 = p2.x - ux * ATOM_R, y2 = p2.y - uy * ATOM_R
+  const c = '#1a1a1a', w = 2
+
+  if (bond.order === 2) {
+    const o = 4
+    return `<line x1="${x1 + px * o}" y1="${y1 + py * o}" x2="${x2 + px * o}" y2="${y2 + py * o}" stroke="${c}" stroke-width="${w}"/>` +
+           `<line x1="${x1 - px * o}" y1="${y1 - py * o}" x2="${x2 - px * o}" y2="${y2 - py * o}" stroke="${c}" stroke-width="${w}"/>`
+  }
+  if (bond.order === 3) {
+    const o = 5
+    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${w}"/>` +
+           `<line x1="${x1 + px * o}" y1="${y1 + py * o}" x2="${x2 + px * o}" y2="${y2 + py * o}" stroke="${c}" stroke-width="${w}"/>` +
+           `<line x1="${x1 - px * o}" y1="${y1 - py * o}" x2="${x2 - px * o}" y2="${y2 - py * o}" stroke="${c}" stroke-width="${w}"/>`
+  }
+  return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${w}"/>`
+}
+
+function svgAtomNode(
+  atom: LewisStructure['atoms'][0],
+  pos: { x: number; y: number },
+  adj: Record<string, string[]>,
+  positions: Record<string, { x: number; y: number }>,
+): string {
+  const color = getColor(atom.element)
+  const r     = atom.element === 'H' ? H_ATOM_R : ATOM_R
+
+  const bondAngles = (adj[atom.id] ?? []).map(nid => {
+    const npos = positions[nid]
+    return npos ? Math.atan2(npos.y - pos.y, npos.x - pos.x) * (180 / Math.PI) : 0
+  })
+  const lpAngles = getLonePairAngles(bondAngles, atom.lone_pairs)
+
+  const chargeLabel = atom.formal_charge === 0 ? null
+    : atom.formal_charge ===  1 ? '+'
+    : atom.formal_charge === -1 ? '&#x2212;'
+    : atom.formal_charge  >  0 ? `+${atom.formal_charge}`
+    : `${atom.formal_charge}`
+
+  const lpSvg = lpAngles.map(angle => {
+    const rad = angle * (Math.PI / 180)
+    const lpCx = pos.x + Math.cos(rad) * LP_OFFSET
+    const lpCy = pos.y + Math.sin(rad) * LP_OFFSET
+    const perpRad = rad + Math.PI / 2
+    const dx = Math.cos(perpRad) * LP_DOT_SEP
+    const dy = Math.sin(perpRad) * LP_DOT_SEP
+    return `<circle cx="${lpCx + dx}" cy="${lpCy + dy}" r="${LP_R}" fill="#1a1a1a"/>` +
+           `<circle cx="${lpCx - dx}" cy="${lpCy - dy}" r="${LP_R}" fill="#1a1a1a"/>`
+  }).join('')
+
+  const fs = atom.element.length > 1 ? 11 : r === H_ATOM_R ? 11 : 13
+  const chargeSvg = chargeLabel
+    ? `<text x="${pos.x + r}" y="${pos.y - r + 1}" text-anchor="start" fill="white" font-size="10" font-weight="bold" font-family="sans-serif">${chargeLabel}</text>`
+    : ''
+
+  return lpSvg +
+    `<circle cx="${pos.x}" cy="${pos.y}" r="${r}" fill="${color}" stroke="#555" stroke-width="1.5"/>` +
+    `<text x="${pos.x}" y="${pos.y}" text-anchor="middle" dominant-baseline="central" fill="white" font-size="${fs}" font-weight="700" font-family="sans-serif">${atom.element}</text>` +
+    chargeSvg
+}
+
+export function lewisToSvgString(structure: LewisStructure, width = 280, height = 190): string {
+  const positions = computeLayout(structure.atoms, structure.bonds, structure.geometry)
+  const adj: Record<string, string[]> = {}
+  structure.atoms.forEach(a => { adj[a.id] = [] })
+  structure.bonds.forEach(b => { adj[b.from].push(b.to); adj[b.to].push(b.from) })
+
+  const bonds = structure.bonds.map(b => svgBondLines(b, positions)).join('')
+  const atoms = structure.atoms.map(a => {
+    const pos = positions[a.id]
+    return pos ? svgAtomNode(a, pos, adj, positions) : ''
+  }).join('')
+
+  return `<svg viewBox="0 0 ${SVG_W} ${SVG_H}" width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg" style="background:#f8f9fa;border:1px solid #ccc;border-radius:3px">${bonds}${atoms}</svg>`
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function LewisStructureDiagram({

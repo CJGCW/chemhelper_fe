@@ -12,15 +12,9 @@ import NetIonicTool from '../components/tools/NetIonicTool'
 import ActivitySeries from '../components/tools/ActivitySeries'
 import IdealGasReference from '../components/idealgas/IdealGasReference'
 import EmpiricalVisual from '../components/empirical/EmpiricalVisual'
-import LewisReference from '../components/lewis/LewisReference'
-import VsepReference from '../components/vsepr/VsepReference'
-import LewisPage from './LewisPage'
-import VsepPage from './VsepPage'
-
 type Tab =
   | 'stoich' | 'molar' | 'solubility' | 'quantum' | 'energy' | 'naming'
   | 'classifier' | 'electrolyte' | 'net-ionic' | 'activity' | 'ideal-gas' | 'empirical'
-  | 'lewis' | 'vsepr'
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'stoich',      label: 'Stoichiometry'       },
@@ -29,8 +23,6 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'quantum',     label: 'Quantum Numbers'     },
   { id: 'energy',      label: 'Energy Levels'       },
   { id: 'naming',      label: 'Naming'              },
-  { id: 'lewis',       label: 'Lewis Structures'    },
-  { id: 'vsepr',       label: 'VSEPR'               },
   { id: 'classifier',  label: 'Reaction Classifier' },
   { id: 'electrolyte', label: 'Electrolyte'         },
   { id: 'net-ionic',   label: 'Net Ionic Equations' },
@@ -107,28 +99,6 @@ export default function ReferencePage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <NamingReference />
-          </motion.div>
-        )}
-        {activeTab === 'lewis' && (
-          <motion.div key="lewis"
-            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}
-            className="flex flex-col gap-8">
-            <LewisPage embedded />
-            <div className="border-t border-border pt-6">
-              <LewisReference />
-            </div>
-          </motion.div>
-        )}
-        {activeTab === 'vsepr' && (
-          <motion.div key="vsepr"
-            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}
-            className="flex flex-col gap-8">
-            <VsepPage />
-            <div className="border-t border-border pt-6">
-              <VsepReference />
-            </div>
           </motion.div>
         )}
         {activeTab === 'classifier' && (

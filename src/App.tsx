@@ -10,6 +10,8 @@ import EmpiricalPage from './pages/EmpiricalPage'
 import TestPage from './pages/TestPage'
 import StoichiometryPage from './pages/StoichiometryPage'
 import ReferencePage from './pages/ReferencePage'
+import StructuresPage from './pages/StructuresPage'
+import ToolsPage from './pages/ToolsPage'
 import ClassifierPage from './pages/ClassifierPage'
 import ElectrolytePage from './pages/ElectrolytePage'
 import NetIonicPage from './pages/NetIonicPage'
@@ -27,9 +29,10 @@ export default function App() {
         <Route path="/test" element={<TestPage />} />
         <Route path="/calculations" element={<CalculationsPage />} />
         <Route path="/base-calculations" element={<BaseCalculationsPage />} />
-        <Route path="/structures" element={<Navigate to="/reference?tab=lewis" replace />} />
+        <Route path="/structures" element={<StructuresPage />} />
+        <Route path="/tools" element={<ToolsPage />} />
         {/* Legacy redirects */}
-        <Route path="/lewis"                 element={<Navigate to="/reference?tab=lewis" replace />} />
+        <Route path="/lewis"                 element={<Navigate to="/structures?tab=lewis" replace />} />
         <Route path="/calculations/moles"    element={<Navigate to="/calculations" replace />} />
         <Route path="/calculations/molarity" element={<Navigate to="/calculations" replace />} />
         <Route path="/calculations/molality" element={<Navigate to="/calculations" replace />} />

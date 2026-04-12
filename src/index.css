@@ -1,3 +1,6 @@
+/* Declare ketcher layer first so it has lowest priority — below Tailwind layers and unlayered CSS */
+@layer ketcher;
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { checkSigFigAnswer } from '../../utils/sigfigPractice'
 import { checkEmpiricalAnswer } from '../../utils/empiricalPractice'
 import { checkConversionAnswer } from '../../utils/conversionPractice'
 import { checkAtomicAnswer } from '../../utils/atomicPractice'
 import { checkLewisProblem, checkVseprProblem } from '../../utils/lewisPractice'
+import LewisStructureDiagram, { lewisToSvgString } from '../lewis/LewisStructureDiagram'
+const VseprDrawModal = lazy(() => import('./VseprDrawModal'))
 import { checkStoichAnswer } from '../../utils/stoichiometryPractice'
 import { checkRedoxAnswer } from '../../utils/redoxPractice'
 import { checkPercCompAnswer } from '../../utils/percentCompositionPractice'
@@ -46,6 +48,7 @@ function checkQuestion(q: TestQuestion, answer: string): Result {
     return checkGasStoichAnswer(q.problem.data, answer) ? 'correct' : 'wrong'
   if (q.problem.kind === 'sol_stoich')
     return checkSolStoichAnswer(q.problem.data, answer) ? 'correct' : 'wrong'
+  if (q.problem.kind === 'vsepr-draw') return 'blank'  // scored externally via Ketcher
   if (q.problem.kind === 'balancing') {
     // answer: "2,1,2" — comma/space separated coefficients (reactants then products)
     const eq = q.problem.data
@@ -115,6 +118,14 @@ function buildQuestionHtml(q: TestQuestion): string {
     return `<div class="question">${header}
       <p class="q-text">${p.question}</p>
       <div class="answer-row"><span class="solve-for">Answer:</span><span class="answer-line"></span>${unitLabel}</div>
+    </div>`
+  }
+
+  if (q.problem.kind === 'vsepr-draw') {
+    const p = q.problem.data
+    return `<div class="question">${header}
+      <p class="q-text">${p.question}</p>
+      <div class="draw-box"></div>
     </div>`
   }
 
@@ -213,6 +224,11 @@ function buildAnswerKeyHtml(q: TestQuestion): string {
     answer = q.problem.data.answerUnit
       ? `${q.problem.data.answer} ${q.problem.data.answerUnit}`
       : q.problem.data.answer
+  else if (q.problem.kind === 'vsepr-draw') {
+    const p = q.problem.data
+    const svg = lewisToSvgString(p.structure, 260, 180)
+    return `<div class="key-row key-row--draw"><span class="key-num">${q.id}.</span><div style="display:flex;align-items:flex-start;gap:16px;flex:1"><div class="key-draw"><span class="key-ans">${p.geometry}</span>${p.keyDetails.map(d => `<span class="key-detail">${d}</span>`).join('')}</div>${svg}</div></div>`
+  }
   else if (q.problem.kind === 'stoich')
     answer = q.problem.data.answerUnit
       ? `${q.problem.data.answer} ${q.problem.data.answerUnit}`
@@ -256,12 +272,16 @@ const PRINT_CSS = `
   .solve-for { font-family: monospace; font-size: 12pt; white-space: nowrap; }
   .answer-line { border-bottom: 1px solid #111; width: 160px; height: 22px; }
   .unit-label { font-family: monospace; font-size: 11pt; color: #444; }
+  .draw-box { margin: 12px 0 4px 22px; border: 1px solid #ccc; height: 160px; width: 100%; }
   .answer-key { padding-top: 28px; }
   .answer-key h2 { font-size: 16pt; margin-bottom: 16px; border-bottom: 1px solid #ccc; padding-bottom: 6px; }
   .key-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px 24px; }
   .key-row { display: flex; gap: 8px; align-items: baseline; font-size: 11pt; }
+  .key-row--draw { grid-column: 1 / -1; align-items: flex-start; }
+  .key-draw { display: flex; flex-direction: column; gap: 2px; }
   .key-num { font-weight: bold; min-width: 22px; }
   .key-ans { font-family: monospace; font-size: 10pt; }
+  .key-detail { font-family: monospace; font-size: 9pt; color: #555; }
   .toolbar { position: fixed; top: 16px; right: 16px; display: flex; gap: 8px; }
   .toolbar button { padding: 6px 14px; font-family: sans-serif; font-size: 12pt; cursor: pointer; border: none; border-radius: 3px; }
   .btn-print { background: #2563eb; color: #fff; }
@@ -291,7 +311,7 @@ function openTestPrint(test: GeneratedTest) {
       <div class="name-date">
         <div class="field"><span class="field-label">Name:</span><span class="field-line" style="width:220px">&nbsp;</span></div>
         <div class="field"><span class="field-label">Date:</span><span class="field-line" style="width:140px">&nbsp;</span></div>
-        <div class="field"><span class="field-label">Score:</span><span class="field-line" style="width:80px">&nbsp;</span><span style="font-size:11pt">/ ${test.questions.length}</span></div>
+        <div class="field"><span class="field-label">Score:</span><span class="field-line" style="width:80px">&nbsp;</span><span style="font-size:11pt">/ ${test.questions.filter(q => q.problem.kind !== 'vsepr-draw').length}</span></div>
       </div>
     </div>`
   openWindow(test.title, header + test.questions.map(buildQuestionHtml).join(''))
@@ -313,9 +333,13 @@ function openAnswerKeyPrint(test: GeneratedTest) {
 interface Props { test: GeneratedTest; onBack: () => void }
 
 export default function TestSheet({ test, onBack }: Props) {
-  const [answers, setAnswers]   = useState<Record<number, string>>({})
-  const [checked, setChecked]   = useState(false)
-  const [revealed, setRevealed] = useState<Set<number>>(new Set())
+  interface DrawSubmission { mol: string; passed: boolean }
+
+  const [answers, setAnswers]       = useState<Record<number, string>>({})
+  const [checked, setChecked]       = useState(false)
+  const [revealed, setRevealed]     = useState<Set<number>>(new Set())
+  const [submissions, setSubmissions] = useState<Record<number, DrawSubmission>>({})
+  const [drawModal, setDrawModal]   = useState<{ q: TestQuestion; review: boolean } | null>(null)
 
   function setAnswer(id: number, val: string) {
     if (checked) return
@@ -326,18 +350,31 @@ export default function TestSheet({ test, onBack }: Props) {
     setRevealed(prev => { const s = new Set(prev); s.has(id) ? s.delete(id) : s.add(id); return s })
   }
 
+  function handleDrawSubmit(id: number, mol: string, passed: boolean) {
+    setSubmissions(prev => ({ ...prev, [id]: { mol, passed } }))
+  }
+
   const answeredCount = Object.values(answers).filter(v => v?.trim() !== '').length
+    + Object.keys(submissions).length
 
   const results: Record<number, Result> | null = checked
-    ? Object.fromEntries(test.questions.map(q => [q.id, checkQuestion(q, answers[q.id] ?? '')]))
+    ? Object.fromEntries(test.questions.map(q => {
+        if (q.problem.kind === 'vsepr-draw') {
+          const s = submissions[q.id]
+          return [q.id, s === undefined ? 'blank' : s.passed ? 'correct' : 'wrong']
+        }
+        return [q.id, checkQuestion(q, answers[q.id] ?? '')]
+      }))
     : null
 
+  const scorableCount = test.questions.length
   const score = results ? Object.values(results).filter(r => r === 'correct').length : null
 
   // ── Render question ──────────────────────────────────────────────────────────
 
   function renderQuestion(q: TestQuestion) {
-    const result = results?.[q.id]
+    const result: Result | undefined = results?.[q.id]
+
     const bgClass = result === 'correct' ? 'border-emerald-800/50 bg-emerald-950/20'
       : (result === 'wrong' || result === 'wrong_sf') ? 'border-rose-800/50 bg-rose-950/20'
       : result === 'blank' ? 'border-amber-800/40 bg-amber-950/10'
@@ -356,6 +393,7 @@ export default function TestSheet({ test, onBack }: Props) {
     const gasStoichP  = q.problem.kind === 'gas_stoich' ? q.problem.data : null
     const solStoichP  = q.problem.kind === 'sol_stoich' ? q.problem.data : null
     const balancingP  = q.problem.kind === 'balancing'  ? q.problem.data : null
+    const vseprDrawP  = q.problem.kind === 'vsepr-draw' ? q.problem.data : null
 
     const questionText = sfProblem
       ? (sfProblem.kind === 'count'
@@ -407,6 +445,8 @@ export default function TestSheet({ test, onBack }: Props) {
             <span className="font-mono">{[...balancingP.reactants, ...balancingP.products].map(s => s.coeff).join(', ')}</span>
           </p>
         </div>
+      : vseprDrawP
+      ? <p className="font-sans text-base text-bright leading-relaxed pl-8">{vseprDrawP.question}</p>
       : <p className="font-sans text-base text-bright leading-relaxed pl-8">
           {percCompP?.question ?? atomicP?.question ?? lewisP?.question ?? vseprP?.question ?? conversionP?.question ?? molarP!.question}
         </p>
@@ -435,6 +475,8 @@ export default function TestSheet({ test, onBack }: Props) {
       ? `${solStoichP.answer.toPrecision(4)} ${solStoichP.answerUnit}`
       : balancingP
       ? formatEquation(balancingP)
+      : vseprDrawP
+      ? `${vseprDrawP.geometry} — ${vseprDrawP.keyDetails.join(', ')}`
       : `${molarP!.answer} ${molarP!.answerUnit}`
 
     const solutionSteps = sfProblem
@@ -461,6 +503,8 @@ export default function TestSheet({ test, onBack }: Props) {
       ? solStoichP.steps
       : balancingP
       ? [`Balanced: ${formatEquation(balancingP)}`]
+      : vseprDrawP
+      ? [`Geometry: ${vseprDrawP.geometry}`, ...vseprDrawP.keyDetails]
       : molarP!.steps
 
     return (
@@ -484,6 +528,35 @@ export default function TestSheet({ test, onBack }: Props) {
         </div>
 
         {questionText}
+
+        {/* Draw problems: open Ketcher editor in modal */}
+        {vseprDrawP && (
+          <div className="flex items-center gap-3 pl-8">
+            <button
+              onClick={() => setDrawModal({ q, review: false })}
+              className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
+              style={{
+                background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                color: 'var(--c-halogen)',
+              }}
+            >
+              {submissions[q.id] ? 'Redraw →' : 'Open Editor →'}
+            </button>
+            {submissions[q.id]
+              ? <span className="font-mono text-xs text-emerald-400">drawing submitted</span>
+              : <span className="font-mono text-xs text-dim">not yet submitted</span>
+            }
+            {checked && (
+              <button
+                onClick={() => toggleReveal(q.id)}
+                className="ml-2 font-mono text-xs text-dim hover:text-secondary transition-colors"
+              >
+                {revealed.has(q.id) ? '▲ hide' : '▼ solution'}
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Empirical: element percentages */}
         {empiricalP && (
@@ -523,7 +596,8 @@ export default function TestSheet({ test, onBack }: Props) {
           </div>
         )}
 
-        {/* Answer input */}
+        {/* Answer input — skipped for draw problems */}
+        {!vseprDrawP && (
         <div className="flex items-center gap-3 pl-8">
           {molarP && (
             <span className="font-mono text-base text-secondary whitespace-nowrap">{molarP.solveFor} =</span>
@@ -594,6 +668,7 @@ export default function TestSheet({ test, onBack }: Props) {
             </button>
           )}
         </div>
+        )}
 
         {/* Revealed solution */}
         <AnimatePresence>
@@ -605,17 +680,54 @@ export default function TestSheet({ test, onBack }: Props) {
               transition={{ duration: 0.15 }}
               style={{ overflow: 'hidden' }}
             >
-              <div className="pl-8 flex flex-col gap-2 pt-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs text-dim">Answer:</span>
-                  <span className="font-mono text-sm text-bright">{correctAnswer}</span>
+              {vseprDrawP ? (
+                <div className="pl-8 flex flex-col gap-4 pt-1">
+                  {/* Student's submission */}
+                  <div className="flex flex-col gap-1.5">
+                    <span className="font-mono text-xs text-dim tracking-wider uppercase">Your drawing</span>
+                    {submissions[q.id] ? (
+                      <button
+                        onClick={() => setDrawModal({ q, review: true })}
+                        className="self-start px-3 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
+                        style={{
+                          background: '#141620',
+                          border: '1px solid #1c1f2e',
+                          color: '#7b82a0',
+                        }}
+                      >
+                        View submitted drawing →
+                      </button>
+                    ) : (
+                      <span className="font-mono text-xs text-dim italic">No drawing submitted.</span>
+                    )}
+                  </div>
+                  {/* Expected answer */}
+                  <div className="flex flex-col gap-1.5">
+                    <span className="font-mono text-xs text-dim tracking-wider uppercase">Expected</span>
+                    <div className="flex flex-col gap-1 pl-3 border-l border-border mb-1">
+                      <span className="font-mono text-sm font-semibold text-bright">{vseprDrawP.geometry}</span>
+                      {vseprDrawP.keyDetails.map((d, i) => (
+                        <p key={i} className="font-mono text-xs text-secondary">{d}</p>
+                      ))}
+                    </div>
+                    <div style={{ maxWidth: 360 }}>
+                      <LewisStructureDiagram structure={vseprDrawP.structure} />
+                    </div>
+                  </div>
                 </div>
-                <div className="flex flex-col gap-1.5 pl-3 border-l border-border">
-                  {solutionSteps.map((step, i) => (
-                    <p key={i} className="font-mono text-sm text-primary">{step}</p>
-                  ))}
+              ) : (
+                <div className="pl-8 flex flex-col gap-2 pt-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs text-dim">Answer:</span>
+                    <span className="font-mono text-sm text-bright">{correctAnswer}</span>
+                  </div>
+                  <div className="flex flex-col gap-1.5 pl-3 border-l border-border">
+                    {solutionSteps.map((step, i) => (
+                      <p key={i} className="font-mono text-sm text-primary">{step}</p>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -639,7 +751,7 @@ export default function TestSheet({ test, onBack }: Props) {
         <div className="flex items-center gap-2 ml-auto flex-wrap">
           {checked && score !== null && (
             <span className="font-mono text-sm text-secondary">
-              Score: <span className="text-bright">{score}</span><span className="text-dim"> / {test.questions.length}</span>
+              Score: <span className="text-bright">{score}</span><span className="text-dim"> / {scorableCount}</span>
             </span>
           )}
 
@@ -662,7 +774,7 @@ export default function TestSheet({ test, onBack }: Props) {
             </>
           ) : (
             <button
-              onClick={() => { setAnswers({}); setChecked(false); setRevealed(new Set()) }}
+              onClick={() => { setAnswers({}); setChecked(false); setRevealed(new Set()); setSubmissions({}) }}
               className="px-4 py-1.5 rounded-sm font-sans text-sm border border-border
                          text-secondary hover:text-primary hover:border-muted transition-colors"
             >
@@ -728,6 +840,19 @@ export default function TestSheet({ test, onBack }: Props) {
             ⎙ Answer Key
           </button>
         </div>
+      )}
+
+      {/* Ketcher draw modal */}
+      {drawModal && drawModal.q.problem.kind === 'vsepr-draw' && (
+        <Suspense fallback={null}>
+          <VseprDrawModal
+            compound={drawModal.q.problem.data.compound}
+            structure={drawModal.q.problem.data.structure}
+            reviewMol={drawModal.review ? submissions[drawModal.q.id]?.mol : undefined}
+            onSubmit={drawModal.review ? undefined : (mol, passed) => handleDrawSubmit(drawModal.q.id, mol, passed)}
+            onClose={() => setDrawModal(null)}
+          />
+        </Suspense>
       )}
     </div>
   )

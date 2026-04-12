@@ -11,6 +11,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/calculations/fpd": "Freezing Point Depression",
   "/compound": "Compound Resolver",
   "/structures": "Structures",
+  "/tools": "Tools & References",
 };
 
 export default function AppLayout() {

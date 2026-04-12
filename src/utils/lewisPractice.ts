@@ -20,6 +20,15 @@ export interface VseprProblem {
   steps:        string[]
 }
 
+export interface VseprDrawProblem {
+  compound:   string          // display label e.g. "water (H₂O)"
+  question:   string
+  // answer key fields
+  geometry:   string          // e.g. "Bent"
+  keyDetails: string[]        // e.g. ["sp³", "≈104.5°", "2 bonding pairs, 2 lone pairs"]
+  structure:  LewisStructure  // full structure for diagram rendering
+}
+
 // ── Compound pool ─────────────────────────────────────────────────────────────
 
 const COMPOUND_POOL = [
@@ -233,6 +242,36 @@ function makeVseprProblem(structure: LewisStructure, label: string): VseprProble
   }
 }
 
+// ── VSEPR draw problem builder ────────────────────────────────────────────────
+
+const BOND_ANGLES: Record<string, string> = {
+  linear: '180°', diatomic: '180°',
+  trigonal_planar: '≈120°', bent: '< 120° or < 109.5°',
+  tetrahedral: '≈109.5°', trigonal_pyramidal: '≈107°',
+  see_saw: '≈120° / 90°', seesaw: '≈120° / 90°',
+  t_shaped: '≈90°', square_planar: '90°',
+  square_pyramidal: '≈90°', trigonal_bipyramidal: '90° / 120°',
+  octahedral: '90°',
+}
+
+function makeVseprDrawProblem(structure: LewisStructure, label: string): VseprDrawProblem {
+  const v = deriveVsepr(structure)
+  const geoKey = structure.geometry.toLowerCase().replace(/-/g, '_')
+  const angle  = BOND_ANGLES[geoKey] ?? '—'
+
+  return {
+    compound: label,
+    question: `Draw the 3D molecular structure of ${label} using wedge (▶) and dash (– –) bonds to show its geometry.`,
+    geometry: v.molecularGeometry,
+    keyDetails: [
+      `Hybridization: ${v.hybridization}`,
+      `Bond angles: ${angle}`,
+      `${v.bondingPairs} bonding pair${v.bondingPairs !== 1 ? 's' : ''}, ${v.lonePairs} lone pair${v.lonePairs !== 1 ? 's' : ''} on central atom`,
+    ],
+    structure,
+  }
+}
+
 // ── Public generators ─────────────────────────────────────────────────────────
 
 export async function generateLewisProblem(): Promise<LewisProblem | null> {
@@ -245,6 +284,12 @@ export async function generateVseprProblem(): Promise<VseprProblem | null> {
   const c = pick(COMPOUND_POOL)
   const s = await fetchStructure(c.formula, c.charge)
   return s ? makeVseprProblem(s, c.label) : null
+}
+
+export async function generateVseprDrawProblem(): Promise<VseprDrawProblem | null> {
+  const c = pick(COMPOUND_POOL)
+  const s = await fetchStructure(c.formula, c.charge)
+  return s ? makeVseprDrawProblem(s, c.label) : null
 }
 
 // ── Answer checking ───────────────────────────────────────────────────────────

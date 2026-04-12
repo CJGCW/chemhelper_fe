@@ -5,6 +5,10 @@ export default defineConfig({
   test: {
     environment: 'node',
   },
+  define: {
+    'process.env': {},
+    'global': 'globalThis',
+  },
   plugins: [react()],
   server: {
     port: 5173,

@@ -256,8 +256,8 @@ function RedoxSubItem({ item, onNavigate }: { item: typeof REDOX_ITEMS[0]; onNav
 // ── Structures sub-items ──────────────────────────────────────────────────────
 
 const STRUCTURE_ITEMS = [
-  { path: "/reference?tab=lewis", label: "Lewis Structure", formula: "⌬" },
-  { path: "/reference?tab=vsepr", label: "VSEPR",           formula: "⬡" },
+  { path: "/structures?tab=lewis", label: "Lewis Structures", formula: "⌬" },
+  { path: "/structures?tab=vsepr", label: "VSEPR",            formula: "⬡" },
 ]
 
 // ── Practice / top-level nav items ────────────────────────────────────────────
@@ -368,6 +368,7 @@ export default function NavSidebar({ open, onClose }: Props) {
 
   const [refCalcOpen,        setRefCalcOpen]        = useState(true)
   const [pracSectionOpen,    setPracSectionOpen]    = useState(true)
+  const [toolsSectionOpen,   setToolsSectionOpen]   = useState(currentPath === '/tools')
 
   // ── Reference / Calculations expandables ────────────────────────────────────
   const [tableExpanded,       setTableExpanded]       = useState(currentPath === "/table" || currentPath === "/electron-config")
@@ -375,7 +376,7 @@ export default function NavSidebar({ open, onClose }: Props) {
   const [calcExpanded,        setCalcExpanded]        = useState(currentPath === "/calculations")
   const [stoichExpanded,      setStoichExpanded]      = useState(currentPath === "/stoichiometry")
   const [redoxExpanded,       setRedoxExpanded]       = useState(currentPath === "/redox")
-  const [structExpanded,      setStructExpanded]      = useState(currentPath === "/structures" || (currentPath === '/reference' && (currentTab === 'lewis' || currentTab === 'vsepr')))
+  const [structExpanded,      setStructExpanded]      = useState(currentPath === "/structures")
   const [empiricalExpanded,   setEmpiricalExpanded]   = useState(
     currentPath === '/empirical' || (currentPath === '/reference' && currentTab === 'empirical')
   )
@@ -386,7 +387,7 @@ export default function NavSidebar({ open, onClose }: Props) {
   const isMolarCalcActive  = currentPath === "/calculations"
   const isStoichActive     = currentPath === "/stoichiometry"
   const isRedoxActive      = currentPath === "/redox"
-  const isStructActive     = currentPath === "/structures" || (currentPath === '/reference' && (currentTab === 'lewis' || currentTab === 'vsepr'))
+  const isStructActive     = currentPath === "/structures"
   const isEmpiricalActive  = currentPath === '/empirical' || (currentPath === '/reference' && currentTab === 'empirical')
   const isIdealGasNavActive = currentPath === '/ideal-gas'
 
@@ -507,6 +508,24 @@ export default function NavSidebar({ open, onClose }: Props) {
           )}
         </AnimatePresence>
 
+        {/* Tools */}
+        <NavGroup label="Tools" expanded={toolsSectionOpen} onToggle={() => setToolsSectionOpen(e => !e)} />
+        <AnimatePresence initial={false}>
+          {toolsSectionOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }}
+              style={{ overflow: 'hidden' }}
+            >
+              <PathSubItem
+                path="/tools?tool=ketcher"
+                formula="✎"
+                label="Ketcher Editor"
+                onNavigate={onClose}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
       </nav>
 

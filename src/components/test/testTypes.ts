@@ -3,7 +3,7 @@ import type { SigFigProblem } from '../../utils/sigfigPractice'
 import type { EmpiricalProblem } from '../../utils/empiricalPractice'
 import type { ConversionProblem } from '../../utils/conversionPractice'
 import type { AtomicProblem } from '../../utils/atomicPractice'
-import type { LewisProblem, VseprProblem } from '../../utils/lewisPractice'
+import type { LewisProblem, VseprProblem, VseprDrawProblem } from '../../utils/lewisPractice'
 import type { StoichProblem } from '../../utils/stoichiometryPractice'
 import type { RedoxProblem } from '../../utils/redoxPractice'
 import type { PercCompProblem } from '../../utils/percentCompositionPractice'
@@ -11,7 +11,7 @@ import type { GasStoichProblem } from '../../utils/gasStoichPractice'
 import type { SolStoichProblem } from '../../utils/solutionStoichPractice'
 import type { BalancingEquation } from '../../utils/balancingPractice'
 
-export type { SigFigProblem, EmpiricalProblem, ConversionProblem, AtomicProblem, LewisProblem, VseprProblem, StoichProblem, RedoxProblem, PercCompProblem, GasStoichProblem, SolStoichProblem, BalancingEquation }
+export type { SigFigProblem, EmpiricalProblem, ConversionProblem, AtomicProblem, LewisProblem, VseprProblem, VseprDrawProblem, StoichProblem, RedoxProblem, PercCompProblem, GasStoichProblem, SolStoichProblem, BalancingEquation }
 
 export interface MolarTestProblem      { kind: 'molar';      data: MolarProblem      }
 export interface SigFigTestProblem     { kind: 'sigfig';     data: SigFigProblem     }
@@ -20,6 +20,7 @@ export interface ConversionTestProblem { kind: 'conversion'; data: ConversionPro
 export interface AtomicTestProblem     { kind: 'atomic';     data: AtomicProblem     }
 export interface LewisTestProblem      { kind: 'lewis';      data: LewisProblem      }
 export interface VseprTestProblem      { kind: 'vsepr';      data: VseprProblem      }
+export interface VseprDrawTestProblem  { kind: 'vsepr-draw'; data: VseprDrawProblem  }
 export interface StoichTestProblem     { kind: 'stoich';     data: StoichProblem     }
 export interface RedoxTestProblem      { kind: 'redox';      data: RedoxProblem      }
 export interface PercCompTestProblem   { kind: 'perc_comp';  data: PercCompProblem   }
@@ -35,6 +36,7 @@ export type TestProblem =
   | AtomicTestProblem
   | LewisTestProblem
   | VseprTestProblem
+  | VseprDrawTestProblem
   | StoichTestProblem
   | RedoxTestProblem
   | PercCompTestProblem

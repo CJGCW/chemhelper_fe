@@ -217,9 +217,11 @@ function validate(
 function EditorInner({
   correctStructure,
   onRequestStructure,
+  onValidated,
 }: {
   correctStructure: LewisStructure | null
   onRequestStructure: () => Promise<LewisStructure | null>
+  onValidated?: (passed: boolean) => void
 }) {
   const [nodes, setNodes, onNodesChange] = useNodesState<AtomNodeType>([])
   const [edges, setEdges, onEdgesChange] = useEdgesState<BondEdgeType>([])
@@ -354,6 +356,7 @@ function EditorInner({
       const result = validate(nodes as Node<AtomNodeData>[], edges as Edge<BondEdgeData>[], correct)
 
       setValidationResult(result)
+      onValidated?.(result.passed)
     } finally {
       setValidating(false)
     }
@@ -548,14 +551,16 @@ function EditorInner({
 interface LewisEditorProps {
   correctStructure: LewisStructure | null
   onRequestStructure: () => Promise<LewisStructure | null>
+  onValidated?: (passed: boolean) => void
 }
 
-export default function LewisEditor({ correctStructure, onRequestStructure }: LewisEditorProps) {
+export default function LewisEditor({ correctStructure, onRequestStructure, onValidated }: LewisEditorProps) {
   return (
     <ReactFlowProvider>
       <EditorInner
         correctStructure={correctStructure}
         onRequestStructure={onRequestStructure}
+        onValidated={onValidated}
       />
     </ReactFlowProvider>
   )
