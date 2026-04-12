@@ -38,20 +38,69 @@ export interface VseprDrawProblem {
 // ── Compound pool ─────────────────────────────────────────────────────────────
 
 const COMPOUND_POOL = [
-  { formula: 'H2O',  charge:  0, label: 'water (H₂O)'                    },
-  { formula: 'CO2',  charge:  0, label: 'carbon dioxide (CO₂)'            },
-  { formula: 'NH3',  charge:  0, label: 'ammonia (NH₃)'                   },
-  { formula: 'CH4',  charge:  0, label: 'methane (CH₄)'                   },
-  { formula: 'NO3',  charge: -1, label: 'nitrate (NO₃⁻)'                  },
-  { formula: 'SO4',  charge: -2, label: 'sulfate (SO₄²⁻)'                 },
-  { formula: 'NH4',  charge:  1, label: 'ammonium (NH₄⁺)'                 },
-  { formula: 'PCl5', charge:  0, label: 'phosphorus pentachloride (PCl₅)' },
-  { formula: 'SF6',  charge:  0, label: 'sulfur hexafluoride (SF₆)'       },
-  { formula: 'XeF4', charge:  0, label: 'xenon tetrafluoride (XeF₄)'     },
-  { formula: 'BF3',  charge:  0, label: 'boron trifluoride (BF₃)'         },
-  { formula: 'HCN',  charge:  0, label: 'hydrogen cyanide (HCN)'          },
-  { formula: 'OF2',  charge:  0, label: 'oxygen difluoride (OF₂)'         },
-  { formula: 'H2S',  charge:  0, label: 'hydrogen sulfide (H₂S)'          },
+  // ── Linear ────────────────────────────────────────────────────────────────────
+  { formula: 'CO2',   charge:  0, label: 'carbon dioxide (CO₂)'              },
+  { formula: 'CS2',   charge:  0, label: 'carbon disulfide (CS₂)'            },
+  { formula: 'HCN',   charge:  0, label: 'hydrogen cyanide (HCN)'            },
+  { formula: 'BeCl2', charge:  0, label: 'beryllium chloride (BeCl₂)'        },
+  { formula: 'XeF2',  charge:  0, label: 'xenon difluoride (XeF₂)'           },
+  // ── Trigonal planar ───────────────────────────────────────────────────────────
+  { formula: 'BF3',   charge:  0, label: 'boron trifluoride (BF₃)'           },
+  { formula: 'BCl3',  charge:  0, label: 'boron trichloride (BCl₃)'          },
+  { formula: 'SO3',   charge:  0, label: 'sulfur trioxide (SO₃)'             },
+  { formula: 'NO3',   charge: -1, label: 'nitrate (NO₃⁻)'                    },
+  { formula: 'CO3',   charge: -2, label: 'carbonate (CO₃²⁻)'                 },
+  { formula: 'CH2O',  charge:  0, label: 'formaldehyde (CH₂O)'               },
+  // ── Bent (sp²) ────────────────────────────────────────────────────────────────
+  { formula: 'SO2',   charge:  0, label: 'sulfur dioxide (SO₂)'              },
+  { formula: 'O3',    charge:  0, label: 'ozone (O₃)'                        },
+  { formula: 'NO2',   charge: -1, label: 'nitrite (NO₂⁻)'                    },
+  // ── Tetrahedral ───────────────────────────────────────────────────────────────
+  { formula: 'CH4',   charge:  0, label: 'methane (CH₄)'                     },
+  { formula: 'CCl4',  charge:  0, label: 'carbon tetrachloride (CCl₄)'       },
+  { formula: 'CF4',   charge:  0, label: 'carbon tetrafluoride (CF₄)'        },
+  { formula: 'SiH4',  charge:  0, label: 'silane (SiH₄)'                     },
+  { formula: 'SiCl4', charge:  0, label: 'silicon tetrachloride (SiCl₄)'     },
+  { formula: 'NH4',   charge:  1, label: 'ammonium (NH₄⁺)'                   },
+  { formula: 'SO4',   charge: -2, label: 'sulfate (SO₄²⁻)'                   },
+  { formula: 'PO4',   charge: -3, label: 'phosphate (PO₄³⁻)'                 },
+  { formula: 'ClO4',  charge: -1, label: 'perchlorate (ClO₄⁻)'               },
+  // ── Trigonal pyramidal ────────────────────────────────────────────────────────
+  { formula: 'NH3',   charge:  0, label: 'ammonia (NH₃)'                     },
+  { formula: 'PH3',   charge:  0, label: 'phosphine (PH₃)'                   },
+  { formula: 'PCl3',  charge:  0, label: 'phosphorus trichloride (PCl₃)'     },
+  { formula: 'NF3',   charge:  0, label: 'nitrogen trifluoride (NF₃)'        },
+  { formula: 'PF3',   charge:  0, label: 'phosphorus trifluoride (PF₃)'      },
+  { formula: 'SO3',   charge: -2, label: 'sulfite (SO₃²⁻)'                   },
+  { formula: 'ClO3',  charge: -1, label: 'chlorate (ClO₃⁻)'                  },
+  // ── Bent (sp³) ────────────────────────────────────────────────────────────────
+  { formula: 'H2O',   charge:  0, label: 'water (H₂O)'                       },
+  { formula: 'H2S',   charge:  0, label: 'hydrogen sulfide (H₂S)'            },
+  { formula: 'OF2',   charge:  0, label: 'oxygen difluoride (OF₂)'           },
+  { formula: 'SCl2',  charge:  0, label: 'sulfur dichloride (SCl₂)'          },
+  { formula: 'ClO2',  charge: -1, label: 'chlorite (ClO₂⁻)'                  },
+  // ── Trigonal bipyramidal ──────────────────────────────────────────────────────
+  { formula: 'PCl5',  charge:  0, label: 'phosphorus pentachloride (PCl₅)'   },
+  { formula: 'PF5',   charge:  0, label: 'phosphorus pentafluoride (PF₅)'    },
+  { formula: 'AsF5',  charge:  0, label: 'arsenic pentafluoride (AsF₅)'      },
+  // ── See-saw ───────────────────────────────────────────────────────────────────
+  { formula: 'SF4',   charge:  0, label: 'sulfur tetrafluoride (SF₄)'        },
+  { formula: 'TeCl4', charge:  0, label: 'tellurium tetrachloride (TeCl₄)'   },
+  // ── T-shaped ──────────────────────────────────────────────────────────────────
+  { formula: 'ClF3',  charge:  0, label: 'chlorine trifluoride (ClF₃)'       },
+  { formula: 'BrF3',  charge:  0, label: 'bromine trifluoride (BrF₃)'        },
+  { formula: 'IF3',   charge:  0, label: 'iodine trifluoride (IF₃)'          },
+  // ── Square planar ─────────────────────────────────────────────────────────────
+  { formula: 'XeF4',  charge:  0, label: 'xenon tetrafluoride (XeF₄)'        },
+  { formula: 'ICl4',  charge: -1, label: 'tetrachloroiodate (ICl₄⁻)'         },
+  // ── Square pyramidal ──────────────────────────────────────────────────────────
+  { formula: 'BrF5',  charge:  0, label: 'bromine pentafluoride (BrF₅)'      },
+  { formula: 'IF5',   charge:  0, label: 'iodine pentafluoride (IF₅)'        },
+  { formula: 'ClF5',  charge:  0, label: 'chlorine pentafluoride (ClF₅)'     },
+  // ── Octahedral ────────────────────────────────────────────────────────────────
+  { formula: 'SF6',   charge:  0, label: 'sulfur hexafluoride (SF₆)'         },
+  { formula: 'SeF6',  charge:  0, label: 'selenium hexafluoride (SeF₆)'      },
+  { formula: 'IF6',   charge:  1, label: 'hexafluoroiodine cation (IF₆⁺)'    },
 ]
 
 function pick<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)] }
@@ -278,35 +327,56 @@ function makeVseprDrawProblem(structure: LewisStructure, label: string): VseprDr
   }
 }
 
+// ── Random structure fetch (backend-generated) ────────────────────────────────
+
+async function fetchRandomStructure(): Promise<LewisStructure | null> {
+  try {
+    const resp = await fetch('/api/structure/random')
+    if (!resp.ok) return null
+    return resp.json()
+  } catch {
+    return null
+  }
+}
+
+// Pick either from the curated static pool (which includes ions and multi-element
+// compounds the generator can't produce) or from the backend random generator.
+async function pickStructure(): Promise<{ structure: LewisStructure; label: string } | null> {
+  // ~40% of the time use the curated pool, otherwise ask the backend to generate one
+  if (Math.random() < 0.4) {
+    const c = pick(COMPOUND_POOL)
+    const s = await fetchStructure(c.formula, c.charge)
+    return s ? { structure: s, label: c.label } : null
+  }
+  const s = await fetchRandomStructure()
+  return s ? { structure: s, label: s.name } : null
+}
+
 // ── Public generators ─────────────────────────────────────────────────────────
 
 export async function generateLewisProblem(): Promise<LewisProblem | null> {
-  const c = pick(COMPOUND_POOL)
-  const s = await fetchStructure(c.formula, c.charge)
-  return s ? makeLewisProblem(s, c.label) : null
+  const picked = await pickStructure()
+  return picked ? makeLewisProblem(picked.structure, picked.label) : null
 }
 
 export async function generateVseprProblem(): Promise<VseprProblem | null> {
-  const c = pick(COMPOUND_POOL)
-  const s = await fetchStructure(c.formula, c.charge)
-  return s ? makeVseprProblem(s, c.label) : null
+  const picked = await pickStructure()
+  return picked ? makeVseprProblem(picked.structure, picked.label) : null
 }
 
 export async function generateLewisDrawProblem(): Promise<LewisDrawProblem | null> {
-  const c = pick(COMPOUND_POOL)
-  const s = await fetchStructure(c.formula, c.charge)
-  if (!s) return null
+  const picked = await pickStructure()
+  if (!picked) return null
   return {
-    compound:  c.label,
-    question:  `Draw the Lewis structure of ${c.label}, showing all bonds and lone pairs.`,
-    structure: s,
+    compound:  picked.label,
+    question:  `Draw the Lewis structure of ${picked.label}, showing all bonds and lone pairs.`,
+    structure: picked.structure,
   }
 }
 
 export async function generateVseprDrawProblem(): Promise<VseprDrawProblem | null> {
-  const c = pick(COMPOUND_POOL)
-  const s = await fetchStructure(c.formula, c.charge)
-  return s ? makeVseprDrawProblem(s, c.label) : null
+  const picked = await pickStructure()
+  return picked ? makeVseprDrawProblem(picked.structure, picked.label) : null
 }
 
 // ── Answer checking ───────────────────────────────────────────────────────────

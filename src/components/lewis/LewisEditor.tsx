@@ -131,6 +131,108 @@ function countBy<T>(arr: T[], key: (v: T) => string): Record<string, number> {
   return out
 }
 
+// ── Geometry check ────────────────────────────────────────────────────────────
+//
+// Verifies that the spatial arrangement of drawn atoms matches the expected
+// VSEPR geometry. Only checks geometries that are reliably distinguishable in
+// 2D (linear, bent, trigonal planar/pyramidal, T-shaped, square planar).
+// 3D geometries like tetrahedral, trigonal bipyramidal, etc. are skipped since
+// any 2D projection of those shapes can look different.
+
+function angleBetween(
+  ax: number, ay: number,
+  bx: number, by: number,
+): number {
+  const mag = Math.sqrt(ax * ax + ay * ay) * Math.sqrt(bx * bx + by * by)
+  if (mag < 1) return 0
+  return Math.acos(Math.max(-1, Math.min(1, (ax * bx + ay * by) / mag))) * 180 / Math.PI
+}
+
+function checkGeometry(
+  nodes: Node<AtomNodeData>[],
+  edges: Edge<BondEdgeData>[],
+  geometry: string,
+): ValidationCheck {
+  // Build adjacency from drawn edges
+  const adj: Record<string, string[]> = {}
+  nodes.forEach(n => { adj[n.id] = [] })
+  edges.forEach(e => { adj[e.source]?.push(e.target); adj[e.target]?.push(e.source) })
+
+  // Find center: most connections, tie-broken away from H
+  const posById = Object.fromEntries(nodes.map(n => [n.id, n.position]))
+  const center = nodes.reduce((best, n) => {
+    const nb = adj[n.id]?.length ?? 0, bb = adj[best.id]?.length ?? 0
+    if (nb > bb) return n
+    if (nb === bb && best.data.element === 'H' && n.data.element !== 'H') return n
+    return best
+  })
+
+  const termIds = adj[center.id] ?? []
+  if (termIds.length < 2) {
+    return { label: 'Shape', passed: true, detail: 'Not enough bonds to check shape' }
+  }
+
+  const { x: cx, y: cy } = posById[center.id] ?? { x: 0, y: 0 }
+  const vecs = termIds.map(id => {
+    const p = posById[id] ?? { x: 0, y: 0 }
+    return { x: p.x - cx, y: p.y - cy }
+  })
+
+  // All pairwise angles
+  const angles: number[] = []
+  for (let i = 0; i < vecs.length; i++)
+    for (let j = i + 1; j < vecs.length; j++)
+      angles.push(angleBetween(vecs[i].x, vecs[i].y, vecs[j].x, vecs[j].y))
+
+  const maxAngle = Math.max(...angles)
+  const minAngle = Math.min(...angles)
+  const geo = geometry.toLowerCase().replace(/-/g, '_')
+
+  // Linear / diatomic: two terminals on opposite sides (≈180°)
+  if (geo === 'linear' || geo === 'diatomic') {
+    const a = angles[0]
+    return a >= 150
+      ? { label: 'Shape', passed: true,  detail: `Linear confirmed — bond angle ${a.toFixed(0)}°` }
+      : { label: 'Shape', passed: false, detail: `Linear requires ~180°, got ${a.toFixed(0)}° — place the two terminal atoms on opposite sides of the center` }
+  }
+
+  // Bent: two terminals at an angle, NOT collinear
+  if (geo === 'bent') {
+    const a = angles[0]
+    return a < 160
+      ? { label: 'Shape', passed: true,  detail: `Bent shape confirmed — bond angle ${a.toFixed(0)}°` }
+      : { label: 'Shape', passed: false, detail: `Bent shape requires a visible angle, but the atoms look nearly collinear (${a.toFixed(0)}°) — bend the molecule` }
+  }
+
+  // Trigonal planar / pyramidal: 3 bonds spread out, none collinear
+  if (geo === 'trigonal_planar' || geo === 'trigonal_pyramidal') {
+    if (maxAngle >= 165)
+      return { label: 'Shape', passed: false, detail: `Two bonds appear collinear (${maxAngle.toFixed(0)}°) — spread all three bonds out` }
+    if (minAngle < 55)
+      return { label: 'Shape', passed: false, detail: `Bonds are too crowded (smallest angle ${minAngle.toFixed(0)}°) — spread them out more evenly` }
+    return { label: 'Shape', passed: true, detail: `Bond angles look reasonable (${angles.map(a => a.toFixed(0)).join('°, ')}°)` }
+  }
+
+  // T-shaped: 3 bonds, one pair nearly collinear (the two axial ligands)
+  if (geo === 't_shaped') {
+    return maxAngle >= 155
+      ? { label: 'Shape', passed: true,  detail: `T-shaped confirmed — axial bond angle ${maxAngle.toFixed(0)}°` }
+      : { label: 'Shape', passed: false, detail: `T-shaped needs one pair of bonds nearly opposite (~180°), largest angle is ${maxAngle.toFixed(0)}°` }
+  }
+
+  // Square planar: 4 bonds, two pairs of opposite bonds
+  if (geo === 'square_planar') {
+    const collinear = angles.filter(a => a >= 155).length
+    return collinear >= 2
+      ? { label: 'Shape', passed: true,  detail: `Square planar confirmed — ${collinear} opposite bond pairs` }
+      : { label: 'Shape', passed: false, detail: `Square planar needs two pairs of opposite bonds (~180°), found ${collinear}` }
+  }
+
+  // 3D geometries (tetrahedral, trigonal bipyramidal, octahedral, etc.) cannot
+  // be verified from 2D positions — any projection is valid.
+  return { label: 'Shape', passed: true, detail: `Shape layout looks fine (${geometry})` }
+}
+
 function validate(
   nodes: Node<AtomNodeData>[],
   edges: Edge<BondEdgeData>[],
@@ -208,6 +310,12 @@ function validate(
       ? 'Formal charges are correct'
       : 'Formal charges don\'t match — check your lone pairs and bond orders',
   })
+
+  // 5. Spatial geometry — only run when atoms and bonds are correct so that the
+  //    center-finding logic has meaningful node positions to work with.
+  if (elemPass && bondsPass) {
+    checks.push(checkGeometry(nodes, edges, correct.geometry))
+  }
 
   return { passed: checks.every(c => c.passed), checks }
 }

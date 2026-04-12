@@ -44,7 +44,107 @@ function lewisToMol(ls: LewisStructure): string {
   return `${header}${counts}\n${atomBlock}\n${bondBlock}\n${chgLines}M  END\n`
 }
 
-// ── MOL V2000 parser — kept only for wedge/dash stereo detection ──────────────
+// ── MOL V2000 parser — atom positions + wedge/dash stereo ────────────────────
+
+interface AtomPos2D { x: number; y: number }
+interface Bond2D    { a1: number; a2: number }
+
+function parseMolfile2D(molfile: string): { atoms: AtomPos2D[]; bonds: Bond2D[] } | null {
+  try {
+    const lines = molfile.split('\n')
+    const countsLine = lines[3]
+    if (!countsLine) return null
+    const atomCount = parseInt(countsLine.substring(0, 3).trim(), 10)
+    const bondCount = parseInt(countsLine.substring(3, 6).trim(), 10)
+    if (isNaN(atomCount) || isNaN(bondCount)) return null
+
+    const atoms: AtomPos2D[] = []
+    for (let i = 0; i < atomCount; i++) {
+      const line = lines[4 + i] ?? ''
+      atoms.push({
+        x: parseFloat(line.substring(0, 10).trim()),
+        y: parseFloat(line.substring(10, 20).trim()),
+      })
+    }
+
+    const bonds: Bond2D[] = []
+    for (let i = 0; i < bondCount; i++) {
+      const line = lines[4 + atomCount + i] ?? ''
+      bonds.push({
+        a1: parseInt(line.substring(0, 3).trim(), 10) - 1,
+        a2: parseInt(line.substring(3, 6).trim(), 10) - 1,
+      })
+    }
+    return { atoms, bonds }
+  } catch {
+    return null
+  }
+}
+
+function checkMolGeometry(
+  molfile: string,
+  geometry: string,
+): { passed: boolean; detail: string } | null {
+  // Only check geometries that are purely 2D (no wedge/dash expected)
+  if (!FLAT_GEOMETRIES.has(geometry)) return null
+
+  const parsed = parseMolfile2D(molfile)
+  if (!parsed) return null
+  const { atoms, bonds } = parsed
+  if (atoms.length < 3) return null  // diatomic: nothing to check
+
+  // Find centre = atom with most connections
+  const deg = new Array(atoms.length).fill(0)
+  for (const b of bonds) { deg[b.a1]++; deg[b.a2]++ }
+  const maxDeg  = Math.max(...deg)
+  const centerIdx = deg.indexOf(maxDeg)
+  const center  = atoms[centerIdx]
+
+  // Terminal indices
+  const termIdxs = bonds
+    .filter(b => b.a1 === centerIdx || b.a2 === centerIdx)
+    .map(b => b.a1 === centerIdx ? b.a2 : b.a1)
+
+  if (termIdxs.length < 2) return null
+
+  function angleBetween(i: number, j: number): number {
+    const ax = atoms[i].x - center.x, ay = atoms[i].y - center.y
+    const bx = atoms[j].x - center.x, by = atoms[j].y - center.y
+    const magA = Math.sqrt(ax*ax + ay*ay)
+    const magB = Math.sqrt(bx*bx + by*by)
+    if (magA < 1e-6 || magB < 1e-6) return 0
+    const cosθ = Math.max(-1, Math.min(1, (ax*bx + ay*by) / (magA * magB)))
+    return Math.acos(cosθ) * 180 / Math.PI
+  }
+
+  const angles: number[] = []
+  for (let i = 0; i < termIdxs.length; i++)
+    for (let j = i + 1; j < termIdxs.length; j++)
+      angles.push(angleBetween(termIdxs[i], termIdxs[j]))
+
+  const maxAngle = Math.max(...angles)
+  const minAngle = Math.min(...angles)
+
+  if (geometry === 'linear' || geometry === 'diatomic') {
+    if (maxAngle >= 150) return { passed: true,  detail: 'Linear geometry confirmed' }
+    return { passed: false, detail: `Should be linear — drawn angle is ~${Math.round(maxAngle)}° (expected ~180°)` }
+  }
+
+  if (geometry === 'bent') {
+    if (maxAngle < 160) return { passed: true,  detail: 'Bent geometry confirmed' }
+    return { passed: false, detail: `Should be bent — drawn angle is ~${Math.round(maxAngle)}° (expected <160°)` }
+  }
+
+  if (geometry === 'trigonal_planar') {
+    if (maxAngle < 165 && minAngle >= 55)
+      return { passed: true, detail: 'Trigonal planar geometry confirmed' }
+    if (maxAngle >= 165)
+      return { passed: false, detail: `Should be trigonal planar — one pair of bonds is nearly collinear (~${Math.round(maxAngle)}°); all angles should be ~120°` }
+    return { passed: false, detail: `Should be trigonal planar — check bond angles (expected ~120°)` }
+  }
+
+  return null
+}
 
 function molHas3DBonds(molfile: string): boolean {
   try {
@@ -184,6 +284,18 @@ export default function KetcherStructureEditor({ correctStructure, onValidated, 
           passed: has3D,
           detail: has3D ? 'Present' : 'Use wedge (▶) or dash (– –) bonds to show 3D geometry',
         })
+      }
+
+      // ── 5. Geometry check (flat geometries only) ─────────────────────────────
+      if (structurePassed && isFlat) {
+        const geoResult = checkMolGeometry(molfile, correctStructure.geometry ?? '')
+        if (geoResult) {
+          checks.push({
+            label: 'Geometry',
+            passed: geoResult.passed,
+            detail: geoResult.detail,
+          })
+        }
       }
 
       const validation: ValidationResult = { passed: checks.every(c => c.passed), checks }
