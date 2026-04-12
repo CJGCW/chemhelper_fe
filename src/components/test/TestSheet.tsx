@@ -6,7 +6,9 @@ import { checkConversionAnswer } from '../../utils/conversionPractice'
 import { checkAtomicAnswer } from '../../utils/atomicPractice'
 import { checkLewisProblem, checkVseprProblem } from '../../utils/lewisPractice'
 import LewisStructureDiagram, { lewisToSvgString } from '../lewis/LewisStructureDiagram'
-const VseprDrawModal = lazy(() => import('./VseprDrawModal'))
+const VseprDrawModal  = lazy(() => import('./VseprDrawModal'))
+const LewisDrawModal  = lazy(() => import('./LewisDrawModal'))
+import type { LewisSnapshot } from './LewisDrawModal'
 import { checkStoichAnswer } from '../../utils/stoichiometryPractice'
 import { checkRedoxAnswer } from '../../utils/redoxPractice'
 import { checkPercCompAnswer } from '../../utils/percentCompositionPractice'
@@ -48,7 +50,7 @@ function checkQuestion(q: TestQuestion, answer: string): Result {
     return checkGasStoichAnswer(q.problem.data, answer) ? 'correct' : 'wrong'
   if (q.problem.kind === 'sol_stoich')
     return checkSolStoichAnswer(q.problem.data, answer) ? 'correct' : 'wrong'
-  if (q.problem.kind === 'vsepr-draw') return 'blank'  // scored externally via Ketcher
+  if (q.problem.kind === 'vsepr-draw' || q.problem.kind === 'lewis-draw') return 'blank'  // scored externally via Ketcher
   if (q.problem.kind === 'balancing') {
     // answer: "2,1,2" — comma/space separated coefficients (reactants then products)
     const eq = q.problem.data
@@ -121,7 +123,7 @@ function buildQuestionHtml(q: TestQuestion): string {
     </div>`
   }
 
-  if (q.problem.kind === 'vsepr-draw') {
+  if (q.problem.kind === 'vsepr-draw' || q.problem.kind === 'lewis-draw') {
     const p = q.problem.data
     return `<div class="question">${header}
       <p class="q-text">${p.question}</p>
@@ -224,6 +226,11 @@ function buildAnswerKeyHtml(q: TestQuestion): string {
     answer = q.problem.data.answerUnit
       ? `${q.problem.data.answer} ${q.problem.data.answerUnit}`
       : q.problem.data.answer
+  else if (q.problem.kind === 'lewis-draw') {
+    const p = q.problem.data
+    const svg = lewisToSvgString(p.structure, 260, 180)
+    return `<div class="key-row key-row--draw"><span class="key-num">${q.id}.</span><div style="display:flex;align-items:flex-start;gap:16px;flex:1">${svg}</div></div>`
+  }
   else if (q.problem.kind === 'vsepr-draw') {
     const p = q.problem.data
     const svg = lewisToSvgString(p.structure, 260, 180)
@@ -333,7 +340,7 @@ function openAnswerKeyPrint(test: GeneratedTest) {
 interface Props { test: GeneratedTest; onBack: () => void }
 
 export default function TestSheet({ test, onBack }: Props) {
-  interface DrawSubmission { mol: string; passed: boolean }
+  interface DrawSubmission { mol?: string; snapshot?: LewisSnapshot; passed: boolean }
 
   const [answers, setAnswers]       = useState<Record<number, string>>({})
   const [checked, setChecked]       = useState(false)
@@ -350,8 +357,8 @@ export default function TestSheet({ test, onBack }: Props) {
     setRevealed(prev => { const s = new Set(prev); s.has(id) ? s.delete(id) : s.add(id); return s })
   }
 
-  function handleDrawSubmit(id: number, mol: string, passed: boolean) {
-    setSubmissions(prev => ({ ...prev, [id]: { mol, passed } }))
+  function handleDrawSubmit(id: number, mol: string | undefined, passed: boolean, snapshot?: LewisSnapshot) {
+    setSubmissions(prev => ({ ...prev, [id]: { mol, snapshot, passed } }))
   }
 
   const answeredCount = Object.values(answers).filter(v => v?.trim() !== '').length
@@ -359,7 +366,7 @@ export default function TestSheet({ test, onBack }: Props) {
 
   const results: Record<number, Result> | null = checked
     ? Object.fromEntries(test.questions.map(q => {
-        if (q.problem.kind === 'vsepr-draw') {
+        if (q.problem.kind === 'vsepr-draw' || q.problem.kind === 'lewis-draw') {
           const s = submissions[q.id]
           return [q.id, s === undefined ? 'blank' : s.passed ? 'correct' : 'wrong']
         }
@@ -394,6 +401,8 @@ export default function TestSheet({ test, onBack }: Props) {
     const solStoichP  = q.problem.kind === 'sol_stoich' ? q.problem.data : null
     const balancingP  = q.problem.kind === 'balancing'  ? q.problem.data : null
     const vseprDrawP  = q.problem.kind === 'vsepr-draw' ? q.problem.data : null
+    const lewisDrawP  = q.problem.kind === 'lewis-draw' ? q.problem.data : null
+    const drawP       = vseprDrawP ?? lewisDrawP   // either draw-type problem
 
     const questionText = sfProblem
       ? (sfProblem.kind === 'count'
@@ -445,8 +454,8 @@ export default function TestSheet({ test, onBack }: Props) {
             <span className="font-mono">{[...balancingP.reactants, ...balancingP.products].map(s => s.coeff).join(', ')}</span>
           </p>
         </div>
-      : vseprDrawP
-      ? <p className="font-sans text-base text-bright leading-relaxed pl-8">{vseprDrawP.question}</p>
+      : drawP
+      ? <p className="font-sans text-base text-bright leading-relaxed pl-8">{drawP.question}</p>
       : <p className="font-sans text-base text-bright leading-relaxed pl-8">
           {percCompP?.question ?? atomicP?.question ?? lewisP?.question ?? vseprP?.question ?? conversionP?.question ?? molarP!.question}
         </p>
@@ -475,6 +484,8 @@ export default function TestSheet({ test, onBack }: Props) {
       ? `${solStoichP.answer.toPrecision(4)} ${solStoichP.answerUnit}`
       : balancingP
       ? formatEquation(balancingP)
+      : lewisDrawP
+      ? lewisDrawP.compound
       : vseprDrawP
       ? `${vseprDrawP.geometry} — ${vseprDrawP.keyDetails.join(', ')}`
       : `${molarP!.answer} ${molarP!.answerUnit}`
@@ -503,6 +514,8 @@ export default function TestSheet({ test, onBack }: Props) {
       ? solStoichP.steps
       : balancingP
       ? [`Balanced: ${formatEquation(balancingP)}`]
+      : lewisDrawP
+      ? ['See diagram']
       : vseprDrawP
       ? [`Geometry: ${vseprDrawP.geometry}`, ...vseprDrawP.keyDetails]
       : molarP!.steps
@@ -530,7 +543,7 @@ export default function TestSheet({ test, onBack }: Props) {
         {questionText}
 
         {/* Draw problems: open Ketcher editor in modal */}
-        {vseprDrawP && (
+        {drawP && (
           <div className="flex items-center gap-3 pl-8">
             <button
               onClick={() => setDrawModal({ q, review: false })}
@@ -597,7 +610,7 @@ export default function TestSheet({ test, onBack }: Props) {
         )}
 
         {/* Answer input — skipped for draw problems */}
-        {!vseprDrawP && (
+        {!drawP && (
         <div className="flex items-center gap-3 pl-8">
           {molarP && (
             <span className="font-mono text-base text-secondary whitespace-nowrap">{molarP.solveFor} =</span>
@@ -680,7 +693,7 @@ export default function TestSheet({ test, onBack }: Props) {
               transition={{ duration: 0.15 }}
               style={{ overflow: 'hidden' }}
             >
-              {vseprDrawP ? (
+              {drawP ? (
                 <div className="pl-8 flex flex-col gap-4 pt-1">
                   {/* Student's submission */}
                   <div className="flex flex-col gap-1.5">
@@ -704,14 +717,16 @@ export default function TestSheet({ test, onBack }: Props) {
                   {/* Expected answer */}
                   <div className="flex flex-col gap-1.5">
                     <span className="font-mono text-xs text-dim tracking-wider uppercase">Expected</span>
-                    <div className="flex flex-col gap-1 pl-3 border-l border-border mb-1">
-                      <span className="font-mono text-sm font-semibold text-bright">{vseprDrawP.geometry}</span>
-                      {vseprDrawP.keyDetails.map((d, i) => (
-                        <p key={i} className="font-mono text-xs text-secondary">{d}</p>
-                      ))}
-                    </div>
+                    {vseprDrawP && (
+                      <div className="flex flex-col gap-1 pl-3 border-l border-border mb-1">
+                        <span className="font-mono text-sm font-semibold text-bright">{vseprDrawP.geometry}</span>
+                        {vseprDrawP.keyDetails.map((d, i) => (
+                          <p key={i} className="font-mono text-xs text-secondary">{d}</p>
+                        ))}
+                      </div>
+                    )}
                     <div style={{ maxWidth: 360 }}>
-                      <LewisStructureDiagram structure={vseprDrawP.structure} />
+                      <LewisStructureDiagram structure={drawP.structure} />
                     </div>
                   </div>
                 </div>
@@ -842,7 +857,7 @@ export default function TestSheet({ test, onBack }: Props) {
         </div>
       )}
 
-      {/* Ketcher draw modal */}
+      {/* Draw modals */}
       {drawModal && drawModal.q.problem.kind === 'vsepr-draw' && (
         <Suspense fallback={null}>
           <VseprDrawModal
@@ -850,6 +865,17 @@ export default function TestSheet({ test, onBack }: Props) {
             structure={drawModal.q.problem.data.structure}
             reviewMol={drawModal.review ? submissions[drawModal.q.id]?.mol : undefined}
             onSubmit={drawModal.review ? undefined : (mol, passed) => handleDrawSubmit(drawModal.q.id, mol, passed)}
+            onClose={() => setDrawModal(null)}
+          />
+        </Suspense>
+      )}
+      {drawModal && drawModal.q.problem.kind === 'lewis-draw' && (
+        <Suspense fallback={null}>
+          <LewisDrawModal
+            compound={drawModal.q.problem.data.compound}
+            structure={drawModal.q.problem.data.structure}
+            reviewSnapshot={drawModal.review ? submissions[drawModal.q.id]?.snapshot : undefined}
+            onSubmit={drawModal.review ? undefined : (passed, snapshot) => handleDrawSubmit(drawModal.q.id, undefined, passed, snapshot)}
             onClose={() => setDrawModal(null)}
           />
         </Suspense>

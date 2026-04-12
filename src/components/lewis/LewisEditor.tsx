@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import {
   ReactFlow,
   Background,
@@ -214,17 +214,29 @@ function validate(
 
 // ── Inner editor (needs ReactFlowProvider context) ───────────────────────────
 
-function EditorInner({
-  correctStructure,
-  onRequestStructure,
-  onValidated,
-}: {
+export interface LewisEditorHandle {
+  submitSilently: () => Promise<{ passed: boolean; nodes: AtomNodeType[]; edges: BondEdgeType[] } | null>
+}
+
+const EditorInner = forwardRef<LewisEditorHandle, {
   correctStructure: LewisStructure | null
   onRequestStructure: () => Promise<LewisStructure | null>
   onValidated?: (passed: boolean) => void
-}) {
-  const [nodes, setNodes, onNodesChange] = useNodesState<AtomNodeType>([])
-  const [edges, setEdges, onEdgesChange] = useEdgesState<BondEdgeType>([])
+  initialNodes?: AtomNodeType[]
+  initialEdges?: BondEdgeType[]
+  hideCheck?: boolean
+  canvasHeight?: number
+}>(function EditorInner({
+  correctStructure,
+  onRequestStructure,
+  onValidated,
+  initialNodes,
+  initialEdges,
+  hideCheck,
+  canvasHeight = 480,
+}, ref) {
+  const [nodes, setNodes, onNodesChange] = useNodesState<AtomNodeType>(initialNodes ?? [])
+  const [edges, setEdges, onEdgesChange] = useEdgesState<BondEdgeType>(initialEdges ?? [])
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null)
   const [validating, setValidating] = useState(false)
   const [loadedMol, setLoadedMol] = useState('')
@@ -234,6 +246,16 @@ function EditorInner({
   const [loadError, setLoadError] = useState<string | null>(null)
   const [customElement, setCustomElement] = useState('')
   const nodeIdRef = useRef(0)
+
+  useImperativeHandle(ref, () => ({
+    async submitSilently() {
+      if (nodes.length === 0) return null
+      const correct = localStructure ?? correctStructure ?? await onRequestStructure()
+      if (!correct) return null
+      const result = validate(nodes as Node<AtomNodeData>[], edges as Edge<BondEdgeData>[], correct)
+      return { passed: result.passed, nodes: nodes as AtomNodeType[], edges: edges as BondEdgeType[] }
+    },
+  }), [nodes, edges, localStructure, correctStructure, onRequestStructure])
 
   function addAtom(element: string) {
     const el = element.trim()
@@ -456,18 +478,20 @@ function EditorInner({
           >
             Clear
           </button>
-          <button
-            onClick={handleCheck}
-            disabled={nodes.length === 0 || validating}
-            className="px-4 h-8 rounded-sm font-sans text-sm font-medium transition-all disabled:opacity-40"
-            style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
-              border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
-              color: 'var(--c-halogen)',
-            }}
-          >
-            {validating ? '…' : 'Check'}
-          </button>
+          {!hideCheck && (
+            <button
+              onClick={handleCheck}
+              disabled={nodes.length === 0 || validating}
+              className="px-4 h-8 rounded-sm font-sans text-sm font-medium transition-all disabled:opacity-40"
+              style={{
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
+                color: 'var(--c-halogen)',
+              }}
+            >
+              {validating ? '…' : 'Check'}
+            </button>
+          )}
         </div>
       </div>
 
@@ -482,7 +506,7 @@ function EditorInner({
       {/* Canvas */}
       <div
         style={{
-          height: 480,
+          height: canvasHeight,
           border: '1px solid #1c1f2e',
           borderRadius: 6,
           overflow: 'hidden',
@@ -544,7 +568,7 @@ function EditorInner({
       )}
     </div>
   )
-}
+})
 
 // ── Public component (wraps with provider) ────────────────────────────────────
 
@@ -552,16 +576,29 @@ interface LewisEditorProps {
   correctStructure: LewisStructure | null
   onRequestStructure: () => Promise<LewisStructure | null>
   onValidated?: (passed: boolean) => void
+  initialNodes?: AtomNodeType[]
+  initialEdges?: BondEdgeType[]
+  hideCheck?: boolean
+  canvasHeight?: number
 }
 
-export default function LewisEditor({ correctStructure, onRequestStructure, onValidated }: LewisEditorProps) {
-  return (
-    <ReactFlowProvider>
-      <EditorInner
-        correctStructure={correctStructure}
-        onRequestStructure={onRequestStructure}
-        onValidated={onValidated}
-      />
-    </ReactFlowProvider>
-  )
-}
+const LewisEditor = forwardRef<LewisEditorHandle, LewisEditorProps>(
+  function LewisEditor({ correctStructure, onRequestStructure, onValidated, initialNodes, initialEdges, hideCheck, canvasHeight }, ref) {
+    return (
+      <ReactFlowProvider>
+        <EditorInner
+          ref={ref}
+          correctStructure={correctStructure}
+          onRequestStructure={onRequestStructure}
+          onValidated={onValidated}
+          initialNodes={initialNodes}
+          initialEdges={initialEdges}
+          hideCheck={hideCheck}
+          canvasHeight={canvasHeight}
+        />
+      </ReactFlowProvider>
+    )
+  }
+)
+
+export default LewisEditor

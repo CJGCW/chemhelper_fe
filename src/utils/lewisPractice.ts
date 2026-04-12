@@ -20,6 +20,12 @@ export interface VseprProblem {
   steps:        string[]
 }
 
+export interface LewisDrawProblem {
+  compound:  string
+  question:  string
+  structure: LewisStructure
+}
+
 export interface VseprDrawProblem {
   compound:   string          // display label e.g. "water (H₂O)"
   question:   string
@@ -284,6 +290,17 @@ export async function generateVseprProblem(): Promise<VseprProblem | null> {
   const c = pick(COMPOUND_POOL)
   const s = await fetchStructure(c.formula, c.charge)
   return s ? makeVseprProblem(s, c.label) : null
+}
+
+export async function generateLewisDrawProblem(): Promise<LewisDrawProblem | null> {
+  const c = pick(COMPOUND_POOL)
+  const s = await fetchStructure(c.formula, c.charge)
+  if (!s) return null
+  return {
+    compound:  c.label,
+    question:  `Draw the Lewis structure of ${c.label}, showing all bonds and lone pairs.`,
+    structure: s,
+  }
 }
 
 export async function generateVseprDrawProblem(): Promise<VseprDrawProblem | null> {
