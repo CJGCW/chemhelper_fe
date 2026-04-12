@@ -11,11 +11,19 @@ import type { StoichProblemType } from '../../utils/stoichiometryPractice'
 import { generateStoichProblem } from '../../utils/stoichiometryPractice'
 import type { RedoxSubtype } from '../../utils/redoxPractice'
 import { generateRedoxProblem } from '../../utils/redoxPractice'
+import type { PercCompType } from '../../utils/percentCompositionPractice'
+import { generatePercCompProblem } from '../../utils/percentCompositionPractice'
+import type { GasStandard } from '../../utils/gasStoichPractice'
+import { generateGasStoichProblem } from '../../utils/gasStoichPractice'
+import type { SolStoichType } from '../../utils/solutionStoichPractice'
+import { generateSolStoichProblem } from '../../utils/solutionStoichPractice'
+import type { Difficulty } from '../../utils/balancingPractice'
+import { pickEquation } from '../../utils/balancingPractice'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
 // ── Topic definitions ─────────────────────────────────────────────────────────
 
-type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'vsepr' | 'stoich' | 'redox'
+type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'vsepr' | 'stoich' | 'redox' | 'perc_comp' | 'gas_stoich' | 'sol_stoich' | 'balancing'
 type TopicGroup = 'core' | 'atomic_molecular' | 'structures' | 'molar_solutions' | 'stoichiometry' | 'redox'
 
 const GROUP_LABELS: Record<TopicGroup, string> = {
@@ -29,14 +37,18 @@ const GROUP_LABELS: Record<TopicGroup, string> = {
 const GROUP_ORDER: TopicGroup[] = ['core', 'atomic_molecular', 'structures', 'molar_solutions', 'stoichiometry', 'redox']
 
 interface TopicDef {
-  id:          string
-  kind:        TopicKind
-  group:       TopicGroup
-  label:       string
-  formula:     string
-  molarType?:  MolarCalcType
-  stoichType?: StoichProblemType
-  redoxType?:  RedoxSubtype
+  id:           string
+  kind:         TopicKind
+  group:        TopicGroup
+  label:        string
+  formula:      string
+  molarType?:   MolarCalcType
+  stoichType?:  StoichProblemType
+  redoxType?:   RedoxSubtype
+  percCompType?:  PercCompType
+  gasStandard?:   GasStandard
+  solStoichType?: SolStoichType
+  balDifficulty?: Difficulty
 }
 
 const ALL_TOPICS: TopicDef[] = [
@@ -51,11 +63,18 @@ const ALL_TOPICS: TopicDef[] = [
   { id: 'molality',   kind: 'molar',      group: 'molar_solutions',  label: 'Molality',                formula: 'b = n/m',              molarType: 'molality' },
   { id: 'bpe',        kind: 'molar',      group: 'molar_solutions',  label: 'Boiling Pt Elevation',    formula: 'ΔTb = i·Kb·b',         molarType: 'bpe'      },
   { id: 'fpd',        kind: 'molar',      group: 'molar_solutions',  label: 'Freezing Pt Depression',  formula: 'ΔTf = i·Kf·b',         molarType: 'fpd'      },
+  { id: 'perc-comp',  kind: 'perc_comp',  group: 'molar_solutions',  label: '% Composition',           formula: '% mass'                                       },
   { id: 'stoich-mr',  kind: 'stoich',     group: 'stoichiometry',    label: 'Mole Ratios',             formula: 'n₁/n₂',                stoichType: 'mole_ratio'        },
   { id: 'stoich-mm',  kind: 'stoich',     group: 'stoichiometry',    label: 'Mass-to-Mass',            formula: 'g → mol → g',           stoichType: 'mass_to_mass'      },
   { id: 'stoich-lr',  kind: 'stoich',     group: 'stoichiometry',    label: 'Limiting Reagent',        formula: 'LR',                    stoichType: 'limiting_reagent'  },
   { id: 'stoich-ty',  kind: 'stoich',     group: 'stoichiometry',    label: 'Theoretical Yield',       formula: 'TY (g)',                stoichType: 'theoretical_yield' },
   { id: 'stoich-py',  kind: 'stoich',     group: 'stoichiometry',    label: 'Percent Yield',           formula: '% yield',               stoichType: 'percent_yield'     },
+  { id: 'gas-stp',      kind: 'gas_stoich', group: 'stoichiometry',    label: 'Gas Stoich (STP)',        formula: 'L → mol @ STP',         gasStandard: 'STP'                          },
+  { id: 'gas-satp',    kind: 'gas_stoich', group: 'stoichiometry',    label: 'Gas Stoich (SATP)',       formula: 'L → mol @ SATP',        gasStandard: 'SATP'                         },
+  { id: 'sol-stoich',  kind: 'sol_stoich', group: 'stoichiometry',    label: 'Solution Stoich',         formula: 'M·V → mol → g'                                                      },
+  { id: 'bal-easy',    kind: 'balancing',  group: 'stoichiometry',    label: 'Balancing (Easy)',        formula: '_□ + _□ → _□',          balDifficulty: 'easy'                       },
+  { id: 'bal-medium',  kind: 'balancing',  group: 'stoichiometry',    label: 'Balancing (Medium)',      formula: '_□ + _□ → _□',          balDifficulty: 'medium'                     },
+  { id: 'bal-hard',    kind: 'balancing',  group: 'stoichiometry',    label: 'Balancing (Hard)',        formula: '_□ + _□ → _□',          balDifficulty: 'hard'                       },
   { id: 'redox-ox',   kind: 'redox',      group: 'redox',            label: 'Oxidation Numbers',        formula: 'ox. #',                 redoxType: 'ox_state'           },
   { id: 'redox-id',   kind: 'redox',      group: 'redox',            label: 'Identify Oxidised/Reduced', formula: 'OA / RA',              redoxType: 'identify_redox'     },
   { id: 'redox-chg',  kind: 'redox',      group: 'redox',            label: 'Oxidation State Change',   formula: 'Δox',                   redoxType: 'ox_change'          },
@@ -154,6 +173,14 @@ export default function TestBuilder({ onGenerate }: Props) {
         return { topic: t.label, topicFormula: t.formula, problem: { kind: 'stoich', data: generateStoichProblem(t.stoichType!) } }
       if (t.kind === 'redox')
         return { topic: t.label, topicFormula: t.formula, problem: { kind: 'redox', data: generateRedoxProblem(t.redoxType!) } }
+      if (t.kind === 'perc_comp')
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'perc_comp', data: generatePercCompProblem(t.percCompType) } }
+      if (t.kind === 'gas_stoich')
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'gas_stoich', data: generateGasStoichProblem(t.gasStandard) } }
+      if (t.kind === 'sol_stoich')
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'sol_stoich', data: generateSolStoichProblem(t.solStoichType) } }
+      if (t.kind === 'balancing')
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'balancing', data: pickEquation(t.balDifficulty) } }
       return { topic: t.label, topicFormula: t.formula, problem: { kind: 'molar', data: generateMolarProblem(t.molarType!, randomStyle()) } }
     }
 

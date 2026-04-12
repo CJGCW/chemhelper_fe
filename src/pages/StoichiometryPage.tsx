@@ -6,24 +6,32 @@ import LimitingReagentSolver from '../components/stoichiometry/LimitingReagentSo
 import TheoreticalYieldSolver from '../components/stoichiometry/TheoreticalYieldSolver'
 import PercentYieldSolver from '../components/stoichiometry/PercentYieldSolver'
 import StoichiometryPractice from '../components/stoichiometry/StoichiometryPractice'
+import GasStoichPractice from '../components/stoichiometry/GasStoichPractice'
 import BalancingPractice from '../components/stoichiometry/BalancingPractice'
 import StoichReference from '../components/stoichiometry/StoichReference'
+import SolutionStoichTab from '../components/stoichiometry/SolutionStoichTab'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 
-type Tab = 'stoich' | 'limiting' | 'theoretical' | 'percent' | 'practice' | 'balance' | 'reference'
+type Tab = 'stoich' | 'limiting' | 'theoretical' | 'percent' | 'practice' | 'balance' | 'reference' | 'visual' | 'gas-stoich' | 'solution'
+type Mode = 'reference' | 'practice'
 
-const SOLVER_TABS: { id: Tab; label: string; formula: string }[] = [
+const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
   { id: 'stoich',      label: 'Stoichiometry',    formula: 'g ↔ mol' },
   { id: 'balance',     label: 'Balance',          formula: '_□_'     },
   { id: 'limiting',    label: 'Limiting Reagent', formula: 'LR'      },
   { id: 'theoretical', label: 'Theoretical Yield',formula: 'T.Y.'    },
   { id: 'percent',     label: 'Percent Yield',    formula: '%Y'      },
+  { id: 'solution',    label: 'Solution Stoich',  formula: 'M·V'     },
+  { id: 'visual',      label: 'Visual',           formula: '◈'       },
+  { id: 'reference',   label: 'Guide',            formula: '≡'       },
 ]
 
-const RESOURCE_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'reference',   label: 'Reference',        formula: '≡'       },
-  { id: 'practice',    label: 'Practice',         formula: '✎'       },
+const PRACTICE_TABS: { id: Tab; label: string; formula: string }[] = [
+  { id: 'practice',   label: 'Practice',            formula: '✎'  },
+  { id: 'gas-stoich', label: 'Gas Stoich Practice', formula: 'PV' },
 ]
+
+const PRACTICE_TAB_IDS = new Set<Tab>(PRACTICE_TABS.map(t => t.id))
 
 const EXPLANATIONS: Partial<Record<Tab, ExplanationContent>> = {
   stoich: {
@@ -115,6 +123,8 @@ export default function StoichiometryPage() {
   const [showExplanation, setShowExplanation] = useState(false)
   const activeTab = (searchParams.get('tab') as Tab) ?? 'stoich'
 
+  const activeMode: Mode = PRACTICE_TAB_IDS.has(activeTab) ? 'practice' : 'reference'
+
   function setTab(tab: Tab) {
     setSearchParams(prev => {
       const next = new URLSearchParams(prev)
@@ -122,6 +132,14 @@ export default function StoichiometryPage() {
       return next
     })
   }
+
+  function setMode(mode: Mode) {
+    if (mode === activeMode) return
+    const defaultTab = mode === 'reference' ? 'stoich' : 'practice'
+    setTab(defaultTab)
+  }
+
+  const visibleTabs = activeMode === 'reference' ? REFERENCE_TABS : PRACTICE_TABS
 
   return (
     <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
@@ -142,41 +160,40 @@ export default function StoichiometryPage() {
           )}
         </div>
 
-        {/* Solver tabs */}
-        <div className="flex items-center gap-1 p-1 rounded-sm self-start flex-wrap"
+        {/* Mode toggle switch */}
+        <div className="flex items-center gap-1 p-1 rounded-full self-start"
           style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
-          {SOLVER_TABS.map(tab => {
-            const isActive = activeTab === tab.id
+          {(['reference', 'practice'] as Mode[]).map(mode => {
+            const isActive = activeMode === mode
             return (
-              <button key={tab.id} onClick={() => setTab(tab.id)}
-                className="relative flex-shrink-0 px-3.5 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
-                style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
+              <button key={mode} onClick={() => setMode(mode)}
+                className="relative px-5 py-1.5 rounded-full font-sans text-sm font-medium transition-colors capitalize"
+                style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)' }}>
                 {isActive && (
-                  <motion.div layoutId="stoich-solver-pill" className="absolute inset-0 rounded-sm"
+                  <motion.div layoutId="stoich-mode-switch" className="absolute inset-0 rounded-full"
                     style={{
                       background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
                       border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                     }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
                 )}
-                <span className="relative z-10">{tab.label}</span>
-                <span className="relative z-10 font-mono text-[10px] ml-1.5 opacity-50">{tab.formula}</span>
+                <span className="relative z-10">{mode}</span>
               </button>
             )
           })}
         </div>
 
-        {/* Resource tabs */}
+        {/* Tab pills for active mode */}
         <div className="flex items-center gap-1 p-1 rounded-sm self-start flex-wrap"
           style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
-          {RESOURCE_TABS.map(tab => {
+          {visibleTabs.map(tab => {
             const isActive = activeTab === tab.id
             return (
               <button key={tab.id} onClick={() => setTab(tab.id)}
                 className="relative flex-shrink-0 px-3.5 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
                 style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
                 {isActive && (
-                  <motion.div layoutId="stoich-resource-pill" className="absolute inset-0 rounded-sm"
+                  <motion.div layoutId="stoich-tab-pill" className="absolute inset-0 rounded-sm"
                     style={{
                       background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
                       border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
@@ -235,11 +252,32 @@ export default function StoichiometryPage() {
             <BalancingPractice />
           </motion.div>
         )}
+        {activeTab === 'visual' && (
+          <motion.div key="visual"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <StoichReference section="visual" />
+          </motion.div>
+        )}
         {activeTab === 'reference' && (
           <motion.div key="reference"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <StoichReference />
+            <StoichReference section="guide" />
+          </motion.div>
+        )}
+        {activeTab === 'gas-stoich' && (
+          <motion.div key="gas-stoich"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <GasStoichPractice />
+          </motion.div>
+        )}
+        {activeTab === 'solution' && (
+          <motion.div key="solution"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <SolutionStoichTab />
           </motion.div>
         )}
       </AnimatePresence>

@@ -6,8 +6,12 @@ import type { AtomicProblem } from '../../utils/atomicPractice'
 import type { LewisProblem, VseprProblem } from '../../utils/lewisPractice'
 import type { StoichProblem } from '../../utils/stoichiometryPractice'
 import type { RedoxProblem } from '../../utils/redoxPractice'
+import type { PercCompProblem } from '../../utils/percentCompositionPractice'
+import type { GasStoichProblem } from '../../utils/gasStoichPractice'
+import type { SolStoichProblem } from '../../utils/solutionStoichPractice'
+import type { BalancingEquation } from '../../utils/balancingPractice'
 
-export type { SigFigProblem, EmpiricalProblem, ConversionProblem, AtomicProblem, LewisProblem, VseprProblem, StoichProblem, RedoxProblem }
+export type { SigFigProblem, EmpiricalProblem, ConversionProblem, AtomicProblem, LewisProblem, VseprProblem, StoichProblem, RedoxProblem, PercCompProblem, GasStoichProblem, SolStoichProblem, BalancingEquation }
 
 export interface MolarTestProblem      { kind: 'molar';      data: MolarProblem      }
 export interface SigFigTestProblem     { kind: 'sigfig';     data: SigFigProblem     }
@@ -18,6 +22,10 @@ export interface LewisTestProblem      { kind: 'lewis';      data: LewisProblem 
 export interface VseprTestProblem      { kind: 'vsepr';      data: VseprProblem      }
 export interface StoichTestProblem     { kind: 'stoich';     data: StoichProblem     }
 export interface RedoxTestProblem      { kind: 'redox';      data: RedoxProblem      }
+export interface PercCompTestProblem   { kind: 'perc_comp';  data: PercCompProblem   }
+export interface GasStoichTestProblem  { kind: 'gas_stoich'; data: GasStoichProblem  }
+export interface SolStoichTestProblem  { kind: 'sol_stoich'; data: SolStoichProblem  }
+export interface BalancingTestProblem  { kind: 'balancing';  data: BalancingEquation }
 
 export type TestProblem =
   | MolarTestProblem
@@ -29,6 +37,10 @@ export type TestProblem =
   | VseprTestProblem
   | StoichTestProblem
   | RedoxTestProblem
+  | PercCompTestProblem
+  | GasStoichTestProblem
+  | SolStoichTestProblem
+  | BalancingTestProblem
 
 export interface TestQuestion {
   id:           number

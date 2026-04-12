@@ -72,10 +72,11 @@ function PathSubItem({ path, formula, label, onNavigate }: {
 // ── Periodic Table sub-items ──────────────────────────────────────────────────
 
 const TABLE_ITEMS = [
-  { path: "/table",                                 label: "Periodic Table",  formula: "⬡"  },
-  { path: "/electron-config?topic=electron_config", label: "Electron Config", formula: "e⁻" },
-  { path: "/electron-config?topic=quantum_numbers", label: "Quantum Numbers", formula: "QN" },
-  { path: "/electron-config?topic=energy_levels",   label: "Energy Levels",   formula: "Eₙ" },
+  { path: "/table",                                  label: "Periodic Table",  formula: "⬡"  },
+  { path: "/electron-config?topic=electron_config",  label: "Electron Config", formula: "e⁻" },
+  { path: "/electron-config?topic=quantum_numbers",  label: "Quantum Numbers", formula: "QN" },
+  { path: "/electron-config?topic=energy_levels",    label: "Energy Levels",   formula: "Eₙ" },
+  { path: "/electron-config?topic=isoelectronic",    label: "Isoelectronic",   formula: "≡"  },
 ]
 
 function TableSubItem({ item, onNavigate }: { item: typeof TABLE_ITEMS[0]; onNavigate: () => void }) {
@@ -128,8 +129,9 @@ const CALC_ITEMS: { tab?: string; path?: string; label: string; formula: string;
   { tab:  "molarity",    label: "Molarity",                  formula: "C = n/V" },
   { tab:  "molality",    label: "Molality",                  formula: "b = n/m" },
   { tab:  "colligative", label: "Boiling Point Elevation",   formula: "ΔTb", mode: "bpe" },
-  { tab:  "colligative", label: "Freezing Point Depression", formula: "ΔTf", mode: "fpd" },
-  { path: "/reference?tab=molar",     label: "Reference",   formula: "≡" },
+  { tab:  "colligative",  label: "Freezing Point Depression", formula: "ΔTf", mode: "fpd" },
+  { tab:  "percent-comp", label: "% Composition",            formula: "% m" },
+  { path: "/reference?tab=molar",      label: "Reference",   formula: "≡" },
 ]
 
 function CalcSubItem({ item, onNavigate }: { item: typeof CALC_ITEMS[0]; onNavigate: () => void }) {
@@ -165,12 +167,47 @@ function CalcSubItem({ item, onNavigate }: { item: typeof CALC_ITEMS[0]; onNavig
   return <SubItem formula={item.formula} label={item.label} isActive={isActive} onClick={handleClick} />
 }
 
-// ── Ideal Gas sub-items ───────────────────────────────────────────────────────
+// ── Ideal Gas pill row ────────────────────────────────────────────────────────
 
-const IDEAL_GAS_ITEMS = [
-  { path: '/calculations?tab=ideal-gas', label: 'Calculator', formula: 'PV' },
-  { path: '/reference?tab=ideal-gas',    label: 'Reference',  formula: '≡'  },
+const IDEAL_GAS_PILLS = [
+  { path: '/ideal-gas',              label: 'Calculator', formula: 'PV' },
+  { path: '/ideal-gas?tab=practice', label: 'Practice',   formula: '✎'  },
 ]
+
+function IdealGasPills({ onNavigate }: { onNavigate: () => void }) {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const currentParams = new URLSearchParams(location.search)
+
+  return (
+    <div className="flex items-center gap-1 px-4 py-2 flex-wrap">
+      {IDEAL_GAS_PILLS.map((pill) => {
+        const [pillPath, pillQuery] = pill.path.split('?')
+        const pillParams = pillQuery ? new URLSearchParams(pillQuery) : null
+        const isActive = pillParams
+          ? location.pathname === pillPath && [...pillParams.entries()].every(([k, v]) => currentParams.get(k) === v)
+          : location.pathname === pillPath && !currentParams.get('tab')
+        return (
+          <button
+            key={pill.path}
+            onClick={() => { navigate(pill.path); onNavigate() }}
+            className="relative flex items-center gap-1 px-3 py-1 rounded-sm font-sans text-xs font-medium transition-colors"
+            style={{
+              color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)',
+              background: isActive ? 'color-mix(in srgb, var(--c-halogen) 10%, #141620)' : '#0e1016',
+              border: isActive
+                ? '1px solid color-mix(in srgb, var(--c-halogen) 28%, transparent)'
+                : '1px solid #1c1f2e',
+            }}
+          >
+            <span className="font-mono text-[9px] opacity-60">{pill.formula}</span>
+            <span>{pill.label}</span>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
 
 // ── Stoichiometry sub-items ───────────────────────────────────────────────────
 
@@ -179,6 +216,7 @@ const STOICH_ITEMS: { tab: string; label: string; formula: string }[] = [
   { tab: 'limiting',    label: 'Limiting Reagent',  formula: 'LR'    },
   { tab: 'theoretical', label: 'Theoretical Yield', formula: 'T.Y.'  },
   { tab: 'percent',     label: 'Percent Yield',     formula: '%Y'    },
+  { tab: 'solution',    label: 'Solution Stoich',   formula: 'M·V'   },
   { tab: 'reference',   label: 'Reference',         formula: '≡'     },
 ]
 
@@ -331,29 +369,36 @@ export default function NavSidebar({ open, onClose }: Props) {
   const [refCalcOpen,        setRefCalcOpen]        = useState(true)
   const [pracSectionOpen,    setPracSectionOpen]    = useState(true)
 
+  // ── Reference / Calculations expandables ────────────────────────────────────
   const [tableExpanded,       setTableExpanded]       = useState(currentPath === "/table" || currentPath === "/electron-config")
   const [baseCalcExpanded,    setBaseCalcExpanded]    = useState(currentPath === "/base-calculations")
-  const [calcExpanded,        setCalcExpanded]        = useState(currentPath === "/calculations" && currentTab !== 'ideal-gas')
+  const [calcExpanded,        setCalcExpanded]        = useState(currentPath === "/calculations")
   const [stoichExpanded,      setStoichExpanded]      = useState(currentPath === "/stoichiometry")
   const [redoxExpanded,       setRedoxExpanded]       = useState(currentPath === "/redox")
   const [structExpanded,      setStructExpanded]      = useState(currentPath === "/structures" || (currentPath === '/reference' && (currentTab === 'lewis' || currentTab === 'vsepr')))
   const [empiricalExpanded,   setEmpiricalExpanded]   = useState(
     currentPath === '/empirical' || (currentPath === '/reference' && currentTab === 'empirical')
   )
-  const [idealGasNavExpanded, setIdealGasNavExpanded] = useState(
-    (currentPath === '/calculations' && currentTab === 'ideal-gas') ||
-    (currentPath === '/reference'    && currentTab === 'ideal-gas')
-  )
+  const [idealGasNavExpanded, setIdealGasNavExpanded] = useState(currentPath === '/ideal-gas')
 
   const isTableActive      = currentPath === "/table" || currentPath === "/electron-config"
   const isBaseCalcActive   = currentPath === "/base-calculations"
-  const isMolarCalcActive  = currentPath === "/calculations" && currentTab !== 'ideal-gas'
+  const isMolarCalcActive  = currentPath === "/calculations"
   const isStoichActive     = currentPath === "/stoichiometry"
   const isRedoxActive      = currentPath === "/redox"
   const isStructActive     = currentPath === "/structures" || (currentPath === '/reference' && (currentTab === 'lewis' || currentTab === 'vsepr'))
   const isEmpiricalActive  = currentPath === '/empirical' || (currentPath === '/reference' && currentTab === 'empirical')
-  const isIdealGasNavActive = (currentPath === '/calculations' && currentTab === 'ideal-gas') ||
-                              (currentPath === '/reference'    && currentTab === 'ideal-gas')
+  const isIdealGasNavActive = currentPath === '/ideal-gas'
+
+  // ── Practice expandables ─────────────────────────────────────────────────────
+  const isPracEmpiricalActive = currentPath === '/empirical-practice'
+  const isPracMolarActive     = currentPath === '/calculations' && ['practice', 'percent-comp'].includes(currentTab)
+  const isPracStoichActive    = currentPath === '/stoichiometry' && ['practice', 'balance', 'gas-stoich', 'solution'].includes(currentTab)
+  const isPracRedoxActive     = currentPath === '/redox-practice'
+  const [pracEmpiricalExpanded,  setPracEmpiricalExpanded]  = useState(isPracEmpiricalActive)
+  const [pracMolarExpanded,      setPracMolarExpanded]      = useState(isPracMolarActive)
+  const [pracStoichExpanded,     setPracStoichExpanded]     = useState(isPracStoichActive)
+  const [pracRedoxExpanded,      setPracRedoxExpanded]      = useState(isPracRedoxActive)
 
   const inner = (
     <div className="flex flex-col h-full">
@@ -430,9 +475,7 @@ export default function NavSidebar({ open, onClose }: Props) {
                 isActive={isIdealGasNavActive} expanded={idealGasNavExpanded}
                 onToggle={() => setIdealGasNavExpanded(e => !e)}
               >
-                {IDEAL_GAS_ITEMS.map((item, i) => (
-                  <PathSubItem key={i} path={item.path} formula={item.formula} label={item.label} onNavigate={onClose} />
-                ))}
+                <IdealGasPills onNavigate={onClose} />
               </ExpandableSection>
 
               <PracticeNavItem path="/reference?tab=solubility" icon="S/I" label="Solubility" onNavigate={onClose} />
@@ -468,12 +511,42 @@ export default function NavSidebar({ open, onClose }: Props) {
               exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }}
               style={{ overflow: 'hidden' }}
             >
-              <PracticeNavItem path="/calculations?tab=practice"  icon="⚗"  label="Molar Practice"    onNavigate={onClose} />
-              <PracticeNavItem path="/stoichiometry?tab=practice" icon="⚖"  label="Stoich Practice"   onNavigate={onClose} />
-              <PracticeNavItem path="/stoichiometry?tab=balance"  icon="⇌"  label="Balance Equations" onNavigate={onClose} />
-              <PracticeNavItem path="/redox-practice"             icon="e⁻" label="Redox Practice"    onNavigate={onClose} />
-              <PracticeNavItem path="/ideal-gas-practice"         icon="PV" label="Ideal Gas Practice"  onNavigate={onClose} />
-              <PracticeNavItem path="/empirical-practice"         icon="⌬"  label="Empirical Practice"  onNavigate={onClose} />
+              <ExpandableSection
+                icon="⌬" label="Empirical Formula"
+                isActive={isPracEmpiricalActive} expanded={pracEmpiricalExpanded}
+                onToggle={() => setPracEmpiricalExpanded(e => !e)}
+              >
+                <PathSubItem path="/empirical-practice" formula="⌬" label="Empirical Practice" onNavigate={onClose} />
+              </ExpandableSection>
+
+              <ExpandableSection
+                icon="⚗" label="Molar Calculations"
+                isActive={isPracMolarActive} expanded={pracMolarExpanded}
+                onToggle={() => setPracMolarExpanded(e => !e)}
+              >
+                <PathSubItem path="/calculations?tab=practice"    formula="⚗"  label="Molar Practice"   onNavigate={onClose} />
+                <PathSubItem path="/calculations?tab=percent-comp" formula="% m" label="% Composition"   onNavigate={onClose} />
+              </ExpandableSection>
+
+              <ExpandableSection
+                icon="⇌" label="Reactions / Redox"
+                isActive={isPracRedoxActive} expanded={pracRedoxExpanded}
+                onToggle={() => setPracRedoxExpanded(e => !e)}
+              >
+                <PathSubItem path="/redox-practice" formula="e⁻" label="Redox Practice" onNavigate={onClose} />
+              </ExpandableSection>
+
+              <ExpandableSection
+                icon="⚖" label="Stoichiometry"
+                isActive={isPracStoichActive} expanded={pracStoichExpanded}
+                onToggle={() => setPracStoichExpanded(e => !e)}
+              >
+                <PathSubItem path="/stoichiometry?tab=practice"   formula="⚖"  label="Stoich Practice"   onNavigate={onClose} />
+                <PathSubItem path="/stoichiometry?tab=balance"    formula="⇌"  label="Balance Equations" onNavigate={onClose} />
+                <PathSubItem path="/stoichiometry?tab=gas-stoich" formula="PV" label="Gas Stoich"         onNavigate={onClose} />
+                <PathSubItem path="/stoichiometry?tab=solution"   formula="M·V" label="Solution Stoich"   onNavigate={onClose} />
+              </ExpandableSection>
+
               <TestNavItem onNavigate={onClose} />
             </motion.div>
           )}

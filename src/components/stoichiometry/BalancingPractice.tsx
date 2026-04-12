@@ -1,9 +1,69 @@
-import { useRef, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { motion, AnimatePresence, useSpring } from 'framer-motion'
 import {
-  EQUATIONS, pickEquation, checkBalanced,
-  type BalancingEquation, type Difficulty,
+  EQUATIONS, pickEquation, checkBalanced, parseAtoms,
+  type BalancingEquation, type Difficulty, type BalSpecies,
 } from '../../utils/balancingPractice'
+
+// ── Live atom counter ─────────────────────────────────────────────────────────
+
+function countAtoms(species: BalSpecies[], coeffs: string[]): number {
+  return species.reduce((sum, sp, i) => {
+    const c = parseInt(coeffs[i]) || 0
+    return sum + Object.values(parseAtoms(sp.formula)).reduce((s, n) => s + n * c, 0)
+  }, 0)
+}
+
+// ── Balance scale visualization ───────────────────────────────────────────────
+
+function BalanceViz({ leftAtoms, rightAtoms }: { leftAtoms: number; rightAtoms: number }) {
+  const diff        = rightAtoms - leftAtoms
+  const total       = leftAtoms + rightAtoms
+  const targetAngle = total > 0 ? Math.max(-20, Math.min(20, (diff / total) * 32)) : 0
+  const isBalanced  = total > 0 && diff === 0
+  const beamColor   = isBalanced ? '#4ade80' : 'rgba(255,255,255,0.38)'
+
+  const springAngle = useSpring(0, { stiffness: 180, damping: 26 })
+  const gRef        = useRef<SVGGElement>(null)
+
+  useEffect(() => { springAngle.set(targetAngle) }, [targetAngle, springAngle])
+
+  useEffect(() =>
+    springAngle.on('change', v => {
+      gRef.current?.setAttribute('transform', `rotate(${v} 100 8)`)
+    }),
+    [springAngle],
+  )
+
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <svg viewBox="0 0 200 32" style={{ width: 180, height: 29 }} aria-hidden="true">
+        {/* Static fulcrum */}
+        <polygon points="100,8 93,28 107,28" fill="rgba(255,255,255,0.18)" />
+        {/* Rotating beam + pans */}
+        <g ref={gRef}>
+          <line x1="10" y1="8" x2="190" y2="8" stroke={beamColor} strokeWidth="2" strokeLinecap="round" />
+          <line x1="10"  y1="8" x2="10"  y2="19" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+          <line x1="190" y1="8" x2="190" y2="19" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+          <rect x="3"   y="19" width="14" height="5" rx="1"
+            fill="rgba(255,255,255,0.06)" stroke={beamColor} strokeWidth="0.8" />
+          <rect x="183" y="19" width="14" height="5" rx="1"
+            fill="rgba(255,255,255,0.06)" stroke={beamColor} strokeWidth="0.8" />
+        </g>
+        {/* Pivot dot */}
+        <circle cx="100" cy="8" r="2.5" fill="rgba(255,255,255,0.5)" />
+      </svg>
+      <div className="flex justify-between font-mono text-[10px]" style={{ width: 180 }}>
+        <span style={{ color: leftAtoms  > 0 ? beamColor : 'rgba(255,255,255,0.2)' }}>
+          {leftAtoms  || '—'} atoms
+        </span>
+        <span style={{ color: rightAtoms > 0 ? beamColor : 'rgba(255,255,255,0.2)' }}>
+          {rightAtoms || '—'} atoms
+        </span>
+      </div>
+    </div>
+  )
+}
 
 // ── Difficulty pill selector ──────────────────────────────────────────────────
 
@@ -205,6 +265,10 @@ export default function BalancingPractice() {
       ? 'border-emerald-800/50 bg-emerald-950/20'
       : 'border-rose-800/50 bg-rose-950/20'
 
+  // Live atom counts for the balance visualization
+  const leftAtoms  = countAtoms(eq.reactants, rCoeffs)
+  const rightAtoms = countAtoms(eq.products,  pCoeffs)
+
   return (
     <div className="flex flex-col gap-5 max-w-2xl">
 
@@ -286,6 +350,9 @@ export default function BalancingPractice() {
           disabled={result?.balanced === true}
           onEnter={canCheck && !result?.balanced ? handleCheck : () => {}}
         />
+
+        {/* Live balance scale */}
+        <BalanceViz leftAtoms={leftAtoms} rightAtoms={rightAtoms} />
 
         {/* Check button / result */}
         <div className="flex items-center gap-3 flex-wrap">

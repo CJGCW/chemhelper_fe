@@ -9,21 +9,29 @@ import ColligativeCalc from '../../components/calculations/ColligativeCalc'
 import MolarPractice from '../../components/calculations/MolarPractice'
 import MolarReference from '../../components/calculations/MolarReference'
 import MolarVolumeCalc from '../../components/calculations/MolarVolumeCalc'
-import IdealGasCalc from '../../components/idealgas/IdealGasCalc'
+import PercentCompositionTab from '../../components/calculations/PercentCompositionTab'
 import { useState } from 'react'
 
-type CalcType = 'moles' | 'molarity' | 'molality' | 'colligative' | 'molar-volume' | 'practice' | 'reference' | 'ideal-gas'
+type CalcType = 'moles' | 'molarity' | 'molality' | 'colligative' | 'molar-volume' | 'percent-comp' | 'practice' | 'reference' | 'visual'
 type ColligativeMode = 'bpe' | 'fpd'
+type Mode = 'reference' | 'practice'
 
-const PILLS: { value: CalcType; label: string; formula: string }[] = [
-  { value: 'moles',       label: 'Moles',       formula: 'n = m / M'  },
-  { value: 'molarity',    label: 'Molarity',    formula: 'C = n / V'  },
-  { value: 'molality',    label: 'Molality',    formula: 'b = n / m'  },
-  { value: 'colligative',  label: 'Colligative',  formula: 'ΔT = i·K·b' },
-  { value: 'molar-volume', label: 'Molar Volume', formula: 'V = nVm'    },
-  { value: 'practice',     label: 'Practice',     formula: '✎'          },
-  { value: 'reference',   label: 'Reference',   formula: '⎙'           },
+const REFERENCE_PILLS: { value: CalcType; label: string; formula: string }[] = [
+  { value: 'moles',        label: 'Moles',         formula: 'n = m / M'   },
+  { value: 'molarity',     label: 'Molarity',      formula: 'C = n / V'   },
+  { value: 'molality',     label: 'Molality',      formula: 'b = n / m'   },
+  { value: 'colligative',  label: 'Colligative',   formula: 'ΔT = i·K·b'  },
+  { value: 'molar-volume', label: 'Molar Volume',  formula: 'V = nVm'     },
+  { value: 'percent-comp', label: '% Composition', formula: '% m'         },
+  { value: 'visual',       label: 'Visual',        formula: '◈'           },
+  { value: 'reference',    label: 'Guide',         formula: '⎙'           },
 ]
+
+const PRACTICE_PILLS: { value: CalcType; label: string; formula: string }[] = [
+  { value: 'practice', label: 'Practice', formula: '✎' },
+]
+
+const PRACTICE_TAB_IDS = new Set<CalcType>(['practice'])
 
 const EXPLANATIONS: Partial<Record<CalcType, ExplanationContent>> = {
   colligative: {
@@ -99,6 +107,8 @@ export default function CalculationsPage() {
   const activeTab = (searchParams.get('tab') as CalcType) ?? 'moles'
   const colligativeMode = (searchParams.get('mode') as ColligativeMode) ?? 'bpe'
 
+  const activeMode: Mode = PRACTICE_TAB_IDS.has(activeTab) ? 'practice' : 'reference'
+
   function setTab(tab: CalcType) {
     setSearchParams(prev => {
       const next = new URLSearchParams(prev)
@@ -108,6 +118,12 @@ export default function CalculationsPage() {
     })
   }
 
+  function setMode(mode: Mode) {
+    if (mode === activeMode) return
+    setTab(mode === 'practice' ? 'practice' : 'moles')
+  }
+
+  const visiblePills = activeMode === 'reference' ? REFERENCE_PILLS : PRACTICE_PILLS
   const showExplanationButton = !!EXPLANATIONS[activeTab]
 
   return (
@@ -139,10 +155,33 @@ export default function CalculationsPage() {
           )}
         </div>
 
-        {/* Pills */}
-        <div className="flex items-center gap-1 p-1 rounded-sm self-start"
+        {/* Mode toggle switch */}
+        <div className="flex items-center gap-1 p-1 rounded-full self-start"
           style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
-          {PILLS.map(pill => {
+          {(['reference', 'practice'] as Mode[]).map(mode => {
+            const isActive = activeMode === mode
+            return (
+              <button key={mode} onClick={() => setMode(mode)}
+                className="relative px-5 py-1.5 rounded-full font-sans text-sm font-medium transition-colors capitalize"
+                style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)' }}>
+                {isActive && (
+                  <motion.div layoutId="calc-mode-switch" className="absolute inset-0 rounded-full"
+                    style={{
+                      background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                      border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                    }}
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
+                )}
+                <span className="relative z-10">{mode}</span>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Tab pills for active mode */}
+        <div className="flex items-center gap-1 p-1 rounded-sm self-start flex-wrap"
+          style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+          {visiblePills.map(pill => {
             const isActive = activeTab === pill.value
             return (
               <button
@@ -182,10 +221,11 @@ export default function CalculationsPage() {
           {activeTab === 'molarity'    && <MolarityCalc />}
           {activeTab === 'molality'    && <MolalityCalc />}
           {activeTab === 'colligative'  && <ColligativeCalc initialMode={colligativeMode} />}
-          {activeTab === 'molar-volume' && <MolarVolumeCalc />}
-          {activeTab === 'practice'     && <MolarPractice />}
-          {activeTab === 'reference'   && <MolarReference />}
-          {activeTab === 'ideal-gas'   && <IdealGasCalc />}
+          {activeTab === 'molar-volume'  && <MolarVolumeCalc />}
+          {activeTab === 'percent-comp' && <PercentCompositionTab />}
+          {activeTab === 'practice'    && <MolarPractice />}
+          {activeTab === 'visual'      && <MolarReference section="visual" />}
+          {activeTab === 'reference'   && <MolarReference section="guide" />}
         </motion.div>
       </AnimatePresence>
 

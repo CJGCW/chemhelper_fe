@@ -149,7 +149,8 @@ function RoadmapCard() {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
-export default function StoichReference() {
+export default function StoichReference({ section = 'guide' }: { section?: 'guide' | 'visual' }) {
+  if (section === 'visual') return <StoichExamples />
   return (
     <div className="flex flex-col gap-5 print:max-w-none print:gap-4">
 
@@ -344,8 +345,6 @@ export default function StoichReference() {
 
       </div>
 
-      {/* Animated examples */}
-      <StoichExamples />
     </div>
   )
 }

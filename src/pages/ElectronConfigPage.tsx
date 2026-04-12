@@ -6,16 +6,18 @@ import ElectronConfigPractice from '../components/atomic/ElectronConfigPractice'
 import QuantumNumbersReference from '../components/atomic/QuantumNumbersReference'
 import EnergyLevelsReference from '../components/atomic/EnergyLevelsReference'
 import AtomicPractice from '../components/atomic/AtomicPractice'
+import IsoelectronicSeries from '../components/atomic/IsoelectronicSeries'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type Topic = 'electron_config' | 'quantum_numbers' | 'energy_levels'
+type Topic = 'electron_config' | 'quantum_numbers' | 'energy_levels' | 'isoelectronic'
 type Mode  = 'reference' | 'practice'
 
 const TOPICS: { id: Topic; label: string; subtitle: string }[] = [
   { id: 'electron_config',  label: 'Electron Config',  subtitle: 'Aufbau, orbital diagrams'  },
   { id: 'quantum_numbers',  label: 'Quantum Numbers',  subtitle: 'n, l, mₗ, ms rules'        },
   { id: 'energy_levels',    label: 'Energy Levels',    subtitle: 'Bohr model, transitions'   },
+  { id: 'isoelectronic',    label: 'Isoelectronic',    subtitle: 'Ion size comparison'        },
 ]
 
 // ── Tab bar ───────────────────────────────────────────────────────────────────
@@ -62,6 +64,7 @@ function TopicSection({ topic }: { topic: Topic }) {
           {topic === 'quantum_numbers' && mode === 'practice'  && <AtomicPractice subtopic="quantum_numbers" />}
           {topic === 'energy_levels'   && mode === 'reference' && <EnergyLevelsReference />}
           {topic === 'energy_levels'   && mode === 'practice'  && <AtomicPractice subtopic="energy_levels" />}
+          {topic === 'isoelectronic'   && <IsoelectronicSeries />}
         </motion.div>
       </AnimatePresence>
     </div>

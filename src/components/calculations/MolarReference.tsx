@@ -156,7 +156,28 @@ function SolventTable() {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
-export default function MolarReference() {
+export default function MolarReference({ section = 'guide' }: { section?: 'guide' | 'visual' }) {
+  if (section === 'visual') {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
+          <p className="font-sans text-sm font-semibold text-bright">Moles from Mass</p>
+          <p className="font-mono text-xs text-secondary">n = m / M</p>
+          <MolesExample />
+        </div>
+        <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
+          <p className="font-sans text-sm font-semibold text-bright">Molarity</p>
+          <p className="font-mono text-xs text-secondary">C = n / V</p>
+          <MolarityExample />
+        </div>
+        <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
+          <p className="font-sans text-sm font-semibold text-bright">Molality</p>
+          <p className="font-mono text-xs text-secondary">b = n / m</p>
+          <MolalityExample />
+        </div>
+      </div>
+    )
+  }
   return (
     <div className="flex flex-col gap-5 print:max-w-none print:gap-4">
 
@@ -266,28 +287,6 @@ export default function MolarReference() {
               },
             ]}
           />
-        </div>
-      </div>
-
-      {/* Visual examples */}
-      <div className="print:hidden">
-        <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3">Visual Examples</p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
-            <p className="font-sans text-sm font-semibold text-bright">Moles from Mass</p>
-            <p className="font-mono text-xs text-secondary">n = m / M</p>
-            <MolesExample />
-          </div>
-          <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
-            <p className="font-sans text-sm font-semibold text-bright">Molarity</p>
-            <p className="font-mono text-xs text-secondary">C = n / V</p>
-            <MolarityExample />
-          </div>
-          <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
-            <p className="font-sans text-sm font-semibold text-bright">Molality</p>
-            <p className="font-mono text-xs text-secondary">b = n / m</p>
-            <MolalityExample />
-          </div>
         </div>
       </div>
 

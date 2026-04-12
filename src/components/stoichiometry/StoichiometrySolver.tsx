@@ -2,6 +2,96 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { REACTIONS, type Reaction, type Species } from '../../utils/stoichiometryPractice'
 
+// ── Gas volume helper ─────────────────────────────────────────────────────────
+
+type GasStandard = 'STP' | 'SATP'
+
+const GAS_STANDARDS: { id: GasStandard; label: string; Vm: number; desc: string }[] = [
+  { id: 'STP',  label: 'STP',  Vm: 22.414, desc: '0 °C, 1 atm'   },
+  { id: 'SATP', label: 'SATP', Vm: 24.789, desc: '25 °C, 100 kPa' },
+]
+
+function GasVolumePanel({ onUse }: { onUse: (moles: string, note: string) => void }) {
+  const [open,     setOpen]     = useState(false)
+  const [volume,   setVolume]   = useState('')
+  const [standard, setStandard] = useState<GasStandard>('STP')
+
+  const std   = GAS_STANDARDS.find(s => s.id === standard)!
+  const vol   = parseFloat(volume)
+  const moles = !isNaN(vol) && vol > 0 ? vol / std.Vm : null
+
+  function handleUse() {
+    if (moles === null) return
+    onUse(
+      moles.toPrecision(4),
+      `${volume} L at ${std.label} (${std.desc}) ÷ ${std.Vm} L/mol`
+    )
+    setOpen(false)
+  }
+
+  return (
+    <div>
+      <button onClick={() => setOpen(o => !o)}
+        className="flex items-center gap-1.5 font-mono text-[11px] transition-colors"
+        style={{ color: open ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)' }}>
+        <motion.span animate={{ rotate: open ? 90 : 0 }} transition={{ duration: 0.15 }}
+          className="inline-block text-[9px]">▶</motion.span>
+        Start from a gas volume (STP/SATP)
+      </button>
+
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }}
+            style={{ overflow: 'hidden' }}>
+            <div className="mt-2 p-3 rounded-sm border border-border bg-surface flex flex-col gap-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <input type="number" inputMode="decimal" min="0" value={volume}
+                  onChange={e => setVolume(e.target.value)}
+                  placeholder="volume"
+                  className="w-28 bg-raised border border-border rounded-sm px-3 py-1.5
+                             font-mono text-sm text-bright placeholder-dim focus:outline-none focus:border-muted" />
+                <span className="font-mono text-xs text-dim">L at</span>
+                <div className="flex rounded-sm overflow-hidden border border-border">
+                  {GAS_STANDARDS.map(s => (
+                    <button key={s.id} onClick={() => setStandard(s.id)}
+                      className="px-2.5 py-1 font-mono text-xs transition-colors"
+                      style={standard === s.id
+                        ? { background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)', color: 'var(--c-halogen)' }
+                        : { background: 'transparent', color: 'rgba(255,255,255,0.4)' }}>
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+                <span className="font-mono text-[10px] text-dim">{std.desc}</span>
+              </div>
+
+              {moles !== null && (
+                <div className="flex items-center justify-between gap-3">
+                  <span className="font-mono text-sm text-secondary">
+                    {volume} L ÷ {std.Vm} L/mol =&nbsp;
+                    <span className="text-primary font-semibold">{moles.toPrecision(4)} mol</span>
+                  </span>
+                  <button onClick={handleUse}
+                    className="shrink-0 px-3 py-1 rounded-sm font-sans text-xs font-medium transition-colors"
+                    style={{
+                      background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+                      border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
+                      color: 'var(--c-halogen)',
+                    }}>
+                    Use as given →
+                  </button>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
 type InputUnit = 'g' | 'mol'
 
 function sig(n: number, sf = 4): string {
@@ -153,6 +243,7 @@ export default function StoichiometrySolver() {
   const [toFormula,   setToFormula]   = useState(() => REACTIONS[0].products[0].formula)
   const [toUnit,      setToUnit]      = useState<InputUnit>('g')
   const [result,      setResult]      = useState<StandardResult | null>(null)
+  const [gasNote,     setGasNote]     = useState<string | null>(null)
 
   const rxn   = REACTIONS[rxnIdx]
   const allSp = [...rxn.reactants, ...rxn.products]
@@ -164,6 +255,7 @@ export default function StoichiometrySolver() {
     setToFormula(r.products[0].formula)
     setFromVal('')
     setResult(null)
+    setGasNote(null)
   }
 
   function getSpecies(f: string) { return allSp.find(s => s.formula === f)! }
@@ -191,16 +283,39 @@ export default function StoichiometrySolver() {
         <p className="font-mono text-sm text-secondary">{rxn.equation}</p>
       </div>
 
+      {/* Gas volume helper */}
+      <GasVolumePanel onUse={(moles, note) => {
+        setFromVal(moles)
+        setFromUnit('mol')
+        setGasNote(note)
+        setResult(null)
+      }} />
+
       {/* Given row */}
       <div className="flex flex-col gap-2">
-        <label className="font-mono text-[10px] text-secondary tracking-widest uppercase">Given</label>
+        <div className="flex items-center gap-2">
+          <label className="font-mono text-[10px] text-secondary tracking-widest uppercase">Given</label>
+          {gasNote && (
+            <span className="font-mono text-[9px] px-1.5 py-0.5 rounded-sm"
+              style={{
+                background: 'color-mix(in srgb, var(--c-halogen) 12%, #0e1016)',
+                color: 'var(--c-halogen)',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+              }}>
+              from gas vol
+            </span>
+          )}
+        </div>
         <div className="flex flex-wrap items-center gap-2">
-          <NumInput value={fromVal} onChange={v => { setFromVal(v); setResult(null) }} />
-          <UnitToggle unit={fromUnit} onChange={u => { setFromUnit(u); setResult(null) }} />
+          <NumInput value={fromVal} onChange={v => { setFromVal(v); setResult(null); setGasNote(null) }} />
+          <UnitToggle unit={fromUnit} onChange={u => { setFromUnit(u); setResult(null); setGasNote(null) }} />
           <span className="font-mono text-xs text-dim">of</span>
           <SpeciesSelect rxn={rxn} value={fromFormula}
             onChange={f => { setFromFormula(f); setResult(null) }} exclude={toFormula} />
         </div>
+        {gasNote && (
+          <p className="font-mono text-[10px] text-dim">{gasNote}</p>
+        )}
       </div>
 
       {/* Find row */}

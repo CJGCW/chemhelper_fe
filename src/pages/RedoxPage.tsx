@@ -8,19 +8,27 @@ import NetIonicTool from '../components/tools/NetIonicTool'
 import ActivitySeries from '../components/tools/ActivitySeries'
 
 type Tab = 'practice' | 'classifier' | 'electrolyte' | 'net-ionic' | 'activity' | 'reference'
+type Mode = 'reference' | 'practice'
 
-const TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'practice',    label: 'Practice',             formula: '✎'  },
-  { id: 'classifier',  label: 'Reaction Classifier',  formula: '⇄'  },
-  { id: 'electrolyte', label: 'Electrolyte',          formula: '⚡' },
-  { id: 'net-ionic',   label: 'Net Ionic',            formula: '⇌'  },
-  { id: 'activity',    label: 'Activity Series',      formula: '↕'  },
-  { id: 'reference',   label: 'Printable Reference',  formula: '⎙'  },
+const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
+  { id: 'classifier',  label: 'Reaction Classifier', formula: '⇄'  },
+  { id: 'electrolyte', label: 'Electrolyte',         formula: '⚡' },
+  { id: 'net-ionic',   label: 'Net Ionic',           formula: '⇌'  },
+  { id: 'activity',    label: 'Activity Series',     formula: '↕'  },
+  { id: 'reference',   label: 'Guide',              formula: '⎙'  },
 ]
+
+const PRACTICE_TABS: { id: Tab; label: string; formula: string }[] = [
+  { id: 'practice', label: 'Practice', formula: '✎' },
+]
+
+const PRACTICE_TAB_IDS = new Set<Tab>(['practice'])
 
 export default function RedoxPage() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const activeTab = (searchParams.get('tab') as Tab) ?? 'practice'
+  const activeTab = (searchParams.get('tab') as Tab) ?? 'classifier'
+
+  const activeMode: Mode = PRACTICE_TAB_IDS.has(activeTab) ? 'practice' : 'reference'
 
   function setTab(tab: Tab) {
     setSearchParams(prev => {
@@ -29,6 +37,13 @@ export default function RedoxPage() {
       return next
     })
   }
+
+  function setMode(mode: Mode) {
+    if (mode === activeMode) return
+    setTab(mode === 'practice' ? 'practice' : 'classifier')
+  }
+
+  const visibleTabs = activeMode === 'reference' ? REFERENCE_TABS : PRACTICE_TABS
 
   return (
     <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
@@ -50,10 +65,33 @@ export default function RedoxPage() {
         </div>
         <h2 className="hidden print:block font-sans font-semibold text-black text-xl">Redox Reference</h2>
 
-        {/* Tab bar */}
+        {/* Mode toggle switch */}
+        <div className="flex items-center gap-1 p-1 rounded-full self-start print:hidden"
+          style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+          {(['reference', 'practice'] as Mode[]).map(mode => {
+            const isActive = activeMode === mode
+            return (
+              <button key={mode} onClick={() => setMode(mode)}
+                className="relative px-5 py-1.5 rounded-full font-sans text-sm font-medium transition-colors capitalize"
+                style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)' }}>
+                {isActive && (
+                  <motion.div layoutId="redox-mode-switch" className="absolute inset-0 rounded-full"
+                    style={{
+                      background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                      border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                    }}
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
+                )}
+                <span className="relative z-10">{mode}</span>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Tab pills for active mode */}
         <div className="flex items-center gap-1 p-1 rounded-sm self-start flex-wrap print:hidden"
           style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
-          {TABS.map(tab => {
+          {visibleTabs.map(tab => {
             const isActive = activeTab === tab.id
             return (
               <button key={tab.id} onClick={() => setTab(tab.id)}

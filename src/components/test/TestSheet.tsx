@@ -7,6 +7,10 @@ import { checkAtomicAnswer } from '../../utils/atomicPractice'
 import { checkLewisProblem, checkVseprProblem } from '../../utils/lewisPractice'
 import { checkStoichAnswer } from '../../utils/stoichiometryPractice'
 import { checkRedoxAnswer } from '../../utils/redoxPractice'
+import { checkPercCompAnswer } from '../../utils/percentCompositionPractice'
+import { checkGasStoichAnswer } from '../../utils/gasStoichPractice'
+import { checkSolStoichAnswer } from '../../utils/solutionStoichPractice'
+import { checkBalanced, formatEquation } from '../../utils/balancingPractice'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
 // ── Answer checking ───────────────────────────────────────────────────────────
@@ -36,6 +40,22 @@ function checkQuestion(q: TestQuestion, answer: string): Result {
     return checkStoichAnswer(answer, q.problem.data) ? 'correct' : 'wrong'
   if (q.problem.kind === 'redox')
     return checkRedoxAnswer(answer, q.problem.data) ? 'correct' : 'wrong'
+  if (q.problem.kind === 'perc_comp')
+    return checkPercCompAnswer(q.problem.data, answer) ? 'correct' : 'wrong'
+  if (q.problem.kind === 'gas_stoich')
+    return checkGasStoichAnswer(q.problem.data, answer) ? 'correct' : 'wrong'
+  if (q.problem.kind === 'sol_stoich')
+    return checkSolStoichAnswer(q.problem.data, answer) ? 'correct' : 'wrong'
+  if (q.problem.kind === 'balancing') {
+    // answer: "2,1,2" — comma/space separated coefficients (reactants then products)
+    const eq = q.problem.data
+    const nums = answer.split(/[\s,]+/).map(s => parseInt(s)).filter(n => !isNaN(n))
+    const nR = eq.reactants.length
+    const rCoeffs = nums.slice(0, nR)
+    const pCoeffs = nums.slice(nR)
+    if (rCoeffs.length !== nR || pCoeffs.length !== eq.products.length) return 'wrong'
+    return checkBalanced(eq, rCoeffs, pCoeffs).balanced ? 'correct' : 'wrong'
+  }
 
   // molar
   const userVal = parseFloat(answer)
@@ -124,6 +144,46 @@ function buildQuestionHtml(q: TestQuestion): string {
     </div>`
   }
 
+  if (q.problem.kind === 'perc_comp') {
+    const p = q.problem.data
+    return `<div class="question">${header}
+      <p class="q-text">${p.question}</p>
+      <div class="answer-row"><span class="solve-for">Answer:</span><span class="answer-line"></span><span class="unit-label">${p.answerUnit}</span></div>
+    </div>`
+  }
+
+  if (q.problem.kind === 'gas_stoich') {
+    const p = q.problem.data
+    return `<div class="question">${header}
+      <p class="q-text" style="font-family:monospace;font-size:10pt;color:#555;">${p.equation}</p>
+      <p class="q-text">${p.question}</p>
+      <div class="answer-row"><span class="solve-for">Answer:</span><span class="answer-line"></span><span class="unit-label">${p.answerUnit}</span></div>
+    </div>`
+  }
+
+  if (q.problem.kind === 'sol_stoich') {
+    const p = q.problem.data
+    return `<div class="question">${header}
+      <p class="q-text" style="font-family:monospace;font-size:10pt;color:#555;">${p.equation}</p>
+      <p class="q-text">${p.question}</p>
+      <div class="answer-row"><span class="solve-for">Answer:</span><span class="answer-line"></span><span class="unit-label">${p.answerUnit}</span></div>
+    </div>`
+  }
+
+  if (q.problem.kind === 'balancing') {
+    const eq = q.problem.data
+    const blankSide = (species: typeof eq.reactants) =>
+      species.map(s => `<span style="border-bottom:1px solid #111;display:inline-block;min-width:18px;margin:0 2px;">&nbsp;&nbsp;</span> ${s.display}`).join(' + ')
+    const blankedEq = `${blankSide(eq.reactants)} → ${blankSide(eq.products)}`
+    const speciesOrder = [...eq.reactants, ...eq.products].map(s => s.display).join(', ')
+    return `<div class="question">${header}
+      <p class="q-text">Balance the following equation:</p>
+      <p class="q-text" style="font-family:serif;font-size:13pt;margin:8px 0 4px 22px;">${blankedEq}</p>
+      <p class="q-text" style="font-size:9pt;color:#777;font-family:monospace;">Enter coefficients as: ${speciesOrder}</p>
+      <div class="answer-row"><span class="solve-for">Coefficients:</span><span class="answer-line" style="width:200px;"></span></div>
+    </div>`
+  }
+
   // molar
   const p = q.problem.data
   const givenHtml = p.style === 'arithmetic' && p.given.length > 0
@@ -159,6 +219,14 @@ function buildAnswerKeyHtml(q: TestQuestion): string {
       : q.problem.data.answer
   else if (q.problem.kind === 'redox')
     answer = q.problem.data.answer
+  else if (q.problem.kind === 'perc_comp')
+    answer = `${q.problem.data.answer.toPrecision(4)} ${q.problem.data.answerUnit}`
+  else if (q.problem.kind === 'gas_stoich')
+    answer = `${q.problem.data.answer.toPrecision(4)} ${q.problem.data.answerUnit}`
+  else if (q.problem.kind === 'sol_stoich')
+    answer = `${q.problem.data.answer.toPrecision(4)} ${q.problem.data.answerUnit}`
+  else if (q.problem.kind === 'balancing')
+    answer = formatEquation(q.problem.data)
   else
     answer = `${q.problem.data.answer} ${q.problem.data.answerUnit}`
   return `<div class="key-row"><span class="key-num">${q.id}.</span><span class="key-ans">${answer}</span></div>`
@@ -284,6 +352,10 @@ export default function TestSheet({ test, onBack }: Props) {
     const vseprP      = q.problem.kind === 'vsepr'      ? q.problem.data : null
     const stoichP     = q.problem.kind === 'stoich'     ? q.problem.data : null
     const redoxP      = q.problem.kind === 'redox'      ? q.problem.data : null
+    const percCompP   = q.problem.kind === 'perc_comp'  ? q.problem.data : null
+    const gasStoichP  = q.problem.kind === 'gas_stoich' ? q.problem.data : null
+    const solStoichP  = q.problem.kind === 'sol_stoich' ? q.problem.data : null
+    const balancingP  = q.problem.kind === 'balancing'  ? q.problem.data : null
 
     const questionText = sfProblem
       ? (sfProblem.kind === 'count'
@@ -314,8 +386,29 @@ export default function TestSheet({ test, onBack }: Props) {
           )}
           <p className="font-sans text-base text-bright leading-relaxed">{redoxP.question}</p>
         </div>
+      : gasStoichP
+      ? <div className="pl-8 flex flex-col gap-1">
+          <p className="font-mono text-xs text-secondary">{gasStoichP.equation}</p>
+          <p className="font-sans text-base text-bright leading-relaxed">{gasStoichP.question}</p>
+        </div>
+      : solStoichP
+      ? <div className="pl-8 flex flex-col gap-1">
+          <p className="font-mono text-xs text-secondary">{solStoichP.equation}</p>
+          <p className="font-sans text-base text-bright leading-relaxed">{solStoichP.question}</p>
+        </div>
+      : balancingP
+      ? <div className="pl-8 flex flex-col gap-1.5">
+          <p className="font-sans text-base text-bright leading-relaxed">Balance the following equation:</p>
+          <p className="font-mono text-sm text-secondary">
+            {[...balancingP.reactants, ...balancingP.products].map(s => s.display).join(' · ')}
+          </p>
+          <p className="font-sans text-xs text-dim">
+            Enter coefficients in order (reactants then products), comma-separated, e.g.{' '}
+            <span className="font-mono">{[...balancingP.reactants, ...balancingP.products].map(s => s.coeff).join(', ')}</span>
+          </p>
+        </div>
       : <p className="font-sans text-base text-bright leading-relaxed pl-8">
-          {atomicP?.question ?? lewisP?.question ?? vseprP?.question ?? conversionP?.question ?? molarP!.question}
+          {percCompP?.question ?? atomicP?.question ?? lewisP?.question ?? vseprP?.question ?? conversionP?.question ?? molarP!.question}
         </p>
 
     const correctAnswer = sfProblem
@@ -334,6 +427,14 @@ export default function TestSheet({ test, onBack }: Props) {
       ? (stoichP.answerUnit ? `${stoichP.answer} ${stoichP.answerUnit}` : stoichP.answer)
       : redoxP
       ? redoxP.answer
+      : percCompP
+      ? `${percCompP.answer.toPrecision(4)} ${percCompP.answerUnit}`
+      : gasStoichP
+      ? `${gasStoichP.answer.toPrecision(4)} ${gasStoichP.answerUnit}`
+      : solStoichP
+      ? `${solStoichP.answer.toPrecision(4)} ${solStoichP.answerUnit}`
+      : balancingP
+      ? formatEquation(balancingP)
       : `${molarP!.answer} ${molarP!.answerUnit}`
 
     const solutionSteps = sfProblem
@@ -352,6 +453,14 @@ export default function TestSheet({ test, onBack }: Props) {
       ? stoichP.steps
       : redoxP
       ? redoxP.steps
+      : percCompP
+      ? percCompP.steps
+      : gasStoichP
+      ? gasStoichP.steps
+      : solStoichP
+      ? solStoichP.steps
+      : balancingP
+      ? [`Balanced: ${formatEquation(balancingP)}`]
       : molarP!.steps
 
     return (
@@ -423,7 +532,7 @@ export default function TestSheet({ test, onBack }: Props) {
             <span className="font-mono text-base text-secondary whitespace-nowrap">EF =</span>
           )}
           <input
-            type={(sfProblem || empiricalP || atomicP?.isTextAnswer || lewisP?.isTextAnswer || vseprP?.isTextAnswer || stoichP?.isTextAnswer || redoxP?.isTextAnswer) ? 'text' : 'number'}
+            type={(sfProblem || empiricalP || atomicP?.isTextAnswer || lewisP?.isTextAnswer || vseprP?.isTextAnswer || stoichP?.isTextAnswer || redoxP?.isTextAnswer || balancingP) ? 'text' : 'number'}
             inputMode={sfProblem?.kind === 'count' ? 'numeric' : 'decimal'}
             value={answers[q.id] ?? ''}
             onChange={e => setAnswer(q.id, e.target.value)}
@@ -437,12 +546,13 @@ export default function TestSheet({ test, onBack }: Props) {
               : stoichP?.isTextAnswer ? 'formula, e.g. H₂'
               : redoxP?.isTextAnswer  ? 'formula, e.g. Zn'
               : redoxP               ? 'e.g. +6 or −2'
+              : balancingP           ? 'e.g. 2, 1, 2'
               : 'answer'
             }
             className={`bg-raised border rounded-sm px-3 py-1.5 font-mono text-base
                         placeholder-dim focus:outline-none focus:border-muted
                         disabled:cursor-not-allowed transition-colors
-                        ${(empiricalP || atomicP?.isTextAnswer || lewisP?.isTextAnswer || vseprP?.isTextAnswer || stoichP?.isTextAnswer || redoxP?.isTextAnswer) ? 'w-44' : 'w-36'}
+                        ${(empiricalP || atomicP?.isTextAnswer || lewisP?.isTextAnswer || vseprP?.isTextAnswer || stoichP?.isTextAnswer || redoxP?.isTextAnswer || balancingP) ? 'w-44' : 'w-36'}
                         ${result === 'correct' ? 'border-emerald-700/60 text-emerald-300'
                           : (result === 'wrong' || result === 'wrong_sf') ? 'border-rose-700/60 text-rose-300'
                           : 'border-border text-bright'}`}
@@ -464,6 +574,15 @@ export default function TestSheet({ test, onBack }: Props) {
           )}
           {stoichP?.answerUnit && (
             <span className="font-mono text-sm text-secondary">{stoichP.answerUnit}</span>
+          )}
+          {percCompP && (
+            <span className="font-mono text-sm text-secondary">{percCompP.answerUnit}</span>
+          )}
+          {gasStoichP && (
+            <span className="font-mono text-sm text-secondary">{gasStoichP.answerUnit}</span>
+          )}
+          {solStoichP && (
+            <span className="font-mono text-sm text-secondary">{solStoichP.answerUnit}</span>
           )}
 
           {checked && (
