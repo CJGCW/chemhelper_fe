@@ -6,6 +6,11 @@ import type { Ketcher } from 'ketcher-core'
 import type { LewisStructure } from '../../pages/LewisPage'
 
 import { getStructServiceProvider } from './structServiceProvider'
+import {
+  VSEPR_HIDDEN_BUTTONS,
+  KETCHER_OVERRIDES_CSS_ID,
+  KETCHER_OVERRIDES_CSS,
+} from './ketcherConfig'
 
 // ── Geometries that need wedge/dash bonds ─────────────────────────────────────
 
@@ -197,11 +202,18 @@ export default function KetcherStructureEditor({ correctStructure, onValidated, 
 
   // Inject Ketcher CSS in a cascade layer so unlayered app styles always win
   useEffect(() => {
-    if (document.getElementById(KETCHER_CSS_ID)) return
-    const style = document.createElement('style')
-    style.id = KETCHER_CSS_ID
-    style.textContent = `@layer ketcher { ${ketcherCss} }`
-    document.head.appendChild(style)
+    if (!document.getElementById(KETCHER_CSS_ID)) {
+      const style = document.createElement('style')
+      style.id = KETCHER_CSS_ID
+      style.textContent = `@layer ketcher { ${ketcherCss} }`
+      document.head.appendChild(style)
+    }
+    if (!document.getElementById(KETCHER_OVERRIDES_CSS_ID)) {
+      const style = document.createElement('style')
+      style.id = KETCHER_OVERRIDES_CSS_ID
+      style.textContent = KETCHER_OVERRIDES_CSS
+      document.head.appendChild(style)
+    }
   }, [])
 
   // Clear canvas when resetKey changes (new problem)
@@ -324,6 +336,8 @@ export default function KetcherStructureEditor({ correctStructure, onValidated, 
           staticResourcesUrl=""
           structServiceProvider={getStructServiceProvider()}
           errorHandler={(msg) => console.error('Ketcher:', msg)}
+          buttons={VSEPR_HIDDEN_BUTTONS as never}
+          disableMacromoleculesEditor
           onInit={(ketcher: Ketcher) => {
             ketcherRef.current = ketcher
             setReady(true)

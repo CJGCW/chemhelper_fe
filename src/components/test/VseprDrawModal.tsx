@@ -6,6 +6,11 @@ import ketcherCss from 'ketcher-react/dist/index.css?inline'
 import type { Ketcher } from 'ketcher-core'
 import type { LewisStructure } from '../../pages/LewisPage'
 import { getStructServiceProvider } from '../vsepr/structServiceProvider'
+import {
+  VSEPR_HIDDEN_BUTTONS,
+  KETCHER_OVERRIDES_CSS_ID,
+  KETCHER_OVERRIDES_CSS,
+} from '../vsepr/ketcherConfig'
 
 // ── Helpers (mirrored from KetcherStructureEditor) ────────────────────────────
 
@@ -57,13 +62,20 @@ export default function VseprDrawModal({ compound, structure, reviewMol, onSubmi
   const [emptyError, setEmptyError] = useState(false)
   const isReview = reviewMol !== undefined
 
-  // Inject Ketcher CSS (same as KetcherStructureEditor)
+  // Inject Ketcher CSS + VSEPR overrides (same as KetcherStructureEditor)
   useEffect(() => {
-    if (document.getElementById(KETCHER_CSS_ID)) return
-    const style = document.createElement('style')
-    style.id = KETCHER_CSS_ID
-    style.textContent = `@layer ketcher { ${ketcherCss} }`
-    document.head.appendChild(style)
+    if (!document.getElementById(KETCHER_CSS_ID)) {
+      const style = document.createElement('style')
+      style.id = KETCHER_CSS_ID
+      style.textContent = `@layer ketcher { ${ketcherCss} }`
+      document.head.appendChild(style)
+    }
+    if (!document.getElementById(KETCHER_OVERRIDES_CSS_ID)) {
+      const style = document.createElement('style')
+      style.id = KETCHER_OVERRIDES_CSS_ID
+      style.textContent = KETCHER_OVERRIDES_CSS
+      document.head.appendChild(style)
+    }
   }, [])
 
   // Load mol once Ketcher is ready
@@ -155,6 +167,8 @@ export default function VseprDrawModal({ compound, structure, reviewMol, onSubmi
               staticResourcesUrl=""
               structServiceProvider={getStructServiceProvider()}
               errorHandler={(msg) => console.error('Ketcher:', msg)}
+              buttons={VSEPR_HIDDEN_BUTTONS as never}
+              disableMacromoleculesEditor
               onInit={(ketcher: Ketcher) => {
                 ketcherRef.current = ketcher
                 setReady(true)
