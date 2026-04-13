@@ -6,8 +6,12 @@ import ReactionClassifier from '../components/tools/ReactionClassifier'
 import ElectrolyteClassifier from '../components/tools/ElectrolyteClassifier'
 import NetIonicTool from '../components/tools/NetIonicTool'
 import ActivitySeries from '../components/tools/ActivitySeries'
+import ReactionPredictor from '../components/tools/ReactionPredictor'
+import EcellCalc from '../components/tools/EcellCalc'
+import ReactionPredictorPractice from '../components/tools/ReactionPredictorPractice'
+import EcellPractice from '../components/tools/EcellPractice'
 
-type Tab = 'practice' | 'classifier' | 'electrolyte' | 'net-ionic' | 'activity' | 'reference'
+type Tab = 'practice' | 'rxn-practice' | 'ecell-practice' | 'classifier' | 'electrolyte' | 'net-ionic' | 'activity' | 'predictor' | 'ecell' | 'reference'
 type Mode = 'reference' | 'practice'
 
 const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
@@ -15,14 +19,18 @@ const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
   { id: 'electrolyte', label: 'Electrolyte',         formula: '⚡' },
   { id: 'net-ionic',   label: 'Net Ionic',           formula: '⇌'  },
   { id: 'activity',    label: 'Activity Series',     formula: '↕'  },
+  { id: 'predictor',  label: 'Rxn Predictor',      formula: '⇄'  },
+  { id: 'ecell',      label: 'E°cell / Nernst',    formula: 'E°' },
   { id: 'reference',   label: 'Guide',              formula: '⎙'  },
 ]
 
 const PRACTICE_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'practice', label: 'Practice', formula: '✎' },
+  { id: 'practice',      label: 'Redox',          formula: '✎'  },
+  { id: 'rxn-practice',  label: 'Rxn Predictor',  formula: '⇄'  },
+  { id: 'ecell-practice', label: 'E°cell',         formula: 'E°' },
 ]
 
-const PRACTICE_TAB_IDS = new Set<Tab>(['practice'])
+const PRACTICE_TAB_IDS = new Set<Tab>(['practice', 'rxn-practice', 'ecell-practice'])
 
 export default function RedoxPage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -148,6 +156,34 @@ export default function RedoxPage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <ActivitySeries />
+          </motion.div>
+        )}
+        {activeTab === 'predictor' && (
+          <motion.div key="predictor"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <ReactionPredictor />
+          </motion.div>
+        )}
+        {activeTab === 'ecell' && (
+          <motion.div key="ecell"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <EcellCalc />
+          </motion.div>
+        )}
+        {activeTab === 'rxn-practice' && (
+          <motion.div key="rxn-practice"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <ReactionPredictorPractice />
+          </motion.div>
+        )}
+        {activeTab === 'ecell-practice' && (
+          <motion.div key="ecell-practice"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <EcellPractice />
           </motion.div>
         )}
         {activeTab === 'reference' && (

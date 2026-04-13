@@ -235,10 +235,12 @@ function StoichSubItem({ item, onNavigate }: { item: typeof STOICH_ITEMS[0]; onN
 // ── Redox sub-items ───────────────────────────────────────────────────────────
 
 const REDOX_ITEMS: { tab: string; label: string; formula: string }[] = [
-  { tab: 'classifier',  label: 'Reaction Classifier', formula: '⇄'  },
-  { tab: 'electrolyte', label: 'Electrolyte',         formula: '⚡' },
-  { tab: 'net-ionic',   label: 'Net Ionic',           formula: '⇌'  },
-  { tab: 'activity',    label: 'Activity Series',     formula: '↕'  },
+  { tab: 'classifier',    label: 'Reaction Classifier',  formula: '⇄'  },
+  { tab: 'electrolyte',   label: 'Electrolyte',          formula: '⚡' },
+  { tab: 'net-ionic',     label: 'Net Ionic',            formula: '⇌'  },
+  { tab: 'activity',      label: 'Activity Series',      formula: '↕'  },
+  { tab: 'predictor',     label: 'Rxn Predictor',        formula: '⇄'  },
+  { tab: 'ecell',         label: 'E°cell / Nernst',      formula: 'E°' },
 ]
 
 function RedoxSubItem({ item, onNavigate }: { item: typeof REDOX_ITEMS[0]; onNavigate: () => void }) {
@@ -504,7 +506,7 @@ export default function NavSidebar({ open, onClose }: Props) {
               </ExpandableSection>
 
               <ExpandableSection
-                icon="🌡" label="Thermochemistry"
+                icon="ΔH" label="Thermochemistry"
                 isActive={isThermoActive} expanded={thermoExpanded}
                 onToggle={() => setThermoExpanded(e => !e)}
               >
