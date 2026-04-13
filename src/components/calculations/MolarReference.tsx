@@ -1,4 +1,4 @@
-import { MolesExample, MolarityExample, MolalityExample } from './animations/MolarExamples'
+import { MolesExample, MolarityExample, MolalityExample, ConcentrationExample } from './animations/MolarExamples'
 
 // ── Concept cards ─────────────────────────────────────────────────────────────
 
@@ -159,7 +159,7 @@ function SolventTable() {
 export default function MolarReference({ section = 'guide' }: { section?: 'guide' | 'visual' }) {
   if (section === 'visual') {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
           <p className="font-sans text-sm font-semibold text-bright">Moles from Mass</p>
           <p className="font-mono text-xs text-secondary">n = m / M</p>
@@ -174,6 +174,11 @@ export default function MolarReference({ section = 'guide' }: { section?: 'guide
           <p className="font-sans text-sm font-semibold text-bright">Molality</p>
           <p className="font-mono text-xs text-secondary">b = n / m</p>
           <MolalityExample />
+        </div>
+        <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
+          <p className="font-sans text-sm font-semibold text-bright">Concentration &amp; Dilution</p>
+          <p className="font-mono text-xs text-secondary">C₁V₁ = C₂V₂</p>
+          <ConcentrationExample />
         </div>
       </div>
     )

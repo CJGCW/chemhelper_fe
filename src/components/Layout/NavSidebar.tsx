@@ -130,7 +130,9 @@ const CALC_ITEMS: { tab?: string; path?: string; label: string; formula: string;
   { tab:  "molality",    label: "Molality",                  formula: "b = n/m" },
   { tab:  "colligative", label: "Boiling Point Elevation",   formula: "ΔTb", mode: "bpe" },
   { tab:  "colligative",  label: "Freezing Point Depression", formula: "ΔTf", mode: "fpd" },
-  { tab:  "percent-comp", label: "% Composition",            formula: "% m" },
+  { tab:  "percent-comp",   label: "% Composition",          formula: "% m"  },
+  { tab:  "dilution",       label: "Dilution",               formula: "C₁V₁" },
+  { tab:  "conc-converter", label: "Conc. Units",            formula: "↔"    },
   { path: "/reference?tab=molar",      label: "Reference",   formula: "≡" },
 ]
 

@@ -10,9 +10,12 @@ import MolarPractice from '../../components/calculations/MolarPractice'
 import MolarReference from '../../components/calculations/MolarReference'
 import MolarVolumeCalc from '../../components/calculations/MolarVolumeCalc'
 import PercentCompositionTab from '../../components/calculations/PercentCompositionTab'
+import DilutionCalc from '../../components/calculations/DilutionCalc'
+import ConcentrationConverter from '../../components/calculations/ConcentrationConverter'
+import DilutionConcPractice from '../../components/calculations/DilutionConcPractice'
 import { useState } from 'react'
 
-type CalcType = 'moles' | 'molarity' | 'molality' | 'colligative' | 'molar-volume' | 'percent-comp' | 'practice' | 'reference' | 'visual'
+type CalcType = 'moles' | 'molarity' | 'molality' | 'colligative' | 'molar-volume' | 'percent-comp' | 'dilution' | 'conc-converter' | 'practice' | 'conc-practice' | 'reference' | 'visual'
 type ColligativeMode = 'bpe' | 'fpd'
 type Mode = 'reference' | 'practice'
 
@@ -22,16 +25,19 @@ const REFERENCE_PILLS: { value: CalcType; label: string; formula: string }[] = [
   { value: 'molality',     label: 'Molality',      formula: 'b = n / m'   },
   { value: 'colligative',  label: 'Colligative',   formula: 'ΔT = i·K·b'  },
   { value: 'molar-volume', label: 'Molar Volume',  formula: 'V = nVm'     },
-  { value: 'percent-comp', label: '% Composition', formula: '% m'         },
-  { value: 'visual',       label: 'Visual',        formula: '◈'           },
-  { value: 'reference',    label: 'Guide',         formula: '⎙'           },
+  { value: 'percent-comp',   label: '% Composition',  formula: '% m'       },
+  { value: 'dilution',       label: 'Dilution',        formula: 'C₁V₁'     },
+  { value: 'conc-converter', label: 'Conc. Units',     formula: '↔'        },
+  { value: 'visual',         label: 'Visual',          formula: '◈'        },
+  { value: 'reference',      label: 'Guide',           formula: '⎙'        },
 ]
 
 const PRACTICE_PILLS: { value: CalcType; label: string; formula: string }[] = [
-  { value: 'practice', label: 'Practice', formula: '✎' },
+  { value: 'practice',      label: 'Molar',     formula: 'n/V/b' },
+  { value: 'conc-practice', label: 'Dilution & Conc', formula: 'C₁V₁/w%' },
 ]
 
-const PRACTICE_TAB_IDS = new Set<CalcType>(['practice'])
+const PRACTICE_TAB_IDS = new Set<CalcType>(['practice', 'conc-practice'])
 
 const EXPLANATIONS: Partial<Record<CalcType, ExplanationContent>> = {
   colligative: {
@@ -81,6 +87,54 @@ const EXPLANATIONS: Partial<Record<CalcType, ExplanationContent>> = {
       scenario: '5.85 g NaCl in 250.0 mL. Find molarity.',
       steps: ['n = 5.85/58.44 = 0.1001 mol', 'C = 0.1001/0.2500 = 0.4003 mol/L'],
       result: 'C = 0.4003 mol/L',
+    },
+  },
+  dilution: {
+    title: 'Dilution',
+    formula: 'C₁V₁ = C₂V₂',
+    formulaVars: [
+      { symbol: 'C₁', meaning: 'Initial concentration', unit: 'mol/L' },
+      { symbol: 'V₁', meaning: 'Initial volume', unit: 'L or mL' },
+      { symbol: 'C₂', meaning: 'Final concentration', unit: 'mol/L' },
+      { symbol: 'V₂', meaning: 'Final volume', unit: 'L or mL' },
+    ],
+    description:
+      'Dilution is the process of adding solvent to reduce the concentration of a solution. ' +
+      'Moles of solute are conserved: n = C·V, so C₁V₁ = C₂V₂. ' +
+      'Solve for any unknown by rearranging: C₂ = C₁V₁/V₂, V₂ = C₁V₁/C₂, V₁ = C₂V₂/C₁.',
+    example: {
+      scenario: 'Dilute 25.0 mL of 6.00 M HCl to 150.0 mL. Find C₂.',
+      steps: [
+        'C₂ = C₁V₁ / V₂ = (6.00 mol/L × 25.0 mL) / 150.0 mL',
+        'C₂ = 150.0 / 150.0 = 1.00 mol/L',
+      ],
+      result: 'C₂ = 1.00 mol/L',
+    },
+  },
+  'conc-converter': {
+    title: 'Concentration Units',
+    formula: 'C ↔ w% ↔ ppm ↔ χ',
+    formulaVars: [
+      { symbol: 'C',   meaning: 'Molarity',     unit: 'mol/L'  },
+      { symbol: 'w%',  meaning: 'Mass percent',  unit: '% w/w'  },
+      { symbol: 'ppm', meaning: 'Parts per million (dilute aq.)', unit: 'mg/L' },
+      { symbol: 'χ',   meaning: 'Mole fraction', unit: '—'      },
+      { symbol: 'b',   meaning: 'Molality',       unit: 'mol/kg' },
+    ],
+    description:
+      'Key interconversion formulas (ρ = solution density in g/mL, Mw = molar mass in g/mol): ' +
+      'C = (w/100 × ρ × 1000) / Mw · · · ' +
+      'w% = (C × Mw) / (ρ × 10) · · · ' +
+      'C = ppm / (Mw × 1000) [for dilute aq.] · · · ' +
+      'b = (C × 1000) / (ρ × 1000 − C × Mw)',
+    example: {
+      scenario: 'Concentrated HCl: 37.0% (w/w), ρ = 1.19 g/mL, Mw = 36.46 g/mol. Find molarity.',
+      steps: [
+        'C = (37.0/100 × 1.19 × 1000) / 36.46',
+        'C = 440.3 / 36.46',
+        'C = 12.07 mol/L',
+      ],
+      result: 'C ≈ 12.1 mol/L',
     },
   },
   molality: {
@@ -217,15 +271,18 @@ export default function CalculationsPage() {
           exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.18 }}
         >
-          {activeTab === 'moles'       && <MolesCalc />}
-          {activeTab === 'molarity'    && <MolarityCalc />}
-          {activeTab === 'molality'    && <MolalityCalc />}
-          {activeTab === 'colligative'  && <ColligativeCalc initialMode={colligativeMode} />}
-          {activeTab === 'molar-volume'  && <MolarVolumeCalc />}
-          {activeTab === 'percent-comp' && <PercentCompositionTab />}
-          {activeTab === 'practice'    && <MolarPractice />}
-          {activeTab === 'visual'      && <MolarReference section="visual" />}
-          {activeTab === 'reference'   && <MolarReference section="guide" />}
+          {activeTab === 'moles'          && <MolesCalc />}
+          {activeTab === 'molarity'       && <MolarityCalc />}
+          {activeTab === 'molality'       && <MolalityCalc />}
+          {activeTab === 'colligative'    && <ColligativeCalc initialMode={colligativeMode} />}
+          {activeTab === 'molar-volume'   && <MolarVolumeCalc />}
+          {activeTab === 'percent-comp'   && <PercentCompositionTab />}
+          {activeTab === 'dilution'       && <DilutionCalc />}
+          {activeTab === 'conc-converter' && <ConcentrationConverter />}
+          {activeTab === 'practice'       && <MolarPractice />}
+          {activeTab === 'conc-practice'  && <DilutionConcPractice />}
+          {activeTab === 'visual'         && <MolarReference section="visual" />}
+          {activeTab === 'reference'      && <MolarReference section="guide" />}
         </motion.div>
       </AnimatePresence>
 
