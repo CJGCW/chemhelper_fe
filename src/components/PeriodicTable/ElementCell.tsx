@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import type { Element } from '../../types'
 import { getColorCategory, GROUP_COLORS, matchesSearch } from './groupColors'
 import { useElementStore } from '../../stores/elementStore'
+import type { TrendMode } from '../../stores/elementStore'
 import { IE1, EA, IONIC_RADIUS } from '../../data/periodicTrends'
 
 interface Props {
@@ -39,10 +40,7 @@ interface TrendConfig {
   label:     string        // value shown inside cell
 }
 
-function getTrendConfig(
-  mode: ReturnType<typeof useElementStore>['trendMode'],
-  element: Element,
-): TrendConfig {
+function getTrendConfig(mode: TrendMode, element: Element): TrendConfig {
   const z = element.atomicNumber
   switch (mode) {
     case 'electronegativity': {
@@ -101,6 +99,7 @@ export default function ElementCell({ element, animationIndex = 0 }: Props) {
   const {
     hoveredGroup, hoveredColumnGroup,
     searchQuery, selectElement, trendMode,
+    compareMode, compareElements, addToCompare,
   } = useElementStore()
 
   const category       = getColorCategory(element)
@@ -113,12 +112,16 @@ export default function ElementCell({ element, animationIndex = 0 }: Props) {
   const showTrend = trendMode !== 'none'
   const trend     = showTrend ? getTrendConfig(trendMode, element) : null
 
+  const compareSlot =
+    compareElements[0]?.atomicNumber === element.atomicNumber ? 0 :
+    compareElements[1]?.atomicNumber === element.atomicNumber ? 1 : -1
+
   const delay = animationIndex * 0.003
 
   return (
     <div style={{ isolation: 'isolate', width: '100%' }}>
       <motion.button
-        onClick={() => selectElement(element)}
+        onClick={() => compareMode ? addToCompare(element) : selectElement(element)}
         className="relative w-full aspect-[4/5] flex flex-col items-center justify-center
                    rounded-sm border cursor-pointer select-none outline-none overflow-hidden
                    focus-visible:ring-1 focus-visible:ring-white/30"
@@ -174,6 +177,16 @@ export default function ElementCell({ element, animationIndex = 0 }: Props) {
           style={{ color: 'rgba(255,255,255,0.55)', fontSize: 'clamp(6px, 1.3vw, 16px)' }}>
           {element.atomicNumber}
         </span>
+
+        {/* Compare badge */}
+        {compareSlot >= 0 && (
+          <span
+            className="absolute top-[2px] right-[3px] font-mono font-bold leading-none z-20"
+            style={{ fontSize: 'clamp(6px, 1.2vw, 14px)', color: compareSlot === 0 ? '#60a5fa' : '#f472b6' }}
+          >
+            {compareSlot === 0 ? 'A' : 'B'}
+          </span>
+        )}
 
         {/* Symbol */}
         <span className="font-mono font-semibold leading-none relative z-10"

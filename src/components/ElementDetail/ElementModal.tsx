@@ -527,25 +527,24 @@ export default function ElementModal() {
               </div>
 
               {/* Tab bar */}
-              <div className="flex shrink-0 border-b border-border" style={{ background: 'rgba(0,0,0,0.2)' }}>
+              <div className="flex shrink-0 border-b border-border relative" style={{ background: 'rgba(0,0,0,0.2)' }}>
                 {TABS.map(t => (
                   <button
                     key={t}
                     onClick={() => setTab(t)}
-                    className="flex-1 py-2.5 font-mono text-[11px] tracking-wider uppercase relative transition-colors"
+                    className="flex-1 py-2.5 font-mono text-[11px] tracking-wider uppercase transition-colors"
                     style={{ color: tab === t ? color : 'rgba(255,255,255,0.3)' }}
                   >
                     {t === 'config' ? 'e⁻ config' : t}
-                    {tab === t && (
-                      <motion.div
-                        layoutId="modal-tab-indicator"
-                        className="absolute bottom-0 left-0 right-0 h-px"
-                        style={{ background: color }}
-                        transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-                      />
-                    )}
                   </button>
                 ))}
+                {/* Single indicator that slides — no layoutId to avoid AnimatePresence exit conflicts */}
+                <motion.div
+                  className="absolute bottom-0 left-0 h-px pointer-events-none"
+                  style={{ background: color, width: `${100 / TABS.length}%` }}
+                  animate={{ x: `${TABS.indexOf(tab) * 100}%` }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                />
               </div>
 
               {/* Tab content */}

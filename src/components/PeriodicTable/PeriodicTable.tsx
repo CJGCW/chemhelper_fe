@@ -5,6 +5,8 @@ import type { TrendMode } from "../../stores/elementStore";
 import ElementCell from "./ElementCell";
 import GroupHeader from "./GroupHeader";
 import Staircase from "./Staircase";
+import TrendExplainer from "./TrendExplainer";
+import TrendCompare from "./TrendCompare";
 import { GROUP_COLORS, GROUP_LABELS, matchesSearch } from "./groupColors";
 import type { ColorCategory, Element } from "../../types";
 
@@ -159,6 +161,10 @@ export default function PeriodicTable() {
     trendMode,
     setTrendMode,
     footnoteVisible,
+    compareMode,
+    compareElements,
+    setCompareMode,
+    clearCompare,
   } = useElementStore();
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -314,6 +320,21 @@ export default function PeriodicTable() {
             }
           />
         </div>
+        <div className="h-5 w-px bg-border hidden sm:block" />
+        <button
+          onClick={() => setCompareMode(!compareMode)}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-sm border transition-all duration-150"
+          style={{
+            borderColor: compareMode ? '#60a5fa' : 'rgba(255,255,255,0.1)',
+            background: compareMode ? 'color-mix(in srgb, #60a5fa 12%, #0e1016)' : '#0e1016',
+            color: compareMode ? '#60a5fa' : 'rgba(255,255,255,0.4)',
+          }}
+        >
+          <div className="w-2 h-2 rounded-full shrink-0"
+            style={{ background: compareMode ? '#60a5fa' : 'rgba(255,255,255,0.2)' }} />
+          <span className="font-mono text-[11px]">Compare</span>
+          <span className="font-sans text-[10px] opacity-60">A vs B</span>
+        </button>
       </div>
 
       {/* Scrollable table wrapper */}
@@ -461,6 +482,32 @@ export default function PeriodicTable() {
           </button>
         ))}
       </div>
+
+      {/* Trend explainer — visible when any trend overlay is active */}
+      <AnimatePresence>
+        {trendMode !== 'none' && (
+          <motion.div
+            key={trendMode}
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.2 }}
+          >
+            <TrendExplainer trendMode={trendMode} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Comparison panel — visible when compare mode has at least one element */}
+      <AnimatePresence>
+        {compareMode && (
+          <TrendCompare
+            elementA={compareElements[0]}
+            elementB={compareElements[1]}
+            onClear={clearCompare}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
