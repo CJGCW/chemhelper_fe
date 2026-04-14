@@ -5,6 +5,8 @@ import ExplanationModal, { type ExplanationContent } from '../calculations/Expla
 import DaltonsLawCalc from './DaltonsLawCalc'
 import GrahamsLawCalc from './GrahamsLawCalc'
 import GasDensityCalc from './GasDensityCalc'
+import VanDerWaalsCalc from './VanDerWaalsCalc'
+import MaxwellBoltzmann from './MaxwellBoltzmann'
 
 const sf = (v: number, n = 4) => parseFloat(v.toPrecision(n)).toString()
 
@@ -385,7 +387,7 @@ const GAS_EXPLANATIONS: Record<'ideal' | 'combined' | 'daltons' | 'grahams' | 'd
 // ── Ideal Gas Law calculator (PV = nRT) ───────────────────────────────────────
 
 export default function IdealGasCalc() {
-  const [mode, setMode]   = useState<'ideal' | 'combined' | 'daltons' | 'grahams' | 'density'>('ideal')
+  const [mode, setMode]   = useState<'ideal' | 'combined' | 'daltons' | 'grahams' | 'density' | 'vdw' | 'maxwell'>('ideal')
   const [P, setP]         = useState('')
   const [pUnit, setPUnit] = useState<PUnit>('atm')
   const [V, setV]         = useState('')
@@ -473,6 +475,8 @@ export default function IdealGasCalc() {
           { id: 'daltons',  label: "Dalton's Law"         },
           { id: 'grahams',  label: "Graham's Law"         },
           { id: 'density',  label: 'Gas Density'          },
+          { id: 'vdw',      label: 'van der Waals'        },
+          { id: 'maxwell',  label: 'Maxwell-Boltzmann'   },
         ] as const).map(m => (
           <button key={m.id} onClick={() => setMode(m.id)}
             className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
@@ -517,6 +521,18 @@ export default function IdealGasCalc() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.15 }}>
             <GasDensityCalc />
+          </motion.div>
+        ) : mode === 'vdw' ? (
+          <motion.div key="vdw"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.15 }}>
+            <VanDerWaalsCalc />
+          </motion.div>
+        ) : mode === 'maxwell' ? (
+          <motion.div key="maxwell"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.15 }}>
+            <MaxwellBoltzmann />
           </motion.div>
         ) : mode === 'combined' ? (
           <motion.div key="combined"
@@ -605,11 +621,13 @@ export default function IdealGasCalc() {
         )}
       </AnimatePresence>
 
-      <ExplanationModal
-        content={GAS_EXPLANATIONS[mode]}
-        open={showExplanation}
-        onClose={() => setShowExplanation(false)}
-      />
+      {mode !== 'vdw' && mode !== 'maxwell' && (
+        <ExplanationModal
+          content={GAS_EXPLANATIONS[mode as keyof typeof GAS_EXPLANATIONS]}
+          open={showExplanation}
+          onClose={() => setShowExplanation(false)}
+        />
+      )}
     </div>
   )
 }

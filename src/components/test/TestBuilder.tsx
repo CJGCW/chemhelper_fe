@@ -24,11 +24,12 @@ import { genEnthalpyProblem } from '../../utils/enthalpyPractice'
 import { genHessProblem } from '../../utils/hessLawPractice'
 import { genBondEnthalpyProblem } from '../../utils/bondEnthalpyPractice'
 import { genHeatTransferProblem } from '../../utils/heatTransferPractice'
+import { generateVdWProblem } from '../../utils/vanDerWaalsPractice'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
 // ── Topic definitions ─────────────────────────────────────────────────────────
 
-type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'lewis_draw' | 'vsepr' | 'vsepr_draw' | 'stoich' | 'redox' | 'perc_comp' | 'gas_stoich' | 'sol_stoich' | 'balancing' | 'calorimetry' | 'enthalpy' | 'hess' | 'bond_enthalpy' | 'heat_transfer'
+type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'lewis_draw' | 'vsepr' | 'vsepr_draw' | 'stoich' | 'redox' | 'perc_comp' | 'gas_stoich' | 'sol_stoich' | 'balancing' | 'calorimetry' | 'enthalpy' | 'hess' | 'bond_enthalpy' | 'heat_transfer' | 'vdw'
 type TopicGroup = 'core' | 'atomic_molecular' | 'structures' | 'molar_solutions' | 'stoichiometry' | 'redox' | 'thermochemistry'
 
 const GROUP_LABELS: Record<TopicGroup, string> = {
@@ -79,6 +80,7 @@ const ALL_TOPICS: TopicDef[] = [
   { id: 'stoich-py',  kind: 'stoich',     group: 'stoichiometry',    label: 'Percent Yield',           formula: '% yield',               stoichType: 'percent_yield'     },
   { id: 'gas-stp',      kind: 'gas_stoich', group: 'stoichiometry',    label: 'Gas Stoich (STP)',        formula: 'L → mol @ STP',         gasStandard: 'STP'                          },
   { id: 'gas-satp',    kind: 'gas_stoich', group: 'stoichiometry',    label: 'Gas Stoich (SATP)',       formula: 'L → mol @ SATP',        gasStandard: 'SATP'                         },
+  { id: 'vdw',         kind: 'vdw',        group: 'stoichiometry',    label: 'van der Waals',           formula: 'P = nRT/(V−nb) − a(n/V)²'                                          },
   { id: 'sol-stoich',  kind: 'sol_stoich', group: 'stoichiometry',    label: 'Solution Stoich',         formula: 'M·V → mol → g'                                                      },
   { id: 'bal-easy',    kind: 'balancing',  group: 'stoichiometry',    label: 'Balancing (Easy)',        formula: '_□ + _□ → _□',          balDifficulty: 'easy'                       },
   { id: 'bal-medium',  kind: 'balancing',  group: 'stoichiometry',    label: 'Balancing (Medium)',      formula: '_□ + _□ → _□',          balDifficulty: 'medium'                     },
@@ -212,6 +214,8 @@ export default function TestBuilder({ onGenerate }: Props) {
         return { topic: t.label, topicFormula: t.formula, problem: { kind: 'bond_enthalpy', data: genBondEnthalpyProblem() } }
       if (t.kind === 'heat_transfer')
         return { topic: t.label, topicFormula: t.formula, problem: { kind: 'heat_transfer', data: genHeatTransferProblem() } }
+      if (t.kind === 'vdw')
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'vdw', data: generateVdWProblem() } }
       return { topic: t.label, topicFormula: t.formula, problem: { kind: 'molar', data: generateMolarProblem(t.molarType!, randomStyle()) } }
     }
 

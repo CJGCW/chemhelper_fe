@@ -20,6 +20,7 @@ import { checkEnthalpyAnswer } from '../../utils/enthalpyPractice'
 import { checkHessAnswer } from '../../utils/hessLawPractice'
 import { checkBondEnthalpyAnswer } from '../../utils/bondEnthalpyPractice'
 import { checkHeatTransferAnswer } from '../../utils/heatTransferPractice'
+import { checkVdWAnswer } from '../../utils/vanDerWaalsPractice'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
 // ── Answer checking ───────────────────────────────────────────────────────────
@@ -65,6 +66,8 @@ function checkQuestion(q: TestQuestion, answer: string): Result {
     return checkBondEnthalpyAnswer(q.problem.data, answer) ? 'correct' : 'wrong'
   if (q.problem.kind === 'heat_transfer')
     return checkHeatTransferAnswer(q.problem.data, answer) ? 'correct' : 'wrong'
+  if (q.problem.kind === 'vdw')
+    return checkVdWAnswer(answer, q.problem.data) ? 'correct' : 'wrong'
   if (q.problem.kind === 'vsepr-draw' || q.problem.kind === 'lewis-draw') return 'blank'  // scored externally via Ketcher
   if (q.problem.kind === 'balancing') {
     // answer: "2,1,2" — comma/space separated coefficients (reactants then products)
@@ -269,6 +272,23 @@ function buildQuestionHtml(q: TestQuestion): string {
     </div>`
   }
 
+  if (q.problem.kind === 'vdw') {
+    const p = q.problem.data
+    const givenHtml = `<div class="given">
+      <span class="chip"><span class="label">n =</span> ${p.givenN} mol</span>
+      <span class="chip"><span class="label">V =</span> ${p.givenV} L</span>
+      <span class="chip"><span class="label">T =</span> ${p.givenT} K</span>
+      <span class="chip"><span class="label">a =</span> ${p.gas.a} L²·atm/mol²</span>
+      <span class="chip"><span class="label">b =</span> ${p.gas.b} L/mol</span>
+    </div>`
+    return `<div class="question">${header}
+      <p class="q-text">${p.question}</p>
+      <p class="q-text" style="font-size:10pt;color:#555;font-style:italic">Gas: ${p.gas.name} (${p.gas.formula})</p>
+      ${givenHtml}
+      <div class="answer-row"><span class="solve-for">P =</span><span class="answer-line"></span><span class="unit-label">atm</span></div>
+    </div>`
+  }
+
   if (q.problem.kind === 'calorimetry') {
     const p = q.problem.data
     const givenHtml = p.given.length > 0
@@ -345,6 +365,8 @@ function buildAnswerKeyHtml(q: TestQuestion): string {
     answer = `${q.problem.data.answer > 0 ? '+' : ''}${q.problem.data.answer} ${q.problem.data.answerUnit}`
   else if (q.problem.kind === 'heat_transfer')
     answer = `${q.problem.data.answer} ${q.problem.data.answerUnit}`
+  else if (q.problem.kind === 'vdw')
+    answer = `${parseFloat(q.problem.data.realP.toPrecision(4))} atm`
   else
     answer = `${q.problem.data.answer} ${q.problem.data.answerUnit}`
   return `<div class="key-row"><span class="key-num">${q.id}.</span><span class="key-ans">${answer}</span></div>`

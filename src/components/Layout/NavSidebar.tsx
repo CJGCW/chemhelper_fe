@@ -169,45 +169,24 @@ function CalcSubItem({ item, onNavigate }: { item: typeof CALC_ITEMS[0]; onNavig
   return <SubItem formula={item.formula} label={item.label} isActive={isActive} onClick={handleClick} />
 }
 
-// ── Ideal Gas pill row ────────────────────────────────────────────────────────
+// ── Ideal Gas sub-items ───────────────────────────────────────────────────────
 
-const IDEAL_GAS_PILLS = [
-  { path: '/ideal-gas',              label: 'Calculator', formula: 'PV' },
-  { path: '/ideal-gas?tab=practice', label: 'Practice',   formula: '✎'  },
+const IDEAL_GAS_ITEMS: { tab: string; label: string; formula: string }[] = [
+  { tab: 'reference',    label: 'Ideal Gas Law',   formula: 'PV=nRT' },
+  { tab: 'practice',     label: 'PV=nRT',          formula: 'P,V,n,T' },
+  { tab: 'gas-stoich',   label: 'Gas Stoich',       formula: 'L→mol'  },
+  { tab: 'vdw-practice', label: 'Real Gas',         formula: 'vdW'    },
 ]
 
-function IdealGasPills({ onNavigate }: { onNavigate: () => void }) {
+function IdealGasSubItem({ item, onNavigate }: { item: typeof IDEAL_GAS_ITEMS[0]; onNavigate: () => void }) {
   const location = useLocation()
   const navigate = useNavigate()
-  const currentParams = new URLSearchParams(location.search)
+  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'reference'
+  const isActive = location.pathname === '/ideal-gas' && currentTab === item.tab
 
   return (
-    <div className="flex items-center gap-1 px-4 py-2 flex-wrap">
-      {IDEAL_GAS_PILLS.map((pill) => {
-        const [pillPath, pillQuery] = pill.path.split('?')
-        const pillParams = pillQuery ? new URLSearchParams(pillQuery) : null
-        const isActive = pillParams
-          ? location.pathname === pillPath && [...pillParams.entries()].every(([k, v]) => currentParams.get(k) === v)
-          : location.pathname === pillPath && !currentParams.get('tab')
-        return (
-          <button
-            key={pill.path}
-            onClick={() => { navigate(pill.path); onNavigate() }}
-            className="relative flex items-center gap-1 px-3 py-1 rounded-sm font-sans text-xs font-medium transition-colors"
-            style={{
-              color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)',
-              background: isActive ? 'color-mix(in srgb, var(--c-halogen) 10%, #141620)' : '#0e1016',
-              border: isActive
-                ? '1px solid color-mix(in srgb, var(--c-halogen) 28%, transparent)'
-                : '1px solid #1c1f2e',
-            }}
-          >
-            <span className="font-mono text-[9px] opacity-60">{pill.formula}</span>
-            <span>{pill.label}</span>
-          </button>
-        )
-      })}
-    </div>
+    <SubItem formula={item.formula} label={item.label} isActive={isActive}
+      onClick={() => { navigate(`/ideal-gas?tab=${item.tab}`); onNavigate() }} />
   )
 }
 
@@ -458,7 +437,7 @@ export default function NavSidebar({ open, onClose }: Props) {
                 isActive={isIdealGasNavActive} expanded={idealGasNavExpanded}
                 onToggle={() => setIdealGasNavExpanded(e => !e)}
               >
-                <IdealGasPills onNavigate={onClose} />
+                {IDEAL_GAS_ITEMS.map((item, i) => <IdealGasSubItem key={i} item={item} onNavigate={onClose} />)}
               </ExpandableSection>
 
               <ExpandableSection

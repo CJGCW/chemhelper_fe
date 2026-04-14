@@ -414,9 +414,9 @@ export default function ReactionPredictor() {
       {/* Supported compounds hint */}
       {!result && !error && (
         <p className="font-mono text-[10px] text-dim leading-relaxed">
-          Supports ionic compounds with common cations (Na⁺, K⁺, Ca²⁺, Cu²⁺, Fe²⁺/³⁺, Ag⁺, Pb²⁺…)
-          and anions (Cl⁻, SO₄²⁻, OH⁻, CO₃²⁻, NO₃⁻, PO₄³⁻…).
-          Type a formula (e.g. CuSO4) or select from suggestions.
+          Precipitation reactions only (double displacement between two soluble ionic compounds).
+          Supports common cations (Na⁺, K⁺, Ca²⁺, Cu²⁺, Fe²⁺/³⁺, Ag⁺, Pb²⁺…) and anions (Cl⁻, SO₄²⁻, OH⁻, CO₃²⁻, NO₃⁻, PO₄³⁻…).
+          For acid-base neutralization or gas-forming reactions, use the Reaction Classifier tab.
         </p>
       )}
     </div>

@@ -15,8 +15,9 @@ import type { EnthalpyProblem } from '../../utils/enthalpyPractice'
 import type { HessProblem } from '../../utils/hessLawPractice'
 import type { BondEnthalpyProblem } from '../../utils/bondEnthalpyPractice'
 import type { HeatTransferProblem } from '../../utils/heatTransferPractice'
+import type { VdWProblem } from '../../utils/vanDerWaalsPractice'
 
-export type { SigFigProblem, EmpiricalProblem, ConversionProblem, AtomicProblem, LewisProblem, LewisDrawProblem, VseprProblem, VseprDrawProblem, StoichProblem, RedoxProblem, PercCompProblem, GasStoichProblem, SolStoichProblem, BalancingEquation, CalorimetryProblem, EnthalpyProblem, HessProblem, BondEnthalpyProblem, HeatTransferProblem }
+export type { SigFigProblem, EmpiricalProblem, ConversionProblem, AtomicProblem, LewisProblem, LewisDrawProblem, VseprProblem, VseprDrawProblem, StoichProblem, RedoxProblem, PercCompProblem, GasStoichProblem, SolStoichProblem, BalancingEquation, CalorimetryProblem, EnthalpyProblem, HessProblem, BondEnthalpyProblem, HeatTransferProblem, VdWProblem }
 
 export interface MolarTestProblem      { kind: 'molar';      data: MolarProblem      }
 export interface SigFigTestProblem     { kind: 'sigfig';     data: SigFigProblem     }
@@ -38,6 +39,7 @@ export interface EnthalpyTestProblem   { kind: 'enthalpy';    data: EnthalpyProb
 export interface HessTestProblem            { kind: 'hess';         data: HessProblem            }
 export interface BondEnthalpyTestProblem    { kind: 'bond_enthalpy';   data: BondEnthalpyProblem   }
 export interface HeatTransferTestProblem   { kind: 'heat_transfer';   data: HeatTransferProblem   }
+export interface VdWTestProblem            { kind: 'vdw';             data: VdWProblem             }
 
 export type TestProblem =
   | MolarTestProblem
@@ -60,6 +62,7 @@ export type TestProblem =
   | HessTestProblem
   | BondEnthalpyTestProblem
   | HeatTransferTestProblem
+  | VdWTestProblem
 
 export interface TestQuestion {
   id:           number
