@@ -137,6 +137,26 @@ function getLonePairAngles(bondAngles: number[], count: number): number[] {
   return grid.filter((_, i) => !occupied.has(i))
 }
 
+// ── Formal charge placement ───────────────────────────────────────────────────
+
+// Find the angle (degrees) that maximises the minimum angular gap from all
+// occupied directions (bonds + lone pairs). This avoids drawing the charge
+// badge on top of a bond line or lone-pair dot.
+function bestChargeAngle(occupiedAngles: number[]): number {
+  if (occupiedAngles.length === 0) return -45
+
+  const norm  = (a: number) => ((a % 360) + 360) % 360
+  const diff  = (a: number, b: number) => { const d = Math.abs(norm(a) - norm(b)); return d > 180 ? 360 - d : d }
+
+  let bestAngle = -45
+  let bestMin   = -1
+  for (let a = 0; a < 360; a += 10) {
+    const minGap = Math.min(...occupiedAngles.map(o => diff(a, o)))
+    if (minGap > bestMin) { bestMin = minGap; bestAngle = a }
+  }
+  return bestAngle
+}
+
 // ── BFS fan layout helper ─────────────────────────────────────────────────────
 
 // Starting from `frontier` (already-positioned atoms), place every unpositioned
@@ -409,15 +429,19 @@ function AtomNode({
   const lpAngles = getLonePairAngles(bondAngles, atom.lone_pairs);
 
   const chargeLabel =
-    atom.formal_charge === 0
-      ? null
-      : atom.formal_charge === 1
-        ? "+"
-        : atom.formal_charge === -1
-          ? "−"
-          : atom.formal_charge > 0
-            ? `+${atom.formal_charge}`
-            : `${atom.formal_charge}`;
+    atom.formal_charge === 0 ? null
+    : atom.formal_charge ===  1 ? "+"
+    : atom.formal_charge === -1 ? "−"
+    : atom.formal_charge  >  0 ? `+${atom.formal_charge}`
+    : `${atom.formal_charge}`;
+
+  // Place charge badge in the clearest direction (avoids bonds + lone pairs)
+  const BADGE_R   = 7.5
+  const BADGE_DIST = r + BADGE_R + 1   // badge centre just outside atom edge
+  const chargeAngle = bestChargeAngle([...bondAngles, ...lpAngles])
+  const chargeRad   = chargeAngle * (Math.PI / 180)
+  const chargeBx    = pos.x + Math.cos(chargeRad) * BADGE_DIST
+  const chargeBy    = pos.y + Math.sin(chargeRad) * BADGE_DIST
 
   return (
     <g>
@@ -431,59 +455,45 @@ function AtomNode({
         const dy = Math.sin(perpRad) * LP_DOT_SEP;
         return (
           <g key={i}>
-            <circle
-              cx={lpCx + dx}
-              cy={lpCy + dy}
-              r={LP_R}
-              fill="rgba(255,255,255,0.85)"
-            />
-            <circle
-              cx={lpCx - dx}
-              cy={lpCy - dy}
-              r={LP_R}
-              fill="rgba(255,255,255,0.85)"
-            />
+            <circle cx={lpCx + dx} cy={lpCy + dy} r={LP_R} fill="rgba(255,255,255,0.85)" />
+            <circle cx={lpCx - dx} cy={lpCy - dy} r={LP_R} fill="rgba(255,255,255,0.85)" />
           </g>
         );
       })}
 
       {/* Atom circle */}
-      <circle
-        cx={pos.x}
-        cy={pos.y}
-        r={r}
-        fill={color}
-        stroke="#1c1f2e"
-        strokeWidth="1.5"
-      />
+      <circle cx={pos.x} cy={pos.y} r={r} fill={color} stroke="#1c1f2e" strokeWidth="1.5" />
 
       {/* Element symbol */}
       <text
-        x={pos.x}
-        y={pos.y}
-        textAnchor="middle"
-        dominantBaseline="central"
+        x={pos.x} y={pos.y}
+        textAnchor="middle" dominantBaseline="central"
         fill="white"
         fontSize={atom.element.length > 1 ? 11 : r === H_ATOM_R ? 11 : 13}
-        fontWeight="700"
-        fontFamily="system-ui, sans-serif"
+        fontWeight="700" fontFamily="system-ui, sans-serif"
       >
         {atom.element}
       </text>
 
-      {/* Formal charge */}
+      {/* Formal charge badge — disc with dark background so it reads over bonds */}
       {chargeLabel && (
-        <text
-          x={pos.x + r}
-          y={pos.y - r + 1}
-          textAnchor="start"
-          fill="white"
-          fontSize="10"
-          fontWeight="bold"
-          fontFamily="system-ui, sans-serif"
-        >
-          {chargeLabel}
-        </text>
+        <g>
+          <circle
+            cx={chargeBx} cy={chargeBy} r={BADGE_R}
+            fill="#0e1016"
+            stroke="rgba(255,255,255,0.45)"
+            strokeWidth="1"
+          />
+          <text
+            x={chargeBx} y={chargeBy}
+            textAnchor="middle" dominantBaseline="central"
+            fill="white"
+            fontSize={chargeLabel.length > 1 ? "8" : "9"}
+            fontWeight="bold" fontFamily="system-ui, sans-serif"
+          >
+            {chargeLabel}
+          </text>
+        </g>
       )}
     </g>
   );
@@ -552,9 +562,18 @@ function svgAtomNode(
            `<circle cx="${lpCx - dx}" cy="${lpCy - dy}" r="${LP_R}" fill="#1a1a1a"/>`
   }).join('')
 
+  const BADGE_R   = 7.5
+  const BADGE_DIST = r + BADGE_R + 1
+  const chargeAngle = bestChargeAngle([...bondAngles, ...lpAngles])
+  const chargeRad   = chargeAngle * (Math.PI / 180)
+  const chargeBx    = pos.x + Math.cos(chargeRad) * BADGE_DIST
+  const chargeBy    = pos.y + Math.sin(chargeRad) * BADGE_DIST
+  const cfs = chargeLabel && chargeLabel.length > 1 ? 8 : 9
+
   const fs = atom.element.length > 1 ? 11 : r === H_ATOM_R ? 11 : 13
   const chargeSvg = chargeLabel
-    ? `<text x="${pos.x + r}" y="${pos.y - r + 1}" text-anchor="start" fill="white" font-size="10" font-weight="bold" font-family="sans-serif">${chargeLabel}</text>`
+    ? `<circle cx="${chargeBx}" cy="${chargeBy}" r="${BADGE_R}" fill="#f8f9fa" stroke="#555" stroke-width="1"/>` +
+      `<text x="${chargeBx}" y="${chargeBy}" text-anchor="middle" dominant-baseline="central" fill="#111" font-size="${cfs}" font-weight="bold" font-family="sans-serif">${chargeLabel}</text>`
     : ''
 
   return lpSvg +
