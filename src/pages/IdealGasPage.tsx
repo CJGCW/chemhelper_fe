@@ -45,10 +45,23 @@ export default function IdealGasPage() {
 
       {/* Header */}
       <div className="flex flex-col gap-3">
-        <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Ideal Gas Law</h2>
+        <div className="flex items-center gap-3 print:hidden">
+          <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Ideal Gas Law</h2>
+          {activeMode === 'reference' && (
+            <button
+              onClick={() => window.print()}
+              className="flex items-center gap-2 px-3 py-1 rounded-sm font-sans text-sm border border-border
+                         text-secondary hover:text-primary hover:border-muted transition-colors"
+            >
+              <span>⎙</span>
+              <span>Print</span>
+            </button>
+          )}
+        </div>
+        <h2 className="hidden print:block font-sans font-semibold text-black text-xl">Ideal Gas Law — Reference</h2>
 
         {/* Mode toggle switch */}
-        <div className="flex items-center gap-1 p-1 rounded-full self-start"
+        <div className="flex items-center gap-1 p-1 rounded-full self-start print:hidden"
           style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
           {(['reference', 'practice'] as Mode[]).map(m => {
             const isActive = activeMode === m

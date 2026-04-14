@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { genGasProblem, checkGasAnswer, gasSolutionSteps, type GasProblem } from '../../utils/idealGas'
+import { genGasProblem, checkGasAnswer, gasSolutionSteps, type GasProblem } from '../../utils/idealGasPractice'
 
 export default function IdealGasPractice() {
   const [problem, setProblem]     = useState<GasProblem>(() => genGasProblem())

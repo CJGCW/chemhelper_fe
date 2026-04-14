@@ -21,6 +21,11 @@ import { checkHessAnswer } from '../../utils/hessLawPractice'
 import { checkBondEnthalpyAnswer } from '../../utils/bondEnthalpyPractice'
 import { checkHeatTransferAnswer } from '../../utils/heatTransferPractice'
 import { checkVdWAnswer } from '../../utils/vanDerWaalsPractice'
+import { checkGasAnswer } from '../../utils/idealGasPractice'
+import { checkEcellAnswer } from '../../utils/ecellPractice'
+import { checkRxnPracticeAnswer } from '../../utils/reactionPredictorPractice'
+import { checkDilutionAnswer } from '../../utils/dilutionPractice'
+import { checkConcAnswer } from '../../utils/concentrationPractice'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
 // ── Answer checking ───────────────────────────────────────────────────────────
@@ -68,6 +73,16 @@ function checkQuestion(q: TestQuestion, answer: string): Result {
     return checkHeatTransferAnswer(q.problem.data, answer) ? 'correct' : 'wrong'
   if (q.problem.kind === 'vdw')
     return checkVdWAnswer(answer, q.problem.data) ? 'correct' : 'wrong'
+  if (q.problem.kind === 'ideal_gas')
+    return checkGasAnswer(q.problem.data, answer) ? 'correct' : 'wrong'
+  if (q.problem.kind === 'ecell')
+    return checkEcellAnswer(answer, q.problem.data) ? 'correct' : 'wrong'
+  if (q.problem.kind === 'rxn_pred')
+    return checkRxnPracticeAnswer(answer, q.problem.data) ? 'correct' : 'wrong'
+  if (q.problem.kind === 'dilution')
+    return checkDilutionAnswer(answer, q.problem.data) ? 'correct' : 'wrong'
+  if (q.problem.kind === 'conc')
+    return checkConcAnswer(answer, q.problem.data) ? 'correct' : 'wrong'
   if (q.problem.kind === 'vsepr-draw' || q.problem.kind === 'lewis-draw') return 'blank'  // scored externally via Ketcher
   if (q.problem.kind === 'balancing') {
     // answer: "2,1,2" — comma/space separated coefficients (reactants then products)
@@ -302,6 +317,73 @@ function buildQuestionHtml(q: TestQuestion): string {
     </div>`
   }
 
+  if (q.problem.kind === 'ideal_gas') {
+    const p = q.problem.data
+    const sf3 = (v: number) => v.toPrecision(3)
+    const givenChips = [
+      p.givenP !== undefined ? `<span class="chip"><span class="label">P =</span> ${sf3(p.givenP)} ${p.pUnit}</span>` : '',
+      p.givenV !== undefined ? `<span class="chip"><span class="label">V =</span> ${sf3(p.givenV)} L</span>` : '',
+      p.givenN !== undefined ? `<span class="chip"><span class="label">n =</span> ${sf3(p.givenN)} mol</span>` : '',
+      p.givenT !== undefined ? `<span class="chip"><span class="label">T =</span> ${sf3(p.givenT)} K</span>` : '',
+    ].filter(Boolean).join('')
+    return `<div class="question">${header}
+      <p class="q-text">${p.question}</p>
+      <div class="given">${givenChips}</div>
+      <div class="answer-row"><span class="solve-for">${p.solveFor} =</span><span class="answer-line"></span><span class="unit-label">${p.answerUnit}</span></div>
+    </div>`
+  }
+
+  if (q.problem.kind === 'ecell') {
+    const p = q.problem.data
+    const contextHtml = p.context
+      ? `<p class="q-text" style="font-family:monospace;font-size:10pt;color:#555;">${p.context}</p>`
+      : ''
+    const hintHtml = p.hint ? `<p class="q-text" style="font-size:10pt;color:#555;font-style:italic">Hint: ${p.hint}</p>` : ''
+    const unitLabel = p.answerUnit ? `<span class="unit-label">${p.answerUnit}</span>` : ''
+    return `<div class="question">${header}
+      ${contextHtml}
+      <p class="q-text">${p.question}</p>${hintHtml}
+      <div class="answer-row"><span class="solve-for">Answer:</span><span class="answer-line"></span>${unitLabel}</div>
+    </div>`
+  }
+
+  if (q.problem.kind === 'rxn_pred') {
+    const p = q.problem.data
+    const contextHtml = p.context
+      ? `<p class="q-text" style="font-family:monospace;font-size:10pt;color:#555;">${p.context}</p>`
+      : ''
+    const hintHtml = p.hint ? `<p class="q-text" style="font-size:10pt;color:#555;font-style:italic">Hint: ${p.hint}</p>` : ''
+    return `<div class="question">${header}
+      ${contextHtml}
+      <p class="q-text">${p.question}</p>${hintHtml}
+      <div class="answer-row"><span class="solve-for">Answer:</span><span class="answer-line"></span></div>
+    </div>`
+  }
+
+  if (q.problem.kind === 'dilution') {
+    const p = q.problem.data
+    const givenChips = p.given.map(g =>
+      `<span class="chip"><span class="label">${g.label} =</span> ${g.value} <span class="unit">${g.unit}</span></span>`
+    ).join('')
+    return `<div class="question">${header}
+      <p class="q-text">${p.question}</p>
+      <div class="given">${givenChips}</div>
+      <div class="answer-row"><span class="solve-for">${p.solveFor} =</span><span class="answer-line"></span><span class="unit-label">${p.answerUnit}</span></div>
+    </div>`
+  }
+
+  if (q.problem.kind === 'conc') {
+    const p = q.problem.data
+    const givenChips = p.given.map(g =>
+      `<span class="chip"><span class="label">${g.label} =</span> ${g.value} <span class="unit">${g.unit}</span></span>`
+    ).join('')
+    return `<div class="question">${header}
+      <p class="q-text">${p.question}</p>
+      <div class="given">${givenChips}</div>
+      <div class="answer-row"><span class="solve-for">${p.solveFor} =</span><span class="answer-line"></span><span class="unit-label">${p.answerUnit}</span></div>
+    </div>`
+  }
+
   // molar
   const p = q.problem.data
   const givenHtml = p.style === 'arithmetic' && p.given.length > 0
@@ -367,6 +449,18 @@ function buildAnswerKeyHtml(q: TestQuestion): string {
     answer = `${q.problem.data.answer} ${q.problem.data.answerUnit}`
   else if (q.problem.kind === 'vdw')
     answer = `${parseFloat(q.problem.data.realP.toPrecision(4))} atm`
+  else if (q.problem.kind === 'ideal_gas')
+    answer = `${q.problem.data.answer.toPrecision(3)} ${q.problem.data.answerUnit}`
+  else if (q.problem.kind === 'ecell')
+    answer = q.problem.data.answerUnit
+      ? `${q.problem.data.answer} ${q.problem.data.answerUnit}`
+      : q.problem.data.answer
+  else if (q.problem.kind === 'rxn_pred')
+    answer = q.problem.data.answer
+  else if (q.problem.kind === 'dilution')
+    answer = `${q.problem.data.answer.toPrecision(3)} ${q.problem.data.answerUnit}`
+  else if (q.problem.kind === 'conc')
+    answer = `${q.problem.data.answer.toPrecision(3)} ${q.problem.data.answerUnit}`
   else
     answer = `${q.problem.data.answer} ${q.problem.data.answerUnit}`
   return `<div class="key-row"><span class="key-num">${q.id}.</span><span class="key-ans">${answer}</span></div>`

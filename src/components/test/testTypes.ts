@@ -16,8 +16,13 @@ import type { HessProblem } from '../../utils/hessLawPractice'
 import type { BondEnthalpyProblem } from '../../utils/bondEnthalpyPractice'
 import type { HeatTransferProblem } from '../../utils/heatTransferPractice'
 import type { VdWProblem } from '../../utils/vanDerWaalsPractice'
+import type { GasProblem } from '../../utils/idealGasPractice'
+import type { EcellProblem } from '../../utils/ecellPractice'
+import type { RxnPracticeProblem } from '../../utils/reactionPredictorPractice'
+import type { DilutionProblem } from '../../utils/dilutionPractice'
+import type { ConcProblem } from '../../utils/concentrationPractice'
 
-export type { SigFigProblem, EmpiricalProblem, ConversionProblem, AtomicProblem, LewisProblem, LewisDrawProblem, VseprProblem, VseprDrawProblem, StoichProblem, RedoxProblem, PercCompProblem, GasStoichProblem, SolStoichProblem, BalancingEquation, CalorimetryProblem, EnthalpyProblem, HessProblem, BondEnthalpyProblem, HeatTransferProblem, VdWProblem }
+export type { SigFigProblem, EmpiricalProblem, ConversionProblem, AtomicProblem, LewisProblem, LewisDrawProblem, VseprProblem, VseprDrawProblem, StoichProblem, RedoxProblem, PercCompProblem, GasStoichProblem, SolStoichProblem, BalancingEquation, CalorimetryProblem, EnthalpyProblem, HessProblem, BondEnthalpyProblem, HeatTransferProblem, VdWProblem, GasProblem, EcellProblem, RxnPracticeProblem, DilutionProblem, ConcProblem }
 
 export interface MolarTestProblem      { kind: 'molar';      data: MolarProblem      }
 export interface SigFigTestProblem     { kind: 'sigfig';     data: SigFigProblem     }
@@ -40,6 +45,11 @@ export interface HessTestProblem            { kind: 'hess';         data: HessPr
 export interface BondEnthalpyTestProblem    { kind: 'bond_enthalpy';   data: BondEnthalpyProblem   }
 export interface HeatTransferTestProblem   { kind: 'heat_transfer';   data: HeatTransferProblem   }
 export interface VdWTestProblem            { kind: 'vdw';             data: VdWProblem             }
+export interface IdealGasTestProblem       { kind: 'ideal_gas';       data: GasProblem             }
+export interface EcellTestProblem          { kind: 'ecell';           data: EcellProblem           }
+export interface RxnPredTestProblem        { kind: 'rxn_pred';        data: RxnPracticeProblem     }
+export interface DilutionTestProblem       { kind: 'dilution';        data: DilutionProblem        }
+export interface ConcTestProblem           { kind: 'conc';            data: ConcProblem            }
 
 export type TestProblem =
   | MolarTestProblem
@@ -63,6 +73,11 @@ export type TestProblem =
   | BondEnthalpyTestProblem
   | HeatTransferTestProblem
   | VdWTestProblem
+  | IdealGasTestProblem
+  | EcellTestProblem
+  | RxnPredTestProblem
+  | DilutionTestProblem
+  | ConcTestProblem
 
 export interface TestQuestion {
   id:           number

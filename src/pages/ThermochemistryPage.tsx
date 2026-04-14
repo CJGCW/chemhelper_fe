@@ -101,9 +101,24 @@ export default function ThermochemistryPage() {
 
       {/* Header */}
       <div className="flex flex-col gap-4">
-        <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Thermochemistry</h2>
+        <div className="flex items-center gap-3 print:hidden">
+          <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Thermochemistry</h2>
+          {tab.endsWith('-reference') && (
+            <button
+              onClick={() => window.print()}
+              className="flex items-center gap-2 px-3 py-1 rounded-sm font-sans text-sm border border-border
+                         text-secondary hover:text-primary hover:border-muted transition-colors"
+            >
+              <span>⎙</span>
+              <span>Print</span>
+            </button>
+          )}
+        </div>
+        <h2 className="hidden print:block font-sans font-semibold text-black text-xl">
+          {currentSection ? `${currentSection.heading} — Reference` : 'Thermochemistry Reference'}
+        </h2>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 print:hidden">
           {/* Section pills */}
           <div className="flex items-center gap-1 flex-wrap">
             {SECTIONS.map(s => {

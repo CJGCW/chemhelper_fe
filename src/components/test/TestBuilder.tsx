@@ -25,12 +25,21 @@ import { genHessProblem } from '../../utils/hessLawPractice'
 import { genBondEnthalpyProblem } from '../../utils/bondEnthalpyPractice'
 import { genHeatTransferProblem } from '../../utils/heatTransferPractice'
 import { generateVdWProblem } from '../../utils/vanDerWaalsPractice'
+import { genGasProblem } from '../../utils/idealGasPractice'
+import type { EcellSubtype } from '../../utils/ecellPractice'
+import { genEcellProblem } from '../../utils/ecellPractice'
+import type { RxnSubtype } from '../../utils/reactionPredictorPractice'
+import { genRxnPracticeProblem } from '../../utils/reactionPredictorPractice'
+import type { DilutionSubtype } from '../../utils/dilutionPractice'
+import { genDilutionProblem } from '../../utils/dilutionPractice'
+import type { ConcSubtype } from '../../utils/concentrationPractice'
+import { genConcProblem } from '../../utils/concentrationPractice'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
 // ── Topic definitions ─────────────────────────────────────────────────────────
 
-type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'lewis_draw' | 'vsepr' | 'vsepr_draw' | 'stoich' | 'redox' | 'perc_comp' | 'gas_stoich' | 'sol_stoich' | 'balancing' | 'calorimetry' | 'enthalpy' | 'hess' | 'bond_enthalpy' | 'heat_transfer' | 'vdw'
-type TopicGroup = 'core' | 'atomic_molecular' | 'structures' | 'molar_solutions' | 'stoichiometry' | 'redox' | 'thermochemistry'
+type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'lewis_draw' | 'vsepr' | 'vsepr_draw' | 'stoich' | 'redox' | 'perc_comp' | 'gas_stoich' | 'sol_stoich' | 'balancing' | 'calorimetry' | 'enthalpy' | 'hess' | 'bond_enthalpy' | 'heat_transfer' | 'vdw' | 'ideal_gas' | 'ecell' | 'rxn_pred' | 'dilution' | 'conc'
+type TopicGroup = 'core' | 'atomic_molecular' | 'structures' | 'molar_solutions' | 'stoichiometry' | 'gases' | 'redox' | 'thermochemistry'
 
 const GROUP_LABELS: Record<TopicGroup, string> = {
   core:             'Core Skills',
@@ -38,24 +47,29 @@ const GROUP_LABELS: Record<TopicGroup, string> = {
   structures:       'Structures',
   molar_solutions:  'Molar & Solutions',
   stoichiometry:    'Stoichiometry',
-  redox:            'Redox',
+  gases:            'Gas Laws',
+  redox:            'Redox & Electrochemistry',
   thermochemistry:  'Thermochemistry',
 }
-const GROUP_ORDER: TopicGroup[] = ['core', 'atomic_molecular', 'structures', 'molar_solutions', 'stoichiometry', 'redox', 'thermochemistry']
+const GROUP_ORDER: TopicGroup[] = ['core', 'atomic_molecular', 'structures', 'molar_solutions', 'stoichiometry', 'gases', 'redox', 'thermochemistry']
 
 interface TopicDef {
-  id:           string
-  kind:         TopicKind
-  group:        TopicGroup
-  label:        string
-  formula:      string
-  molarType?:   MolarCalcType
-  stoichType?:  StoichProblemType
-  redoxType?:   RedoxSubtype
-  percCompType?:  PercCompType
-  gasStandard?:   GasStandard
-  solStoichType?: SolStoichType
-  balDifficulty?: Difficulty
+  id:              string
+  kind:            TopicKind
+  group:           TopicGroup
+  label:           string
+  formula:         string
+  molarType?:      MolarCalcType
+  stoichType?:     StoichProblemType
+  redoxType?:      RedoxSubtype
+  percCompType?:   PercCompType
+  gasStandard?:    GasStandard
+  solStoichType?:  SolStoichType
+  balDifficulty?:  Difficulty
+  ecellType?:      EcellSubtype
+  rxnSubtype?:     RxnSubtype
+  dilutionSubtype?: DilutionSubtype
+  concSubtype?:    ConcSubtype
 }
 
 const ALL_TOPICS: TopicDef[] = [
@@ -78,16 +92,31 @@ const ALL_TOPICS: TopicDef[] = [
   { id: 'stoich-lr',  kind: 'stoich',     group: 'stoichiometry',    label: 'Limiting Reagent',        formula: 'LR',                    stoichType: 'limiting_reagent'  },
   { id: 'stoich-ty',  kind: 'stoich',     group: 'stoichiometry',    label: 'Theoretical Yield',       formula: 'TY (g)',                stoichType: 'theoretical_yield' },
   { id: 'stoich-py',  kind: 'stoich',     group: 'stoichiometry',    label: 'Percent Yield',           formula: '% yield',               stoichType: 'percent_yield'     },
-  { id: 'gas-stp',      kind: 'gas_stoich', group: 'stoichiometry',    label: 'Gas Stoich (STP)',        formula: 'L → mol @ STP',         gasStandard: 'STP'                          },
-  { id: 'gas-satp',    kind: 'gas_stoich', group: 'stoichiometry',    label: 'Gas Stoich (SATP)',       formula: 'L → mol @ SATP',        gasStandard: 'SATP'                         },
-  { id: 'vdw',         kind: 'vdw',        group: 'stoichiometry',    label: 'van der Waals',           formula: 'P = nRT/(V−nb) − a(n/V)²'                                          },
+  { id: 'gas-stp',        kind: 'gas_stoich', group: 'stoichiometry',  label: 'Gas Stoich (STP)',         formula: 'L → mol @ STP',            gasStandard: 'STP'  },
+  { id: 'gas-satp',      kind: 'gas_stoich', group: 'stoichiometry',  label: 'Gas Stoich (SATP)',        formula: 'L → mol @ SATP',           gasStandard: 'SATP' },
   { id: 'sol-stoich',  kind: 'sol_stoich', group: 'stoichiometry',    label: 'Solution Stoich',         formula: 'M·V → mol → g'                                                      },
   { id: 'bal-easy',    kind: 'balancing',  group: 'stoichiometry',    label: 'Balancing (Easy)',        formula: '_□ + _□ → _□',          balDifficulty: 'easy'                       },
   { id: 'bal-medium',  kind: 'balancing',  group: 'stoichiometry',    label: 'Balancing (Medium)',      formula: '_□ + _□ → _□',          balDifficulty: 'medium'                     },
   { id: 'bal-hard',    kind: 'balancing',  group: 'stoichiometry',    label: 'Balancing (Hard)',        formula: '_□ + _□ → _□',          balDifficulty: 'hard'                       },
+  { id: 'dilution-c2', kind: 'dilution', group: 'molar_solutions', label: 'Dilution (find C₂)',     formula: 'C₁V₁=C₂V₂',  dilutionSubtype: 'find_c2' },
+  { id: 'dilution-v2', kind: 'dilution', group: 'molar_solutions', label: 'Dilution (find V₂)',     formula: 'C₁V₁=C₂V₂',  dilutionSubtype: 'find_v2' },
+  { id: 'dilution-v1', kind: 'dilution', group: 'molar_solutions', label: 'Dilution (find V₁)',     formula: 'C₁V₁=C₂V₂',  dilutionSubtype: 'find_v1' },
+  { id: 'conc-pct-mol', kind: 'conc', group: 'molar_solutions', label: 'Conc: % → Molarity',      formula: '%m/v → M',      concSubtype: 'percent_to_molarity'  },
+  { id: 'conc-mol-pct', kind: 'conc', group: 'molar_solutions', label: 'Conc: Molarity → %',      formula: 'M → %m/v',      concSubtype: 'molarity_to_percent'  },
+  { id: 'conc-ppm',     kind: 'conc', group: 'molar_solutions', label: 'Conc: ppm → Molarity',    formula: 'ppm → M',       concSubtype: 'ppm_to_molarity'      },
+  { id: 'conc-xf',      kind: 'conc', group: 'molar_solutions', label: 'Mole Fraction',           formula: 'χ = n/nₜ',      concSubtype: 'mole_fraction'        },
+  { id: 'rxn-pred-occ',  kind: 'rxn_pred', group: 'stoichiometry', label: 'Reaction: Occurs?',        formula: 'ppt?',     rxnSubtype: 'predict_occurs'      },
+  { id: 'rxn-pred-name', kind: 'rxn_pred', group: 'stoichiometry', label: 'Reaction: Name Precipitate', formula: 'ppt name', rxnSubtype: 'name_precipitate'   },
+  { id: 'rxn-pred-sol',  kind: 'rxn_pred', group: 'stoichiometry', label: 'Reaction: Solubility',     formula: 'S/I/SS',   rxnSubtype: 'identify_solubility' },
+  { id: 'ideal-gas',  kind: 'ideal_gas', group: 'gases', label: 'Ideal Gas Law',   formula: 'PV=nRT'     },
+  { id: 'vdw',        kind: 'vdw',       group: 'gases', label: 'Real Gas (vdW)',  formula: 'van der Waals' },
   { id: 'redox-ox',   kind: 'redox',      group: 'redox',            label: 'Oxidation Numbers',        formula: 'ox. #',                 redoxType: 'ox_state'           },
   { id: 'redox-id',   kind: 'redox',      group: 'redox',            label: 'Identify Oxidised/Reduced', formula: 'OA / RA',              redoxType: 'identify_redox'     },
   { id: 'redox-chg',  kind: 'redox',      group: 'redox',            label: 'Oxidation State Change',   formula: 'Δox',                   redoxType: 'ox_change'          },
+  { id: 'ecell-e0',   kind: 'ecell', group: 'redox', label: 'Cell Potential (E°)',   formula: 'E°cell',  ecellType: 'calc_e0cell'  },
+  { id: 'ecell-spon', kind: 'ecell', group: 'redox', label: 'Spontaneity',          formula: 'ΔG / E°', ecellType: 'spontaneity'  },
+  { id: 'ecell-nern', kind: 'ecell', group: 'redox', label: 'Nernst Equation',      formula: 'E=E°−RT/nF·lnQ', ecellType: 'nernst'  },
+  { id: 'ecell-dg',   kind: 'ecell', group: 'redox', label: 'ΔG from E°',           formula: 'ΔG=−nFE',  ecellType: 'delta_g'   },
   { id: 'calorimetry',   kind: 'calorimetry',   group: 'thermochemistry', label: 'Calorimetry',          formula: 'q=mcΔT' },
   { id: 'enthalpy',     kind: 'enthalpy',     group: 'thermochemistry', label: 'Enthalpy of Reaction',   formula: 'ΔHrxn'  },
   { id: 'hess',         kind: 'hess',         group: 'thermochemistry', label: "Hess's Law",             formula: 'ΣΔH'    },
@@ -216,6 +245,16 @@ export default function TestBuilder({ onGenerate }: Props) {
         return { topic: t.label, topicFormula: t.formula, problem: { kind: 'heat_transfer', data: genHeatTransferProblem() } }
       if (t.kind === 'vdw')
         return { topic: t.label, topicFormula: t.formula, problem: { kind: 'vdw', data: generateVdWProblem() } }
+      if (t.kind === 'ideal_gas')
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'ideal_gas', data: genGasProblem() } }
+      if (t.kind === 'ecell')
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'ecell', data: genEcellProblem(t.ecellType!) } }
+      if (t.kind === 'rxn_pred')
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'rxn_pred', data: genRxnPracticeProblem(t.rxnSubtype!) } }
+      if (t.kind === 'dilution')
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'dilution', data: genDilutionProblem(t.dilutionSubtype!) } }
+      if (t.kind === 'conc')
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'conc', data: genConcProblem(t.concSubtype!) } }
       return { topic: t.label, topicFormula: t.formula, problem: { kind: 'molar', data: generateMolarProblem(t.molarType!, randomStyle()) } }
     }
 
