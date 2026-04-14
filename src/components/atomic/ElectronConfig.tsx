@@ -9,17 +9,21 @@ import {
 
 // ── Sub-components ─────────────────────────────────────────────────────────
 
-function OrbitalBox({ up, down, active }: { up: boolean; down: boolean; active?: boolean }) {
+function OrbitalBox({ up, down, active, hund }: { up: boolean; down: boolean; active?: boolean; hund?: boolean }) {
   return (
     <div
       className="w-7 h-8 rounded-sm flex items-center justify-center gap-px shrink-0"
       style={{
         border: active
           ? '1px solid color-mix(in srgb, var(--c-halogen) 70%, transparent)'
-          : '1px solid rgba(255,255,255,0.15)',
+          : hund
+            ? '1px solid rgba(245,158,11,0.5)'
+            : '1px solid rgba(255,255,255,0.15)',
         background: active
           ? 'color-mix(in srgb, var(--c-halogen) 14%, transparent)'
-          : (up || down) ? 'rgba(255,255,255,0.03)' : 'transparent',
+          : hund
+            ? 'rgba(245,158,11,0.06)'
+            : (up || down) ? 'rgba(255,255,255,0.03)' : 'transparent',
         transition: 'background 0.15s, border-color 0.15s',
       }}
     >
@@ -33,14 +37,30 @@ function OrbitalBox({ up, down, active }: { up: boolean; down: boolean; active?:
 
 function SubshellGroup({ sub, active }: { sub: SubshellFill; active?: boolean }) {
   const states = orbitalStates(sub.electrons, sub.orbitals)
+  const isHundActive = sub.electrons > 0 && sub.electrons < sub.orbitals * 2
   return (
     <div className="flex flex-col items-start gap-1">
-      <span className="font-mono text-[10px] tracking-wide"
-        style={{ color: active ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)' }}>
-        {sub.label}
-      </span>
+      <div className="flex items-center gap-1.5">
+        <span className="font-mono text-[10px] tracking-wide"
+          style={{ color: active ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)' }}>
+          {sub.label}
+        </span>
+        {isHundActive && !active && (
+          <span className="font-mono text-[8px] px-1 py-px rounded-sm"
+            style={{
+              background: 'rgba(245,158,11,0.12)',
+              border: '1px solid rgba(245,158,11,0.3)',
+              color: '#fbbf24',
+            }}>
+            {sub.electrons <= sub.orbitals ? "Hund's" : 'pairing'}
+          </span>
+        )}
+      </div>
       <div className="flex gap-0.5">
-        {states.map((s, i) => <OrbitalBox key={i} up={s.up} down={s.down} active={active} />)}
+        {states.map((s, i) => (
+          <OrbitalBox key={i} up={s.up} down={s.down} active={active}
+            hund={isHundActive && s.up && !s.down} />
+        ))}
       </div>
     </div>
   )

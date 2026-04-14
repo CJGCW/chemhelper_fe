@@ -1,23 +1,29 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import ElectronConfig from '../components/atomic/ElectronConfig'
-import ElectronConfigPractice from '../components/atomic/ElectronConfigPractice'
 import QuantumNumbersReference from '../components/atomic/QuantumNumbersReference'
 import EnergyLevelsReference from '../components/atomic/EnergyLevelsReference'
 import AtomicPractice from '../components/atomic/AtomicPractice'
 import IsoelectronicSeries from '../components/atomic/IsoelectronicSeries'
+import OrbitalBoxDiagram from '../components/atomic/OrbitalBoxDiagram'
+import ElectromagneticSpectrum from '../components/atomic/ElectromagneticSpectrum'
+import ParaDiaMagnetic from '../components/atomic/ParaDiaMagnetic'
+import MultiElectronAtoms from '../components/atomic/MultiElectronAtoms'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type Topic = 'electron_config' | 'quantum_numbers' | 'energy_levels' | 'isoelectronic'
+           | 'em_spectrum' | 'para_dia' | 'multi_electron'
 type Mode  = 'reference' | 'practice'
 
 const TOPICS: { id: Topic; label: string; subtitle: string }[] = [
-  { id: 'electron_config',  label: 'Electron Config',  subtitle: 'Aufbau, orbital diagrams'  },
-  { id: 'quantum_numbers',  label: 'Quantum Numbers',  subtitle: 'n, l, mₗ, ms rules'        },
-  { id: 'energy_levels',    label: 'Energy Levels',    subtitle: 'Bohr model, transitions'   },
-  { id: 'isoelectronic',    label: 'Isoelectronic',    subtitle: 'Ion size comparison'        },
+  { id: 'electron_config',  label: 'Electron Config',  subtitle: 'Notation, orbital boxes, Hund\'s rule' },
+  { id: 'quantum_numbers',  label: 'Quantum Numbers',  subtitle: 'n, l, mₗ, ms rules'                    },
+  { id: 'energy_levels',    label: 'Energy Levels',    subtitle: 'Bohr model, transitions'               },
+  { id: 'isoelectronic',    label: 'Isoelectronic',    subtitle: 'Ion size comparison'                    },
+  { id: 'em_spectrum',      label: 'EM Spectrum',      subtitle: 'λ ↔ f ↔ E interconverter'              },
+  { id: 'para_dia',         label: 'Para/Diamagnetic', subtitle: 'Unpaired electrons, magnetism'         },
+  { id: 'multi_electron',   label: 'Multi-Electron',   subtitle: 'Shielding, Z_eff, Slater rules'        },
 ]
 
 // ── Tab bar ───────────────────────────────────────────────────────────────────
@@ -47,24 +53,29 @@ function ModeTabBar({ mode, onChange, layoutId }: { mode: Mode; onChange: (m: Mo
 
 // ── Per-topic section ─────────────────────────────────────────────────────────
 
+const REFERENCE_ONLY_TOPICS = new Set<Topic>(['electron_config', 'isoelectronic', 'em_spectrum', 'para_dia', 'multi_electron'])
+
 function TopicSection({ topic }: { topic: Topic }) {
   const [mode, setMode] = useState<Mode>('reference')
+  const referenceOnly = REFERENCE_ONLY_TOPICS.has(topic)
 
   return (
     <div className="flex flex-col gap-5">
-      <ModeTabBar mode={mode} onChange={setMode} layoutId={`mode-tab-${topic}`} />
+      {!referenceOnly && <ModeTabBar mode={mode} onChange={setMode} layoutId={`mode-tab-${topic}`} />}
 
       <AnimatePresence mode="wait">
         <motion.div key={`${topic}-${mode}`}
           initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.18 }}>
-          {topic === 'electron_config' && mode === 'reference' && <ElectronConfig />}
-          {topic === 'electron_config' && mode === 'practice'  && <ElectronConfigPractice />}
-          {topic === 'quantum_numbers' && mode === 'reference' && <QuantumNumbersReference />}
-          {topic === 'quantum_numbers' && mode === 'practice'  && <AtomicPractice subtopic="quantum_numbers" />}
-          {topic === 'energy_levels'   && mode === 'reference' && <EnergyLevelsReference />}
-          {topic === 'energy_levels'   && mode === 'practice'  && <AtomicPractice subtopic="energy_levels" />}
-          {topic === 'isoelectronic'   && <IsoelectronicSeries />}
+          {topic === 'electron_config'  && <OrbitalBoxDiagram />}
+          {topic === 'quantum_numbers'  && mode === 'reference' && <QuantumNumbersReference />}
+          {topic === 'quantum_numbers'  && mode === 'practice'  && <AtomicPractice subtopic="quantum_numbers" />}
+          {topic === 'energy_levels'    && mode === 'reference' && <EnergyLevelsReference />}
+          {topic === 'energy_levels'    && mode === 'practice'  && <AtomicPractice subtopic="energy_levels" />}
+          {topic === 'isoelectronic'    && <IsoelectronicSeries />}
+          {topic === 'em_spectrum'      && <ElectromagneticSpectrum />}
+          {topic === 'para_dia'         && <ParaDiaMagnetic />}
+          {topic === 'multi_electron'   && <MultiElectronAtoms />}
         </motion.div>
       </AnimatePresence>
     </div>
