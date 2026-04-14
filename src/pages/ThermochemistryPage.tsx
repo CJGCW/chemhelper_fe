@@ -16,6 +16,8 @@ import EnergyDiagram from '../components/thermo/EnergyDiagram'
 import HeatTransferCalc from '../components/thermo/HeatTransferCalc'
 import HeatTransferPractice from '../components/thermo/HeatTransferPractice'
 import HeatTransferReference from '../components/thermo/HeatTransferReference'
+import HeatingCurveCalc from '../components/thermo/HeatingCurveCalc'
+import PhaseDiagram from '../components/thermo/PhaseDiagram'
 
 type Tab =
   | 'calorimetry'
@@ -28,6 +30,8 @@ type Tab =
   | 'hess-practice'
   | 'hess-reference'
   | 'bond'
+  | 'heating-curve'
+  | 'phase-diagram'
   | 'bond-practice'
   | 'bond-reference'
   | 'profile'
@@ -80,6 +84,18 @@ const SECTIONS = [
       { id: 'heattransfer'           as Tab, label: 'Calculator' },
       { id: 'heattransfer-practice'  as Tab, label: 'Practice'   },
       { id: 'heattransfer-reference' as Tab, label: 'Reference'  },
+    ],
+  },
+  {
+    heading: 'Heating Curves',
+    tabs: [
+      { id: 'heating-curve' as Tab, label: 'Calculator' },
+    ],
+  },
+  {
+    heading: 'Phase Diagrams',
+    tabs: [
+      { id: 'phase-diagram' as Tab, label: 'Interactive' },
     ],
   },
 ]
@@ -189,6 +205,8 @@ export default function ThermochemistryPage() {
           {tab === 'heattransfer'           && <HeatTransferCalc />}
           {tab === 'heattransfer-practice'  && <HeatTransferPractice />}
           {tab === 'heattransfer-reference' && <HeatTransferReference />}
+          {tab === 'heating-curve'          && <HeatingCurveCalc />}
+          {tab === 'phase-diagram'          && <PhaseDiagram />}
         </motion.div>
       </AnimatePresence>
     </div>
