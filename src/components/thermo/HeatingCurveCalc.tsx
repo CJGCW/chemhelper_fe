@@ -292,7 +292,6 @@ export default function HeatingCurveCalc() {
 
   const totalQ  = segments.reduce((s, seg) => s + seg.q, 0)
   const heating = t1 > t0
-  const moles   = massNum / sub.M
 
   // Cumulative q for table
   let runningQ = 0

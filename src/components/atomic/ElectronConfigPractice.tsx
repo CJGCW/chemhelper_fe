@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
-  ELEMENTS, EXCEPTIONS, NOBLE_GASES,
-  computeConfig, getAbbrConfig, getNobleGasCore,
+  ELEMENTS, EXCEPTIONS,
+  computeConfig, getAbbrConfig,
   groupByShell, parseWrittenConfig, checkWrittenConfig, checkBoxDiagram,
   type SubshellFill,
 } from './electronConfigUtils'
@@ -353,7 +353,6 @@ export default function ElectronConfigPractice() {
         <div className="flex flex-col gap-1">
           {results.map((r, i) => {
             const el = ELEMENTS[r.z]
-            const both = r.writtenCorrect && r.boxCorrect
             return (
               <div key={i} className="flex items-center gap-3 px-3 py-2 rounded-sm border border-border"
                 style={{ background: '#0e1016' }}>

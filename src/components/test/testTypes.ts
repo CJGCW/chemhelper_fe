@@ -21,8 +21,9 @@ import type { EcellProblem } from '../../utils/ecellPractice'
 import type { RxnPracticeProblem } from '../../utils/reactionPredictorPractice'
 import type { DilutionProblem } from '../../utils/dilutionPractice'
 import type { ConcProblem } from '../../utils/concentrationPractice'
+import type { ClausiusClapeyronProblem } from '../../utils/clausiusClapeyronPractice'
 
-export type { SigFigProblem, EmpiricalProblem, ConversionProblem, AtomicProblem, LewisProblem, LewisDrawProblem, VseprProblem, VseprDrawProblem, StoichProblem, RedoxProblem, PercCompProblem, GasStoichProblem, SolStoichProblem, BalancingEquation, CalorimetryProblem, EnthalpyProblem, HessProblem, BondEnthalpyProblem, HeatTransferProblem, VdWProblem, GasProblem, EcellProblem, RxnPracticeProblem, DilutionProblem, ConcProblem }
+export type { SigFigProblem, EmpiricalProblem, ConversionProblem, AtomicProblem, LewisProblem, LewisDrawProblem, VseprProblem, VseprDrawProblem, StoichProblem, RedoxProblem, PercCompProblem, GasStoichProblem, SolStoichProblem, BalancingEquation, CalorimetryProblem, EnthalpyProblem, HessProblem, BondEnthalpyProblem, HeatTransferProblem, VdWProblem, GasProblem, EcellProblem, RxnPracticeProblem, DilutionProblem, ConcProblem, ClausiusClapeyronProblem }
 
 export interface MolarTestProblem      { kind: 'molar';      data: MolarProblem      }
 export interface SigFigTestProblem     { kind: 'sigfig';     data: SigFigProblem     }
@@ -49,7 +50,8 @@ export interface IdealGasTestProblem       { kind: 'ideal_gas';       data: GasP
 export interface EcellTestProblem          { kind: 'ecell';           data: EcellProblem           }
 export interface RxnPredTestProblem        { kind: 'rxn_pred';        data: RxnPracticeProblem     }
 export interface DilutionTestProblem       { kind: 'dilution';        data: DilutionProblem        }
-export interface ConcTestProblem           { kind: 'conc';            data: ConcProblem            }
+export interface ConcTestProblem                  { kind: 'conc';              data: ConcProblem                  }
+export interface ClausiusClapeyronTestProblem     { kind: 'clausius_clapeyron'; data: ClausiusClapeyronProblem     }
 
 export type TestProblem =
   | MolarTestProblem
@@ -78,6 +80,7 @@ export type TestProblem =
   | RxnPredTestProblem
   | DilutionTestProblem
   | ConcTestProblem
+  | ClausiusClapeyronTestProblem
 
 export interface TestQuestion {
   id:           number

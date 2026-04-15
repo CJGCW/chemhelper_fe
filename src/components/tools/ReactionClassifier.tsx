@@ -132,14 +132,11 @@ const isAcid = (r: CompoundRole) => r === 'strong_acid' || r === 'weak_acid'
 const isBase = (r: CompoundRole) => r === 'strong_base' || r === 'weak_base'
 
 function classify(a: Compound, b: Compound): ReactionResult {
-  const roles = [a.role, b.role]
-
   // Gas-forming: acid + carbonate → CO₂
   if (isAcid(a.role) && (b.role === 'carbonate' || b.role === 'bicarbonate') ||
       isAcid(b.role) && (a.role === 'carbonate' || a.role === 'bicarbonate')) {
     const acid = isAcid(a.role) ? a : b
     const salt = isAcid(a.role) ? b : a
-    const gas = salt.role === 'bicarbonate' ? 'CO₂' : 'CO₂'
     return {
       type: 'gas_forming',
       subtype: 'Acid + Carbonate → CO₂',
@@ -332,7 +329,6 @@ const TYPE_LABEL: Record<ReactionType, string> = {
   unknown:       'Unknown / Not Classified',
 }
 
-const STATE_LABEL: Record<string, string> = { s: 'solid', l: 'liquid', g: 'gas', aq: 'aqueous' }
 
 // ── Compound picker ───────────────────────────────────────────────────────────
 

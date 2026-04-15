@@ -254,6 +254,8 @@ const THERMO_ITEMS = [
   { path: "/thermochemistry?tab=heattransfer",  label: "Heat Transfer",   formula: "q₁=−q₂" },
   { path: "/thermochemistry?tab=heating-curve", label: "Heating Curves",  formula: "q/T"     },
   { path: "/thermochemistry?tab=phase-diagram", label: "Phase Diagram",   formula: "P-T"     },
+  { path: "/thermochemistry?tab=liquid-props",   label: "Liquid Props",   formula: "γ/η"    },
+  { path: "/thermochemistry?tab=cc",            label: "Clausius-Clap.", formula: "ln P"    },
 ]
 
 // ── Practice / top-level nav items ────────────────────────────────────────────

@@ -16,6 +16,7 @@ interface ActivityMetal {
   waterEq?: string   // representative water reaction
   acidEq?: string    // representative acid reaction (with HCl)
   displaceEq?: string  // example displacement (with a salt of a less active metal)
+  note?: string
 }
 
 interface ActivityHalogen {
@@ -545,7 +546,7 @@ function DisplacementChecker() {
 export default function ActivitySeries() {
   const [selectedMetal,   setSelectedMetal]   = useState<ActivityMetal | null>(null)
   const [selectedHalogen, setSelectedHalogen] = useState<ActivityHalogen | null>(null)
-  const [activeSection,   setActiveSection]   = useState<'metals' | 'halogens'>('metals')
+  const [_activeSection,  setActiveSection]   = useState<'metals' | 'halogens'>('metals')
 
   function toggleMetal(m: ActivityMetal) {
     setSelectedMetal(prev => prev?.symbol === m.symbol ? null : m)

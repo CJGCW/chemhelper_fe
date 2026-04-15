@@ -34,11 +34,12 @@ import type { DilutionSubtype } from '../../utils/dilutionPractice'
 import { genDilutionProblem } from '../../utils/dilutionPractice'
 import type { ConcSubtype } from '../../utils/concentrationPractice'
 import { genConcProblem } from '../../utils/concentrationPractice'
+import { genClausiusClapeyronProblem } from '../../utils/clausiusClapeyronPractice'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
 // ── Topic definitions ─────────────────────────────────────────────────────────
 
-type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'lewis_draw' | 'vsepr' | 'vsepr_draw' | 'stoich' | 'redox' | 'perc_comp' | 'gas_stoich' | 'sol_stoich' | 'balancing' | 'calorimetry' | 'enthalpy' | 'hess' | 'bond_enthalpy' | 'heat_transfer' | 'vdw' | 'ideal_gas' | 'ecell' | 'rxn_pred' | 'dilution' | 'conc'
+type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'lewis_draw' | 'vsepr' | 'vsepr_draw' | 'stoich' | 'redox' | 'perc_comp' | 'gas_stoich' | 'sol_stoich' | 'balancing' | 'calorimetry' | 'enthalpy' | 'hess' | 'bond_enthalpy' | 'heat_transfer' | 'vdw' | 'ideal_gas' | 'ecell' | 'rxn_pred' | 'dilution' | 'conc' | 'clausius_clapeyron'
 type TopicGroup = 'core' | 'atomic_molecular' | 'structures' | 'molar_solutions' | 'stoichiometry' | 'gases' | 'redox' | 'thermochemistry'
 
 const GROUP_LABELS: Record<TopicGroup, string> = {
@@ -121,7 +122,8 @@ const ALL_TOPICS: TopicDef[] = [
   { id: 'enthalpy',     kind: 'enthalpy',     group: 'thermochemistry', label: 'Enthalpy of Reaction',   formula: 'ΔHrxn'  },
   { id: 'hess',         kind: 'hess',         group: 'thermochemistry', label: "Hess's Law",             formula: 'ΣΔH'    },
   { id: 'bond-enthalpy',  kind: 'bond_enthalpy',  group: 'thermochemistry', label: 'Bond Enthalpy',   formula: 'BE'      },
-  { id: 'heat-transfer',  kind: 'heat_transfer',  group: 'thermochemistry', label: 'Heat Transfer',   formula: 'q₁=−q₂' },
+  { id: 'heat-transfer',       kind: 'heat_transfer',       group: 'thermochemistry', label: 'Heat Transfer',        formula: 'q₁=−q₂'  },
+  { id: 'clausius-clapeyron', kind: 'clausius_clapeyron', group: 'thermochemistry', label: 'Clausius-Clapeyron',  formula: 'ln P₂/P₁' },
 ]
 
 const STYLES: ProblemStyle[] = ['word', 'arithmetic']
@@ -255,6 +257,8 @@ export default function TestBuilder({ onGenerate }: Props) {
         return { topic: t.label, topicFormula: t.formula, problem: { kind: 'dilution', data: genDilutionProblem(t.dilutionSubtype!) } }
       if (t.kind === 'conc')
         return { topic: t.label, topicFormula: t.formula, problem: { kind: 'conc', data: genConcProblem(t.concSubtype!) } }
+      if (t.kind === 'clausius_clapeyron')
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'clausius_clapeyron', data: genClausiusClapeyronProblem() } }
       return { topic: t.label, topicFormula: t.formula, problem: { kind: 'molar', data: generateMolarProblem(t.molarType!, randomStyle()) } }
     }
 

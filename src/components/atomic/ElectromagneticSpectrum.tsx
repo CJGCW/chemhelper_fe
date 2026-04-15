@@ -73,15 +73,6 @@ function regionForLambda(lambda: number) {
   return REGIONS.find(r => lambda >= r.lambdaMin && lambda <= r.lambdaMax) ?? null
 }
 
-type Fmt = { value: string; exp?: string }
-
-function fmtSI(x: number, unit: string): Fmt {
-  if (!isFinite(x) || x <= 0) return { value: '—' }
-  const exp = Math.floor(Math.log10(x))
-  const mantissa = x / 10 ** exp
-  if (Math.abs(exp) < 4) return { value: `${+x.toPrecision(4)} ${unit}` }
-  return { value: `${+mantissa.toPrecision(4)} × 10`, exp: `${exp} ${unit}` }
-}
 
 function fmtLambda(m: number): string {
   if (!isFinite(m) || m <= 0) return '—'

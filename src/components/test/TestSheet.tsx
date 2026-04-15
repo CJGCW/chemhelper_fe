@@ -26,6 +26,7 @@ import { checkEcellAnswer } from '../../utils/ecellPractice'
 import { checkRxnPracticeAnswer } from '../../utils/reactionPredictorPractice'
 import { checkDilutionAnswer } from '../../utils/dilutionPractice'
 import { checkConcAnswer } from '../../utils/concentrationPractice'
+import { checkCCAnswer } from '../../utils/clausiusClapeyronPractice'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
 // ── Answer checking ───────────────────────────────────────────────────────────
@@ -83,6 +84,8 @@ function checkQuestion(q: TestQuestion, answer: string): Result {
     return checkDilutionAnswer(answer, q.problem.data) ? 'correct' : 'wrong'
   if (q.problem.kind === 'conc')
     return checkConcAnswer(answer, q.problem.data) ? 'correct' : 'wrong'
+  if (q.problem.kind === 'clausius_clapeyron')
+    return checkCCAnswer(q.problem.data, answer) ? 'correct' : 'wrong'
   if (q.problem.kind === 'vsepr-draw' || q.problem.kind === 'lewis-draw') return 'blank'  // scored externally via Ketcher
   if (q.problem.kind === 'balancing') {
     // answer: "2,1,2" — comma/space separated coefficients (reactants then products)
@@ -384,6 +387,18 @@ function buildQuestionHtml(q: TestQuestion): string {
     </div>`
   }
 
+  if (q.problem.kind === 'clausius_clapeyron') {
+    const p = q.problem.data
+    const givenChips = p.given.map(g =>
+      `<span class="chip">${g}</span>`
+    ).join('')
+    return `<div class="question">${header}
+      <p class="q-text">${p.question}</p>
+      <div class="given">${givenChips}</div>
+      <div class="answer-row"><span class="solve-for">${p.solveLabel} =</span><span class="answer-line"></span><span class="unit-label">${p.answerUnit}</span></div>
+    </div>`
+  }
+
   // molar
   const p = q.problem.data
   const givenHtml = p.style === 'arithmetic' && p.given.length > 0
@@ -461,6 +476,8 @@ function buildAnswerKeyHtml(q: TestQuestion): string {
     answer = `${q.problem.data.answer.toPrecision(3)} ${q.problem.data.answerUnit}`
   else if (q.problem.kind === 'conc')
     answer = `${q.problem.data.answer.toPrecision(3)} ${q.problem.data.answerUnit}`
+  else if (q.problem.kind === 'clausius_clapeyron')
+    answer = q.problem.data.answer
   else
     answer = `${q.problem.data.answer} ${q.problem.data.answerUnit}`
   return `<div class="key-row"><span class="key-num">${q.id}.</span><span class="key-ans">${answer}</span></div>`

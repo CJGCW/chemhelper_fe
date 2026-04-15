@@ -18,6 +18,10 @@ import HeatTransferPractice from '../components/thermo/HeatTransferPractice'
 import HeatTransferReference from '../components/thermo/HeatTransferReference'
 import HeatingCurveCalc from '../components/thermo/HeatingCurveCalc'
 import PhaseDiagram from '../components/thermo/PhaseDiagram'
+import LiquidProperties from '../components/thermo/LiquidProperties'
+import ClausiusClapeyronCalc from '../components/thermo/ClausiusClapeyronCalc'
+import ClausiusClapeyronPractice from '../components/thermo/ClausiusClapeyronPractice'
+import ClausiusClapeyronReference from '../components/thermo/ClausiusClapeyronReference'
 
 type Tab =
   | 'calorimetry'
@@ -32,6 +36,10 @@ type Tab =
   | 'bond'
   | 'heating-curve'
   | 'phase-diagram'
+  | 'liquid-props'
+  | 'cc'
+  | 'cc-practice'
+  | 'cc-reference'
   | 'bond-practice'
   | 'bond-reference'
   | 'profile'
@@ -96,6 +104,20 @@ const SECTIONS = [
     heading: 'Phase Diagrams',
     tabs: [
       { id: 'phase-diagram' as Tab, label: 'Interactive' },
+    ],
+  },
+  {
+    heading: 'Liquid Properties',
+    tabs: [
+      { id: 'liquid-props' as Tab, label: 'Reference' },
+    ],
+  },
+  {
+    heading: 'Clausius-Clapeyron',
+    tabs: [
+      { id: 'cc'           as Tab, label: 'Solver'    },
+      { id: 'cc-practice'  as Tab, label: 'Practice'  },
+      { id: 'cc-reference' as Tab, label: 'Reference' },
     ],
   },
 ]
@@ -207,6 +229,10 @@ export default function ThermochemistryPage() {
           {tab === 'heattransfer-reference' && <HeatTransferReference />}
           {tab === 'heating-curve'          && <HeatingCurveCalc />}
           {tab === 'phase-diagram'          && <PhaseDiagram />}
+          {tab === 'liquid-props'           && <LiquidProperties />}
+          {tab === 'cc'                     && <ClausiusClapeyronCalc />}
+          {tab === 'cc-practice'            && <ClausiusClapeyronPractice />}
+          {tab === 'cc-reference'           && <ClausiusClapeyronReference />}
         </motion.div>
       </AnimatePresence>
     </div>

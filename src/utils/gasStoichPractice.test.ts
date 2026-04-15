@@ -3,7 +3,6 @@ import {
   MOLAR_VOLUMES,
   generateGasStoichProblem,
   checkGasStoichAnswer,
-  type GasStoichProblem,
 } from './gasStoichPractice'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
