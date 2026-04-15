@@ -8,15 +8,17 @@ import VsepReference from '../components/vsepr/VsepReference'
 import LewisStructurePractice from '../components/lewis/LewisStructurePractice'
 import LewisDrawChallenge from '../components/lewis/LewisDrawChallenge'
 import VseprPractice from '../components/vsepr/VseprPractice'
+import SolidTypesReference from '../components/structures/SolidTypesReference'
 
 const VseprDrawChallenge = lazy(() => import('../components/vsepr/VseprDrawChallenge'))
 
-type Tab  = 'lewis' | 'vsepr' | 'lewis-practice' | 'lewis-draw' | 'vsepr-practice' | 'vsepr-draw'
+type Tab  = 'lewis' | 'vsepr' | 'solid-types' | 'lewis-practice' | 'lewis-draw' | 'vsepr-practice' | 'vsepr-draw'
 type Mode = 'reference' | 'practice'
 
 const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'lewis', label: 'Lewis Structures', formula: '⌬' },
-  { id: 'vsepr', label: 'VSEPR',            formula: '⬡' },
+  { id: 'lewis',       label: 'Lewis Structures', formula: '⌬'  },
+  { id: 'vsepr',       label: 'VSEPR',            formula: '⬡'  },
+  { id: 'solid-types', label: 'Solid Types',      formula: '4t' },
 ]
 
 const PRACTICE_TABS: { id: Tab; label: string; formula: string }[] = [
@@ -170,6 +172,13 @@ export default function StructuresPage() {
             <Suspense fallback={<span className="font-mono text-xs text-dim animate-pulse">Loading editor…</span>}>
               <VseprDrawChallenge />
             </Suspense>
+          </motion.div>
+        )}
+        {activeTab === 'solid-types' && (
+          <motion.div key="solid-types"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <SolidTypesReference />
           </motion.div>
         )}
       </AnimatePresence>

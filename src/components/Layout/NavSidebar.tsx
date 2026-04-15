@@ -239,8 +239,9 @@ function RedoxSubItem({ item, onNavigate }: { item: typeof REDOX_ITEMS[0]; onNav
 // ── Structures sub-items ──────────────────────────────────────────────────────
 
 const STRUCTURE_ITEMS = [
-  { path: "/structures?tab=lewis", label: "Lewis Structures", formula: "⌬" },
-  { path: "/structures?tab=vsepr", label: "VSEPR",            formula: "⬡" },
+  { path: "/structures?tab=lewis",       label: "Lewis Structures", formula: "⌬"      },
+  { path: "/structures?tab=vsepr",       label: "VSEPR",            formula: "⬡"      },
+  { path: "/structures?tab=solid-types", label: "Solid Types",      formula: "4 types" },
 ]
 
 // ── Thermochemistry sub-items ─────────────────────────────────────────────────
@@ -254,8 +255,10 @@ const THERMO_ITEMS = [
   { path: "/thermochemistry?tab=heattransfer",  label: "Heat Transfer",   formula: "q₁=−q₂" },
   { path: "/thermochemistry?tab=heating-curve", label: "Heating Curves",  formula: "q/T"     },
   { path: "/thermochemistry?tab=phase-diagram", label: "Phase Diagram",   formula: "P-T"     },
-  { path: "/thermochemistry?tab=liquid-props",   label: "Liquid Props",   formula: "γ/η"    },
-  { path: "/thermochemistry?tab=cc",            label: "Clausius-Clap.", formula: "ln P"    },
+  { path: "/thermochemistry?tab=liquid-props",   label: "Liquid Props",   formula: "γ/η"     },
+
+  { path: "/thermochemistry?tab=cc",             label: "Clausius-Clap.", formula: "ln P"    },
+  { path: "/thermochemistry?tab=vapor-pressure", label: "Vapor Pressure", formula: "P₂"      },
 ]
 
 // ── Practice / top-level nav items ────────────────────────────────────────────

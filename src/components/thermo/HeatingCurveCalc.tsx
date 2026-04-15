@@ -264,10 +264,11 @@ function NumInput({ label, value, onChange, unit, hint }: {
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function HeatingCurveCalc() {
-  const [subIdx,  setSubIdx]  = useState(0)
-  const [mass,    setMass]    = useState('100')
-  const [tInit,   setTInit]   = useState('-20')
-  const [tFinal,  setTFinal]  = useState('120')
+  const [subIdx,   setSubIdx]   = useState(0)
+  const [mass,     setMass]     = useState('100')
+  const [tInit,    setTInit]    = useState('-20')
+  const [tFinal,   setTFinal]   = useState('120')
+  const [isHeating, setIsHeating] = useState(true)
 
   const sub = SUBSTANCES[subIdx]
 
@@ -275,9 +276,18 @@ export default function HeatingCurveCalc() {
     const s = SUBSTANCES[idx]
     const span = s.bp - s.mp
     const pad  = Math.max(span * 0.25, 20)
-    setTInit((s.mp - pad).toFixed(0))
-    setTFinal((s.bp + pad).toFixed(0))
+    const lo = (s.mp - pad).toFixed(0)
+    const hi = (s.bp + pad).toFixed(0)
+    setTInit(isHeating ? lo : hi)
+    setTFinal(isHeating ? hi : lo)
     setSubIdx(idx)
+  }
+
+  function toggleMode(heating: boolean) {
+    setIsHeating(heating)
+    // Swap the two temperature fields
+    setTInit(tFinal)
+    setTFinal(tInit)
   }
 
   const massNum = parseFloat(mass)
@@ -298,6 +308,27 @@ export default function HeatingCurveCalc() {
 
   return (
     <div className="flex flex-col gap-8 max-w-3xl">
+
+      {/* Heating / Cooling toggle */}
+      <div className="flex items-center gap-1 p-1 rounded-full self-start"
+        style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+        {([true, false] as const).map(h => {
+          const active = isHeating === h
+          return (
+            <button key={String(h)} onClick={() => toggleMode(h)}
+              className="relative px-5 py-1.5 rounded-full font-sans text-sm font-medium transition-colors"
+              style={{ color: active ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)' }}>
+              {active && (
+                <span className="absolute inset-0 rounded-full" style={{
+                  background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                }} />
+              )}
+              <span className="relative z-10">{h ? 'Heating' : 'Cooling'}</span>
+            </button>
+          )
+        })}
+      </div>
 
       {/* Substance selector */}
       <div className="flex flex-col gap-3">

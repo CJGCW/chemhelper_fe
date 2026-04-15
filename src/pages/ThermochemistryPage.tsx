@@ -22,6 +22,7 @@ import LiquidProperties from '../components/thermo/LiquidProperties'
 import ClausiusClapeyronCalc from '../components/thermo/ClausiusClapeyronCalc'
 import ClausiusClapeyronPractice from '../components/thermo/ClausiusClapeyronPractice'
 import ClausiusClapeyronReference from '../components/thermo/ClausiusClapeyronReference'
+import VaporPressureCalc from '../components/thermo/VaporPressureCalc'
 
 type Tab =
   | 'calorimetry'
@@ -40,6 +41,7 @@ type Tab =
   | 'cc'
   | 'cc-practice'
   | 'cc-reference'
+  | 'vapor-pressure'
   | 'bond-practice'
   | 'bond-reference'
   | 'profile'
@@ -115,9 +117,10 @@ const SECTIONS = [
   {
     heading: 'Clausius-Clapeyron',
     tabs: [
-      { id: 'cc'           as Tab, label: 'Solver'    },
-      { id: 'cc-practice'  as Tab, label: 'Practice'  },
-      { id: 'cc-reference' as Tab, label: 'Reference' },
+      { id: 'cc'             as Tab, label: 'Solver'         },
+      { id: 'vapor-pressure' as Tab, label: 'Vapor Pressure' },
+      { id: 'cc-practice'    as Tab, label: 'Practice'       },
+      { id: 'cc-reference'   as Tab, label: 'Reference'      },
     ],
   },
 ]
@@ -231,6 +234,7 @@ export default function ThermochemistryPage() {
           {tab === 'phase-diagram'          && <PhaseDiagram />}
           {tab === 'liquid-props'           && <LiquidProperties />}
           {tab === 'cc'                     && <ClausiusClapeyronCalc />}
+          {tab === 'vapor-pressure'         && <VaporPressureCalc />}
           {tab === 'cc-practice'            && <ClausiusClapeyronPractice />}
           {tab === 'cc-reference'           && <ClausiusClapeyronReference />}
         </motion.div>
