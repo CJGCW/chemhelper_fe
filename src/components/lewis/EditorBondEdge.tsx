@@ -45,8 +45,8 @@ export function EditorBondEdge({
 
   const stroke = selected
     ? 'color-mix(in srgb, var(--c-halogen) 90%, white)'
-    : 'rgba(255,255,255,0.82)'
-  const sw = 2
+    : 'rgba(226,232,240,0.70)'
+  const sw = 1.5
 
   function handleClick(e: React.MouseEvent) {
     e.stopPropagation()

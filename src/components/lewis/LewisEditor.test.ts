@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { distributeElectrons, totalElectrons } from './LewisEditor'
+import { distributeElectrons, totalElectrons } from './EditorAtomNode'
 import type { ElectronSlots } from './EditorAtomNode'
 
 // ── distributeElectrons ───────────────────────────────────────────────────────

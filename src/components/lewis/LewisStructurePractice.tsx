@@ -28,7 +28,29 @@ export default function LewisStructurePractice() {
   const [correctStructure, setCorrectStructure] = useState<LewisStructure | null>(null)
   const [fetching, setFetching] = useState(false)
   const [fetchError, setFetchError] = useState<string | null>(null)
-  const [showHint, setShowHint] = useState(false)
+
+  // "Other" — custom molecule
+  const [showOther, setShowOther]       = useState(false)
+  const [otherFormula, setOtherFormula] = useState('')
+  const [otherCharge, setOtherCharge]   = useState('0')
+  const [otherError, setOtherError]     = useState<string | null>(null)
+
+  async function loadOther() {
+    const f = otherFormula.trim(); if (!f) return
+    const c = Number(otherCharge) || 0
+    setFetching(true); setFetchError(null); setOtherError(null); setCorrectStructure(null); setShowHint(false)
+    const body: Record<string, unknown> = { input: f }
+    if (c !== 0) body.charge = c
+    try {
+      const resp = await fetch('/api/structure/lewis', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+      })
+      const d = await resp.json()
+      if (resp.ok) setCorrectStructure(d as LewisStructure)
+      else setOtherError(d.error ?? 'Failed to load.')
+    } catch { setOtherError('Failed to connect.') }
+    finally { setFetching(false) }
+  }
 
   const problem = PROBLEMS[selectedIdx]
 
@@ -42,7 +64,7 @@ export default function LewisStructurePractice() {
     setCorrectStructure(null)
     setFetchError(null)
     setFetching(true)
-    setShowHint(false)
+
 
     const body: Record<string, unknown> = { input: problem.formula }
     if (problem.charge !== 0) body.charge = problem.charge
@@ -67,46 +89,63 @@ export default function LewisStructurePractice() {
   return (
     <div className="flex flex-col gap-5">
 
-      {/* Problem header */}
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-3 flex-wrap">
-          <span className="font-mono text-[10px] text-dim tracking-wider uppercase">Draw the Lewis structure of</span>
-          <span className="font-sans font-semibold text-bright text-lg">{problem.label}</span>
-          {fetching && <span className="font-mono text-[10px] text-dim animate-pulse">loading…</span>}
-          <button
-            onClick={() => setShowHint(h => !h)}
-            className="ml-auto font-mono text-[10px] px-2 py-0.5 rounded-sm border border-border
-                       text-dim hover:text-secondary transition-colors"
-          >
-            {showHint ? 'hide hint' : 'hint'}
-          </button>
-        </div>
-        {showHint && (
-          <p className="font-mono text-xs text-secondary px-3 py-2 rounded-sm border border-border"
-            style={{ background: '#0e1016' }}>
-            {problem.hint}
-          </p>
-        )}
-        {fetchError && <p className="font-mono text-xs text-red-400">{fetchError}</p>}
-      </div>
-
       {/* Problem picker */}
       <div className="flex items-center gap-1 flex-wrap">
         <span className="font-mono text-[10px] text-dim mr-1">Molecule:</span>
         {PROBLEMS.map((p, i) => (
           <button
             key={p.formula + p.charge}
-            onClick={() => setSelectedIdx(i)}
+            onClick={() => { setShowOther(false); setSelectedIdx(i) }}
             className="font-mono text-[11px] px-2 py-0.5 rounded-sm border transition-colors"
             style={{
-              borderColor: i === selectedIdx ? 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '#1c1f2e',
-              color: i === selectedIdx ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)',
-              background: i === selectedIdx ? 'color-mix(in srgb, var(--c-halogen) 10%, #0e1016)' : 'transparent',
+              borderColor: i === selectedIdx && !showOther ? 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '#1c1f2e',
+              color: i === selectedIdx && !showOther ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)',
+              background: i === selectedIdx && !showOther ? 'color-mix(in srgb, var(--c-halogen) 10%, #0e1016)' : 'transparent',
             }}
           >
             {p.label}
           </button>
         ))}
+        {/* Other — custom molecule inline with molecule buttons */}
+        <button
+          onClick={() => setShowOther(v => !v)}
+          className="font-mono text-[11px] px-2 py-0.5 rounded-sm border transition-colors"
+          style={{
+            borderColor: showOther ? 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '#1c1f2e',
+            color: showOther ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)',
+            background: showOther ? 'color-mix(in srgb, var(--c-halogen) 10%, #0e1016)' : 'transparent',
+          }}
+        >
+          Other {showOther ? '▴' : '▾'}
+        </button>
+        {showOther && (
+          <>
+            <input
+              type="text" value={otherFormula} onChange={e => setOtherFormula(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') loadOther() }}
+              placeholder="Formula"
+              className="font-mono text-[11px] px-2 py-0.5 rounded-sm border border-border bg-raised text-primary placeholder-dim focus:outline-none"
+              style={{ width: 100 }}
+            />
+            <input
+              type="text" inputMode="numeric" value={otherCharge} onChange={e => setOtherCharge(e.target.value)}
+              placeholder="0"
+              className="font-mono text-[11px] px-2 py-0.5 rounded-sm border border-border bg-raised text-primary placeholder-dim focus:outline-none text-center"
+              style={{ width: 40 }}
+            />
+            <button
+              onClick={loadOther}
+              disabled={!otherFormula.trim() || fetching}
+              className="font-mono text-[11px] px-2 py-0.5 rounded-sm border transition-colors disabled:opacity-40"
+              style={{ borderColor: '#1c1f2e', color: 'rgba(255,255,255,0.6)', background: '#141620' }}
+            >
+              Load
+            </button>
+            {otherError && <span className="font-mono text-[10px] text-red-400">{otherError}</span>}
+          </>
+        )}
+        {fetching && <span className="font-mono text-[10px] text-dim animate-pulse">loading…</span>}
+        {fetchError && <span className="font-mono text-[10px] text-red-400">{fetchError}</span>}
       </div>
 
       {/* Editor — always mounted; correctStructure fed in for Check validation */}

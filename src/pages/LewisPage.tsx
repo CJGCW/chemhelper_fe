@@ -93,6 +93,7 @@ export default function LewisPage({ embedded = false }: { embedded?: boolean }) 
   const [error, setError]         = useState<string | null>(null)
   const [resolved, setResolved]   = useState<{ from: string; to: string } | null>(null)
 
+
   // Cache the last fetched structure so the editor can reuse it for checking
   const cachedStructure = useRef<LewisStructure | null>(null)
   cachedStructure.current = result
@@ -216,10 +217,37 @@ export default function LewisPage({ embedded = false }: { embedded?: boolean }) 
       </div>
 
       {mode === 'practice' && !embedded && (
-        <LewisEditor
-          correctStructure={result}
-          onRequestStructure={requestStructure}
-        />
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="font-mono text-[10px] text-dim">Molecule:</span>
+            {EXAMPLES.map(ex => (
+              <button
+                key={`${ex.input}${ex.charge ?? 0}`}
+                onClick={() => handleExample(ex)}
+                className="font-mono text-[11px] px-2 py-0.5 rounded-sm border transition-colors"
+                style={{
+                  borderColor: input === ex.input && chargeRaw === String(ex.charge ?? 0)
+                    ? 'color-mix(in srgb, var(--c-halogen) 50%, transparent)'
+                    : '#1c1f2e',
+                  color: input === ex.input && chargeRaw === String(ex.charge ?? 0)
+                    ? 'var(--c-halogen)'
+                    : 'rgba(255,255,255,0.45)',
+                  background: input === ex.input && chargeRaw === String(ex.charge ?? 0)
+                    ? 'color-mix(in srgb, var(--c-halogen) 10%, #0e1016)'
+                    : 'transparent',
+                }}
+              >
+                {ex.label}
+              </button>
+            ))}
+            {loading && <span className="font-mono text-[10px] text-dim">Loading…</span>}
+            {error && <span className="font-mono text-[10px] text-red-400">{error}</span>}
+          </div>
+          <LewisEditor
+            correctStructure={result}
+            onRequestStructure={requestStructure}
+          />
+        </div>
       )}
 
       {(mode === 'generate' || embedded) && <div className="flex flex-col gap-6">

@@ -4,6 +4,17 @@ import { Handle, Position, useReactFlow, useEdges, type NodeProps, type Node } f
 
 export type ElectronSlots = [number, number, number, number] // [top, right, bottom, left], each 0–2
 
+export function distributeElectrons(n: number): ElectronSlots {
+  const slots: ElectronSlots = [0, 0, 0, 0]
+  let rem = Math.min(n, 8)
+  for (let i = 0; i < 4 && rem > 0; i++) { slots[i] = Math.min(2, rem) as 0|1|2; rem -= slots[i] }
+  return slots
+}
+
+export function totalElectrons(slots: ElectronSlots): number {
+  return slots[0] + slots[1] + slots[2] + slots[3]
+}
+
 export type AtomNodeData = {
   element: string
   electronSlots: ElectronSlots  // lone electrons per cardinal position
@@ -13,41 +24,60 @@ export type AtomNodeData = {
 
 export type AtomNodeType = Node<AtomNodeData, 'atom'>
 
-// ── Element colours ───────────────────────────────────────────────────────────
+// ── Element colours — matches LewisStructureDiagram ──────────────────────────
 
 const ELEM_COLORS: Record<string, string> = {
-  H: '#9ca3af', C: '#4b5563', N: '#4a7ef5', O: '#e05050',
-  F: '#5dcc5d', Cl: '#40b840', Br: '#be4040', I: '#9966cc',
-  S: '#d4b84a', P: '#e08030', Na: '#9966ff', K: '#8060e0',
-  Ca: '#909090', Mg: '#6ab060', Al: '#a09090', Si: '#b09070',
-  B: '#c87050', Se: '#d4b84a', As: '#c87050', Xe: '#6080c0',
+  H:  '#9ca3af',
+  C:  '#e2e8f0',
+  N:  '#6ea8fe',
+  O:  '#f87171',
+  F:  '#4ade80',
+  Cl: '#4ade80',
+  Br: '#fb923c',
+  I:  '#c084fc',
+  S:  '#fbbf24',
+  P:  '#fb923c',
+  Na: '#a78bfa',
+  K:  '#818cf8',
+  Li: '#c084fc',
+  Ca: '#94a3b8',
+  Mg: '#6ee7b7',
+  Al: '#94a3b8',
+  Si: '#a8a29e',
+  Fe: '#c07040',
+  Cu: '#c88050',
+  Zn: '#7080b0',
+  B:  '#fb923c',
+  Xe: '#60a5fa',
+  Kr: '#818cf8',
 }
 
-// ── 8 connection handles ──────────────────────────────────────────────────────
+const CANVAS_BG = '#0b0e17'
+
+// ── 4 connection handles ──────────────────────────────────────────────────────
 
 const HANDLES: { id: string; position: Position; style: React.CSSProperties }[] = [
-  { id: 'n', position: Position.Top,    style: { top: -5, left: '50%', transform: 'translateX(-50%)' } },
-  { id: 'e', position: Position.Right,  style: { right: -5, top: '50%', transform: 'translateY(-50%)' } },
+  { id: 'n', position: Position.Top,    style: { top: -5,    left: '50%', transform: 'translateX(-50%)' } },
+  { id: 'e', position: Position.Right,  style: { right: -5,  top:  '50%', transform: 'translateY(-50%)' } },
   { id: 's', position: Position.Bottom, style: { bottom: -5, left: '50%', transform: 'translateX(-50%)' } },
-  { id: 'w', position: Position.Left,   style: { left: -5, top: '50%', transform: 'translateY(-50%)' } },
+  { id: 'w', position: Position.Left,   style: { left: -5,   top:  '50%', transform: 'translateY(-50%)' } },
 ]
 
-// ── Electron dot positions (cardinal, outside the 8 handles) ─────────────────
+// ── Electron dot positions (cardinal, outside the handles) ────────────────────
 
-// Which cardinal dot position (0=top,1=right,2=bottom,3=left) each handle blocks.
 const HANDLE_SIDES: Record<string, number[]> = {
   n: [0], e: [1], s: [2], w: [3],
 }
 
 const DOT_POS: { style: React.CSSProperties; horizontal: boolean }[] = [
-  { style: { top: -20, left: '50%', transform: 'translateX(-50%)' }, horizontal: true  },
-  { style: { right: -20, top: '50%', transform: 'translateY(-50%)' }, horizontal: false },
-  { style: { bottom: -20, left: '50%', transform: 'translateX(-50%)' }, horizontal: true  },
-  { style: { left: -20, top: '50%', transform: 'translateY(-50%)' }, horizontal: false },
+  { style: { top: 8,    left: '50%', transform: 'translateX(-50%)' }, horizontal: true  },
+  { style: { right: 4,  top:  '50%', transform: 'translateY(-50%)' }, horizontal: false },
+  { style: { bottom: 8, left: '50%', transform: 'translateX(-50%)' }, horizontal: true  },
+  { style: { left: 4,   top:  '50%', transform: 'translateY(-50%)' }, horizontal: false },
 ]
 
-const DOT_SIZE = 7
-const DOT_GAP  = 4
+const DOT_SIZE = 3
+const DOT_GAP  = 2
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
@@ -75,7 +105,7 @@ export function EditorAtomNode({ id, data, selected }: NodeProps<AtomNodeType>) 
 
   const handleBase: React.CSSProperties = {
     width: 10, height: 10,
-    background: '#0e1016',
+    background: CANVAS_BG,
     border: '1.5px solid var(--c-halogen)',
     borderRadius: '50%',
     position: 'absolute',
@@ -91,10 +121,16 @@ export function EditorAtomNode({ id, data, selected }: NodeProps<AtomNodeType>) 
     updateNodeData(id, { electronSlots: newSlots })
   }
 
+  // Atom body sizing — matches reference atomMetrics proportions
+  const is2Char = data.element.length > 1
+  const bodyW   = is2Char ? 30 : 24
+  const bodyH   = 22
+  const fontSize = is2Char ? 12 : 15
+
   return (
     <div style={{ position: 'relative', width: 44, height: 44 }}>
 
-      {/* 8 connection handles */}
+      {/* 4 connection handles */}
       {HANDLES.map(h => (
         <Handle
           key={h.id}
@@ -118,14 +154,13 @@ export function EditorAtomNode({ id, data, selected }: NodeProps<AtomNodeType>) 
               gap: DOT_GAP,
               flexDirection: horizontal ? 'row' : 'column',
               alignItems: 'center',
+              zIndex: 2,
               ...style,
             }}
           >
             {([0, 1] as const).map(sub => {
-              // sub > count means not yet reachable → hide
               if (sub > count) return null
               const filled = sub < count
-              // ghost = the next available slot (sub === count, slot not full)
               const isGhost = !filled && count < 2
               if (!filled && !isGhost) return null
               return (
@@ -137,8 +172,8 @@ export function EditorAtomNode({ id, data, selected }: NodeProps<AtomNodeType>) 
                     height: DOT_SIZE,
                     borderRadius: '50%',
                     flexShrink: 0,
-                    background: filled ? 'rgba(255,255,255,0.88)' : 'transparent',
-                    border: isGhost ? `1.5px dashed rgba(255,255,255,0.22)` : 'none',
+                    background: filled ? 'rgba(255,255,255,0.85)' : 'transparent',
+                    border: isGhost ? '1.5px dashed rgba(255,255,255,0.22)' : 'none',
                     cursor: 'pointer',
                     boxSizing: 'border-box',
                   }}
@@ -152,32 +187,54 @@ export function EditorAtomNode({ id, data, selected }: NodeProps<AtomNodeType>) 
       {/* Formal charge badge */}
       {chargeLabel && (
         <div style={{
-          position: 'absolute', top: -12, right: -10, zIndex: 10,
-          fontSize: 11, fontWeight: 700, color: 'white',
-          fontFamily: 'system-ui, sans-serif', lineHeight: 1,
+          position: 'absolute', top: -11, right: -7, zIndex: 10,
+          width: 12, height: 12,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 9, fontWeight: 700,
+          color: 'rgba(255,255,255,0.9)',
+          fontFamily: 'system-ui, sans-serif',
+          lineHeight: 1,
+          background: CANVAS_BG,
+          border: '0.5px solid rgba(255,255,255,0.25)',
+          borderRadius: '50%',
+          paddingBottom: '1px',
         }}>
           {chargeLabel}
         </div>
       )}
 
-      {/* Atom circle — drag handle */}
+      {/* Atom body — dark rect + text, mirrors the reference clearance-rect style */}
       <div
         className="atom-body"
         style={{
-          width: 44, height: 44, borderRadius: '50%',
-          background: color,
-          border: `2px solid ${selected ? 'var(--c-halogen)' : '#1c1f2e'}`,
+          position: 'absolute',
+          left: '50%', top: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: bodyW,
+          height: bodyH,
+          background: CANVAS_BG,
+          border: `1px solid ${selected
+            ? 'var(--c-halogen)'
+            : 'rgba(255,255,255,0.13)'}`,
+          borderRadius: 2,
           boxShadow: selected
             ? '0 0 0 2px color-mix(in srgb, var(--c-halogen) 35%, transparent)'
             : undefined,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'grab',
+          userSelect: 'none',
         }}
       >
         <span style={{
-          color: 'white', fontWeight: 700,
-          fontSize: data.element.length > 1 ? 11 : 13,
-          fontFamily: 'system-ui, sans-serif',
-          userSelect: 'none', pointerEvents: 'none',
+          color,
+          fontSize,
+          fontWeight: 700,
+          fontFamily: "ui-monospace, 'Cascadia Code', 'Fira Code', monospace",
+          letterSpacing: '-0.02em',
+          pointerEvents: 'none',
+          userSelect: 'none',
         }}>
           {data.element}
         </span>
