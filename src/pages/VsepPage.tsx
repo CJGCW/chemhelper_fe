@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { LewisStructure } from './LewisPage'
+import { looksLikeFormula, resolveToFormula } from '../utils/resolveFormula'
 import VsepDiagram from '../components/vsepr/VsepDiagram'
 import StepsPanel from '../components/calculations/StepsPanel'
 
@@ -129,6 +130,7 @@ export default function VsepPage() {
   const [loading, setLoading]     = useState(false)
   const [result, setResult]       = useState<LewisStructure | null>(null)
   const [error, setError]         = useState<string | null>(null)
+  const [resolved, setResolved]   = useState<{ from: string; to: string } | null>(null)
 
   const chargeError = validateCharge(chargeRaw)
   const chargeInt = chargeError === null && chargeRaw !== '' && chargeRaw !== '-'
@@ -164,9 +166,24 @@ export default function VsepPage() {
     }
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!canSubmit || chargeInt === null) return
-    analyze(input, chargeInt)
+    const trimmed = input.trim()
+    setResolved(null)
+    if (looksLikeFormula(trimmed)) {
+      analyze(trimmed, chargeInt)
+      return
+    }
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await resolveToFormula(trimmed)
+      if (res.resolvedFrom) setResolved({ from: res.resolvedFrom, to: res.formula })
+      analyze(res.formula, chargeInt)
+    } catch (msg) {
+      setError(typeof msg === 'string' ? msg : 'Failed to connect to the server.')
+      setLoading(false)
+    }
   }
 
   function handleExample(ex: typeof EXAMPLES[0]) {
@@ -197,7 +214,7 @@ export default function VsepPage() {
             value={input}
             onChange={e => { setInput(e.target.value); setResult(null) }}
             onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-            placeholder="Formula — e.g. H2O, CH4, PCl5, SF6"
+            placeholder="Formula or name — e.g. H2O, water, CH4, methane"
             className="flex-1 font-mono text-sm bg-raised border border-border rounded-sm px-3 py-2.5
                        text-primary placeholder-dim focus:outline-none transition-colors"
           />
@@ -238,6 +255,11 @@ export default function VsepPage() {
         </div>
 
         {chargeError && <p className="font-mono text-[10px] text-red-400">{chargeError}</p>}
+        {resolved && (
+          <p className="font-mono text-[10px]" style={{ color: 'var(--c-halogen)' }}>
+            Resolved: {resolved.from} → {resolved.to}
+          </p>
+        )}
 
         {/* Examples */}
         <div className="flex items-center gap-1.5 flex-wrap">

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import LewisStructureDiagram from '../components/lewis/LewisStructureDiagram'
 import StepsPanel from '../components/calculations/StepsPanel'
 import LewisEditor from '../components/lewis/LewisEditor'
+import { looksLikeFormula, resolveToFormula } from '../utils/resolveFormula'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -90,6 +91,7 @@ export default function LewisPage({ embedded = false }: { embedded?: boolean }) 
   const [loading, setLoading]     = useState(false)
   const [result, setResult]       = useState<LewisStructure | null>(null)
   const [error, setError]         = useState<string | null>(null)
+  const [resolved, setResolved]   = useState<{ from: string; to: string } | null>(null)
 
   // Cache the last fetched structure so the editor can reuse it for checking
   const cachedStructure = useRef<LewisStructure | null>(null)
@@ -140,9 +142,24 @@ export default function LewisPage({ embedded = false }: { embedded?: boolean }) 
     }
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!canSubmit || chargeInt === null) return
-    analyze(input, chargeInt)
+    const trimmed = input.trim()
+    setResolved(null)
+    if (looksLikeFormula(trimmed)) {
+      analyze(trimmed, chargeInt)
+      return
+    }
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await resolveToFormula(trimmed)
+      if (res.resolvedFrom) setResolved({ from: res.resolvedFrom, to: res.formula })
+      analyze(res.formula, chargeInt)
+    } catch (msg) {
+      setError(typeof msg === 'string' ? msg : 'Failed to connect to the server.')
+      setLoading(false)
+    }
   }
 
   function handleExample(ex: typeof EXAMPLES[0]) {
@@ -217,7 +234,7 @@ export default function LewisPage({ embedded = false }: { embedded?: boolean }) 
               value={input}
               onChange={e => { setInput(e.target.value); setResult(null) }}
               onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-              placeholder="Formula — e.g. H2O, CO2, NH3, SO4"
+              placeholder="Formula or name — e.g. H2O, water, CO2, ammonia"
               className="w-full font-mono text-sm bg-raised border border-border rounded-sm px-3 py-2.5
                          text-primary placeholder-dim focus:outline-none transition-colors"
               style={{ borderColor: formulaWarning ? '#f59e0b' : undefined }}
@@ -268,6 +285,13 @@ export default function LewisPage({ embedded = false }: { embedded?: boolean }) 
           </button>
         </div>
 
+        {/* Resolved name indicator */}
+        {resolved && (
+          <p className="font-mono text-[10px]" style={{ color: 'var(--c-halogen)' }}>
+            Resolved: {resolved.from} → {resolved.to}
+          </p>
+        )}
+
         {/* Quick examples */}
         <div className="flex items-center gap-1.5 flex-wrap">
           <span className="font-mono text-[10px] text-dim">Try:</span>
@@ -314,28 +338,40 @@ export default function LewisPage({ embedded = false }: { embedded?: boolean }) 
             <LewisStructureDiagram structure={result} />
 
             {/* Metadata strip */}
-            <div className="flex flex-wrap gap-x-6 gap-y-3">
-              <Stat label="Geometry" value={formatGeometry(result.geometry)} />
-              <Stat label="Valence electrons" value={`${result.total_valence_electrons} e⁻`} />
-              <Stat
-                label="Bonds"
-                value={
-                  result.bonds.length === 0
-                    ? 'Ionic (no covalent bonds)'
-                    : result.bonds
-                        .map(b => `${b.from}–${b.to} (${formatBondOrder(b.order)})`)
-                        .join(', ')
-                }
-              />
-              {chargedAtoms.length > 0 && (
-                <Stat
-                  label="Formal charges"
-                  value={chargedAtoms
-                    .map(a => `${a.id}: ${a.formal_charge > 0 ? '+' : ''}${a.formal_charge}`)
-                    .join(', ')}
-                />
-              )}
-            </div>
+            {(() => {
+              const sigmaBonds = result.bonds.length
+              const piBonds    = result.bonds.reduce((s, b) => s + Math.max(0, b.order - 1), 0)
+              return (
+                <div className="flex flex-wrap gap-x-6 gap-y-3">
+                  <Stat label="Geometry" value={formatGeometry(result.geometry)} />
+                  <Stat label="Valence electrons" value={`${result.total_valence_electrons} e⁻`} />
+                  <Stat
+                    label="Bonds"
+                    value={
+                      result.bonds.length === 0
+                        ? 'Ionic (no covalent bonds)'
+                        : result.bonds
+                            .map(b => `${b.from}–${b.to} (${formatBondOrder(b.order)})`)
+                            .join(', ')
+                    }
+                  />
+                  {result.bonds.length > 0 && (
+                    <Stat label="σ bonds" value={`${sigmaBonds}`} />
+                  )}
+                  {piBonds > 0 && (
+                    <Stat label="π bonds" value={`${piBonds}`} />
+                  )}
+                  {chargedAtoms.length > 0 && (
+                    <Stat
+                      label="Formal charges"
+                      value={chargedAtoms
+                        .map(a => `${a.id}: ${a.formal_charge > 0 ? '+' : ''}${a.formal_charge}`)
+                        .join(', ')}
+                    />
+                  )}
+                </div>
+              )
+            })()}
 
             {/* Notes (ionic compounds etc.) */}
             {result.notes && (

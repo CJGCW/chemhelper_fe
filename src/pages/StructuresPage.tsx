@@ -6,6 +6,7 @@ import VsepPage from './VsepPage'
 import LewisReference from '../components/lewis/LewisReference'
 import VsepReference from '../components/vsepr/VsepReference'
 import LewisStructurePractice from '../components/lewis/LewisStructurePractice'
+import SigmaPiPractice from '../components/lewis/SigmaPiPractice'
 import LewisDrawChallenge from '../components/lewis/LewisDrawChallenge'
 import VseprPractice from '../components/vsepr/VseprPractice'
 import SolidTypesReference from '../components/structures/SolidTypesReference'
@@ -13,7 +14,7 @@ import UnitCellCalc from '../components/structures/UnitCellCalc'
 
 const VseprDrawChallenge = lazy(() => import('../components/vsepr/VseprDrawChallenge'))
 
-type Tab  = 'lewis' | 'vsepr' | 'solid-types' | 'unit-cell' | 'lewis-practice' | 'lewis-draw' | 'vsepr-practice' | 'vsepr-draw'
+type Tab  = 'lewis' | 'vsepr' | 'solid-types' | 'unit-cell' | 'lewis-practice' | 'lewis-draw' | 'vsepr-practice' | 'vsepr-draw' | 'sigma-pi'
 type Mode = 'reference' | 'practice'
 
 const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
@@ -24,13 +25,14 @@ const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
 ]
 
 const PRACTICE_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'lewis-practice', label: 'Lewis',            formula: '⌬' },
-  { id: 'lewis-draw',     label: 'Lewis Problems',   formula: '✎' },
-  { id: 'vsepr-practice', label: 'VSEPR',            formula: '⬡' },
-  { id: 'vsepr-draw',     label: 'VSEPR Problems',   formula: '⬡' },
+  { id: 'lewis-practice', label: 'Lewis',            formula: '⌬'    },
+  { id: 'lewis-draw',     label: 'Lewis Problems',   formula: '✎'    },
+  { id: 'vsepr-practice', label: 'VSEPR',            formula: '⬡'    },
+  { id: 'vsepr-draw',     label: 'VSEPR Problems',   formula: '⬡'    },
+  { id: 'sigma-pi',       label: 'σ / π Bonds',      formula: 'σπ'   },
 ]
 
-const PRACTICE_TAB_IDS = new Set<Tab>(['lewis-practice', 'lewis-draw', 'vsepr-practice', 'vsepr-draw'])
+const PRACTICE_TAB_IDS = new Set<Tab>(['lewis-practice', 'lewis-draw', 'vsepr-practice', 'vsepr-draw', 'sigma-pi'])
 
 export default function StructuresPage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -181,6 +183,13 @@ export default function StructuresPage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <SolidTypesReference />
+          </motion.div>
+        )}
+        {activeTab === 'sigma-pi' && (
+          <motion.div key="sigma-pi"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <SigmaPiPractice />
           </motion.div>
         )}
         {activeTab === 'unit-cell' && (
