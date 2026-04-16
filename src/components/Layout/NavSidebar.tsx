@@ -242,6 +242,7 @@ const STRUCTURE_ITEMS = [
   { path: "/structures?tab=lewis",       label: "Lewis Structures", formula: "⌬"      },
   { path: "/structures?tab=vsepr",       label: "VSEPR",            formula: "⬡"      },
   { path: "/structures?tab=solid-types", label: "Solid Types",      formula: "4 types" },
+  { path: "/structures?tab=unit-cell",   label: "Unit Cell",        formula: "SC/BCC/FCC" },
 ]
 
 // ── Thermochemistry sub-items ─────────────────────────────────────────────────

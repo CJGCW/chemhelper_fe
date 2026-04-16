@@ -9,16 +9,18 @@ import LewisStructurePractice from '../components/lewis/LewisStructurePractice'
 import LewisDrawChallenge from '../components/lewis/LewisDrawChallenge'
 import VseprPractice from '../components/vsepr/VseprPractice'
 import SolidTypesReference from '../components/structures/SolidTypesReference'
+import UnitCellCalc from '../components/structures/UnitCellCalc'
 
 const VseprDrawChallenge = lazy(() => import('../components/vsepr/VseprDrawChallenge'))
 
-type Tab  = 'lewis' | 'vsepr' | 'solid-types' | 'lewis-practice' | 'lewis-draw' | 'vsepr-practice' | 'vsepr-draw'
+type Tab  = 'lewis' | 'vsepr' | 'solid-types' | 'unit-cell' | 'lewis-practice' | 'lewis-draw' | 'vsepr-practice' | 'vsepr-draw'
 type Mode = 'reference' | 'practice'
 
 const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'lewis',       label: 'Lewis Structures', formula: '⌬'  },
-  { id: 'vsepr',       label: 'VSEPR',            formula: '⬡'  },
-  { id: 'solid-types', label: 'Solid Types',      formula: '4t' },
+  { id: 'lewis',       label: 'Lewis Structures', formula: '⌬'   },
+  { id: 'vsepr',       label: 'VSEPR',            formula: '⬡'   },
+  { id: 'solid-types', label: 'Solid Types',      formula: '4t'  },
+  { id: 'unit-cell',   label: 'Unit Cell',        formula: 'SC/BCC/FCC' },
 ]
 
 const PRACTICE_TABS: { id: Tab; label: string; formula: string }[] = [
@@ -179,6 +181,13 @@ export default function StructuresPage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <SolidTypesReference />
+          </motion.div>
+        )}
+        {activeTab === 'unit-cell' && (
+          <motion.div key="unit-cell"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <UnitCellCalc />
           </motion.div>
         )}
       </AnimatePresence>
