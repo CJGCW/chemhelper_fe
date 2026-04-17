@@ -27,6 +27,7 @@ import { checkRxnPracticeAnswer } from '../../utils/reactionPredictorPractice'
 import { checkDilutionAnswer } from '../../utils/dilutionPractice'
 import { checkConcAnswer } from '../../utils/concentrationPractice'
 import { checkCCAnswer } from '../../utils/clausiusClapeyronPractice'
+import { checkSigmaPiCombined } from '../../utils/sigmaPiPractice'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
 // ── Answer checking ───────────────────────────────────────────────────────────
@@ -86,6 +87,8 @@ function checkQuestion(q: TestQuestion, answer: string): Result {
     return checkConcAnswer(answer, q.problem.data) ? 'correct' : 'wrong'
   if (q.problem.kind === 'clausius_clapeyron')
     return checkCCAnswer(q.problem.data, answer) ? 'correct' : 'wrong'
+  if (q.problem.kind === 'sigma_pi')
+    return checkSigmaPiCombined(answer, q.problem.data) ? 'correct' : 'wrong'
   if (q.problem.kind === 'vsepr-draw' || q.problem.kind === 'lewis-draw') return 'blank'  // scored externally via Ketcher
   if (q.problem.kind === 'balancing') {
     // answer: "2,1,2" — comma/space separated coefficients (reactants then products)
@@ -164,6 +167,15 @@ function buildQuestionHtml(q: TestQuestion): string {
     return `<div class="question">${header}
       <p class="q-text">${p.question}</p>
       <div class="draw-box"></div>
+    </div>`
+  }
+
+  if (q.problem.kind === 'sigma_pi') {
+    const p = q.problem.data
+    return `<div class="question">${header}
+      <p class="q-text">Count the σ and π bonds in <span class="mono-val">${p.structure.formula}</span>.</p>
+      <div class="answer-row"><span class="solve-for">σ bonds:</span><span class="answer-line" style="width:80px"></span></div>
+      <div class="answer-row" style="margin-top:6px"><span class="solve-for">π bonds:</span><span class="answer-line" style="width:80px"></span></div>
     </div>`
   }
 
@@ -478,6 +490,8 @@ function buildAnswerKeyHtml(q: TestQuestion): string {
     answer = `${q.problem.data.answer.toPrecision(3)} ${q.problem.data.answerUnit}`
   else if (q.problem.kind === 'clausius_clapeyron')
     answer = q.problem.data.answer
+  else if (q.problem.kind === 'sigma_pi')
+    answer = `σ=${q.problem.data.sigma}, π=${q.problem.data.pi}`
   else
     answer = `${q.problem.data.answer} ${q.problem.data.answerUnit}`
   return `<div class="key-row"><span class="key-num">${q.id}.</span><span class="key-ans">${answer}</span></div>`
@@ -630,6 +644,7 @@ export default function TestSheet({ test, onBack }: Props) {
     const balancingP  = q.problem.kind === 'balancing'  ? q.problem.data : null
     const vseprDrawP  = q.problem.kind === 'vsepr-draw' ? q.problem.data : null
     const lewisDrawP  = q.problem.kind === 'lewis-draw' ? q.problem.data : null
+    const sigmaPiP    = q.problem.kind === 'sigma_pi'   ? q.problem.data : null
     const drawP       = vseprDrawP ?? lewisDrawP   // either draw-type problem
 
     const questionText = sfProblem
@@ -682,6 +697,13 @@ export default function TestSheet({ test, onBack }: Props) {
             <span className="font-mono">{[...balancingP.reactants, ...balancingP.products].map(s => s.coeff).join(', ')}</span>
           </p>
         </div>
+      : sigmaPiP
+      ? <div className="pl-8 flex flex-col gap-1.5">
+          <p className="font-sans text-base text-bright leading-relaxed">
+            Count the σ and π bonds in <span className="font-mono">{sigmaPiP.structure.formula}</span>.
+          </p>
+          <p className="font-sans text-xs text-dim">Enter as σ, π — e.g. <span className="font-mono">5, 1</span></p>
+        </div>
       : drawP
       ? <p className="font-sans text-base text-bright leading-relaxed pl-8">{drawP.question}</p>
       : <p className="font-sans text-base text-bright leading-relaxed pl-8">
@@ -712,6 +734,8 @@ export default function TestSheet({ test, onBack }: Props) {
       ? `${solStoichP.answer.toPrecision(4)} ${solStoichP.answerUnit}`
       : balancingP
       ? formatEquation(balancingP)
+      : sigmaPiP
+      ? `σ=${sigmaPiP.sigma}, π=${sigmaPiP.pi}`
       : lewisDrawP
       ? lewisDrawP.compound
       : vseprDrawP
@@ -742,6 +766,8 @@ export default function TestSheet({ test, onBack }: Props) {
       ? solStoichP.steps
       : balancingP
       ? [`Balanced: ${formatEquation(balancingP)}`]
+      : sigmaPiP
+      ? [sigmaPiP.explanation]
       : lewisDrawP
       ? ['See diagram']
       : vseprDrawP
@@ -838,7 +864,7 @@ export default function TestSheet({ test, onBack }: Props) {
         )}
 
         {/* Answer input — skipped for draw problems */}
-        {!drawP && (
+        {!drawP && !sigmaPiP && (
         <div className="flex items-center gap-3 pl-8">
           {molarP && (
             <span className="font-mono text-base text-secondary whitespace-nowrap">{molarP.solveFor} =</span>
@@ -909,6 +935,54 @@ export default function TestSheet({ test, onBack }: Props) {
             </button>
           )}
         </div>
+        )}
+
+        {/* sigma_pi: two-field input */}
+        {sigmaPiP && (
+          <div className="flex items-center gap-4 pl-8 flex-wrap">
+            <span className="font-mono text-sm text-secondary">σ =</span>
+            <input
+              type="number" min="0"
+              value={(answers[q.id] ?? '').split(',')[0] ?? ''}
+              onChange={e => {
+                const pi = (answers[q.id] ?? '').split(',')[1] ?? ''
+                setAnswer(q.id, `${e.target.value},${pi}`)
+              }}
+              disabled={checked}
+              placeholder="?"
+              className={`w-20 bg-raised border rounded-sm px-3 py-1.5 font-mono text-base
+                          placeholder-dim focus:outline-none focus:border-muted
+                          disabled:cursor-not-allowed transition-colors
+                          ${result === 'correct' ? 'border-emerald-700/60 text-emerald-300'
+                            : result === 'wrong' ? 'border-rose-700/60 text-rose-300'
+                            : 'border-border text-bright'}`}
+            />
+            <span className="font-mono text-sm text-secondary">π =</span>
+            <input
+              type="number" min="0"
+              value={(answers[q.id] ?? '').split(',')[1] ?? ''}
+              onChange={e => {
+                const sigma = (answers[q.id] ?? '').split(',')[0] ?? ''
+                setAnswer(q.id, `${sigma},${e.target.value}`)
+              }}
+              disabled={checked}
+              placeholder="?"
+              className={`w-20 bg-raised border rounded-sm px-3 py-1.5 font-mono text-base
+                          placeholder-dim focus:outline-none focus:border-muted
+                          disabled:cursor-not-allowed transition-colors
+                          ${result === 'correct' ? 'border-emerald-700/60 text-emerald-300'
+                            : result === 'wrong' ? 'border-rose-700/60 text-rose-300'
+                            : 'border-border text-bright'}`}
+            />
+            {checked && (
+              <button
+                onClick={() => toggleReveal(q.id)}
+                className="ml-2 font-mono text-xs text-dim hover:text-secondary transition-colors"
+              >
+                {revealed.has(q.id) ? '▲ hide' : '▼ solution'}
+              </button>
+            )}
+          </div>
         )}
 
         {/* Revealed solution */}

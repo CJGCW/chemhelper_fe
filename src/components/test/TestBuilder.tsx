@@ -35,11 +35,12 @@ import { genDilutionProblem } from '../../utils/dilutionPractice'
 import type { ConcSubtype } from '../../utils/concentrationPractice'
 import { genConcProblem } from '../../utils/concentrationPractice'
 import { genClausiusClapeyronProblem } from '../../utils/clausiusClapeyronPractice'
+import { generateSigmaPiProblem } from '../../utils/sigmaPiPractice'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
 // ── Topic definitions ─────────────────────────────────────────────────────────
 
-type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'lewis_draw' | 'vsepr' | 'vsepr_draw' | 'stoich' | 'redox' | 'perc_comp' | 'gas_stoich' | 'sol_stoich' | 'balancing' | 'calorimetry' | 'enthalpy' | 'hess' | 'bond_enthalpy' | 'heat_transfer' | 'vdw' | 'ideal_gas' | 'ecell' | 'rxn_pred' | 'dilution' | 'conc' | 'clausius_clapeyron'
+type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'lewis_draw' | 'vsepr' | 'vsepr_draw' | 'sigma_pi' | 'stoich' | 'redox' | 'perc_comp' | 'gas_stoich' | 'sol_stoich' | 'balancing' | 'calorimetry' | 'enthalpy' | 'hess' | 'bond_enthalpy' | 'heat_transfer' | 'vdw' | 'ideal_gas' | 'ecell' | 'rxn_pred' | 'dilution' | 'conc' | 'clausius_clapeyron'
 type TopicGroup = 'core' | 'atomic_molecular' | 'structures' | 'molar_solutions' | 'stoichiometry' | 'gases' | 'redox' | 'thermochemistry'
 
 const GROUP_LABELS: Record<TopicGroup, string> = {
@@ -82,6 +83,7 @@ const ALL_TOPICS: TopicDef[] = [
   { id: 'lewis-draw', kind: 'lewis_draw', group: 'structures',      label: 'Lewis Draw',              formula: 'draw bonds & lone pairs' },
   { id: 'vsepr',      kind: 'vsepr',      group: 'structures',       label: 'VSEPR',                   formula: 'geometry, hybrid.'     },
   { id: 'vsepr-draw', kind: 'vsepr_draw', group: 'structures',       label: 'VSEPR Draw',              formula: '3D structure drawing'  },
+  { id: 'sigma-pi',   kind: 'sigma_pi',  group: 'structures',       label: 'σ / π Bonds',             formula: 'σ, π count'            },
   { id: 'moles',      kind: 'molar',      group: 'molar_solutions',  label: 'Moles',                   formula: 'n = m/M',              molarType: 'moles'    },
   { id: 'molarity',   kind: 'molar',      group: 'molar_solutions',  label: 'Molarity',                formula: 'C = n/V',              molarType: 'molarity' },
   { id: 'molality',   kind: 'molar',      group: 'molar_solutions',  label: 'Molality',                formula: 'b = n/m',              molarType: 'molality' },
@@ -259,6 +261,11 @@ export default function TestBuilder({ onGenerate }: Props) {
         return { topic: t.label, topicFormula: t.formula, problem: { kind: 'conc', data: genConcProblem(t.concSubtype!) } }
       if (t.kind === 'clausius_clapeyron')
         return { topic: t.label, topicFormula: t.formula, problem: { kind: 'clausius_clapeyron', data: genClausiusClapeyronProblem() } }
+      if (t.kind === 'sigma_pi') {
+        const sigPi = await generateSigmaPiProblem()
+        if (!sigPi) return null
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'sigma_pi', data: sigPi } }
+      }
       return { topic: t.label, topicFormula: t.formula, problem: { kind: 'molar', data: generateMolarProblem(t.molarType!, randomStyle()) } }
     }
 
