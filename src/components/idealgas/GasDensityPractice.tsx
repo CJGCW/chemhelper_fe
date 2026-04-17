@@ -1,0 +1,155 @@
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { generateGasDensityProblem, checkGasDensityAnswer, type GasDensityProblem } from '../../utils/gasDensityPractice'
+
+type CheckState = 'idle' | 'correct' | 'wrong'
+
+export default function GasDensityPractice() {
+  const [problem,    setProblem]    = useState<GasDensityProblem>(generateGasDensityProblem)
+  const [answer,     setAnswer]     = useState('')
+  const [checkState, setCheckState] = useState<CheckState>('idle')
+  const [showSteps,  setShowSteps]  = useState(false)
+  const [score,      setScore]      = useState({ correct: 0, total: 0 })
+
+  function nextProblem() {
+    setProblem(generateGasDensityProblem())
+    setAnswer(''); setCheckState('idle'); setShowSteps(false)
+  }
+
+  function handleCheck() {
+    if (!answer.trim() || checkState !== 'idle') return
+    const correct = checkGasDensityAnswer(answer, problem)
+    setCheckState(correct ? 'correct' : 'wrong')
+    setScore(s => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }))
+  }
+
+  const borderClass = checkState === 'correct'
+    ? 'border-emerald-800/50 bg-emerald-950/20'
+    : checkState === 'wrong'
+    ? 'border-rose-800/50 bg-rose-950/20'
+    : 'border-border bg-surface'
+
+  return (
+    <div className="flex flex-col gap-6 max-w-2xl">
+
+      <p className="font-sans text-sm text-secondary leading-relaxed">
+        Apply the gas density equation.
+        Use <span className="font-mono text-primary">ρ = MP / RT</span> and rearrange to solve
+        for the unknown variable.
+      </p>
+
+      {score.total > 0 && (
+        <div className="flex items-center gap-3">
+          <span className="font-mono text-sm text-secondary">
+            Score: <span className="text-bright">{score.correct}</span>
+            <span className="text-dim"> / {score.total}</span>
+          </span>
+          <div className="flex-1 h-1 rounded-full overflow-hidden bg-raised">
+            <motion.div className="h-full rounded-full" style={{ background: 'var(--c-halogen)' }}
+              animate={{ width: `${(score.correct / score.total) * 100}%` }}
+              transition={{ duration: 0.3 }} />
+          </div>
+        </div>
+      )}
+
+      <AnimatePresence mode="wait">
+        <motion.div key={problem.question}
+          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}
+          className={`rounded-sm border p-5 flex flex-col gap-4 transition-colors ${borderClass}`}
+        >
+          <p className="font-mono text-sm text-secondary rounded-sm px-3 py-2"
+            style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+            ρ = MP / RT &nbsp;·&nbsp; R = 0.08206 L·atm·mol⁻¹·K⁻¹
+          </p>
+
+          <p className="font-sans text-base text-bright leading-relaxed">{problem.question}</p>
+
+          <div className="flex items-center gap-3 flex-wrap">
+            <input
+              type="number"
+              value={answer}
+              onChange={e => setAnswer(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleCheck()}
+              disabled={checkState !== 'idle'}
+              placeholder={`answer in ${problem.unit}`}
+              className={`bg-raised border rounded-sm px-3 py-1.5 font-mono text-base w-48
+                          placeholder-dim focus:outline-none focus:border-muted
+                          disabled:cursor-not-allowed transition-colors
+                          [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
+                          ${checkState === 'correct' ? 'border-emerald-700/60 text-emerald-300'
+                          : checkState === 'wrong'   ? 'border-rose-700/60 text-rose-300'
+                          : 'border-border text-bright'}`}
+            />
+            <span className="font-mono text-sm text-secondary">{problem.unit}</span>
+
+            {checkState === 'idle' ? (
+              <button onClick={handleCheck} disabled={!answer.trim()}
+                className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-30"
+                style={{
+                  background: 'color-mix(in srgb, var(--c-halogen) 15%, #141620)',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                  color: 'var(--c-halogen)',
+                }}>
+                Check
+              </button>
+            ) : (
+              <>
+                <span className={`font-sans text-sm font-medium ${
+                  checkState === 'correct' ? 'text-emerald-400' : 'text-rose-400'
+                }`}>
+                  {checkState === 'correct' ? '✓ Correct' : '✗ Incorrect'}
+                </span>
+                <button onClick={() => setShowSteps(s => !s)}
+                  className="font-mono text-xs text-dim hover:text-secondary transition-colors">
+                  {showSteps ? '▲ hide' : '▼ solution'}
+                </button>
+              </>
+            )}
+          </div>
+
+          <AnimatePresence>
+            {showSteps && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.15 }}
+                style={{ overflow: 'hidden' }}
+              >
+                <div className="flex flex-col gap-2 pt-2 border-t border-border">
+                  {checkState === 'wrong' && (
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs text-dim">Answer:</span>
+                      <span className="font-mono text-sm text-bright">
+                        {parseFloat(problem.answer.toPrecision(4))} {problem.unit}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex flex-col gap-1 pl-3 border-l border-border">
+                    {problem.steps.map((step, i) => (
+                      <p key={i} className="font-mono text-sm text-primary">{step}</p>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </AnimatePresence>
+
+      {checkState !== 'idle' && (
+        <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="flex gap-2">
+          {checkState === 'wrong' && (
+            <button onClick={() => { setAnswer(''); setCheckState('idle'); setShowSteps(false) }}
+              className="px-4 py-2 rounded-sm font-sans text-sm border border-border text-dim hover:text-secondary transition-colors">
+              Try Again
+            </button>
+          )}
+          <button onClick={nextProblem}
+            className="px-4 py-2 rounded-sm font-sans text-sm border border-border text-secondary hover:text-primary hover:border-muted transition-colors">
+            Next →
+          </button>
+        </motion.div>
+      )}
+    </div>
+  )
+}
