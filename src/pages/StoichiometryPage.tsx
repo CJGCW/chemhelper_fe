@@ -9,29 +9,35 @@ import StoichiometryPractice from '../components/stoichiometry/StoichiometryPrac
 import GasStoichPractice from '../components/stoichiometry/GasStoichPractice'
 import BalancingPractice from '../components/stoichiometry/BalancingPractice'
 import StoichReference from '../components/stoichiometry/StoichReference'
-import SolutionStoichTab from '../components/stoichiometry/SolutionStoichTab'
+import SolutionStoichSolver from '../components/stoichiometry/SolutionStoichSolver'
+import SolutionStoichPractice from '../components/stoichiometry/SolutionStoichPractice'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 
-type Tab = 'stoich' | 'limiting' | 'theoretical' | 'percent' | 'practice' | 'balance' | 'reference' | 'visual' | 'gas-stoich' | 'solution'
-type Mode = 'reference' | 'practice'
+type Tab = 'stoich' | 'limiting' | 'theoretical' | 'percent' | 'practice' | 'balance' | 'reference' | 'visual' | 'gas-stoich' | 'solution' | 'solution-practice'
+type Mode = 'reference' | 'practice' | 'problems'
 
 const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'stoich',      label: 'Stoichiometry',    formula: 'g ↔ mol' },
-  { id: 'balance',     label: 'Balance',          formula: '_□_'     },
-  { id: 'limiting',    label: 'Limiting Reagent', formula: 'LR'      },
-  { id: 'theoretical', label: 'Theoretical Yield',formula: 'T.Y.'    },
-  { id: 'percent',     label: 'Percent Yield',    formula: '%Y'      },
-  { id: 'solution',    label: 'Solution Stoich',  formula: 'M·V'     },
-  { id: 'visual',      label: 'Visual',           formula: '◈'       },
-  { id: 'reference',   label: 'Guide',            formula: '≡'       },
+  { id: 'visual',    label: 'Visual', formula: '◈' },
+  { id: 'reference', label: 'Guide',  formula: '≡' },
 ]
 
 const PRACTICE_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'practice',   label: 'Practice',            formula: '✎'  },
-  { id: 'gas-stoich', label: 'Gas Stoich Practice', formula: 'PV' },
+  { id: 'stoich',      label: 'Stoichiometry',     formula: 'g ↔ mol' },
+  { id: 'limiting',    label: 'Limiting Reagent',  formula: 'LR'      },
+  { id: 'theoretical', label: 'Theoretical Yield', formula: 'T.Y.'    },
+  { id: 'percent',     label: 'Percent Yield',     formula: '%Y'      },
+  { id: 'solution',    label: 'Solution Stoich',   formula: 'M·V'     },
 ]
 
-const PRACTICE_TAB_IDS = new Set<Tab>(PRACTICE_TABS.map(t => t.id))
+const PROBLEMS_TABS: { id: Tab; label: string; formula: string }[] = [
+  { id: 'practice',          label: 'Stoichiometry',   formula: '✎'  },
+  { id: 'balance',           label: 'Balance',         formula: '_□_' },
+  { id: 'solution-practice', label: 'Solution Stoich', formula: 'M·V' },
+  { id: 'gas-stoich',        label: 'Gas Stoich',      formula: 'PV' },
+]
+
+const PRACTICE_TAB_IDS  = new Set<Tab>(PRACTICE_TABS.map(t => t.id))
+const PROBLEMS_TAB_IDS  = new Set<Tab>(PROBLEMS_TABS.map(t => t.id))
 
 const EXPLANATIONS: Partial<Record<Tab, ExplanationContent>> = {
   stoich: {
@@ -123,7 +129,9 @@ export default function StoichiometryPage() {
   const [showExplanation, setShowExplanation] = useState(false)
   const activeTab = (searchParams.get('tab') as Tab) ?? 'stoich'
 
-  const activeMode: Mode = PRACTICE_TAB_IDS.has(activeTab) ? 'practice' : 'reference'
+  const activeMode: Mode = PROBLEMS_TAB_IDS.has(activeTab) ? 'problems'
+    : PRACTICE_TAB_IDS.has(activeTab) ? 'practice'
+    : 'reference'
 
   function setTab(tab: Tab) {
     setSearchParams(prev => {
@@ -135,11 +143,14 @@ export default function StoichiometryPage() {
 
   function setMode(mode: Mode) {
     if (mode === activeMode) return
-    const defaultTab = mode === 'reference' ? 'stoich' : 'practice'
-    setTab(defaultTab)
+    if (mode === 'practice') setTab('stoich')
+    else if (mode === 'problems') setTab('practice')
+    else setTab('visual')
   }
 
-  const visibleTabs = activeMode === 'reference' ? REFERENCE_TABS : PRACTICE_TABS
+  const visibleTabs = activeMode === 'problems' ? PROBLEMS_TABS
+    : activeMode === 'practice' ? PRACTICE_TABS
+    : REFERENCE_TABS
 
   return (
     <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
@@ -175,7 +186,7 @@ export default function StoichiometryPage() {
         {/* Mode toggle switch */}
         <div className="flex items-center gap-1 p-1 rounded-full self-start print:hidden"
           style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
-          {(['reference', 'practice'] as Mode[]).map(mode => {
+          {(['reference', 'practice', 'problems'] as Mode[]).map(mode => {
             const isActive = activeMode === mode
             return (
               <button key={mode} onClick={() => setMode(mode)}
@@ -257,13 +268,6 @@ export default function StoichiometryPage() {
             <StoichiometryPractice />
           </motion.div>
         )}
-        {activeTab === 'balance' && (
-          <motion.div key="balance"
-            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <BalancingPractice />
-          </motion.div>
-        )}
         {activeTab === 'visual' && (
           <motion.div key="visual"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
@@ -289,7 +293,21 @@ export default function StoichiometryPage() {
           <motion.div key="solution"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <SolutionStoichTab />
+            <SolutionStoichSolver />
+          </motion.div>
+        )}
+        {activeTab === 'balance' && (
+          <motion.div key="balance"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <BalancingPractice />
+          </motion.div>
+        )}
+        {activeTab === 'solution-practice' && (
+          <motion.div key="solution-practice"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <SolutionStoichPractice />
           </motion.div>
         )}
       </AnimatePresence>

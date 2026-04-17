@@ -118,7 +118,7 @@ function BaseCalcSubItem({ item, onNavigate }: { item: typeof BASE_CALC_ITEMS[0]
 // ── Empirical sub-items ───────────────────────────────────────────────────────
 
 const EMPIRICAL_ITEMS = [
-  { path: '/empirical',               label: 'Solver', formula: '⌬' },
+  { path: '/empirical?mode=practice', label: 'Solver', formula: '⌬' },
   { path: '/reference?tab=empirical', label: 'Visual', formula: '◈' },
 ]
 
@@ -173,7 +173,7 @@ function CalcSubItem({ item, onNavigate }: { item: typeof CALC_ITEMS[0]; onNavig
 
 const IDEAL_GAS_ITEMS: { tab: string; label: string; formula: string }[] = [
   { tab: 'reference',    label: 'Ideal Gas Law',   formula: 'PV=nRT' },
-  { tab: 'practice',     label: 'PV=nRT',          formula: 'P,V,n,T' },
+  { tab: 'solver',       label: 'PV=nRT',          formula: 'P,V,n,T' },
   { tab: 'gas-stoich',   label: 'Gas Stoich',       formula: 'L→mol'  },
   { tab: 'vdw-practice', label: 'Real Gas',         formula: 'vdW'    },
 ]

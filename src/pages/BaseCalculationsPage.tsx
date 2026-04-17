@@ -234,13 +234,12 @@ const EXPLANATIONS: Record<string, ExplanationContent> = {
 type OpType = '×' | '÷' | '+' | '−'
 
 export default function BaseCalculationsPage() {
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [showExplanation, setShowExplanation] = useState(false)
   const pageTab = searchParams.get('tab') ?? 'sig-figs'
-  const [sigFigTab, setSigFigTab] = useState<'reference' | 'practice'>('reference')
-  const [convTab, setConvTab] = useState<'converter' | 'dimensional'>('converter')
-  const [counterInput, setCounterInput] = useState('')
+  const mode = searchParams.get('mode') ?? 'reference'
 
+  const [counterInput, setCounterInput] = useState('')
   const [inputA, setInputA] = useState('')
   const [inputB, setInputB] = useState('')
   const [operation, setOperation] = useState<OpType>('×')
@@ -250,6 +249,20 @@ export default function BaseCalculationsPage() {
   const annotated = annotateNumber(counterInput)
   const sfCount = counterInput.trim() ? countSigFigs(counterInput) : null
   const isMultDiv = operation === '×' || operation === '÷'
+
+  // Available modes per tab
+  const availableModes =
+    pageTab === 'sig-figs'   ? ['reference', 'practice', 'problems'] :
+    pageTab === 'conversions' ? ['reference', 'practice'] :
+    [] // sci-notation: no mode toggle
+
+  function setMode(m: string) {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      next.set('mode', m)
+      return next
+    })
+  }
 
   function calculate() {
     setOpError(null)
@@ -310,394 +323,389 @@ export default function BaseCalculationsPage() {
           </button>
         </div>
 
-        {/* Converter / Dimensional Analysis pills — only shown on conversions tab */}
-        {pageTab === 'conversions' && (
-          <div className="flex items-center gap-1 p-1 rounded-sm self-start"
+        {/* Mode toggle — only for tabs with multiple modes */}
+        {availableModes.length > 1 && (
+          <div className="flex items-center gap-1 p-1 rounded-full self-start"
             style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
-            {(['converter', 'dimensional'] as const).map(tab => (
-              <button key={tab} onClick={() => setConvTab(tab)}
-                className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
-                style={{ color: convTab === tab ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}
-              >
-                {convTab === tab && (
-                  <motion.div layoutId="conv-tab-bg"
-                    className="absolute inset-0 rounded-sm"
-                    style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 32 }}
-                  />
-                )}
-                <span className="relative z-10">{tab === 'converter' ? 'Converter' : 'Conversion Examples'}</span>
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* Reference / Practice pills — only shown on sig figs tab */}
-        {pageTab === 'sig-figs' && (
-          <div className="flex items-center gap-1 p-1 rounded-sm self-start"
-            style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
-            {(['reference', 'practice'] as const).map(tab => (
-              <button key={tab} onClick={() => setSigFigTab(tab)}
-                className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors capitalize"
-                style={{ color: sigFigTab === tab ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}
-              >
-                {sigFigTab === tab && (
-                  <motion.div layoutId="sf-tab-bg"
-                    className="absolute inset-0 rounded-sm"
-                    style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 32 }}
-                  />
-                )}
-                <span className="relative z-10">{tab}</span>
-              </button>
-            ))}
+            {availableModes.map(m => {
+              const isActive = mode === m
+              return (
+                <button key={m} onClick={() => setMode(m)}
+                  className="relative px-5 py-1.5 rounded-full font-sans text-sm font-medium transition-colors capitalize"
+                  style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)' }}>
+                  {isActive && (
+                    <motion.div layoutId="base-calc-mode-switch" className="absolute inset-0 rounded-full"
+                      style={{
+                        background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                        border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                      }}
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
+                  )}
+                  <span className="relative z-10">{m}</span>
+                </button>
+              )
+            })}
           </div>
         )}
       </div>
 
       <AnimatePresence mode="wait">
-      {pageTab === 'conversions' ? (
-        <motion.div key={`conversions-${convTab}`}
-          initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
-          transition={{ duration: 0.18 }}
-        >
-          <UnitConversions tab={convTab} />
-        </motion.div>
-      ) : pageTab === 'sci-notation' ? (
-        <motion.div key="sci-notation"
-          initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
-          transition={{ duration: 0.18 }}
-        >
-          <ScientificNotation />
-        </motion.div>
-      ) : sigFigTab === 'practice' ? (
-        <motion.div key="practice"
-          initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
-          transition={{ duration: 0.18 }}
-        >
-          <SigFigPractice />
-        </motion.div>
-      ) : (
-      <motion.div key="reference"
-        initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
-        transition={{ duration: 0.18 }}
-        className="flex flex-col gap-6"
-      >
 
-      {/* Two cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-
-        {/* ── Sig Fig Counter ── */}
-        <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
-          <p className="font-sans text-sm font-semibold text-primary tracking-wide uppercase">Sig Fig Counter</p>
-
-          <input
-            type="text"
-            inputMode="decimal"
-            value={counterInput}
-            onChange={e => setCounterInput(e.target.value)}
-            placeholder="e.g. 0.00750"
-            className="font-mono text-sm bg-raised border border-border rounded-sm px-3 py-2 text-primary placeholder-dim focus:outline-none focus:border-accent/40 transition-colors"
-          />
-
-          {/* Annotated digit display */}
-          <AnimatePresence>
-            {annotated.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex items-end gap-1.5 min-h-[72px] flex-wrap"
-              >
-                {annotated.map((ac, i) => (
-                  <div key={i} className="flex flex-col items-center gap-2">
-                    <span
-                      className="font-mono text-4xl font-semibold leading-none"
-                      style={{
-                        color: ac.char === '.' || ac.char === '-'
-                          ? 'rgba(255,255,255,0.2)'
-                          : ac.significant
-                            ? 'var(--c-halogen)'
-                            : 'rgba(255,255,255,0.22)',
-                      }}
-                    >
-                      {ac.char}
-                    </span>
-                    {ac.char !== '.' && ac.char !== '-' && (
-                      <div
-                        className="w-2 h-2 rounded-full"
-                        style={{
-                          background: ac.significant
-                            ? 'var(--c-halogen)'
-                            : 'rgba(255,255,255,0.12)',
-                        }}
-                      />
-                    )}
-                  </div>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {sfCount !== null && (
-            <div className="flex items-baseline gap-2 border-t border-border pt-3">
-              <span className="font-mono text-3xl font-bold" style={{ color: 'var(--c-halogen)' }}>
-                {sfCount}
-              </span>
-              <span className="font-sans text-sm text-secondary">
-                significant figure{sfCount !== 1 ? 's' : ''}
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* ── Operation Calculator ── */}
-        <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
-          <div className="flex items-center justify-between">
-            <p className="font-sans text-sm font-semibold text-primary tracking-wide uppercase">Operation Calculator</p>
-            <span className="font-sans text-xs text-secondary">
-              {isMultDiv ? 'fewest sig figs' : 'fewest decimal places'}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <input
-              type="text" inputMode="decimal" value={inputA}
-              onChange={e => { setInputA(e.target.value); setOpResult(null) }}
-              placeholder="e.g. 4.56"
-              className="w-0 flex-1 font-mono text-sm bg-raised border border-border rounded-sm px-3 py-2 text-primary placeholder-dim focus:outline-none focus:border-accent/40 transition-colors"
-            />
-            <div className="flex gap-1 shrink-0">
-              {(['×', '÷', '+', '−'] as OpType[]).map(op => (
-                <button
-                  key={op}
-                  onClick={() => { setOperation(op); setOpResult(null) }}
-                  className="w-8 h-8 rounded-sm font-mono text-sm font-semibold transition-colors"
-                  style={{
-                    background: operation === op
-                      ? 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)'
-                      : 'transparent',
-                    border: operation === op
-                      ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)'
-                      : '1px solid rgba(255,255,255,0.1)',
-                    color: operation === op ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)',
-                  }}
-                >
-                  {op}
-                </button>
-              ))}
-            </div>
-            <input
-              type="text" inputMode="decimal" value={inputB}
-              onChange={e => { setInputB(e.target.value); setOpResult(null) }}
-              placeholder="e.g. 1.4"
-              className="w-0 flex-1 font-mono text-sm bg-raised border border-border rounded-sm px-3 py-2 text-primary placeholder-dim focus:outline-none focus:border-accent/40 transition-colors"
-            />
-          </div>
-
-          {opError && <p className="font-mono text-xs text-red-400">{opError}</p>}
-
-          <button
-            onClick={calculate}
-            className="w-full py-2 rounded-sm font-sans font-medium text-sm transition-all"
-            style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
-              border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
-              color: 'var(--c-halogen)',
-            }}
+        {/* Conversions */}
+        {pageTab === 'conversions' && (
+          <motion.div key={`conversions-${mode}`}
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18 }}
           >
-            Calculate
-          </button>
+            <UnitConversions tab={mode === 'practice' ? 'converter' : 'dimensional'} />
+          </motion.div>
+        )}
 
-          <AnimatePresence>
-            {opResult && (
-              <motion.div
-                key="op-result"
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="flex flex-col gap-2 pt-3 border-t border-border"
-              >
-                <div className="flex items-baseline gap-2">
-                  <span className="font-mono text-dim text-sm">=</span>
-                  <span className="font-mono text-2xl font-bold" style={{ color: 'var(--c-halogen)' }}>
-                    {opResult.value}
-                  </span>
-                  <span className="font-sans text-xs text-secondary">({opResult.label})</span>
-                </div>
-                <div className="flex flex-col gap-0.5">
-                  {opResult.steps.map((s, i) => (
-                    <p key={i} className="font-mono text-xs text-secondary">{s}</p>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
+        {/* Scientific Notation */}
+        {pageTab === 'sci-notation' && (
+          <motion.div key="sci-notation"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18 }}
+          >
+            <ScientificNotation />
+          </motion.div>
+        )}
 
-      {/* Rules Reference */}
-      <div className="flex flex-col gap-3">
-        <p className="font-sans text-sm font-semibold text-primary tracking-wide uppercase">Rules Reference</p>
+        {/* Sig Figs — Problems */}
+        {pageTab === 'sig-figs' && mode === 'problems' && (
+          <motion.div key="sf-problems"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18 }}
+          >
+            <SigFigPractice />
+          </motion.div>
+        )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {SF_RULES.map((r, i) => (
-            <div key={i} className="flex flex-col gap-3 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
-              <div className="flex items-start justify-between gap-2">
-                <span className="font-sans text-xs font-medium text-primary leading-snug">{r.rule}</span>
-                <span
-                  className="font-mono text-sm font-semibold px-2 py-0.5 rounded-sm shrink-0"
-                  style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)',
-                    color: 'var(--c-halogen)',
-                    border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)',
-                  }}
-                >
-                  {r.sigFigs} sf
-                </span>
-              </div>
-              <p className="font-sans text-xs text-secondary leading-relaxed">{r.description}</p>
-              <div className="flex items-end gap-1">
-                {annotateNumber(r.example).map((ac, j) => (
-                  <div key={j} className="flex flex-col items-center gap-1.5">
-                    <span
-                      className="font-mono text-2xl font-semibold leading-none"
-                      style={{
-                        color: ac.char === '.'
-                          ? 'rgba(255,255,255,0.2)'
-                          : ac.significant
-                            ? 'var(--c-halogen)'
-                            : 'rgba(255,255,255,0.22)',
-                      }}
+        {/* Sig Figs — Practice (interactive calculators) */}
+        {pageTab === 'sig-figs' && mode === 'practice' && (
+          <motion.div key="sf-practice"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18 }}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+
+              {/* ── Sig Fig Counter ── */}
+              <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+                <p className="font-sans text-sm font-semibold text-primary tracking-wide uppercase">Sig Fig Counter</p>
+
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={counterInput}
+                  onChange={e => setCounterInput(e.target.value)}
+                  placeholder="e.g. 0.00750"
+                  className="font-mono text-sm bg-raised border border-border rounded-sm px-3 py-2 text-primary placeholder-dim focus:outline-none focus:border-accent/40 transition-colors"
+                />
+
+                <AnimatePresence>
+                  {annotated.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="flex items-end gap-1.5 min-h-[72px] flex-wrap"
                     >
-                      {ac.char}
-                    </span>
-                    {ac.char !== '.' && (
-                      <div
-                        className="w-1.5 h-1.5 rounded-full"
-                        style={{ background: ac.significant ? 'var(--c-halogen)' : 'rgba(255,255,255,0.12)' }}
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+                      {annotated.map((ac, i) => (
+                        <div key={i} className="flex flex-col items-center gap-2">
+                          <span
+                            className="font-mono text-4xl font-semibold leading-none"
+                            style={{
+                              color: ac.char === '.' || ac.char === '-'
+                                ? 'rgba(255,255,255,0.2)'
+                                : ac.significant
+                                  ? 'var(--c-halogen)'
+                                  : 'rgba(255,255,255,0.22)',
+                            }}
+                          >
+                            {ac.char}
+                          </span>
+                          {ac.char !== '.' && ac.char !== '-' && (
+                            <div
+                              className="w-2 h-2 rounded-full"
+                              style={{
+                                background: ac.significant
+                                  ? 'var(--c-halogen)'
+                                  : 'rgba(255,255,255,0.12)',
+                              }}
+                            />
+                          )}
+                        </div>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {OP_EXAMPLES.map((ex, i) => (
-            <div key={i} className="flex flex-col gap-2 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
-              <div className="flex items-center gap-2">
-                <span
-                  className="font-mono text-xs px-2 py-0.5 rounded-sm shrink-0"
+                {sfCount !== null && (
+                  <div className="flex items-baseline gap-2 border-t border-border pt-3">
+                    <span className="font-mono text-3xl font-bold" style={{ color: 'var(--c-halogen)' }}>
+                      {sfCount}
+                    </span>
+                    <span className="font-sans text-sm text-secondary">
+                      significant figure{sfCount !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* ── Operation Calculator ── */}
+              <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+                <div className="flex items-center justify-between">
+                  <p className="font-sans text-sm font-semibold text-primary tracking-wide uppercase">Operation Calculator</p>
+                  <span className="font-sans text-xs text-secondary">
+                    {isMultDiv ? 'fewest sig figs' : 'fewest decimal places'}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text" inputMode="decimal" value={inputA}
+                    onChange={e => { setInputA(e.target.value); setOpResult(null) }}
+                    placeholder="e.g. 4.56"
+                    className="w-0 flex-1 font-mono text-sm bg-raised border border-border rounded-sm px-3 py-2 text-primary placeholder-dim focus:outline-none focus:border-accent/40 transition-colors"
+                  />
+                  <div className="flex gap-1 shrink-0">
+                    {(['×', '÷', '+', '−'] as OpType[]).map(op => (
+                      <button
+                        key={op}
+                        onClick={() => { setOperation(op); setOpResult(null) }}
+                        className="w-8 h-8 rounded-sm font-mono text-sm font-semibold transition-colors"
+                        style={{
+                          background: operation === op
+                            ? 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)'
+                            : 'transparent',
+                          border: operation === op
+                            ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)'
+                            : '1px solid rgba(255,255,255,0.1)',
+                          color: operation === op ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)',
+                        }}
+                      >
+                        {op}
+                      </button>
+                    ))}
+                  </div>
+                  <input
+                    type="text" inputMode="decimal" value={inputB}
+                    onChange={e => { setInputB(e.target.value); setOpResult(null) }}
+                    placeholder="e.g. 1.4"
+                    className="w-0 flex-1 font-mono text-sm bg-raised border border-border rounded-sm px-3 py-2 text-primary placeholder-dim focus:outline-none focus:border-accent/40 transition-colors"
+                  />
+                </div>
+
+                {opError && <p className="font-mono text-xs text-red-400">{opError}</p>}
+
+                <button
+                  onClick={calculate}
+                  className="w-full py-2 rounded-sm font-sans font-medium text-sm transition-all"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+                    border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                     color: 'var(--c-halogen)',
-                    border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)',
                   }}
                 >
-                  {ex.tag}
-                </span>
-                <span className="font-sans text-xs font-medium text-primary">{ex.rule}</span>
+                  Calculate
+                </button>
+
+                <AnimatePresence>
+                  {opResult && (
+                    <motion.div
+                      key="op-result"
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className="flex flex-col gap-2 pt-3 border-t border-border"
+                    >
+                      <div className="flex items-baseline gap-2">
+                        <span className="font-mono text-dim text-sm">=</span>
+                        <span className="font-mono text-2xl font-bold" style={{ color: 'var(--c-halogen)' }}>
+                          {opResult.value}
+                        </span>
+                        <span className="font-sans text-xs text-secondary">({opResult.label})</span>
+                      </div>
+                      <div className="flex flex-col gap-0.5">
+                        {opResult.steps.map((s, i) => (
+                          <p key={i} className="font-mono text-xs text-secondary">{s}</p>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-              <p className="font-mono text-xs text-secondary leading-relaxed">{ex.detail}</p>
             </div>
-          ))}
-        </div>
-      </div>
+          </motion.div>
+        )}
 
-      {/* Scientific Notation */}
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-col gap-1">
-          <p className="font-sans text-sm font-semibold text-primary tracking-wide uppercase">Sig Figs in Scientific Notation</p>
-          <p className="font-sans text-xs text-secondary">
-            Only the coefficient (mantissa) determines significant figures. The × 10ⁿ part is exact and never limits precision.
-          </p>
-        </div>
+        {/* Sig Figs — Reference (rules + examples) */}
+        {pageTab === 'sig-figs' && (mode === 'reference' || !availableModes.includes(mode)) && (
+          <motion.div key="sf-reference"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18 }}
+            className="flex flex-col gap-6"
+          >
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {SCI_NOTATION_EXAMPLES.map((ex, i) => (
-            <div key={i} className="flex flex-col gap-3 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
-              {/* Number display */}
-              <div className="flex items-end gap-1 flex-wrap">
-                {/* Annotated coefficient */}
-                {annotateNumber(ex.coefficient).map((ac, j) => (
-                  <div key={j} className="flex flex-col items-center gap-1.5">
-                    <span className="font-mono text-2xl font-semibold leading-none"
-                      style={{
-                        color: ac.char === '.'
-                          ? 'rgba(255,255,255,0.2)'
-                          : ac.significant ? 'var(--c-halogen)' : 'rgba(255,255,255,0.22)',
-                      }}>
-                      {ac.char}
-                    </span>
-                    {ac.char !== '.' && (
-                      <div className="w-1.5 h-1.5 rounded-full"
-                        style={{ background: ac.significant ? 'var(--c-halogen)' : 'rgba(255,255,255,0.12)' }} />
-                    )}
+            {/* Rules Reference */}
+            <div className="flex flex-col gap-3">
+              <p className="font-sans text-sm font-semibold text-primary tracking-wide uppercase">Rules Reference</p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {SF_RULES.map((r, i) => (
+                  <div key={i} className="flex flex-col gap-3 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="font-sans text-xs font-medium text-primary leading-snug">{r.rule}</span>
+                      <span
+                        className="font-mono text-sm font-semibold px-2 py-0.5 rounded-sm shrink-0"
+                        style={{
+                          background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)',
+                          color: 'var(--c-halogen)',
+                          border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)',
+                        }}
+                      >
+                        {r.sigFigs} sf
+                      </span>
+                    </div>
+                    <p className="font-sans text-xs text-secondary leading-relaxed">{r.description}</p>
+                    <div className="flex items-end gap-1">
+                      {annotateNumber(r.example).map((ac, j) => (
+                        <div key={j} className="flex flex-col items-center gap-1.5">
+                          <span
+                            className="font-mono text-2xl font-semibold leading-none"
+                            style={{
+                              color: ac.char === '.'
+                                ? 'rgba(255,255,255,0.2)'
+                                : ac.significant
+                                  ? 'var(--c-halogen)'
+                                  : 'rgba(255,255,255,0.22)',
+                            }}
+                          >
+                            {ac.char}
+                          </span>
+                          {ac.char !== '.' && (
+                            <div
+                              className="w-1.5 h-1.5 rounded-full"
+                              style={{ background: ac.significant ? 'var(--c-halogen)' : 'rgba(255,255,255,0.12)' }}
+                            />
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ))}
-                {/* × 10^n — dim, not annotated */}
-                <span className="font-mono text-base text-dim leading-none mb-1">
-                  {' '}× 10<sup>{ex.exponent}</sup>
-                </span>
-                {/* Sig fig count badge */}
-                <span className="font-mono text-sm font-semibold px-2 py-0.5 rounded-sm ml-auto mb-1 shrink-0"
-                  style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)',
-                    color: 'var(--c-halogen)',
-                    border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)',
-                  }}>
-                  {ex.sigFigs} sf
-                </span>
               </div>
-              <p className="font-sans text-xs text-secondary leading-relaxed">{ex.note}</p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {OP_EXAMPLES.map((ex, i) => (
+                  <div key={i} className="flex flex-col gap-2 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="font-mono text-xs px-2 py-0.5 rounded-sm shrink-0"
+                        style={{
+                          background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)',
+                          color: 'var(--c-halogen)',
+                          border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)',
+                        }}
+                      >
+                        {ex.tag}
+                      </span>
+                      <span className="font-sans text-xs font-medium text-primary">{ex.rule}</span>
+                    </div>
+                    <p className="font-mono text-xs text-secondary leading-relaxed">{ex.detail}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Exact Numbers */}
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-col gap-1">
-          <p className="font-sans text-sm font-semibold text-primary tracking-wide uppercase">
-            When Sig Figs <span className="text-bright font-bold text-base">Don't</span> Apply
-          </p>
-          <p className="font-sans text-xs text-secondary">
-            Exact numbers have infinite significant figures and never limit the precision of a result.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {EXACT_EXAMPLES.map((ex, i) => (
-            <div key={i} className="flex flex-col gap-3 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
-              <div className="flex items-start justify-between gap-2">
-                <span className="font-sans text-xs font-medium text-primary leading-snug">{ex.category}</span>
-                <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm shrink-0"
-                  style={{
-                    background: 'color-mix(in srgb, #34d399 12%, transparent)',
-                    color: '#34d399',
-                    border: '1px solid color-mix(in srgb, #34d399 25%, transparent)',
-                  }}>
-                  {ex.badge}
-                </span>
-              </div>
+            {/* Scientific Notation */}
+            <div className="flex flex-col gap-3">
               <div className="flex flex-col gap-1">
-                {ex.items.map((item, j) => (
-                  <div key={j} className="flex items-baseline justify-between gap-2">
-                    <span className="font-mono text-xs text-primary">{item.value}</span>
-                    <span className="font-mono text-[10px] text-dim shrink-0">{item.label}</span>
+                <p className="font-sans text-sm font-semibold text-primary tracking-wide uppercase">Sig Figs in Scientific Notation</p>
+                <p className="font-sans text-xs text-secondary">
+                  Only the coefficient (mantissa) determines significant figures. The × 10ⁿ part is exact and never limits precision.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {SCI_NOTATION_EXAMPLES.map((ex, i) => (
+                  <div key={i} className="flex flex-col gap-3 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+                    <div className="flex items-end gap-1 flex-wrap">
+                      {annotateNumber(ex.coefficient).map((ac, j) => (
+                        <div key={j} className="flex flex-col items-center gap-1.5">
+                          <span className="font-mono text-2xl font-semibold leading-none"
+                            style={{
+                              color: ac.char === '.'
+                                ? 'rgba(255,255,255,0.2)'
+                                : ac.significant ? 'var(--c-halogen)' : 'rgba(255,255,255,0.22)',
+                            }}>
+                            {ac.char}
+                          </span>
+                          {ac.char !== '.' && (
+                            <div className="w-1.5 h-1.5 rounded-full"
+                              style={{ background: ac.significant ? 'var(--c-halogen)' : 'rgba(255,255,255,0.12)' }} />
+                          )}
+                        </div>
+                      ))}
+                      <span className="font-mono text-base text-dim leading-none mb-1">
+                        {' '}× 10<sup>{ex.exponent}</sup>
+                      </span>
+                      <span className="font-mono text-sm font-semibold px-2 py-0.5 rounded-sm ml-auto mb-1 shrink-0"
+                        style={{
+                          background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)',
+                          color: 'var(--c-halogen)',
+                          border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)',
+                        }}>
+                        {ex.sigFigs} sf
+                      </span>
+                    </div>
+                    <p className="font-sans text-xs text-secondary leading-relaxed">{ex.note}</p>
                   </div>
                 ))}
               </div>
-              <p className="font-sans text-[11px] text-secondary leading-relaxed border-t border-border pt-2">{ex.note}</p>
             </div>
-          ))}
-        </div>
-      </div>
 
-      </motion.div>
-      )}
+            {/* Exact Numbers */}
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-1">
+                <p className="font-sans text-sm font-semibold text-primary tracking-wide uppercase">
+                  When Sig Figs <span className="text-bright font-bold text-base">Don't</span> Apply
+                </p>
+                <p className="font-sans text-xs text-secondary">
+                  Exact numbers have infinite significant figures and never limit the precision of a result.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {EXACT_EXAMPLES.map((ex, i) => (
+                  <div key={i} className="flex flex-col gap-3 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="font-sans text-xs font-medium text-primary leading-snug">{ex.category}</span>
+                      <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm shrink-0"
+                        style={{
+                          background: 'color-mix(in srgb, #34d399 12%, transparent)',
+                          color: '#34d399',
+                          border: '1px solid color-mix(in srgb, #34d399 25%, transparent)',
+                        }}>
+                        {ex.badge}
+                      </span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      {ex.items.map((item, j) => (
+                        <div key={j} className="flex items-baseline justify-between gap-2">
+                          <span className="font-mono text-xs text-primary">{item.value}</span>
+                          <span className="font-mono text-[10px] text-dim shrink-0">{item.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="font-sans text-[11px] text-secondary leading-relaxed border-t border-border pt-2">{ex.note}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </motion.div>
+        )}
+
       </AnimatePresence>
 
       <ExplanationModal

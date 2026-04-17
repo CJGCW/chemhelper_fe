@@ -1,29 +1,38 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchParams } from 'react-router-dom'
 import IdealGasCalc from '../components/idealgas/IdealGasCalc'
+import IdealGasSolver from '../components/idealgas/IdealGasSolver'
 import IdealGasPractice from '../components/idealgas/IdealGasPractice'
 import GasStoichPractice from '../components/stoichiometry/GasStoichPractice'
 import VanDerWaalsPractice from '../components/idealgas/VanDerWaalsPractice'
 
-type Tab = 'reference' | 'practice' | 'gas-stoich' | 'vdw-practice'
-type Mode = 'reference' | 'practice'
+type Tab = 'reference' | 'solver' | 'practice' | 'gas-stoich' | 'vdw-practice'
+type Mode = 'reference' | 'practice' | 'problems'
 
 const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
   { id: 'reference', label: 'Ideal Gas', formula: 'PV=nRT' },
 ]
 
 const PRACTICE_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'practice',     label: 'PV=nRT',       formula: 'P,V,n,T' },
-  { id: 'gas-stoich',   label: 'Gas Stoich',    formula: 'L→mol→g' },
-  { id: 'vdw-practice', label: 'Real Gas',      formula: 'vdW'     },
+  { id: 'solver', label: 'PV = nRT', formula: 'P,V,n,T' },
 ]
 
-const PRACTICE_TAB_IDS = new Set<Tab>(['practice', 'gas-stoich', 'vdw-practice'])
+const PROBLEMS_TABS: { id: Tab; label: string; formula: string }[] = [
+  { id: 'practice',     label: 'PV=nRT',     formula: 'P,V,n,T'  },
+  { id: 'gas-stoich',   label: 'Gas Stoich', formula: 'L→mol→g' },
+  { id: 'vdw-practice', label: 'Real Gas',   formula: 'vdW'      },
+]
+
+const PRACTICE_TAB_IDS = new Set<Tab>(PRACTICE_TABS.map(t => t.id))
+const PROBLEMS_TAB_IDS = new Set<Tab>(PROBLEMS_TABS.map(t => t.id))
 
 export default function IdealGasPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const activeTab = (searchParams.get('tab') as Tab) ?? 'reference'
-  const activeMode: Mode = PRACTICE_TAB_IDS.has(activeTab) ? 'practice' : 'reference'
+
+  const activeMode: Mode = PROBLEMS_TAB_IDS.has(activeTab) ? 'problems'
+    : PRACTICE_TAB_IDS.has(activeTab) ? 'practice'
+    : 'reference'
 
   function setTab(tab: Tab) {
     setSearchParams(prev => {
@@ -35,10 +44,14 @@ export default function IdealGasPage() {
 
   function setMode(mode: Mode) {
     if (mode === activeMode) return
-    setTab(mode === 'practice' ? 'practice' : 'reference')
+    if (mode === 'practice') setTab('solver')
+    else if (mode === 'problems') setTab('practice')
+    else setTab('reference')
   }
 
-  const visibleTabs = activeMode === 'reference' ? REFERENCE_TABS : PRACTICE_TABS
+  const visibleTabs = activeMode === 'problems' ? PROBLEMS_TABS
+    : activeMode === 'practice' ? PRACTICE_TABS
+    : REFERENCE_TABS
 
   return (
     <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
@@ -63,7 +76,7 @@ export default function IdealGasPage() {
         {/* Mode toggle switch */}
         <div className="flex items-center gap-1 p-1 rounded-full self-start print:hidden"
           style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
-          {(['reference', 'practice'] as Mode[]).map(m => {
+          {(['reference', 'practice', 'problems'] as Mode[]).map(m => {
             const isActive = activeMode === m
             return (
               <button key={m} onClick={() => setMode(m)}
@@ -116,6 +129,13 @@ export default function IdealGasPage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <IdealGasCalc />
+          </motion.div>
+        )}
+        {activeTab === 'solver' && (
+          <motion.div key="solver"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <IdealGasSolver />
           </motion.div>
         )}
         {activeTab === 'practice' && (

@@ -15,29 +15,35 @@ import UnitCellCalc from '../components/structures/UnitCellCalc'
 const VseprDrawChallenge = lazy(() => import('../components/vsepr/VseprDrawChallenge'))
 
 type Tab  = 'lewis' | 'vsepr' | 'solid-types' | 'unit-cell' | 'lewis-practice' | 'lewis-draw' | 'vsepr-practice' | 'vsepr-draw' | 'sigma-pi'
-type Mode = 'reference' | 'practice'
+type Mode = 'reference' | 'practice' | 'problems'
 
 const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'lewis',       label: 'Lewis Structures', formula: '⌬'   },
-  { id: 'vsepr',       label: 'VSEPR',            formula: '⬡'   },
-  { id: 'solid-types', label: 'Solid Types',      formula: '4t'  },
+  { id: 'lewis',       label: 'Lewis Structures', formula: '⌬'        },
+  { id: 'vsepr',       label: 'VSEPR',            formula: '⬡'        },
+  { id: 'solid-types', label: 'Solid Types',      formula: '4t'       },
   { id: 'unit-cell',   label: 'Unit Cell',        formula: 'SC/BCC/FCC' },
 ]
 
 const PRACTICE_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'lewis-practice', label: 'Lewis',            formula: '⌬'    },
-  { id: 'lewis-draw',     label: 'Lewis Problems',   formula: '✎'    },
-  { id: 'vsepr-practice', label: 'VSEPR',            formula: '⬡'    },
-  { id: 'vsepr-draw',     label: 'VSEPR Problems',   formula: '⬡'    },
-  { id: 'sigma-pi',       label: 'σ / π Bonds',      formula: 'σπ'   },
+  { id: 'lewis-practice', label: 'Lewis',       formula: '⌬'  },
+  { id: 'vsepr-practice', label: 'VSEPR',       formula: '⬡'  },
+  { id: 'sigma-pi',       label: 'σ / π Bonds', formula: 'σπ' },
 ]
 
-const PRACTICE_TAB_IDS = new Set<Tab>(['lewis-practice', 'lewis-draw', 'vsepr-practice', 'vsepr-draw', 'sigma-pi'])
+const PROBLEMS_TABS: { id: Tab; label: string; formula: string }[] = [
+  { id: 'lewis-draw', label: 'Lewis',  formula: '⌬' },
+  { id: 'vsepr-draw', label: 'VSEPR', formula: '⬡' },
+]
+
+const PRACTICE_TAB_IDS = new Set<Tab>(['lewis-practice', 'vsepr-practice', 'sigma-pi'])
+const PROBLEMS_TAB_IDS = new Set<Tab>(['lewis-draw', 'vsepr-draw'])
 
 export default function StructuresPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const activeTab = (searchParams.get('tab') as Tab) ?? 'lewis'
-  const activeMode: Mode = PRACTICE_TAB_IDS.has(activeTab) ? 'practice' : 'reference'
+  const activeMode: Mode = PROBLEMS_TAB_IDS.has(activeTab) ? 'problems'
+    : PRACTICE_TAB_IDS.has(activeTab) ? 'practice'
+    : 'reference'
 
   function setTab(tab: Tab) {
     setSearchParams(prev => {
@@ -49,10 +55,14 @@ export default function StructuresPage() {
 
   function setMode(mode: Mode) {
     if (mode === activeMode) return
-    setTab(mode === 'practice' ? 'lewis-practice' : 'lewis')
+    if (mode === 'practice') setTab('lewis-practice')
+    else if (mode === 'problems') setTab('lewis-draw')
+    else setTab('lewis')
   }
 
-  const visibleTabs = activeMode === 'reference' ? REFERENCE_TABS : PRACTICE_TABS
+  const visibleTabs = activeMode === 'problems' ? PROBLEMS_TABS
+    : activeMode === 'practice' ? PRACTICE_TABS
+    : REFERENCE_TABS
 
   return (
     <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
@@ -79,7 +89,7 @@ export default function StructuresPage() {
         {/* Mode toggle */}
         <div className="flex items-center gap-1 p-1 rounded-full self-start print:hidden"
           style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
-          {(['reference', 'practice'] as Mode[]).map(mode => {
+          {(['reference', 'practice', 'problems'] as Mode[]).map(mode => {
             const isActive = activeMode === mode
             return (
               <button key={mode} onClick={() => setMode(mode)}

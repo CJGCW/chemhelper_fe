@@ -53,33 +53,33 @@ const SECTIONS = [
   {
     heading: 'Calorimetry',
     tabs: [
-      { id: 'calorimetry'           as Tab, label: 'Calculator' },
-      { id: 'calorimetry-practice'  as Tab, label: 'Practice'   },
-      { id: 'calorimetry-reference' as Tab, label: 'Reference'  },
+      { id: 'calorimetry'           as Tab, label: 'Practice'  },
+      { id: 'calorimetry-practice'  as Tab, label: 'Problems'  },
+      { id: 'calorimetry-reference' as Tab, label: 'Reference' },
     ],
   },
   {
     heading: 'Enthalpy of Reaction',
     tabs: [
-      { id: 'enthalpy'           as Tab, label: 'Calculator' },
-      { id: 'enthalpy-practice'  as Tab, label: 'Practice'   },
-      { id: 'enthalpy-reference' as Tab, label: 'Reference'  },
+      { id: 'enthalpy'           as Tab, label: 'Practice'  },
+      { id: 'enthalpy-practice'  as Tab, label: 'Problems'  },
+      { id: 'enthalpy-reference' as Tab, label: 'Reference' },
     ],
   },
   {
     heading: "Hess's Law",
     tabs: [
-      { id: 'hess'           as Tab, label: 'Solver'    },
-      { id: 'hess-practice'  as Tab, label: 'Practice'  },
+      { id: 'hess'           as Tab, label: 'Practice'  },
+      { id: 'hess-practice'  as Tab, label: 'Problems'  },
       { id: 'hess-reference' as Tab, label: 'Reference' },
     ],
   },
   {
     heading: 'Bond Enthalpy',
     tabs: [
-      { id: 'bond'           as Tab, label: 'Calculator' },
-      { id: 'bond-practice'  as Tab, label: 'Practice'   },
-      { id: 'bond-reference' as Tab, label: 'Reference'  },
+      { id: 'bond'           as Tab, label: 'Practice'  },
+      { id: 'bond-practice'  as Tab, label: 'Problems'  },
+      { id: 'bond-reference' as Tab, label: 'Reference' },
     ],
   },
   {
@@ -91,15 +91,15 @@ const SECTIONS = [
   {
     heading: 'Heat Transfer',
     tabs: [
-      { id: 'heattransfer'           as Tab, label: 'Calculator' },
-      { id: 'heattransfer-practice'  as Tab, label: 'Practice'   },
-      { id: 'heattransfer-reference' as Tab, label: 'Reference'  },
+      { id: 'heattransfer'           as Tab, label: 'Practice'  },
+      { id: 'heattransfer-practice'  as Tab, label: 'Problems'  },
+      { id: 'heattransfer-reference' as Tab, label: 'Reference' },
     ],
   },
   {
     heading: 'Heating Curves',
     tabs: [
-      { id: 'heating-curve' as Tab, label: 'Calculator' },
+      { id: 'heating-curve' as Tab, label: 'Practice' },
     ],
   },
   {
@@ -117,9 +117,9 @@ const SECTIONS = [
   {
     heading: 'Clausius-Clapeyron',
     tabs: [
-      { id: 'cc'             as Tab, label: 'Solver'         },
+      { id: 'cc'             as Tab, label: 'Practice'       },
       { id: 'vapor-pressure' as Tab, label: 'Vapor Pressure' },
-      { id: 'cc-practice'    as Tab, label: 'Practice'       },
+      { id: 'cc-practice'    as Tab, label: 'Problems'       },
       { id: 'cc-reference'   as Tab, label: 'Reference'      },
     ],
   },

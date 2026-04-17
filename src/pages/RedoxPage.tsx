@@ -12,31 +12,37 @@ import ReactionPredictorPractice from '../components/tools/ReactionPredictorPrac
 import EcellPractice from '../components/tools/EcellPractice'
 
 type Tab = 'practice' | 'rxn-practice' | 'ecell-practice' | 'classifier' | 'electrolyte' | 'net-ionic' | 'activity' | 'predictor' | 'ecell' | 'reference'
-type Mode = 'reference' | 'practice'
+type Mode = 'reference' | 'practice' | 'problems'
 
 const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
+  { id: 'reference', label: 'Guide', formula: '⎙' },
+]
+
+const PRACTICE_TABS: { id: Tab; label: string; formula: string }[] = [
   { id: 'classifier',  label: 'Reaction Classifier', formula: '⇄'  },
   { id: 'electrolyte', label: 'Electrolyte',         formula: '⚡' },
   { id: 'net-ionic',   label: 'Net Ionic',           formula: '⇌'  },
   { id: 'activity',    label: 'Activity Series',     formula: '↕'  },
-  { id: 'predictor',  label: 'Rxn Predictor',      formula: '⇄'  },
-  { id: 'ecell',      label: 'E°cell / Nernst',    formula: 'E°' },
-  { id: 'reference',   label: 'Guide',              formula: '⎙'  },
+  { id: 'predictor',   label: 'Rxn Predictor',       formula: '⇄'  },
+  { id: 'ecell',       label: 'E°cell / Nernst',     formula: 'E°' },
 ]
 
-const PRACTICE_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'practice',      label: 'Redox',          formula: '✎'  },
-  { id: 'rxn-practice',  label: 'Rxn Predictor',  formula: '⇄'  },
-  { id: 'ecell-practice', label: 'E°cell',         formula: 'E°' },
+const PROBLEMS_TABS: { id: Tab; label: string; formula: string }[] = [
+  { id: 'practice',       label: 'Redox',         formula: '✎'  },
+  { id: 'rxn-practice',   label: 'Rxn Predictor', formula: '⇄'  },
+  { id: 'ecell-practice', label: 'E°cell',        formula: 'E°' },
 ]
 
-const PRACTICE_TAB_IDS = new Set<Tab>(['practice', 'rxn-practice', 'ecell-practice'])
+const PRACTICE_TAB_IDS = new Set<Tab>(PRACTICE_TABS.map(t => t.id))
+const PROBLEMS_TAB_IDS = new Set<Tab>(PROBLEMS_TABS.map(t => t.id))
 
 export default function RedoxPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const activeTab = (searchParams.get('tab') as Tab) ?? 'classifier'
 
-  const activeMode: Mode = PRACTICE_TAB_IDS.has(activeTab) ? 'practice' : 'reference'
+  const activeMode: Mode = PROBLEMS_TAB_IDS.has(activeTab) ? 'problems'
+    : PRACTICE_TAB_IDS.has(activeTab) ? 'practice'
+    : 'reference'
 
   function setTab(tab: Tab) {
     setSearchParams(prev => {
@@ -48,10 +54,14 @@ export default function RedoxPage() {
 
   function setMode(mode: Mode) {
     if (mode === activeMode) return
-    setTab(mode === 'practice' ? 'practice' : 'classifier')
+    if (mode === 'practice') setTab('classifier')
+    else if (mode === 'problems') setTab('practice')
+    else setTab('reference')
   }
 
-  const visibleTabs = activeMode === 'reference' ? REFERENCE_TABS : PRACTICE_TABS
+  const visibleTabs = activeMode === 'problems' ? PROBLEMS_TABS
+    : activeMode === 'practice' ? PRACTICE_TABS
+    : REFERENCE_TABS
 
   return (
     <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
@@ -76,7 +86,7 @@ export default function RedoxPage() {
         {/* Mode toggle switch */}
         <div className="flex items-center gap-1 p-1 rounded-full self-start print:hidden"
           style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
-          {(['reference', 'practice'] as Mode[]).map(mode => {
+          {(['reference', 'practice', 'problems'] as Mode[]).map(mode => {
             const isActive = activeMode === mode
             return (
               <button key={mode} onClick={() => setMode(mode)}
@@ -97,28 +107,30 @@ export default function RedoxPage() {
         </div>
 
         {/* Tab pills for active mode */}
-        <div className="flex items-center gap-1 p-1 rounded-sm self-start flex-wrap print:hidden"
-          style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
-          {visibleTabs.map(tab => {
-            const isActive = activeTab === tab.id
-            return (
-              <button key={tab.id} onClick={() => setTab(tab.id)}
-                className="relative flex-shrink-0 px-3.5 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
-                style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
-                {isActive && (
-                  <motion.div layoutId="redox-tab-pill" className="absolute inset-0 rounded-sm"
-                    style={{
-                      background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
-                      border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
-                    }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
-                )}
-                <span className="relative z-10">{tab.label}</span>
-                <span className="relative z-10 font-mono text-[10px] ml-1.5 opacity-50">{tab.formula}</span>
-              </button>
-            )
-          })}
-        </div>
+        {visibleTabs.length > 1 && (
+          <div className="flex items-center gap-1 p-1 rounded-sm self-start flex-wrap print:hidden"
+            style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+            {visibleTabs.map(tab => {
+              const isActive = activeTab === tab.id
+              return (
+                <button key={tab.id} onClick={() => setTab(tab.id)}
+                  className="relative flex-shrink-0 px-3.5 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
+                  style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
+                  {isActive && (
+                    <motion.div layoutId="redox-tab-pill" className="absolute inset-0 rounded-sm"
+                      style={{
+                        background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                        border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                      }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
+                  )}
+                  <span className="relative z-10">{tab.label}</span>
+                  <span className="relative z-10 font-mono text-[10px] ml-1.5 opacity-50">{tab.formula}</span>
+                </button>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       {/* Content */}

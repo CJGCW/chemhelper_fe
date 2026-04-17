@@ -2,10 +2,11 @@ import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useElementStore } from '../stores/elementStore'
+import EmpiricalReference from '../components/empirical/EmpiricalReference'
 import EmpiricalSolver from '../components/empirical/EmpiricalSolver'
 import EmpiricalPractice from '../components/empirical/EmpiricalPractice'
 
-type Mode = 'reference' | 'practice'
+type Mode = 'reference' | 'practice' | 'problems'
 
 export default function EmpiricalPage() {
   const loadElements = useElementStore(s => s.loadElements)
@@ -13,33 +14,28 @@ export default function EmpiricalPage() {
   const error = useElementStore(s => s.error)
 
   const [searchParams, setSearchParams] = useSearchParams()
-  const mode: Mode = searchParams.get('tab') === 'practice' ? 'practice' : 'reference'
+  const mode: Mode = (searchParams.get('mode') as Mode) ?? 'reference'
 
   useEffect(() => { loadElements() }, [loadElements])
 
   function setMode(m: Mode) {
     if (m === mode) return
-    setSearchParams(m === 'practice' ? { tab: 'practice' } : {}, { replace: true })
+    setSearchParams(m === 'reference' ? {} : { mode: m }, { replace: true })
   }
+
+  const needsElements = mode === 'practice' || mode === 'problems'
 
   return (
     <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
 
       {/* Header */}
       <div className="flex flex-col gap-3">
-        <div className="flex flex-col gap-1">
-          <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Empirical &amp; Molecular Formula</h2>
-          {mode === 'reference' && (
-            <p className="font-sans text-sm text-secondary">
-              Determine the simplest whole-number ratio of elements from percent composition or mass data.
-            </p>
-          )}
-        </div>
+        <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Empirical &amp; Molecular Formula</h2>
 
         {/* Mode toggle switch */}
         <div className="flex items-center gap-1 p-1 rounded-full self-start"
           style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
-          {(['reference', 'practice'] as Mode[]).map(m => {
+          {(['reference', 'practice', 'problems'] as Mode[]).map(m => {
             const isActive = mode === m
             return (
               <button key={m} onClick={() => setMode(m)}
@@ -60,18 +56,32 @@ export default function EmpiricalPage() {
         </div>
       </div>
 
-      {loading && <p className="font-mono text-xs text-dim animate-pulse">Loading element data…</p>}
-      {error   && <p className="font-sans text-xs" style={{ color: '#f87171' }}>Failed to load elements: {error}</p>}
+      {needsElements && loading && <p className="font-mono text-xs text-dim animate-pulse">Loading element data…</p>}
+      {needsElements && error   && <p className="font-sans text-xs" style={{ color: '#f87171' }}>Failed to load elements: {error}</p>}
 
-      {!loading && !error && (
-        <AnimatePresence mode="wait">
-          <motion.div key={mode}
+      <AnimatePresence mode="wait">
+        {mode === 'reference' && (
+          <motion.div key="reference"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            {mode === 'reference' ? <EmpiricalSolver /> : <EmpiricalPractice />}
+            <EmpiricalReference />
           </motion.div>
-        </AnimatePresence>
-      )}
+        )}
+        {mode === 'practice' && !loading && !error && (
+          <motion.div key="practice"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <EmpiricalSolver />
+          </motion.div>
+        )}
+        {mode === 'problems' && !loading && !error && (
+          <motion.div key="problems"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <EmpiricalPractice />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

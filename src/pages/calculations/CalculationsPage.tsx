@@ -9,35 +9,44 @@ import ColligativeCalc from '../../components/calculations/ColligativeCalc'
 import MolarPractice from '../../components/calculations/MolarPractice'
 import MolarReference from '../../components/calculations/MolarReference'
 import MolarVolumeCalc from '../../components/calculations/MolarVolumeCalc'
-import PercentCompositionTab from '../../components/calculations/PercentCompositionTab'
+import PercentCompositionCalc from '../../components/calculations/PercentCompositionCalc'
+import PercentCompositionPractice from '../../components/calculations/PercentCompositionPractice'
+import SigFigPractice from '../../components/calculations/SigFigPractice'
 import DilutionCalc from '../../components/calculations/DilutionCalc'
 import ConcentrationConverter from '../../components/calculations/ConcentrationConverter'
 import DilutionConcPractice from '../../components/calculations/DilutionConcPractice'
 import { useState } from 'react'
+import { HideExamplesContext } from '../../components/calculations/ExampleBoxContext'
 
-type CalcType = 'moles' | 'molarity' | 'molality' | 'colligative' | 'molar-volume' | 'percent-comp' | 'dilution' | 'conc-converter' | 'practice' | 'conc-practice' | 'reference' | 'visual'
+type CalcType = 'moles' | 'molarity' | 'molality' | 'colligative' | 'molar-volume' | 'percent-comp' | 'dilution' | 'conc-converter' | 'practice' | 'perc-comp-practice' | 'sig-figs' | 'conc-practice' | 'reference' | 'visual'
 type ColligativeMode = 'bpe' | 'fpd'
-type Mode = 'reference' | 'practice'
+type Mode = 'reference' | 'practice' | 'problems'
 
 const REFERENCE_PILLS: { value: CalcType; label: string; formula: string }[] = [
-  { value: 'moles',        label: 'Moles',         formula: 'n = m / M'   },
-  { value: 'molarity',     label: 'Molarity',      formula: 'C = n / V'   },
-  { value: 'molality',     label: 'Molality',      formula: 'b = n / m'   },
-  { value: 'colligative',  label: 'Colligative',   formula: 'ΔT = i·K·b'  },
-  { value: 'molar-volume', label: 'Molar Volume',  formula: 'V = nVm'     },
-  { value: 'percent-comp',   label: '% Composition',  formula: '% m'       },
-  { value: 'dilution',       label: 'Dilution',        formula: 'C₁V₁'     },
-  { value: 'conc-converter', label: 'Conc. Units',     formula: '↔'        },
-  { value: 'visual',         label: 'Visual',          formula: '◈'        },
-  { value: 'reference',      label: 'Guide',           formula: '⎙'        },
+  { value: 'visual',    label: 'Visual', formula: '◈' },
+  { value: 'reference', label: 'Guide',  formula: '⎙' },
 ]
 
 const PRACTICE_PILLS: { value: CalcType; label: string; formula: string }[] = [
-  { value: 'practice',      label: 'Molar',     formula: 'n/V/b' },
-  { value: 'conc-practice', label: 'Dilution & Conc', formula: 'C₁V₁/w%' },
+  { value: 'moles',          label: 'Moles',         formula: 'n = m / M'  },
+  { value: 'molarity',       label: 'Molarity',      formula: 'C = n / V'  },
+  { value: 'molality',       label: 'Molality',      formula: 'b = n / m'  },
+  { value: 'colligative',    label: 'Colligative',   formula: 'ΔT = i·K·b' },
+  { value: 'molar-volume',   label: 'Molar Volume',  formula: 'V = nVm'    },
+  { value: 'percent-comp',   label: '% Composition', formula: '% m'        },
+  { value: 'dilution',       label: 'Dilution',      formula: 'C₁V₁'       },
+  { value: 'conc-converter', label: 'Conc. Units',   formula: '↔'          },
 ]
 
-const PRACTICE_TAB_IDS = new Set<CalcType>(['practice', 'conc-practice'])
+const PROBLEMS_PILLS: { value: CalcType; label: string; formula: string }[] = [
+  { value: 'practice',          label: 'Molar',           formula: 'n/V/b'   },
+  { value: 'perc-comp-practice',label: '% Composition',   formula: '% m'     },
+  { value: 'conc-practice',     label: 'Dilution & Conc', formula: 'C₁V₁/w%' },
+  { value: 'sig-figs',          label: 'Sig Figs',        formula: 'sf'      },
+]
+
+const PRACTICE_TAB_IDS = new Set<CalcType>(PRACTICE_PILLS.map(p => p.value))
+const PROBLEMS_TAB_IDS = new Set<CalcType>(PROBLEMS_PILLS.map(p => p.value))
 
 const EXPLANATIONS: Partial<Record<CalcType, ExplanationContent>> = {
   colligative: {
@@ -161,7 +170,9 @@ export default function CalculationsPage() {
   const activeTab = (searchParams.get('tab') as CalcType) ?? 'moles'
   const colligativeMode = (searchParams.get('mode') as ColligativeMode) ?? 'bpe'
 
-  const activeMode: Mode = PRACTICE_TAB_IDS.has(activeTab) ? 'practice' : 'reference'
+  const activeMode: Mode = PROBLEMS_TAB_IDS.has(activeTab) ? 'problems'
+    : PRACTICE_TAB_IDS.has(activeTab) ? 'practice'
+    : 'reference'
 
   function setTab(tab: CalcType) {
     setSearchParams(prev => {
@@ -174,10 +185,15 @@ export default function CalculationsPage() {
 
   function setMode(mode: Mode) {
     if (mode === activeMode) return
-    setTab(mode === 'practice' ? 'practice' : 'moles')
+    if (mode === 'practice') setTab('moles')
+    else if (mode === 'problems') setTab('practice')
+    else setTab('visual')
   }
 
-  const visiblePills = activeMode === 'reference' ? REFERENCE_PILLS : PRACTICE_PILLS
+  const visiblePills = activeMode === 'problems' ? PROBLEMS_PILLS
+    : activeMode === 'practice' ? PRACTICE_PILLS
+    : REFERENCE_PILLS
+
   const showExplanationButton = !!EXPLANATIONS[activeTab]
 
   return (
@@ -212,7 +228,7 @@ export default function CalculationsPage() {
         {/* Mode toggle switch */}
         <div className="flex items-center gap-1 p-1 rounded-full self-start"
           style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
-          {(['reference', 'practice'] as Mode[]).map(mode => {
+          {(['reference', 'practice', 'problems'] as Mode[]).map(mode => {
             const isActive = activeMode === mode
             return (
               <button key={mode} onClick={() => setMode(mode)}
@@ -263,6 +279,7 @@ export default function CalculationsPage() {
       </div>
 
       {/* Active calculator */}
+      <HideExamplesContext.Provider value={activeMode === 'practice'}>
       <AnimatePresence mode="wait">
         <motion.div
           key={activeTab === 'colligative' ? `colligative-${colligativeMode}` : activeTab}
@@ -271,20 +288,23 @@ export default function CalculationsPage() {
           exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.18 }}
         >
-          {activeTab === 'moles'          && <MolesCalc />}
-          {activeTab === 'molarity'       && <MolarityCalc />}
-          {activeTab === 'molality'       && <MolalityCalc />}
-          {activeTab === 'colligative'    && <ColligativeCalc initialMode={colligativeMode} />}
-          {activeTab === 'molar-volume'   && <MolarVolumeCalc />}
-          {activeTab === 'percent-comp'   && <PercentCompositionTab />}
-          {activeTab === 'dilution'       && <DilutionCalc />}
-          {activeTab === 'conc-converter' && <ConcentrationConverter />}
-          {activeTab === 'practice'       && <MolarPractice />}
-          {activeTab === 'conc-practice'  && <DilutionConcPractice />}
-          {activeTab === 'visual'         && <MolarReference section="visual" />}
-          {activeTab === 'reference'      && <MolarReference section="guide" />}
+          {activeTab === 'moles'               && <MolesCalc />}
+          {activeTab === 'molarity'            && <MolarityCalc />}
+          {activeTab === 'molality'            && <MolalityCalc />}
+          {activeTab === 'colligative'         && <ColligativeCalc initialMode={colligativeMode} />}
+          {activeTab === 'molar-volume'        && <MolarVolumeCalc />}
+          {activeTab === 'percent-comp'        && <PercentCompositionCalc />}
+          {activeTab === 'dilution'            && <DilutionCalc />}
+          {activeTab === 'conc-converter'      && <ConcentrationConverter />}
+          {activeTab === 'practice'            && <MolarPractice />}
+          {activeTab === 'perc-comp-practice'  && <PercentCompositionPractice />}
+          {activeTab === 'conc-practice'       && <DilutionConcPractice />}
+          {activeTab === 'sig-figs'            && <SigFigPractice />}
+          {activeTab === 'visual'              && <MolarReference section="visual" />}
+          {activeTab === 'reference'           && <MolarReference section="guide" />}
         </motion.div>
       </AnimatePresence>
+      </HideExamplesContext.Provider>
 
       {activeTab !== 'practice' && EXPLANATIONS[activeTab] && (
         <ExplanationModal
