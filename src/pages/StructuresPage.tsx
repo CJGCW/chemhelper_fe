@@ -11,11 +11,13 @@ import SigmaPiProblems from '../components/lewis/SigmaPiProblems'
 import LewisDrawChallenge from '../components/lewis/LewisDrawChallenge'
 import VseprPractice from '../components/vsepr/VseprPractice'
 import SolidTypesReference from '../components/structures/SolidTypesReference'
+import SolidTypesPractice from '../components/structures/SolidTypesPractice'
 import UnitCellCalc from '../components/structures/UnitCellCalc'
+import UnitCellPractice from '../components/structures/UnitCellPractice'
 
 const VseprDrawChallenge = lazy(() => import('../components/vsepr/VseprDrawChallenge'))
 
-type Tab  = 'lewis' | 'vsepr' | 'solid-types' | 'unit-cell' | 'lewis-practice' | 'lewis-draw' | 'vsepr-practice' | 'vsepr-draw' | 'sigma-pi' | 'sigma-pi-problems'
+type Tab  = 'lewis' | 'vsepr' | 'solid-types' | 'unit-cell' | 'lewis-practice' | 'lewis-draw' | 'vsepr-practice' | 'vsepr-draw' | 'sigma-pi' | 'sigma-pi-problems' | 'solid-types-practice' | 'solid-types-problems' | 'unit-cell-practice' | 'unit-cell-problems'
 type Mode = 'reference' | 'practice' | 'problems'
 
 const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
@@ -26,35 +28,47 @@ const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
 ]
 
 const PRACTICE_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'lewis-practice', label: 'Lewis',       formula: '⌬'  },
-  { id: 'vsepr-practice', label: 'VSEPR',       formula: '⬡'  },
-  { id: 'sigma-pi',       label: 'σ / π Bonds', formula: 'σπ'  },
+  { id: 'lewis-practice',       label: 'Lewis',       formula: '⌬'        },
+  { id: 'vsepr-practice',       label: 'VSEPR',       formula: '⬡'        },
+  { id: 'sigma-pi',             label: 'σ / π Bonds', formula: 'σπ'       },
+  { id: 'solid-types-practice', label: 'Solid Types', formula: '4t'       },
+  { id: 'unit-cell-practice',   label: 'Unit Cell',   formula: 'SC/BCC/FCC' },
 ]
 
 const PROBLEMS_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'lewis-draw',        label: 'Lewis',   formula: '⌬' },
-  { id: 'vsepr-draw',        label: 'VSEPR',   formula: '⬡' },
-  { id: 'sigma-pi-problems', label: 'σ / π Bonds', formula: 'σπ' },
+  { id: 'lewis-draw',           label: 'Lewis',       formula: '⌬'        },
+  { id: 'vsepr-draw',           label: 'VSEPR',       formula: '⬡'        },
+  { id: 'sigma-pi-problems',    label: 'σ / π Bonds', formula: 'σπ'       },
+  { id: 'solid-types-problems', label: 'Solid Types', formula: '4t'       },
+  { id: 'unit-cell-problems',   label: 'Unit Cell',   formula: 'SC/BCC/FCC' },
 ]
 
-const PRACTICE_TAB_IDS = new Set<Tab>(['lewis-practice', 'vsepr-practice', 'sigma-pi'])
-const PROBLEMS_TAB_IDS = new Set<Tab>(['lewis-draw', 'vsepr-draw', 'sigma-pi-problems'])
+const PRACTICE_TAB_IDS = new Set<Tab>(['lewis-practice', 'vsepr-practice', 'sigma-pi', 'solid-types-practice', 'unit-cell-practice'])
+const PROBLEMS_TAB_IDS = new Set<Tab>(['lewis-draw', 'vsepr-draw', 'sigma-pi-problems', 'solid-types-problems', 'unit-cell-problems'])
 
 const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
-  'lewis':             'lewis',
-  'lewis-practice':    'lewis',
-  'lewis-draw':        'lewis',
-  'vsepr':             'vsepr',
-  'vsepr-practice':    'vsepr',
-  'vsepr-draw':        'vsepr',
-  'sigma-pi':          'sigma-pi',
-  'sigma-pi-problems': 'sigma-pi',
+  'lewis':                  'lewis',
+  'lewis-practice':         'lewis',
+  'lewis-draw':             'lewis',
+  'vsepr':                  'vsepr',
+  'vsepr-practice':         'vsepr',
+  'vsepr-draw':             'vsepr',
+  'sigma-pi':               'sigma-pi',
+  'sigma-pi-problems':      'sigma-pi',
+  'solid-types':            'solid-types',
+  'solid-types-practice':   'solid-types',
+  'solid-types-problems':   'solid-types',
+  'unit-cell':              'unit-cell',
+  'unit-cell-practice':     'unit-cell',
+  'unit-cell-problems':     'unit-cell',
 }
 
 const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
-  'lewis':    { reference: 'lewis',  practice: 'lewis-practice', problems: 'lewis-draw'        },
-  'vsepr':    { reference: 'vsepr',  practice: 'vsepr-practice', problems: 'vsepr-draw'        },
-  'sigma-pi': {                      practice: 'sigma-pi',        problems: 'sigma-pi-problems' },
+  'lewis':       { reference: 'lewis',       practice: 'lewis-practice',       problems: 'lewis-draw'           },
+  'vsepr':       { reference: 'vsepr',       practice: 'vsepr-practice',       problems: 'vsepr-draw'           },
+  'sigma-pi':    { reference: 'lewis',         practice: 'sigma-pi',              problems: 'sigma-pi-problems'    },
+  'solid-types': { reference: 'solid-types', practice: 'solid-types-practice', problems: 'solid-types-problems' },
+  'unit-cell':   { reference: 'unit-cell',   practice: 'unit-cell-practice',   problems: 'unit-cell-problems'   },
 }
 
 const MODE_DEFAULT: Record<Mode, Tab> = {
@@ -239,6 +253,20 @@ export default function StructuresPage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <UnitCellCalc />
+          </motion.div>
+        )}
+        {(activeTab === 'solid-types-practice' || activeTab === 'solid-types-problems') && (
+          <motion.div key={activeTab}
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <SolidTypesPractice />
+          </motion.div>
+        )}
+        {(activeTab === 'unit-cell-practice' || activeTab === 'unit-cell-problems') && (
+          <motion.div key={activeTab}
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <UnitCellPractice />
           </motion.div>
         )}
       </AnimatePresence>

@@ -254,6 +254,70 @@ export default function LewisReference() {
         </div>
       </div>
 
+      {/* Sigma and Pi bonds */}
+      <div>
+        <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3">σ and π Bonds</p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
+            <h3 className="font-sans font-semibold text-bright">The Rule</h3>
+            <p className="font-sans text-sm text-primary leading-relaxed">
+              Every bond contains exactly <span className="text-bright font-semibold">one σ bond</span>.
+              π bonds are the <em>extra</em> bonds in double and triple bonds.
+            </p>
+            <div className="mt-1 flex flex-col gap-1.5 font-mono text-sm">
+              <div className="flex items-center gap-3">
+                <span className="text-secondary w-32">Single  A–B</span>
+                <span className="text-bright">1σ, 0π</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-secondary w-32">Double  A=B</span>
+                <span className="text-bright">1σ, 1π</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-secondary w-32">Triple  A≡B</span>
+                <span className="text-bright">1σ, 2π</span>
+              </div>
+            </div>
+            <p className="font-sans text-xs text-secondary leading-relaxed mt-1">
+              To count: σ = total number of bonds. π = Σ(bond order − 1) for each bond.
+            </p>
+          </div>
+
+          <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
+            <h3 className="font-sans font-semibold text-bright">What They Are</h3>
+            <p className="font-sans text-sm text-primary leading-relaxed">
+              A <span className="text-bright font-semibold">σ bond</span> forms by head-on overlap of
+              orbitals along the internuclear axis. Electrons are concentrated between the nuclei.
+              Free rotation around a σ bond is possible.
+            </p>
+            <p className="font-sans text-sm text-primary leading-relaxed">
+              A <span className="text-bright font-semibold">π bond</span> forms by side-on overlap of
+              p orbitals above and below the axis. Electrons occupy two lobes on either side of the
+              bond axis. π bonds prevent rotation — they are what makes double/triple bonds rigid.
+            </p>
+          </div>
+
+          <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
+            <h3 className="font-sans font-semibold text-bright">Examples</h3>
+            <div className="flex flex-col gap-2 font-mono text-sm">
+              {[
+                { formula: 'H₂O',  bonds: '2 O–H single bonds',        sigma: 2, pi: 0 },
+                { formula: 'CO₂',  bonds: '2 C=O double bonds',        sigma: 2, pi: 2 },
+                { formula: 'HCN',  bonds: '1 H–C single + 1 C≡N triple', sigma: 2, pi: 2 },
+                { formula: 'C₂H₄', bonds: '4 C–H single + 1 C=C double', sigma: 5, pi: 1 },
+                { formula: 'N₂',   bonds: '1 N≡N triple bond',          sigma: 1, pi: 2 },
+              ].map(e => (
+                <div key={e.formula} className="flex items-baseline gap-2 border-b border-border pb-1.5 last:border-b-0 last:pb-0">
+                  <span className="text-secondary w-12 shrink-0">{e.formula}</span>
+                  <span className="text-dim text-xs flex-1 leading-snug">{e.bonds}</span>
+                  <span className="text-bright shrink-0">{e.sigma}σ, {e.pi}π</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Example gallery */}
       <div>
         <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3">Examples</p>

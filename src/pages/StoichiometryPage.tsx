@@ -13,7 +13,7 @@ import SolutionStoichSolver from '../components/stoichiometry/SolutionStoichSolv
 import SolutionStoichPractice from '../components/stoichiometry/SolutionStoichPractice'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 
-type Tab = 'stoich' | 'limiting' | 'theoretical' | 'percent' | 'practice' | 'balance' | 'reference' | 'visual' | 'gas-stoich' | 'solution' | 'solution-practice'
+type Tab = 'stoich' | 'limiting' | 'theoretical' | 'percent' | 'practice' | 'balance' | 'reference' | 'visual' | 'gas-stoich' | 'solution' | 'solution-practice' | 'balance-practice' | 'gas-stoich-practice' | 'limiting-problems' | 'theoretical-problems' | 'percent-problems'
 type Mode = 'reference' | 'practice' | 'problems'
 
 const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
@@ -22,33 +22,53 @@ const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
 ]
 
 const PRACTICE_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'stoich',      label: 'Stoichiometry',     formula: 'g ↔ mol' },
-  { id: 'limiting',    label: 'Limiting Reagent',  formula: 'LR'      },
-  { id: 'theoretical', label: 'Theoretical Yield', formula: 'T.Y.'    },
-  { id: 'percent',     label: 'Percent Yield',     formula: '%Y'      },
-  { id: 'solution',    label: 'Solution Stoich',   formula: 'M·V'     },
+  { id: 'stoich',              label: 'Stoichiometry',     formula: 'g ↔ mol' },
+  { id: 'limiting',            label: 'Limiting Reagent',  formula: 'LR'      },
+  { id: 'theoretical',         label: 'Theoretical Yield', formula: 'T.Y.'    },
+  { id: 'percent',             label: 'Percent Yield',     formula: '%Y'      },
+  { id: 'solution',            label: 'Solution Stoich',   formula: 'M·V'     },
+  { id: 'balance-practice',    label: 'Balance',           formula: '_□_'     },
+  { id: 'gas-stoich-practice', label: 'Gas Stoich',        formula: 'PV'      },
 ]
 
 const PROBLEMS_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'practice',          label: 'Stoichiometry',   formula: '✎'  },
-  { id: 'balance',           label: 'Balance',         formula: '_□_' },
-  { id: 'solution-practice', label: 'Solution Stoich', formula: 'M·V' },
-  { id: 'gas-stoich',        label: 'Gas Stoich',      formula: 'PV' },
+  { id: 'practice',             label: 'Stoichiometry',     formula: '✎'   },
+  { id: 'balance',              label: 'Balance',           formula: '_□_' },
+  { id: 'solution-practice',    label: 'Solution Stoich',   formula: 'M·V' },
+  { id: 'gas-stoich',           label: 'Gas Stoich',        formula: 'PV'  },
+  { id: 'limiting-problems',    label: 'Limiting Reagent',  formula: 'LR'  },
+  { id: 'theoretical-problems', label: 'Theoretical Yield', formula: 'T.Y.'},
+  { id: 'percent-problems',     label: 'Percent Yield',     formula: '%Y'  },
 ]
 
 const PRACTICE_TAB_IDS  = new Set<Tab>(PRACTICE_TABS.map(t => t.id))
 const PROBLEMS_TAB_IDS  = new Set<Tab>(PROBLEMS_TABS.map(t => t.id))
 
 const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
-  'stoich':            'stoich',
-  'practice':          'stoich',
-  'solution':          'solution',
-  'solution-practice': 'solution',
+  'stoich':               'stoich',
+  'practice':             'stoich',
+  'solution':             'solution',
+  'solution-practice':    'solution',
+  'limiting':             'limiting',
+  'limiting-problems':    'limiting',
+  'theoretical':          'theoretical',
+  'theoretical-problems': 'theoretical',
+  'percent':              'percent',
+  'percent-problems':     'percent',
+  'balance':              'balance',
+  'balance-practice':     'balance',
+  'gas-stoich':           'gas-stoich',
+  'gas-stoich-practice':  'gas-stoich',
 }
 
 const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
-  'stoich':   { practice: 'stoich',   problems: 'practice'          },
-  'solution': { practice: 'solution', problems: 'solution-practice' },
+  'stoich':      { practice: 'stoich',              problems: 'practice'             },
+  'solution':    { practice: 'solution',             problems: 'solution-practice'    },
+  'limiting':    { practice: 'limiting',             problems: 'limiting-problems'    },
+  'theoretical': { practice: 'theoretical',          problems: 'theoretical-problems' },
+  'percent':     { practice: 'percent',              problems: 'percent-problems'     },
+  'balance':     { practice: 'balance-practice',     problems: 'balance'              },
+  'gas-stoich':  { practice: 'gas-stoich-practice',  problems: 'gas-stoich'           },
 }
 
 const MODE_DEFAULT: Record<Mode, Tab> = {
@@ -300,13 +320,6 @@ export default function StoichiometryPage() {
             <StoichReference section="guide" />
           </motion.div>
         )}
-        {activeTab === 'gas-stoich' && (
-          <motion.div key="gas-stoich"
-            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <GasStoichPractice />
-          </motion.div>
-        )}
         {activeTab === 'solution' && (
           <motion.div key="solution"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
@@ -314,11 +327,39 @@ export default function StoichiometryPage() {
             <SolutionStoichSolver />
           </motion.div>
         )}
-        {activeTab === 'balance' && (
-          <motion.div key="balance"
+        {(activeTab === 'balance' || activeTab === 'balance-practice') && (
+          <motion.div key={activeTab}
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <BalancingPractice />
+          </motion.div>
+        )}
+        {(activeTab === 'gas-stoich' || activeTab === 'gas-stoich-practice') && (
+          <motion.div key={activeTab}
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <GasStoichPractice />
+          </motion.div>
+        )}
+        {activeTab === 'limiting-problems' && (
+          <motion.div key="limiting-problems"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <LimitingReagentSolver />
+          </motion.div>
+        )}
+        {activeTab === 'theoretical-problems' && (
+          <motion.div key="theoretical-problems"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <TheoreticalYieldSolver />
+          </motion.div>
+        )}
+        {activeTab === 'percent-problems' && (
+          <motion.div key="percent-problems"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <PercentYieldSolver />
           </motion.div>
         )}
         {activeTab === 'solution-practice' && (

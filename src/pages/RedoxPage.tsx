@@ -10,8 +10,12 @@ import ReactionPredictor from '../components/tools/ReactionPredictor'
 import EcellCalc from '../components/tools/EcellCalc'
 import ReactionPredictorPractice from '../components/tools/ReactionPredictorPractice'
 import EcellPractice from '../components/tools/EcellPractice'
+import ReactionClassifierProblems from '../components/tools/ReactionClassifierProblems'
+import ElectrolyteProblems from '../components/tools/ElectrolyteProblems'
+import NetIonicProblems from '../components/tools/NetIonicProblems'
+import ActivitySeriesProblems from '../components/tools/ActivitySeriesProblems'
 
-type Tab = 'practice' | 'rxn-practice' | 'ecell-practice' | 'classifier' | 'electrolyte' | 'net-ionic' | 'activity' | 'predictor' | 'ecell' | 'reference'
+type Tab = 'practice' | 'rxn-practice' | 'ecell-practice' | 'classifier' | 'electrolyte' | 'net-ionic' | 'activity' | 'predictor' | 'ecell' | 'reference' | 'redox-practice' | 'classifier-problems' | 'electrolyte-problems' | 'net-ionic-problems' | 'activity-problems'
 type Mode = 'reference' | 'practice' | 'problems'
 
 const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
@@ -19,33 +23,53 @@ const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
 ]
 
 const PRACTICE_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'classifier',  label: 'Reaction Classifier', formula: '⇄'  },
-  { id: 'electrolyte', label: 'Electrolyte',         formula: '⚡' },
-  { id: 'net-ionic',   label: 'Net Ionic',           formula: '⇌'  },
-  { id: 'activity',    label: 'Activity Series',     formula: '↕'  },
-  { id: 'predictor',   label: 'Rxn Predictor',       formula: '⇄'  },
-  { id: 'ecell',       label: 'E°cell / Nernst',     formula: 'E°' },
+  { id: 'classifier',    label: 'Reaction Classifier', formula: '⇄'  },
+  { id: 'electrolyte',   label: 'Electrolyte',         formula: '⚡' },
+  { id: 'net-ionic',     label: 'Net Ionic',           formula: '⇌'  },
+  { id: 'activity',      label: 'Activity Series',     formula: '↕'  },
+  { id: 'predictor',     label: 'Rxn Predictor',       formula: '⇄'  },
+  { id: 'ecell',         label: 'E°cell / Nernst',     formula: 'E°' },
+  { id: 'redox-practice', label: 'Redox',              formula: '✎'  },
 ]
 
 const PROBLEMS_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'practice',       label: 'Redox',         formula: '✎'  },
-  { id: 'rxn-practice',   label: 'Rxn Predictor', formula: '⇄'  },
-  { id: 'ecell-practice', label: 'E°cell',        formula: 'E°' },
+  { id: 'practice',              label: 'Redox',       formula: '✎'  },
+  { id: 'rxn-practice',         label: 'Rxn Predictor', formula: '⇄'  },
+  { id: 'ecell-practice',       label: 'E°cell',       formula: 'E°' },
+  { id: 'classifier-problems',  label: 'Rxn Type',     formula: '⇄'  },
+  { id: 'electrolyte-problems', label: 'Electrolyte',  formula: '⚡' },
+  { id: 'net-ionic-problems',   label: 'Net Ionic',    formula: '⇌'  },
+  { id: 'activity-problems',    label: 'Activity',     formula: '↕'  },
 ]
 
 const PRACTICE_TAB_IDS = new Set<Tab>(PRACTICE_TABS.map(t => t.id))
 const PROBLEMS_TAB_IDS = new Set<Tab>(PROBLEMS_TABS.map(t => t.id))
 
 const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
-  'predictor':      'rxn-predictor',
-  'rxn-practice':   'rxn-predictor',
-  'ecell':          'ecell',
-  'ecell-practice': 'ecell',
+  'predictor':             'rxn-predictor',
+  'rxn-practice':          'rxn-predictor',
+  'ecell':                 'ecell',
+  'ecell-practice':        'ecell',
+  'practice':              'redox',
+  'redox-practice':        'redox',
+  'classifier':            'classifier',
+  'classifier-problems':   'classifier',
+  'electrolyte':           'electrolyte',
+  'electrolyte-problems':  'electrolyte',
+  'net-ionic':             'net-ionic',
+  'net-ionic-problems':    'net-ionic',
+  'activity':              'activity',
+  'activity-problems':     'activity',
 }
 
 const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
-  'rxn-predictor': { practice: 'predictor', problems: 'rxn-practice'   },
-  'ecell':         { practice: 'ecell',     problems: 'ecell-practice' },
+  'rxn-predictor': { practice: 'predictor',     problems: 'rxn-practice'          },
+  'ecell':         { practice: 'ecell',          problems: 'ecell-practice'        },
+  'redox':         { practice: 'redox-practice', problems: 'practice'              },
+  'classifier':    { practice: 'classifier',     problems: 'classifier-problems'   },
+  'electrolyte':   { practice: 'electrolyte',    problems: 'electrolyte-problems'  },
+  'net-ionic':     { practice: 'net-ionic',       problems: 'net-ionic-problems'    },
+  'activity':      { practice: 'activity',        problems: 'activity-problems'     },
 }
 
 const MODE_DEFAULT: Record<Mode, Tab> = {
@@ -153,8 +177,8 @@ export default function RedoxPage() {
 
       {/* Content */}
       <AnimatePresence mode="wait">
-        {activeTab === 'practice' && (
-          <motion.div key="practice"
+        {(activeTab === 'practice' || activeTab === 'redox-practice') && (
+          <motion.div key={activeTab}
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <RedoxPractice />
@@ -221,6 +245,34 @@ export default function RedoxPage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <RedoxReference />
+          </motion.div>
+        )}
+        {activeTab === 'classifier-problems' && (
+          <motion.div key="classifier-problems"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <ReactionClassifierProblems />
+          </motion.div>
+        )}
+        {activeTab === 'electrolyte-problems' && (
+          <motion.div key="electrolyte-problems"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <ElectrolyteProblems />
+          </motion.div>
+        )}
+        {activeTab === 'net-ionic-problems' && (
+          <motion.div key="net-ionic-problems"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <NetIonicProblems />
+          </motion.div>
+        )}
+        {activeTab === 'activity-problems' && (
+          <motion.div key="activity-problems"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <ActivitySeriesProblems />
           </motion.div>
         )}
       </AnimatePresence>
