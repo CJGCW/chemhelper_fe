@@ -39,6 +39,24 @@ const PROBLEMS_TABS: { id: Tab; label: string; formula: string }[] = [
 const PRACTICE_TAB_IDS  = new Set<Tab>(PRACTICE_TABS.map(t => t.id))
 const PROBLEMS_TAB_IDS  = new Set<Tab>(PROBLEMS_TABS.map(t => t.id))
 
+const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
+  'stoich':            'stoich',
+  'practice':          'stoich',
+  'solution':          'solution',
+  'solution-practice': 'solution',
+}
+
+const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
+  'stoich':   { practice: 'stoich',   problems: 'practice'          },
+  'solution': { practice: 'solution', problems: 'solution-practice' },
+}
+
+const MODE_DEFAULT: Record<Mode, Tab> = {
+  reference: 'visual',
+  practice:  'stoich',
+  problems:  'practice',
+}
+
 const EXPLANATIONS: Partial<Record<Tab, ExplanationContent>> = {
   stoich: {
     title: 'Stoichiometric Conversion',
@@ -143,9 +161,9 @@ export default function StoichiometryPage() {
 
   function setMode(mode: Mode) {
     if (mode === activeMode) return
-    if (mode === 'practice') setTab('stoich')
-    else if (mode === 'problems') setTab('practice')
-    else setTab('visual')
+    const topic = TAB_TO_TOPIC[activeTab]
+    const next = (topic ? TOPIC_MODE_TAB[topic]?.[mode] : undefined) ?? MODE_DEFAULT[mode]
+    setTab(next)
   }
 
   const visibleTabs = activeMode === 'problems' ? PROBLEMS_TABS

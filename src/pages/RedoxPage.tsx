@@ -36,6 +36,24 @@ const PROBLEMS_TABS: { id: Tab; label: string; formula: string }[] = [
 const PRACTICE_TAB_IDS = new Set<Tab>(PRACTICE_TABS.map(t => t.id))
 const PROBLEMS_TAB_IDS = new Set<Tab>(PROBLEMS_TABS.map(t => t.id))
 
+const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
+  'predictor':      'rxn-predictor',
+  'rxn-practice':   'rxn-predictor',
+  'ecell':          'ecell',
+  'ecell-practice': 'ecell',
+}
+
+const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
+  'rxn-predictor': { practice: 'predictor', problems: 'rxn-practice'   },
+  'ecell':         { practice: 'ecell',     problems: 'ecell-practice' },
+}
+
+const MODE_DEFAULT: Record<Mode, Tab> = {
+  reference: 'reference',
+  practice:  'classifier',
+  problems:  'practice',
+}
+
 export default function RedoxPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const activeTab = (searchParams.get('tab') as Tab) ?? 'classifier'
@@ -54,9 +72,9 @@ export default function RedoxPage() {
 
   function setMode(mode: Mode) {
     if (mode === activeMode) return
-    if (mode === 'practice') setTab('classifier')
-    else if (mode === 'problems') setTab('practice')
-    else setTab('reference')
+    const topic = TAB_TO_TOPIC[activeTab]
+    const next = (topic ? TOPIC_MODE_TAB[topic]?.[mode] : undefined) ?? MODE_DEFAULT[mode]
+    setTab(next)
   }
 
   const visibleTabs = activeMode === 'problems' ? PROBLEMS_TABS

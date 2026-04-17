@@ -40,6 +40,29 @@ const PROBLEMS_TABS: { id: Tab; label: string; formula: string }[] = [
 const PRACTICE_TAB_IDS = new Set<Tab>(['lewis-practice', 'vsepr-practice', 'sigma-pi'])
 const PROBLEMS_TAB_IDS = new Set<Tab>(['lewis-draw', 'vsepr-draw', 'sigma-pi-problems'])
 
+const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
+  'lewis':             'lewis',
+  'lewis-practice':    'lewis',
+  'lewis-draw':        'lewis',
+  'vsepr':             'vsepr',
+  'vsepr-practice':    'vsepr',
+  'vsepr-draw':        'vsepr',
+  'sigma-pi':          'sigma-pi',
+  'sigma-pi-problems': 'sigma-pi',
+}
+
+const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
+  'lewis':    { reference: 'lewis',  practice: 'lewis-practice', problems: 'lewis-draw'        },
+  'vsepr':    { reference: 'vsepr',  practice: 'vsepr-practice', problems: 'vsepr-draw'        },
+  'sigma-pi': {                      practice: 'sigma-pi',        problems: 'sigma-pi-problems' },
+}
+
+const MODE_DEFAULT: Record<Mode, Tab> = {
+  reference: 'lewis',
+  practice:  'lewis-practice',
+  problems:  'lewis-draw',
+}
+
 export default function StructuresPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const activeTab = (searchParams.get('tab') as Tab) ?? 'lewis'
@@ -57,9 +80,9 @@ export default function StructuresPage() {
 
   function setMode(mode: Mode) {
     if (mode === activeMode) return
-    if (mode === 'practice') setTab('lewis-practice')
-    else if (mode === 'problems') setTab('lewis-draw')
-    else setTab('lewis')
+    const topic = TAB_TO_TOPIC[activeTab]
+    const next = (topic ? TOPIC_MODE_TAB[topic]?.[mode] : undefined) ?? MODE_DEFAULT[mode]
+    setTab(next)
   }
 
   const visibleTabs = activeMode === 'problems' ? PROBLEMS_TABS
