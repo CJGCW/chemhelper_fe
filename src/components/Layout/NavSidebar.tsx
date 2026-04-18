@@ -342,11 +342,29 @@ function StoichSubItem({ item, onNavigate }: { item: typeof STOICH_ITEMS[0]; onN
 
 // ── Redox sub-items ───────────────────────────────────────────────────────────
 
-const REDOX_ITEMS: { tab: string; label: string; formula: string }[] = [
-  { tab: 'reference', label: 'Guide', formula: '≡' },
+type RedoxItem = { tab: string; label: string; formula: string }
+
+const REDOX_GROUPS: { label: string; items: RedoxItem[] }[] = [
+  {
+    label: 'Reactions',
+    items: [
+      { tab: 'classifier',    label: 'Rxn Classifier', formula: '⇄' },
+      { tab: 'net-ionic',     label: 'Net Ionic',       formula: '⇌' },
+      { tab: 'predictor',     label: 'Rxn Predictor',   formula: '→' },
+      { tab: 'activity',      label: 'Activity Series', formula: '↕' },
+    ],
+  },
+  {
+    label: 'Electrochemistry',
+    items: [
+      { tab: 'electrolyte',   label: 'Electrolyte',   formula: '⚡' },
+      { tab: 'redox-practice', label: 'Redox',        formula: 'e⁻' },
+      { tab: 'ecell',          label: 'E°cell / Nernst', formula: 'E°' },
+    ],
+  },
 ]
 
-function RedoxSubItem({ item, onNavigate }: { item: typeof REDOX_ITEMS[0]; onNavigate: () => void }) {
+function RedoxSubItem({ item, onNavigate }: { item: RedoxItem; onNavigate: () => void }) {
   const location = useLocation()
   const navigate = useNavigate()
   const currentTab = new URLSearchParams(location.search).get('tab') ?? 'classifier'
@@ -355,6 +373,67 @@ function RedoxSubItem({ item, onNavigate }: { item: typeof REDOX_ITEMS[0]; onNav
   return (
     <SubItem formula={item.formula} label={item.label} isActive={isActive}
       onClick={() => { navigate(`/redox?tab=${item.tab}`); onNavigate() }} />
+  )
+}
+
+function RedoxGroupedItems({ onNavigate }: { onNavigate: () => void }) {
+  const location = useLocation()
+  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'classifier'
+
+  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
+    const active = REDOX_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
+    return new Set(active ? [active.label] : ['Reactions'])
+  })
+
+  function toggleGroup(label: string) {
+    setOpenGroups(prev => {
+      const next = new Set(prev)
+      next.has(label) ? next.delete(label) : next.add(label)
+      return next
+    })
+  }
+
+  return (
+    <>
+      {REDOX_GROUPS.map(group => {
+        const isOpen = openGroups.has(group.label)
+        const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === '/redox'
+        return (
+          <div key={group.label}>
+            <button
+              onClick={() => toggleGroup(group.label)}
+              className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
+            >
+              <span className={`font-mono text-[11px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
+                {group.label}
+              </span>
+              <motion.span
+                animate={{ rotate: isOpen ? 90 : 0 }}
+                transition={{ duration: 0.15 }}
+                className="font-mono text-[7px] text-dim group-hover:text-secondary transition-colors"
+              >
+                ▶
+              </motion.span>
+            </button>
+            <AnimatePresence initial={false}>
+              {isOpen && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.18 }}
+                  style={{ overflow: 'hidden' }}
+                >
+                  {group.items.map(item => (
+                    <RedoxSubItem key={item.tab} item={item} onNavigate={onNavigate} />
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )
+      })}
+    </>
   )
 }
 
@@ -574,7 +653,7 @@ export default function NavSidebar({ open, onClose }: Props) {
                 isActive={isRedoxActive} expanded={redoxExpanded}
                 onToggle={() => setRedoxExpanded(e => !e)}
               >
-                {REDOX_ITEMS.map((item, i) => <RedoxSubItem key={i} item={item} onNavigate={onClose} />)}
+                <RedoxGroupedItems onNavigate={onClose} />
               </ExpandableSection>
 
               <PracticeNavItem path="/reference?tab=solubility" icon="S/I" label="Solubility" onNavigate={onClose} />
