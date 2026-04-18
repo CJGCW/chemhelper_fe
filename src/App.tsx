@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import AppLayout from './components/Layout/AppLayout'
 import TablePage from './pages/TablePage'
-import CalculationsPage from './pages/calculations/CalculationsPage'
+import MolarCalculationsPage from './pages/calculations/MolarCalculationsPage'
 import BaseCalculationsPage from './pages/BaseCalculationsPage'
 import CompoundPage from './pages/CompoundPage'
 import ElectronConfigPage from './pages/ElectronConfigPage'
@@ -28,7 +28,7 @@ export default function App() {
         <Route path="/table" element={<TablePage />} />
         <Route path="/stoichiometry" element={<StoichiometryPage />} />
         <Route path="/test" element={<TestPage />} />
-        <Route path="/calculations" element={<CalculationsPage />} />
+        <Route path="/calculations" element={<MolarCalculationsPage />} />
         <Route path="/base-calculations" element={<BaseCalculationsPage />} />
         <Route path="/structures" element={<StructuresPage />} />
         <Route path="/tools" element={<ToolsPage />} />

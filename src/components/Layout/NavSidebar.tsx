@@ -119,17 +119,34 @@ function BaseCalcSubItem({ item, onNavigate }: { item: typeof BASE_CALC_ITEMS[0]
 
 // ── Molar Calculations sub-items ─────────────────────────────────────────────
 
-const CALC_ITEMS: { tab: string; label: string; formula: string }[] = [
-  { tab: "ref-moles",        label: "Moles",         formula: "n = m/M" },
-  { tab: "ref-molarity",     label: "Molarity",       formula: "C = n/V" },
-  { tab: "ref-molality",     label: "Molality",       formula: "b = n/m" },
-  { tab: "ref-colligative",  label: "Colligative",    formula: "ΔT"      },
-  { tab: "ref-molar-volume", label: "Molar Volume",   formula: "Vm"      },
-  { tab: "ref-dilution",     label: "Dilution",       formula: "C₁V₁"   },
-  { tab: "ref-other",        label: "More",           formula: "…"       },
+type CalcItem = { tab: string; label: string; formula: string }
+
+const CALC_GROUPS: { label: string; items: CalcItem[] }[] = [
+  {
+    label: 'Basic',
+    items: [
+      { tab: "ref-moles",    label: "Moles",    formula: "n = m/M" },
+      { tab: "ref-molarity", label: "Molarity", formula: "C = n/V" },
+      { tab: "ref-molality", label: "Molality", formula: "b = n/m" },
+    ],
+  },
+  {
+    label: 'Solutions',
+    items: [
+      { tab: "ref-molar-volume", label: "Molar Volume", formula: "Vm"    },
+      { tab: "ref-dilution",     label: "Dilution",     formula: "C₁V₁" },
+      { tab: "ref-other",        label: "More",         formula: "…"     },
+    ],
+  },
+  {
+    label: 'Colligative',
+    items: [
+      { tab: "ref-colligative", label: "Colligative", formula: "ΔT" },
+    ],
+  },
 ]
 
-function CalcSubItem({ item, onNavigate }: { item: typeof CALC_ITEMS[0]; onNavigate: () => void }) {
+function CalcSubItem({ item, onNavigate }: { item: CalcItem; onNavigate: () => void }) {
   const location = useLocation()
   const navigate = useNavigate()
   const currentTab = new URLSearchParams(location.search).get("tab") ?? "ref-moles"
@@ -141,19 +158,97 @@ function CalcSubItem({ item, onNavigate }: { item: typeof CALC_ITEMS[0]; onNavig
   )
 }
 
+function CalcGroupedItems({ onNavigate }: { onNavigate: () => void }) {
+  const location = useLocation()
+  const currentTab = new URLSearchParams(location.search).get("tab") ?? "ref-moles"
+
+  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
+    const active = CALC_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
+    return new Set(active ? [active.label] : ['Basic'])
+  })
+
+  function toggleGroup(label: string) {
+    setOpenGroups(prev => {
+      const next = new Set(prev)
+      next.has(label) ? next.delete(label) : next.add(label)
+      return next
+    })
+  }
+
+  return (
+    <>
+      {CALC_GROUPS.map(group => {
+        const isOpen = openGroups.has(group.label)
+        const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === "/calculations"
+        return (
+          <div key={group.label}>
+            <button
+              onClick={() => toggleGroup(group.label)}
+              className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
+            >
+              <span className={`font-mono text-[11px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
+                {group.label}
+              </span>
+              <motion.span
+                animate={{ rotate: isOpen ? 90 : 0 }}
+                transition={{ duration: 0.15 }}
+                className="font-mono text-[7px] text-dim group-hover:text-secondary transition-colors"
+              >
+                ▶
+              </motion.span>
+            </button>
+            <AnimatePresence initial={false}>
+              {isOpen && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.18 }}
+                  style={{ overflow: 'hidden' }}
+                >
+                  {group.items.map(item => (
+                    <CalcSubItem key={item.tab} item={item} onNavigate={onNavigate} />
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )
+      })}
+    </>
+  )
+}
+
 // ── Ideal Gas sub-items ───────────────────────────────────────────────────────
 
-const IDEAL_GAS_ITEMS: { tab: string; label: string; formula: string }[] = [
-  { tab: 'ref-pvnrt',    label: 'Ideal Gas Law',    formula: 'PV=nRT' },
-  { tab: 'ref-combined', label: 'Combined Gas Law',  formula: 'P₁V₁/T₁' },
-  { tab: 'ref-daltons',  label: "Dalton's Law",      formula: 'Pₜₒₜₐₗ' },
-  { tab: 'ref-grahams',  label: "Graham's Law",      formula: '√M'    },
-  { tab: 'ref-density',  label: 'Gas Density',       formula: 'ρ=MP/RT' },
-  { tab: 'ref-vdw',      label: 'van der Waals',     formula: 'vdW'   },
-  { tab: 'ref-maxwell',  label: 'Maxwell-Boltzmann', formula: 'f(v)'  },
+type IdealGasItem = { tab: string; label: string; formula: string }
+
+const IDEAL_GAS_GROUPS: { label: string; items: IdealGasItem[] }[] = [
+  {
+    label: 'Ideal Gas',
+    items: [
+      { tab: 'ref-pvnrt',    label: 'PV = nRT',        formula: 'PV=nRT'   },
+      { tab: 'ref-combined', label: 'Combined Gas Law', formula: 'P₁V₁/T₁' },
+    ],
+  },
+  {
+    label: 'Gas Laws',
+    items: [
+      { tab: 'ref-daltons', label: "Dalton's Law", formula: 'Ptot'    },
+      { tab: 'ref-grahams', label: "Graham's Law", formula: '√M'      },
+      { tab: 'ref-density', label: 'Gas Density',  formula: 'ρ=MP/RT' },
+    ],
+  },
+  {
+    label: 'Real Gas & Distributions',
+    items: [
+      { tab: 'ref-vdw',    label: 'Van der Waals',      formula: 'vdW'  },
+      { tab: 'ref-maxwell', label: 'Maxwell-Boltzmann', formula: 'f(v)' },
+    ],
+  },
 ]
 
-function IdealGasSubItem({ item, onNavigate }: { item: typeof IDEAL_GAS_ITEMS[0]; onNavigate: () => void }) {
+function IdealGasSubItem({ item, onNavigate }: { item: IdealGasItem; onNavigate: () => void }) {
   const location = useLocation()
   const navigate = useNavigate()
   const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-pvnrt'
@@ -162,6 +257,67 @@ function IdealGasSubItem({ item, onNavigate }: { item: typeof IDEAL_GAS_ITEMS[0]
   return (
     <SubItem formula={item.formula} label={item.label} isActive={isActive}
       onClick={() => { navigate(`/ideal-gas?tab=${item.tab}`); onNavigate() }} />
+  )
+}
+
+function IdealGasGroupedItems({ onNavigate }: { onNavigate: () => void }) {
+  const location = useLocation()
+  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-pvnrt'
+
+  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
+    const active = IDEAL_GAS_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
+    return new Set(active ? [active.label] : ['Ideal Gas'])
+  })
+
+  function toggleGroup(label: string) {
+    setOpenGroups(prev => {
+      const next = new Set(prev)
+      next.has(label) ? next.delete(label) : next.add(label)
+      return next
+    })
+  }
+
+  return (
+    <>
+      {IDEAL_GAS_GROUPS.map(group => {
+        const isOpen = openGroups.has(group.label)
+        const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === '/ideal-gas'
+        return (
+          <div key={group.label}>
+            <button
+              onClick={() => toggleGroup(group.label)}
+              className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
+            >
+              <span className={`font-mono text-[11px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
+                {group.label}
+              </span>
+              <motion.span
+                animate={{ rotate: isOpen ? 90 : 0 }}
+                transition={{ duration: 0.15 }}
+                className="font-mono text-[7px] text-dim group-hover:text-secondary transition-colors"
+              >
+                ▶
+              </motion.span>
+            </button>
+            <AnimatePresence initial={false}>
+              {isOpen && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.18 }}
+                  style={{ overflow: 'hidden' }}
+                >
+                  {group.items.map(item => (
+                    <IdealGasSubItem key={item.tab} item={item} onNavigate={onNavigate} />
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )
+      })}
+    </>
   )
 }
 
@@ -250,7 +406,7 @@ function PracticeNavItem({ path, icon, label, onNavigate }: {
     >
       <span
         className={`font-mono leading-none shrink-0 w-4 text-center ${icon.length > 2 ? 'text-[9px]' : 'text-base'}`}
-        style={{ color: isActive ? "var(--c-halogen)" : undefined }}
+        style={{ color: isActive ? "var(--c-halogen)" : "#7b82a0" }}
       >
         {icon}
       </span>
@@ -273,7 +429,7 @@ function TestNavItem({ onNavigate }: { onNavigate: () => void }) {
       style={{ width: "calc(100% - 16px)" }}
     >
       <span className="font-mono text-base leading-none shrink-0 w-4 text-center"
-        style={{ color: isActive ? "var(--c-halogen)" : undefined }}>
+        style={{ color: isActive ? "var(--c-halogen)" : "#7b82a0" }}>
         ✎
       </span>
       <span className="flex-1">Test Generator</span>
@@ -297,7 +453,7 @@ function ExpandableSection({ icon, label, isActive, expanded, onToggle, children
       >
         <span
           className={`font-mono leading-none shrink-0 w-4 text-center ${icon.length > 2 ? 'text-[9px]' : 'text-base'}`}
-          style={{ color: isActive ? "var(--c-halogen)" : undefined }}
+          style={{ color: isActive ? "var(--c-halogen)" : "#7b82a0" }}
         >
           {icon}
         </span>
@@ -393,7 +549,7 @@ export default function NavSidebar({ open, onClose }: Props) {
                 isActive={isIdealGasNavActive} expanded={idealGasNavExpanded}
                 onToggle={() => setIdealGasNavExpanded(e => !e)}
               >
-                {IDEAL_GAS_ITEMS.map((item, i) => <IdealGasSubItem key={i} item={item} onNavigate={onClose} />)}
+                <IdealGasGroupedItems onNavigate={onClose} />
               </ExpandableSection>
 
               <ExpandableSection
@@ -401,7 +557,7 @@ export default function NavSidebar({ open, onClose }: Props) {
                 isActive={isMolarCalcActive} expanded={calcExpanded}
                 onToggle={() => setCalcExpanded(e => !e)}
               >
-                {CALC_ITEMS.map((item, i) => <CalcSubItem key={i} item={item} onNavigate={onClose} />)}
+                <CalcGroupedItems onNavigate={onClose} />
               </ExpandableSection>
 
 
