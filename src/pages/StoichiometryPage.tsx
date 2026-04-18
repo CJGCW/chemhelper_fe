@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchParams } from 'react-router-dom'
 import StoichiometrySolver from '../components/stoichiometry/StoichiometrySolver'
@@ -8,71 +8,142 @@ import PercentYieldSolver from '../components/stoichiometry/PercentYieldSolver'
 import StoichiometryPractice from '../components/stoichiometry/StoichiometryPractice'
 import GasStoichPractice from '../components/stoichiometry/GasStoichPractice'
 import BalancingPractice from '../components/stoichiometry/BalancingPractice'
-import StoichReference from '../components/stoichiometry/StoichReference'
+import StoichReference, { type RefTopic } from '../components/stoichiometry/StoichReference'
 import SolutionStoichSolver from '../components/stoichiometry/SolutionStoichSolver'
 import SolutionStoichPractice from '../components/stoichiometry/SolutionStoichPractice'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 
-type Tab = 'stoich' | 'limiting' | 'theoretical' | 'percent' | 'practice' | 'balance' | 'reference' | 'visual' | 'gas-stoich' | 'solution' | 'solution-practice' | 'balance-practice' | 'gas-stoich-practice' | 'limiting-problems' | 'theoretical-problems' | 'percent-problems'
+type Tab =
+  | 'stoich' | 'limiting' | 'theoretical' | 'percent'
+  | 'practice' | 'balance' | 'reference' | 'visual'
+  | 'gas-stoich' | 'solution'
+  | 'solution-practice' | 'balance-practice' | 'gas-stoich-practice'
+  | 'limiting-problems' | 'theoretical-problems' | 'percent-problems'
+  | 'ref-stoich' | 'ref-limiting' | 'ref-theoretical' | 'ref-percent'
+  | 'ref-balance' | 'ref-solution' | 'ref-gas-stoich'
+
 type Mode = 'reference' | 'practice' | 'problems'
+type RefView = 'guide' | 'visual'
 
-const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'visual',    label: 'Visual', formula: '◈' },
-  { id: 'reference', label: 'Guide',  formula: '≡' },
+type TabPill = { id: Tab; label: string; formula: string }
+type TabGroup = { id: string; label: string; pills: TabPill[] }
+
+const REFERENCE_GROUPS: TabGroup[] = [
+  {
+    id: 'stoich-ref',
+    label: 'Stoichiometry',
+    pills: [
+      { id: 'ref-stoich',      label: 'Stoichiometry',     formula: 'g↔mol' },
+      { id: 'ref-limiting',    label: 'Limiting Reagent',  formula: 'LR'    },
+      { id: 'ref-theoretical', label: 'Theoretical Yield', formula: 'T.Y.'  },
+      { id: 'ref-percent',     label: 'Percent Yield',     formula: '%Y'    },
+    ],
+  },
+  {
+    id: 'advanced-ref',
+    label: 'Advanced',
+    pills: [
+      { id: 'ref-balance',    label: 'Balancing',         formula: '_□_' },
+      { id: 'ref-solution',   label: 'Solution Stoich',   formula: 'M·V' },
+      { id: 'ref-gas-stoich', label: 'Gas Stoichiometry', formula: 'PV'  },
+    ],
+  },
 ]
 
-const PRACTICE_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'stoich',              label: 'Stoichiometry',     formula: 'g ↔ mol' },
-  { id: 'limiting',            label: 'Limiting Reagent',  formula: 'LR'      },
-  { id: 'theoretical',         label: 'Theoretical Yield', formula: 'T.Y.'    },
-  { id: 'percent',             label: 'Percent Yield',     formula: '%Y'      },
-  { id: 'solution',            label: 'Solution Stoich',   formula: 'M·V'     },
-  { id: 'balance-practice',    label: 'Balance',           formula: '_□_'     },
-  { id: 'gas-stoich-practice', label: 'Gas Stoich',        formula: 'PV'      },
+const PRACTICE_GROUPS: TabGroup[] = [
+  {
+    id: 'stoich',
+    label: 'Stoichiometry',
+    pills: [
+      { id: 'stoich',      label: 'Stoichiometry',     formula: 'g ↔ mol' },
+      { id: 'limiting',    label: 'Limiting Reagent',  formula: 'LR'      },
+      { id: 'theoretical', label: 'Theoretical Yield', formula: 'T.Y.'    },
+      { id: 'percent',     label: 'Percent Yield',     formula: '%Y'      },
+    ],
+  },
+  {
+    id: 'advanced',
+    label: 'Advanced',
+    pills: [
+      { id: 'solution',            label: 'Solution Stoich', formula: 'M·V' },
+      { id: 'gas-stoich-practice', label: 'Gas Stoich',      formula: 'PV'  },
+      { id: 'balance-practice',    label: 'Balance',         formula: '_□_' },
+    ],
+  },
 ]
 
-const PROBLEMS_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'practice',             label: 'Stoichiometry',     formula: '✎'   },
-  { id: 'balance',              label: 'Balance',           formula: '_□_' },
-  { id: 'solution-practice',    label: 'Solution Stoich',   formula: 'M·V' },
-  { id: 'gas-stoich',           label: 'Gas Stoich',        formula: 'PV'  },
-  { id: 'limiting-problems',    label: 'Limiting Reagent',  formula: 'LR'  },
-  { id: 'theoretical-problems', label: 'Theoretical Yield', formula: 'T.Y.'},
-  { id: 'percent-problems',     label: 'Percent Yield',     formula: '%Y'  },
+const PROBLEMS_GROUPS: TabGroup[] = [
+  {
+    id: 'stoich',
+    label: 'Stoichiometry',
+    pills: [
+      { id: 'practice',             label: 'Stoichiometry',     formula: '✎'    },
+      { id: 'limiting-problems',    label: 'Limiting Reagent',  formula: 'LR'   },
+      { id: 'theoretical-problems', label: 'Theoretical Yield', formula: 'T.Y.' },
+      { id: 'percent-problems',     label: 'Percent Yield',     formula: '%Y'   },
+    ],
+  },
+  {
+    id: 'advanced',
+    label: 'Advanced',
+    pills: [
+      { id: 'solution-practice', label: 'Solution Stoich', formula: 'M·V' },
+      { id: 'gas-stoich',        label: 'Gas Stoich',      formula: 'PV'  },
+      { id: 'balance',           label: 'Balance',         formula: '_□_' },
+    ],
+  },
 ]
 
-const PRACTICE_TAB_IDS  = new Set<Tab>(PRACTICE_TABS.map(t => t.id))
-const PROBLEMS_TAB_IDS  = new Set<Tab>(PROBLEMS_TABS.map(t => t.id))
+const REFERENCE_TAB_IDS = new Set<Tab>(REFERENCE_GROUPS.flatMap(g => g.pills.map(p => p.id)))
+const PRACTICE_TAB_IDS  = new Set<Tab>(PRACTICE_GROUPS.flatMap(g => g.pills.map(p => p.id)))
+const PROBLEMS_TAB_IDS  = new Set<Tab>(PROBLEMS_GROUPS.flatMap(g => g.pills.map(p => p.id)))
+
+const REF_TOPIC_MAP: Partial<Record<Tab, RefTopic>> = {
+  'ref-stoich':      'stoich',
+  'ref-limiting':    'limiting',
+  'ref-theoretical': 'theoretical',
+  'ref-percent':     'percent',
+  'ref-balance':     'balance',
+  'ref-solution':    'solution',
+  'ref-gas-stoich':  'gas-stoich',
+}
 
 const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
   'stoich':               'stoich',
   'practice':             'stoich',
+  'ref-stoich':           'stoich',
   'solution':             'solution',
   'solution-practice':    'solution',
+  'ref-solution':         'solution',
   'limiting':             'limiting',
   'limiting-problems':    'limiting',
+  'ref-limiting':         'limiting',
   'theoretical':          'theoretical',
   'theoretical-problems': 'theoretical',
+  'ref-theoretical':      'theoretical',
   'percent':              'percent',
   'percent-problems':     'percent',
+  'ref-percent':          'percent',
   'balance':              'balance',
   'balance-practice':     'balance',
+  'ref-balance':          'balance',
   'gas-stoich':           'gas-stoich',
   'gas-stoich-practice':  'gas-stoich',
+  'ref-gas-stoich':       'gas-stoich',
 }
 
 const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
-  'stoich':      { practice: 'stoich',              problems: 'practice'             },
-  'solution':    { practice: 'solution',             problems: 'solution-practice'    },
-  'limiting':    { practice: 'limiting',             problems: 'limiting-problems'    },
-  'theoretical': { practice: 'theoretical',          problems: 'theoretical-problems' },
-  'percent':     { practice: 'percent',              problems: 'percent-problems'     },
-  'balance':     { practice: 'balance-practice',     problems: 'balance'              },
-  'gas-stoich':  { practice: 'gas-stoich-practice',  problems: 'gas-stoich'           },
+  'stoich':      { reference: 'ref-stoich',      practice: 'stoich',              problems: 'practice'             },
+  'solution':    { reference: 'ref-solution',    practice: 'solution',             problems: 'solution-practice'    },
+  'limiting':    { reference: 'ref-limiting',    practice: 'limiting',             problems: 'limiting-problems'    },
+  'theoretical': { reference: 'ref-theoretical', practice: 'theoretical',          problems: 'theoretical-problems' },
+  'percent':     { reference: 'ref-percent',     practice: 'percent',              problems: 'percent-problems'     },
+  'balance':     { reference: 'ref-balance',     practice: 'balance-practice',     problems: 'balance'              },
+  'gas-stoich':  { reference: 'ref-gas-stoich',  practice: 'gas-stoich-practice',  problems: 'gas-stoich'           },
 }
 
 const MODE_DEFAULT: Record<Mode, Tab> = {
-  reference: 'visual',
+  reference: 'ref-stoich',
   practice:  'stoich',
   problems:  'practice',
 }
@@ -165,11 +236,73 @@ const EXPLANATIONS: Partial<Record<Tab, ExplanationContent>> = {
 export default function StoichiometryPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [showExplanation, setShowExplanation] = useState(false)
-  const activeTab = (searchParams.get('tab') as Tab) ?? 'stoich'
+  const [openGroups, setOpenGroups]       = useState(() => new Set<string>())
+  const [refOpenGroups, setRefOpenGroups] = useState(() => new Set<string>(['stoich-ref']))
+  const [refView, setRefView]             = useState<RefView>('guide')
+  const [printingAll, setPrintingAll]     = useState(false)
 
-  const activeMode: Mode = PROBLEMS_TAB_IDS.has(activeTab) ? 'problems'
+  const activeTab = (searchParams.get('tab') as Tab) ?? 'ref-stoich'
+
+  const activeMode: Mode =
+    REFERENCE_TAB_IDS.has(activeTab) || activeTab === 'visual' || activeTab === 'reference' ? 'reference'
+    : PROBLEMS_TAB_IDS.has(activeTab) ? 'problems'
     : PRACTICE_TAB_IDS.has(activeTab) ? 'practice'
     : 'reference'
+
+  const activeGroups = activeMode === 'problems' ? PROBLEMS_GROUPS : PRACTICE_GROUPS
+
+  useEffect(() => {
+    if (activeMode === 'reference') {
+      const group = REFERENCE_GROUPS.find(g => g.pills.some(p => p.id === activeTab))
+      if (group) {
+        setRefOpenGroups(prev => {
+          if (prev.has(group.id)) return prev
+          const next = new Set(prev)
+          next.add(group.id)
+          return next
+        })
+      }
+    } else {
+      const group = activeGroups.find(g => g.pills.some(p => p.id === activeTab))
+      if (group) {
+        setOpenGroups(prev => {
+          if (prev.has(group.id)) return prev
+          const next = new Set(prev)
+          next.add(group.id)
+          return next
+        })
+      }
+    }
+  }, [activeTab, activeMode])
+
+  useEffect(() => {
+    if (!printingAll) return
+    const id = requestAnimationFrame(() =>
+      requestAnimationFrame(() => { window.print() })
+    )
+    const handler = () => setPrintingAll(false)
+    window.addEventListener('afterprint', handler)
+    return () => {
+      window.removeEventListener('afterprint', handler)
+      cancelAnimationFrame(id)
+    }
+  }, [printingAll])
+
+  function toggleGroup(id: string) {
+    setOpenGroups(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
+
+  function toggleRefGroup(id: string) {
+    setRefOpenGroups(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
 
   function setTab(tab: Tab) {
     setSearchParams(prev => {
@@ -186,26 +319,107 @@ export default function StoichiometryPage() {
     setTab(next)
   }
 
-  const visibleTabs = activeMode === 'problems' ? PROBLEMS_TABS
-    : activeMode === 'practice' ? PRACTICE_TABS
-    : REFERENCE_TABS
+  function renderGroups(groups: TabGroup[], openSet: Set<string>, toggle: (id: string) => void, layoutPrefix: string) {
+    return (
+      <div className="flex flex-col gap-1.5">
+        {groups.map(group => {
+          const isOpen = openSet.has(group.id)
+          const groupActive = group.pills.some(p => p.id === activeTab)
+          return (
+            <div key={group.id} className="flex flex-col gap-1">
+              <button
+                onClick={() => toggle(group.id)}
+                className="relative flex items-center self-start px-3 py-1.5 rounded-sm font-sans text-xs font-semibold transition-colors"
+                style={{ color: groupActive ? 'var(--c-halogen)' : isOpen ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.35)' }}
+              >
+                {groupActive ? (
+                  <motion.div
+                    layoutId={`${layoutPrefix}-group-bg-${group.id}`}
+                    className="absolute inset-0 rounded-sm"
+                    style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                  />
+                ) : (
+                  <div className="absolute inset-0 rounded-sm" style={{ background: '#0e1016', border: '1px solid #1c1f2e' }} />
+                )}
+                <span className="relative z-10">{group.label}</span>
+              </button>
+              <AnimatePresence initial={false}>
+                {isOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2, ease: 'easeInOut' }}
+                    className="overflow-hidden"
+                  >
+                    <div className="flex items-center gap-1 flex-wrap pb-0.5">
+                      {group.pills.map(pill => {
+                        const isActive = activeTab === pill.id
+                        return (
+                          <button
+                            key={pill.id}
+                            onClick={() => setTab(pill.id)}
+                            className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
+                            style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}
+                          >
+                            {isActive && (
+                              <motion.div
+                                layoutId={`${layoutPrefix}-pill-bg`}
+                                className="absolute inset-0 rounded-sm"
+                                style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
+                                transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                              />
+                            )}
+                            <span className="relative z-10">{pill.label}</span>
+                            <span className="relative z-10 font-mono text-[10px] ml-1.5 opacity-50">{pill.formula}</span>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
 
   return (
     <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
+
+      {/* Print All: render outside AnimatePresence so print fires after mount */}
+      {printingAll && (
+        <div className="hidden print:block">
+          <StoichReference section="guide" />
+        </div>
+      )}
 
       {/* Header */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-3 print:hidden">
           <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Stoichiometry</h2>
-          {activeMode === 'reference' && (
-            <button
-              onClick={() => window.print()}
-              className="flex items-center gap-2 px-3 py-1 rounded-sm font-sans text-sm border border-border
-                         text-secondary hover:text-primary hover:border-muted transition-colors"
-            >
-              <span>⎙</span>
-              <span>Print</span>
-            </button>
+          {activeMode === 'reference' && REFERENCE_TAB_IDS.has(activeTab) && (
+            <>
+              <button
+                onClick={() => window.print()}
+                className="flex items-center gap-2 px-3 py-1 rounded-sm font-sans text-sm border border-border
+                           text-secondary hover:text-primary hover:border-muted transition-colors"
+              >
+                <span>⎙</span>
+                <span>Print</span>
+              </button>
+              <button
+                onClick={() => setPrintingAll(true)}
+                className="flex items-center gap-2 px-3 py-1 rounded-sm font-sans text-sm border border-border
+                           text-secondary hover:text-primary hover:border-muted transition-colors"
+              >
+                <span>⎙</span>
+                <span>Print All</span>
+              </button>
+            </>
           )}
           {EXPLANATIONS[activeTab] && (
             <button
@@ -244,33 +458,50 @@ export default function StoichiometryPage() {
           })}
         </div>
 
-        {/* Tab pills for active mode */}
-        <div className="flex items-center gap-1 p-1 rounded-sm self-start flex-wrap print:hidden"
-          style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
-          {visibleTabs.map(tab => {
-            const isActive = activeTab === tab.id
-            return (
-              <button key={tab.id} onClick={() => setTab(tab.id)}
-                className="relative flex-shrink-0 px-3.5 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
-                style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
-                {isActive && (
-                  <motion.div layoutId="stoich-tab-pill" className="absolute inset-0 rounded-sm"
-                    style={{
-                      background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
-                      border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
-                    }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
-                )}
-                <span className="relative z-10">{tab.label}</span>
-                <span className="relative z-10 font-mono text-[10px] ml-1.5 opacity-50">{tab.formula}</span>
-              </button>
-            )
-          })}
-        </div>
+        {/* Tab pills / groups for active mode */}
+        {activeMode === 'reference' ? (
+          <div className="flex flex-col gap-3 print:hidden">
+            {renderGroups(REFERENCE_GROUPS, refOpenGroups, toggleRefGroup, 'ref')}
+
+            {/* Visual | Guide secondary toggle */}
+            <div className="flex items-center gap-1 p-1 rounded-sm self-start"
+              style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+              {(['guide', 'visual'] as RefView[]).map(v => {
+                const isActive = refView === v
+                return (
+                  <button key={v} onClick={() => setRefView(v)}
+                    className="relative px-3.5 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors capitalize"
+                    style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
+                    {isActive && (
+                      <motion.div layoutId="stoich-refview-pill" className="absolute inset-0 rounded-sm"
+                        style={{
+                          background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                          border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                        }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
+                    )}
+                    <span className="relative z-10">{v}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        ) : (
+          <div className="print:hidden">
+            {renderGroups(activeGroups, openGroups, toggleGroup, 'stoich')}
+          </div>
+        )}
       </div>
 
       {/* Content */}
       <AnimatePresence mode="wait">
+        {activeMode === 'reference' && REFERENCE_TAB_IDS.has(activeTab) && (
+          <motion.div key={activeTab}
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <StoichReference section={refView} topic={REF_TOPIC_MAP[activeTab]} />
+          </motion.div>
+        )}
         {activeTab === 'stoich' && (
           <motion.div key="stoich"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
@@ -304,20 +535,6 @@ export default function StoichiometryPage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <StoichiometryPractice />
-          </motion.div>
-        )}
-        {activeTab === 'visual' && (
-          <motion.div key="visual"
-            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <StoichReference section="visual" />
-          </motion.div>
-        )}
-        {activeTab === 'reference' && (
-          <motion.div key="reference"
-            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <StoichReference section="guide" />
           </motion.div>
         )}
         {activeTab === 'solution' && (

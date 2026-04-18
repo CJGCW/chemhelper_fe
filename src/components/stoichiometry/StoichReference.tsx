@@ -149,11 +149,15 @@ function RoadmapCard() {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
-export default function StoichReference({ section = 'guide' }: { section?: 'guide' | 'visual' }) {
+export type RefTopic = 'stoich' | 'limiting' | 'theoretical' | 'percent' | 'balance' | 'solution' | 'gas-stoich'
+
+export default function StoichReference({ section = 'guide', topic }: { section?: 'guide' | 'visual'; topic?: RefTopic }) {
   if (section === 'visual') return <StoichExamples />
+
+  const show = (t: RefTopic) => !topic || topic === t
+
   return (
     <div className="flex flex-col gap-5 print:max-w-none print:gap-4">
-
 
       {/* Print-only title */}
       <div className="hidden print:block print:mb-4">
@@ -165,7 +169,7 @@ export default function StoichReference({ section = 'guide' }: { section?: 'guid
       {/* Cards grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5 print:grid-cols-2 print:gap-4">
 
-        <RefCard
+        {show('stoich') && <RefCard
           title="Stoichiometry (Mole Ratio)"
           formulaLines={[
             'mol B = mol A × (coeff B / coeff A)',
@@ -179,11 +183,11 @@ export default function StoichReference({ section = 'guide' }: { section?: 'guid
             ],
             result: '2.00 mol CO₂',
           }}
-        />
+        />}
 
-        <RoadmapCard />
+        {show('stoich') && <RoadmapCard />}
 
-        <RefCard
+        {show('stoich') && <RefCard
           title="Mass-to-Mass"
           formulaLines={[
             'g B = (g A ÷ M_A) × (coeff B / coeff A) × M_B',
@@ -197,9 +201,9 @@ export default function StoichReference({ section = 'guide' }: { section?: 'guid
             ],
             result: '87.8 g CO₂',
           }}
-        />
+        />}
 
-        <RefCard
+        {show('limiting') && <RefCard
           title="Limiting Reagent"
           formulaLines={[
             'available ratio = mol A / coeff A',
@@ -220,9 +224,9 @@ export default function StoichReference({ section = 'guide' }: { section?: 'guid
             ],
             result: 'N₂ is the limiting reagent',
           }}
-        />
+        />}
 
-        <RefCard
+        {show('theoretical') && <RefCard
           title="Theoretical Yield"
           formulaLines={[
             'mol product = mol LR × (coeff product / coeff LR)',
@@ -236,9 +240,9 @@ export default function StoichReference({ section = 'guide' }: { section?: 'guid
             ],
             result: '34.05 g NH₃',
           }}
-        />
+        />}
 
-        <RefCard
+        {show('percent') && <RefCard
           title="Percent Yield"
           formulaLines={[
             '% yield = (actual yield / theoretical yield) × 100',
@@ -257,11 +261,11 @@ export default function StoichReference({ section = 'guide' }: { section?: 'guid
             ],
             result: '% yield = 28.9%',
           }}
-        />
+        />}
 
-        <BalancingCard />
+        {show('balance') && <BalancingCard />}
 
-        <RefCard
+        {show('balance') && <RefCard
           title="Avogadro's Number / Particle Conversions"
           formulaLines={[
             'N = n × Nₐ',
@@ -276,9 +280,9 @@ export default function StoichReference({ section = 'guide' }: { section?: 'guid
             ],
             result: 'N = 1.506 × 10²⁴ molecules',
           }}
-        />
+        />}
 
-        <RefCard
+        {show('balance') && <RefCard
           title="Percent Composition"
           formulaLines={[
             '% element = (n × M_element / M_compound) × 100',
@@ -296,9 +300,9 @@ export default function StoichReference({ section = 'guide' }: { section?: 'guid
             ],
             result: '% O = 65.25%',
           }}
-        />
+        />}
 
-        <RefCard
+        {show('solution') && <RefCard
           title="Solution Stoichiometry"
           formulaLines={[
             'n = C × V',
@@ -318,9 +322,9 @@ export default function StoichReference({ section = 'guide' }: { section?: 'guid
             ],
             result: 'n(NaOH) = 5.00 × 10⁻³ mol',
           }}
-        />
+        />}
 
-        <RefCard
+        {show('gas-stoich') && <RefCard
           title="Gas Stoichiometry"
           formulaLines={[
             'PV = nRT   (R = 0.08206 L·atm/mol·K)',
@@ -341,7 +345,7 @@ export default function StoichReference({ section = 'guide' }: { section?: 'guid
             ],
             result: 'V = 22.4 L CO₂',
           }}
-        />
+        />}
 
       </div>
 

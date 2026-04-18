@@ -323,12 +323,29 @@ function IdealGasGroupedItems({ onNavigate }: { onNavigate: () => void }) {
 
 // ── Stoichiometry sub-items ───────────────────────────────────────────────────
 
-const STOICH_ITEMS: { tab: string; label: string; formula: string }[] = [
-  { tab: 'visual',    label: 'Visual Guide',  formula: '◈' },
-  { tab: 'reference', label: 'Guide',         formula: '≡' },
+type StoichItem = { tab: string; label: string; formula: string }
+
+const STOICH_GROUPS: { label: string; items: StoichItem[] }[] = [
+  {
+    label: 'Stoichiometry',
+    items: [
+      { tab: 'stoich',      label: 'Stoichiometry',     formula: 'g↔mol' },
+      { tab: 'limiting',    label: 'Limiting Reagent',  formula: 'LR'    },
+      { tab: 'theoretical', label: 'Theoretical Yield', formula: 'T.Y.'  },
+      { tab: 'percent',     label: 'Percent Yield',     formula: '%Y'    },
+    ],
+  },
+  {
+    label: 'Advanced',
+    items: [
+      { tab: 'solution',            label: 'Solution Stoich', formula: 'M·V' },
+      { tab: 'gas-stoich-practice', label: 'Gas Stoich',      formula: 'PV'  },
+      { tab: 'balance-practice',    label: 'Balance',         formula: '_□_' },
+    ],
+  },
 ]
 
-function StoichSubItem({ item, onNavigate }: { item: typeof STOICH_ITEMS[0]; onNavigate: () => void }) {
+function StoichSubItem({ item, onNavigate }: { item: StoichItem; onNavigate: () => void }) {
   const location = useLocation()
   const navigate = useNavigate()
   const currentTab = new URLSearchParams(location.search).get('tab') ?? 'stoich'
@@ -337,6 +354,67 @@ function StoichSubItem({ item, onNavigate }: { item: typeof STOICH_ITEMS[0]; onN
   return (
     <SubItem formula={item.formula} label={item.label} isActive={isActive}
       onClick={() => { navigate(`/stoichiometry?tab=${item.tab}`); onNavigate() }} />
+  )
+}
+
+function StoichGroupedItems({ onNavigate }: { onNavigate: () => void }) {
+  const location = useLocation()
+  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'stoich'
+
+  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
+    const active = STOICH_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
+    return new Set(active ? [active.label] : ['Stoichiometry'])
+  })
+
+  function toggleGroup(label: string) {
+    setOpenGroups(prev => {
+      const next = new Set(prev)
+      next.has(label) ? next.delete(label) : next.add(label)
+      return next
+    })
+  }
+
+  return (
+    <>
+      {STOICH_GROUPS.map(group => {
+        const isOpen = openGroups.has(group.label)
+        const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === '/stoichiometry'
+        return (
+          <div key={group.label}>
+            <button
+              onClick={() => toggleGroup(group.label)}
+              className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
+            >
+              <span className={`font-mono text-[11px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
+                {group.label}
+              </span>
+              <motion.span
+                animate={{ rotate: isOpen ? 90 : 0 }}
+                transition={{ duration: 0.15 }}
+                className="font-mono text-[7px] text-dim group-hover:text-secondary transition-colors"
+              >
+                ▶
+              </motion.span>
+            </button>
+            <AnimatePresence initial={false}>
+              {isOpen && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.18 }}
+                  style={{ overflow: 'hidden' }}
+                >
+                  {group.items.map(item => (
+                    <StoichSubItem key={item.tab} item={item} onNavigate={onNavigate} />
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )
+      })}
+    </>
   )
 }
 
@@ -663,7 +741,7 @@ export default function NavSidebar({ open, onClose }: Props) {
                 isActive={isStoichActive} expanded={stoichExpanded}
                 onToggle={() => setStoichExpanded(e => !e)}
               >
-                {STOICH_ITEMS.map((item, i) => <StoichSubItem key={i} item={item} onNavigate={onClose} />)}
+                <StoichGroupedItems onNavigate={onClose} />
               </ExpandableSection>
 
               <ExpandableSection
