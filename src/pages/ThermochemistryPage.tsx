@@ -17,7 +17,9 @@ import HeatTransferCalc from '../components/thermo/HeatTransferCalc'
 import HeatTransferPractice from '../components/thermo/HeatTransferPractice'
 import HeatTransferReference from '../components/thermo/HeatTransferReference'
 import HeatingCurveCalc from '../components/thermo/HeatingCurveCalc'
+import HeatingCurveProblems from '../components/thermo/HeatingCurveProblems'
 import PhaseDiagram from '../components/thermo/PhaseDiagram'
+import PhaseDiagramProblems from '../components/thermo/PhaseDiagramProblems'
 import LiquidProperties from '../components/thermo/LiquidProperties'
 import ClausiusClapeyronCalc from '../components/thermo/ClausiusClapeyronCalc'
 import ClausiusClapeyronPractice from '../components/thermo/ClausiusClapeyronPractice'
@@ -36,7 +38,9 @@ type Tab =
   | 'hess-reference'
   | 'bond'
   | 'heating-curve'
+  | 'heating-curve-problems'
   | 'phase-diagram'
+  | 'phase-diagram-problems'
   | 'liquid-props'
   | 'cc'
   | 'cc-practice'
@@ -99,13 +103,15 @@ const SECTIONS = [
   {
     heading: 'Heating Curves',
     tabs: [
-      { id: 'heating-curve' as Tab, label: 'Practice' },
+      { id: 'heating-curve'          as Tab, label: 'Practice' },
+      { id: 'heating-curve-problems' as Tab, label: 'Problems' },
     ],
   },
   {
     heading: 'Phase Diagrams',
     tabs: [
-      { id: 'phase-diagram' as Tab, label: 'Interactive' },
+      { id: 'phase-diagram'          as Tab, label: 'Interactive' },
+      { id: 'phase-diagram-problems' as Tab, label: 'Problems'    },
     ],
   },
   {
@@ -231,7 +237,9 @@ export default function ThermochemistryPage() {
           {tab === 'heattransfer-practice'  && <HeatTransferPractice />}
           {tab === 'heattransfer-reference' && <HeatTransferReference />}
           {tab === 'heating-curve'          && <HeatingCurveCalc />}
+          {tab === 'heating-curve-problems' && <HeatingCurveProblems />}
           {tab === 'phase-diagram'          && <PhaseDiagram />}
+          {tab === 'phase-diagram-problems' && <PhaseDiagramProblems />}
           {tab === 'liquid-props'           && <LiquidProperties />}
           {tab === 'cc'                     && <ClausiusClapeyronCalc />}
           {tab === 'vapor-pressure'         && <VaporPressureCalc />}

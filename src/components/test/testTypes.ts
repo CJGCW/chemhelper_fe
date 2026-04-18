@@ -23,8 +23,10 @@ import type { DilutionProblem } from '../../utils/dilutionPractice'
 import type { ConcProblem } from '../../utils/concentrationPractice'
 import type { ClausiusClapeyronProblem } from '../../utils/clausiusClapeyronPractice'
 import type { SigmaPiProblem } from '../../utils/sigmaPiPractice'
+import type { HCProblem } from '../../utils/heatingCurveProblems'
+import type { PDProblem } from '../../utils/phaseDiagramProblems'
 
-export type { SigFigProblem, EmpiricalProblem, ConversionProblem, AtomicProblem, LewisProblem, LewisDrawProblem, VseprProblem, VseprDrawProblem, StoichProblem, RedoxProblem, PercCompProblem, GasStoichProblem, SolStoichProblem, BalancingEquation, CalorimetryProblem, EnthalpyProblem, HessProblem, BondEnthalpyProblem, HeatTransferProblem, VdWProblem, GasProblem, EcellProblem, RxnPracticeProblem, DilutionProblem, ConcProblem, ClausiusClapeyronProblem, SigmaPiProblem }
+export type { SigFigProblem, EmpiricalProblem, ConversionProblem, AtomicProblem, LewisProblem, LewisDrawProblem, VseprProblem, VseprDrawProblem, StoichProblem, RedoxProblem, PercCompProblem, GasStoichProblem, SolStoichProblem, BalancingEquation, CalorimetryProblem, EnthalpyProblem, HessProblem, BondEnthalpyProblem, HeatTransferProblem, VdWProblem, GasProblem, EcellProblem, RxnPracticeProblem, DilutionProblem, ConcProblem, ClausiusClapeyronProblem, SigmaPiProblem, HCProblem, PDProblem }
 
 export interface MolarTestProblem      { kind: 'molar';      data: MolarProblem      }
 export interface SigFigTestProblem     { kind: 'sigfig';     data: SigFigProblem     }
@@ -54,6 +56,8 @@ export interface DilutionTestProblem       { kind: 'dilution';        data: Dilu
 export interface ConcTestProblem                  { kind: 'conc';              data: ConcProblem                  }
 export interface ClausiusClapeyronTestProblem     { kind: 'clausius_clapeyron'; data: ClausiusClapeyronProblem     }
 export interface SigmaPiTestProblem               { kind: 'sigma_pi';           data: SigmaPiProblem               }
+export interface HeatingCurveTestProblem          { kind: 'heating_curve';      data: HCProblem                    }
+export interface PhaseDiagramTestProblem          { kind: 'phase_diagram';      data: PDProblem                    }
 
 export type TestProblem =
   | MolarTestProblem
@@ -84,6 +88,8 @@ export type TestProblem =
   | ConcTestProblem
   | ClausiusClapeyronTestProblem
   | SigmaPiTestProblem
+  | HeatingCurveTestProblem
+  | PhaseDiagramTestProblem
 
 export interface TestQuestion {
   id:           number

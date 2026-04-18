@@ -36,11 +36,13 @@ import type { ConcSubtype } from '../../utils/concentrationPractice'
 import { genConcProblem } from '../../utils/concentrationPractice'
 import { genClausiusClapeyronProblem } from '../../utils/clausiusClapeyronPractice'
 import { generateSigmaPiProblem } from '../../utils/sigmaPiPractice'
+import { genHCProblem } from '../../utils/heatingCurveProblems'
+import { genPDProblem } from '../../utils/phaseDiagramProblems'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
 // ── Topic definitions ─────────────────────────────────────────────────────────
 
-type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'lewis_draw' | 'vsepr' | 'vsepr_draw' | 'sigma_pi' | 'stoich' | 'redox' | 'perc_comp' | 'gas_stoich' | 'sol_stoich' | 'balancing' | 'calorimetry' | 'enthalpy' | 'hess' | 'bond_enthalpy' | 'heat_transfer' | 'vdw' | 'ideal_gas' | 'ecell' | 'rxn_pred' | 'dilution' | 'conc' | 'clausius_clapeyron'
+type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'lewis_draw' | 'vsepr' | 'vsepr_draw' | 'sigma_pi' | 'stoich' | 'redox' | 'perc_comp' | 'gas_stoich' | 'sol_stoich' | 'balancing' | 'calorimetry' | 'enthalpy' | 'hess' | 'bond_enthalpy' | 'heat_transfer' | 'vdw' | 'ideal_gas' | 'ecell' | 'rxn_pred' | 'dilution' | 'conc' | 'clausius_clapeyron' | 'heating_curve' | 'phase_diagram'
 type TopicGroup = 'core' | 'atomic_molecular' | 'structures' | 'molar_solutions' | 'stoichiometry' | 'gases' | 'redox' | 'thermochemistry'
 
 const GROUP_LABELS: Record<TopicGroup, string> = {
@@ -126,6 +128,8 @@ const ALL_TOPICS: TopicDef[] = [
   { id: 'bond-enthalpy',  kind: 'bond_enthalpy',  group: 'thermochemistry', label: 'Bond Enthalpy',   formula: 'BE'      },
   { id: 'heat-transfer',       kind: 'heat_transfer',       group: 'thermochemistry', label: 'Heat Transfer',        formula: 'q₁=−q₂'  },
   { id: 'clausius-clapeyron', kind: 'clausius_clapeyron', group: 'thermochemistry', label: 'Clausius-Clapeyron',  formula: 'ln P₂/P₁' },
+  { id: 'heating-curve',      kind: 'heating_curve',      group: 'thermochemistry', label: 'Heating Curve',        formula: 'q/T diagram' },
+  { id: 'phase-diagram',      kind: 'phase_diagram',      group: 'thermochemistry', label: 'Phase Diagram',        formula: 'P-T diagram' },
 ]
 
 const STYLES: ProblemStyle[] = ['word', 'arithmetic']
@@ -266,6 +270,10 @@ export default function TestBuilder({ onGenerate }: Props) {
         if (!sigPi) return null
         return { topic: t.label, topicFormula: t.formula, problem: { kind: 'sigma_pi', data: sigPi } }
       }
+      if (t.kind === 'heating_curve')
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'heating_curve', data: genHCProblem() } }
+      if (t.kind === 'phase_diagram')
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'phase_diagram', data: genPDProblem() } }
       return { topic: t.label, topicFormula: t.formula, problem: { kind: 'molar', data: generateMolarProblem(t.molarType!, randomStyle()) } }
     }
 
