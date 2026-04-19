@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  type PhaseData, type TargetKind, type PDProblem,
-  identifyPhase, genPDProblem, pdInterp as interp,
+  type TargetKind, type PDProblem,
+  identifyPhase, genPDProblem,
 } from '../../utils/phaseDiagramProblems'
 
 type Problem = PDProblem

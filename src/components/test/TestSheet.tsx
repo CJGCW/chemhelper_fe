@@ -28,7 +28,7 @@ import { checkDilutionAnswer } from '../../utils/dilutionPractice'
 import { checkConcAnswer } from '../../utils/concentrationPractice'
 import { checkCCAnswer } from '../../utils/clausiusClapeyronPractice'
 import { checkSigmaPiCombined } from '../../utils/sigmaPiPractice'
-import type { HCProblem } from '../../utils/heatingCurveProblems'
+import type { HCProblem, Phase } from '../../utils/heatingCurveProblems'
 import type { PDProblem } from '../../utils/phaseDiagramProblems'
 import { identifyPhase } from '../../utils/phaseDiagramProblems'
 import type { GeneratedTest, TestQuestion } from './testTypes'
@@ -96,7 +96,7 @@ function checkQuestion(q: TestQuestion, answer: string): Result {
   if (q.problem.kind === 'heating_curve') {
     const p = q.problem.data
     const validPhases = new Set(p.validIdxs.map(i => p.segments[i].phase))
-    return validPhases.has(answer) ? 'correct' : 'wrong'
+    return validPhases.has(answer as Phase) ? 'correct' : 'wrong'
   }
   if (q.problem.kind === 'phase_diagram')
     return answer === q.problem.data.target ? 'correct' : 'wrong'
@@ -746,7 +746,6 @@ function HCInteractive({ p, answer, onAnswer, result, checked }: {
   const yS = (t: number) => MT + PH - ((t - (p.t0 - tPad)) / (tRange + 2 * tPad)) * PH
 
   const polyline = p.pts.map(pt => `${xS(pt.x).toFixed(1)},${yS(pt.t).toFixed(1)}`).join(' ')
-  const validPhases = new Set(p.validIdxs.map(i => p.segments[i].phase))
 
   // Dot position = midpoint of the selected segment ON the curve
   const dotIdx   = answer ? p.segments.findIndex(s => s.phase === answer) : -1
@@ -815,8 +814,8 @@ function HCInteractive({ p, answer, onAnswer, result, checked }: {
   )
 }
 
-function PDInteractive({ p, qId, answer, dotPos, onAnswer, onDotPos, result, checked }: {
-  p: PDProblem; qId: number; answer: string; dotPos: { x: number; y: number } | null
+function PDInteractive({ p, qId, dotPos, onAnswer, onDotPos, result, checked }: {
+  p: PDProblem; qId: number; answer?: string; dotPos: { x: number; y: number } | null
   onAnswer: (target: string) => void; onDotPos: (pos: { x: number; y: number }) => void
   result?: Result; checked: boolean
 }) {
@@ -1178,7 +1177,7 @@ export default function TestSheet({ test, onBack }: Props) {
       : hessP
       ? hessP.steps.map(s => `${s.equation}  ΔH = ${s.dh > 0 ? '+' : ''}${s.dh} kJ`)
       : bondEnthalpyP
-      ? bondEnthalpyP.steps
+      ? bondEnthalpyP.solutionSteps
       : heatTransferP
       ? []
       : vdwP
@@ -1485,7 +1484,7 @@ export default function TestSheet({ test, onBack }: Props) {
                     <span className="font-mono text-sm text-bright">{correctAnswer}</span>
                   </div>
                   <div className="flex flex-col gap-1.5 pl-3 border-l border-border">
-                    {solutionSteps.map((step, i) => (
+                    {(solutionSteps as string[]).map((step: string, i: number) => (
                       <p key={i} className="font-mono text-sm text-primary">{step}</p>
                     ))}
                   </div>

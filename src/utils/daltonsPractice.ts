@@ -36,7 +36,7 @@ export function generateDaltonsProblem(): DaltonsProblem {
     const question = `A container holds a mixture of gases: ${parts.join(', ')}. What is the total pressure?`
 
     const steps = [
-      `P_total = ${names.map((g, i) => `P(${g})`).join(' + ')}`,
+      `P_total = ${names.map(g => `P(${g})`).join(' + ')}`,
       `P_total = ${pressures.join(' + ')} atm`,
       `P_total = ${sig(total)} atm`,
     ]

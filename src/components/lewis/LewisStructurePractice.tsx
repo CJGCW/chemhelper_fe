@@ -38,7 +38,7 @@ export default function LewisStructurePractice() {
   async function loadOther() {
     const f = otherFormula.trim(); if (!f) return
     const c = Number(otherCharge) || 0
-    setFetching(true); setFetchError(null); setOtherError(null); setCorrectStructure(null); setShowHint(false)
+    setFetching(true); setFetchError(null); setOtherError(null); setCorrectStructure(null)
     const body: Record<string, unknown> = { input: f }
     if (c !== 0) body.charge = c
     try {
