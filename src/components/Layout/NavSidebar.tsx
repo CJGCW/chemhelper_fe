@@ -526,18 +526,97 @@ const STRUCTURE_ITEMS = [
 
 // ── Thermochemistry sub-items ─────────────────────────────────────────────────
 
-const THERMO_ITEMS = [
-  { path: "/thermochemistry?tab=calorimetry-reference", label: "Calorimetry",    formula: "q"       },
-  { path: "/thermochemistry?tab=enthalpy-reference",    label: "Enthalpy ΔHrxn", formula: "ΔH"      },
-  { path: "/thermochemistry?tab=hess-reference",        label: "Hess's Law",     formula: "ΣΔH"     },
-  { path: "/thermochemistry?tab=bond-reference",        label: "Bond Enthalpy",  formula: "BE"      },
-  { path: "/thermochemistry?tab=heattransfer-reference", label: "Heat Transfer",  formula: "q₁=−q₂" },
-  { path: "/thermochemistry?tab=heating-curve",         label: "Heating Curves", formula: "q/T"     },
-  { path: "/thermochemistry?tab=phase-diagram",         label: "Phase Diagram",  formula: "P-T"     },
-  { path: "/thermochemistry?tab=liquid-props",          label: "Liquid Props",   formula: "γ/η"     },
-  { path: "/thermochemistry?tab=cc-reference",          label: "Clausius-Clap.", formula: "ln P"    },
-  { path: "/thermochemistry?tab=vapor-pressure",        label: "Vapor Pressure", formula: "P₂"      },
+const THERMO_GROUPS: { label: string; items: { tab: string; label: string; formula: string }[] }[] = [
+  {
+    label: 'Thermochemistry',
+    items: [
+      { tab: 'calorimetry-reference', label: 'Calorimetry',    formula: 'q'    },
+      { tab: 'enthalpy-reference',    label: 'Enthalpy ΔHrxn', formula: 'ΔH'   },
+      { tab: 'hess-reference',        label: "Hess's Law",     formula: 'ΣΔH'  },
+      { tab: 'bond-reference',        label: 'Bond Enthalpy',  formula: 'BE'   },
+    ],
+  },
+  {
+    label: 'Heat & Phase Changes',
+    items: [
+      { tab: 'profile',                   label: 'Reaction Profiles', formula: '⇀'    },
+      { tab: 'heattransfer-reference',    label: 'Heat Transfer',     formula: 'q₁=−q₂' },
+      { tab: 'heating-curve-reference',   label: 'Heating Curves',    formula: 'q/T'  },
+    ],
+  },
+  {
+    label: 'Phase Behavior',
+    items: [
+      { tab: 'phase-diagram-reference', label: 'Phase Diagrams',    formula: 'P-T'  },
+      { tab: 'liquid-props',            label: 'Liquid Props',      formula: 'γ/η'  },
+      { tab: 'cc-reference',            label: 'Clausius-Clap.',    formula: 'ln P' },
+    ],
+  },
 ]
+
+function ThermoGroupedItems({ onNavigate }: { onNavigate: () => void }) {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'calorimetry'
+
+  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
+    const active = THERMO_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
+    return new Set(active ? [active.label] : ['Thermochemistry'])
+  })
+
+  function toggleGroup(label: string) {
+    setOpenGroups(prev => {
+      const next = new Set(prev)
+      next.has(label) ? next.delete(label) : next.add(label)
+      return next
+    })
+  }
+
+  return (
+    <>
+      {THERMO_GROUPS.map(group => {
+        const isOpen = openGroups.has(group.label)
+        const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === '/thermochemistry'
+        return (
+          <div key={group.label}>
+            <button
+              onClick={() => toggleGroup(group.label)}
+              className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
+            >
+              <span className={`font-mono text-[11px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
+                {group.label}
+              </span>
+              <motion.span
+                animate={{ rotate: isOpen ? 90 : 0 }}
+                transition={{ duration: 0.15 }}
+                className="font-mono text-[7px] text-dim group-hover:text-secondary transition-colors"
+              >
+                ▶
+              </motion.span>
+            </button>
+            <AnimatePresence initial={false}>
+              {isOpen && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.15 }}
+                  style={{ overflow: 'hidden' }}
+                >
+                  {group.items.map(item => {
+                    const isActive = location.pathname === '/thermochemistry' && currentTab === item.tab
+                    return (
+                      <SubItem key={item.tab} formula={item.formula} label={item.label} isActive={isActive}
+                        onClick={() => { navigate(`/thermochemistry?tab=${item.tab}`); onNavigate() }} />
+                    )
+                  })}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )
+      })}
+    </>
+  )
+}
 
 // ── Practice / top-level nav items ────────────────────────────────────────────
 
@@ -759,9 +838,7 @@ export default function NavSidebar({ open, onClose }: Props) {
                 isActive={isThermoActive} expanded={thermoExpanded}
                 onToggle={() => setThermoExpanded(e => !e)}
               >
-                {THERMO_ITEMS.map((item, i) => (
-                  <PathSubItem key={i} path={item.path} formula={item.formula} label={item.label} onNavigate={onClose} />
-                ))}
+                <ThermoGroupedItems onNavigate={onClose} />
               </ExpandableSection>
 
             </motion.div>
