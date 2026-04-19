@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { RedoxSubtype } from '../../utils/redoxPractice'
 import { generateRedoxProblem, checkRedoxAnswer } from '../../utils/redoxPractice'
+import WorkedExample from '../calculations/WorkedExample'
 
 type Selection = RedoxSubtype | 'random'
 
@@ -18,6 +19,12 @@ function freshProblem(sel: Selection) {
     ? (['ox_state', 'identify_redox', 'ox_change', 'charge_balance'] as RedoxSubtype[])[Math.floor(Math.random() * 4)]
     : sel
   return generateRedoxProblem(t)
+}
+
+function generateExample() {
+  const p = freshProblem('random')
+  const last = p.steps.length - 1
+  return { scenario: p.question, steps: p.steps.slice(0, last), result: p.steps[last] }
 }
 
 export default function RedoxPractice() {
@@ -74,6 +81,8 @@ export default function RedoxPractice() {
 
   return (
     <div className="flex flex-col gap-5 max-w-2xl">
+
+      <WorkedExample generate={generateExample} />
 
       {/* Type selector */}
       <div className="flex flex-wrap gap-1.5">

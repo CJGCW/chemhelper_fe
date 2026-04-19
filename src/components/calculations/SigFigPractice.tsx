@@ -4,6 +4,34 @@ import {
   makeCountProblem, makeArithProblem, checkSigFigAnswer,
   type SigFigProblem, type SigFigCheckResult,
 } from '../../utils/sigfigPractice'
+import WorkedExample from './WorkedExample'
+
+const SIGFIG_EXAMPLES = [
+  {
+    scenario: 'How many significant figures does 0.00420 have?',
+    steps: ['Leading zeros are not significant', 'The 4, 2, and trailing 0 are all significant'],
+    result: '3 significant figures',
+  },
+  {
+    scenario: 'Calculate 2.54 × 3.2 with correct significant figures.',
+    steps: ['Unrounded result: 2.54 × 3.2 = 8.128', '2.54 has 3 sf; 3.2 has 2 sf → limit to 2 sf'],
+    result: '8.1',
+  },
+  {
+    scenario: 'Calculate 12.30 + 0.456 with correct significant figures.',
+    steps: ['Unrounded sum: 12.30 + 0.456 = 12.756', 'Least decimal places: 12.30 has 2 dp → round to 2 dp'],
+    result: '12.76',
+  },
+  {
+    scenario: 'How many significant figures does 3600 have (no decimal point)?',
+    steps: ['Trailing zeros without decimal are ambiguous', 'Assumed: 2 sig figs (3 and 6)'],
+    result: '2 significant figures (ambiguous without decimal)',
+  },
+]
+
+function generateSigFigExample() {
+  return SIGFIG_EXAMPLES[Math.floor(Math.random() * SIGFIG_EXAMPLES.length)]
+}
 
 // ── Local problem type (adds id for component state) ─────────────────────────
 
@@ -86,6 +114,8 @@ export default function SigFigPractice() {
 
   return (
     <div className="flex flex-col gap-5">
+
+      <WorkedExample generate={generateSigFigExample} />
 
       {/* Settings */}
       <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>

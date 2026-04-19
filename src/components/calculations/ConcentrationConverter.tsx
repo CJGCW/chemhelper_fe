@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import ExampleBox from './ExampleBox'
+import WorkedExample, { pick, sig } from './WorkedExample'
 import { sanitize, hasValue } from '../../utils/calcHelpers'
 
 type SourceUnit = 'mol/L' | '% (w/w)' | 'ppm' | 'mol/kg'
@@ -102,6 +102,38 @@ function FormulaBox({ title, formula }: FormulaBoxProps) {
   )
 }
 
+const CONC_SOLUTIONS = [
+  { name: 'HCl (conc.)',     C: 12.1,  rho: 1.19, M: 36.46 },
+  { name: 'H₂SO₄ (conc.)',  C: 18.0,  rho: 1.84, M: 98.08 },
+  { name: 'HNO₃ (conc.)',   C: 16.0,  rho: 1.51, M: 63.01 },
+  { name: 'acetic acid',     C: 17.4,  rho: 1.05, M: 60.05 },
+  { name: 'NH₃ (aq)',        C: 14.8,  rho: 0.90, M: 17.03 },
+  { name: 'NaOH (10 M)',     C: 10.0,  rho: 1.43, M: 40.00 },
+  { name: 'HCl (3 M)',       C:  3.0,  rho: 1.05, M: 36.46 },
+]
+
+function generateConcExample() {
+  const s = pick(CONC_SOLUTIONS)
+  const massPerL = s.C * s.M
+  const rhoGperL = s.rho * 1000
+  const wPct = (massPerL / rhoGperL) * 100
+  const mSolvent_kg = (rhoGperL - massPerL) / 1000
+  const molal = s.C / (s.rho - s.C * s.M / 1000)
+  const ppm = wPct * 10000
+  return {
+    scenario: `Convert ${s.C} mol/L ${s.name} (ρ = ${s.rho} g/mL, M = ${s.M} g/mol) to w%, ppm, and molality.`,
+    steps: [
+      `Mass of solute per litre: ${s.C} mol × ${s.M} g/mol = ${sig(massPerL, 4)} g`,
+      `Total mass of 1 L solution: ${s.rho} g/mL × 1000 mL = ${rhoGperL} g`,
+      `w% = ${sig(massPerL, 4)} g / ${rhoGperL} g × 100 = ${sig(wPct, 4)}%`,
+      `ppm = w% × 10 000 = ${sig(ppm, 4)} ppm`,
+      `Mass of solvent per litre: ${rhoGperL} − ${sig(massPerL, 4)} = ${sig(rhoGperL - massPerL, 4)} g = ${sig(mSolvent_kg, 4)} kg`,
+      `Molality b = ${s.C} mol ÷ ${sig(mSolvent_kg, 4)} kg = ${sig(molal, 4)} mol/kg`,
+    ],
+    result: `w% = ${sig(wPct, 4)}%   ppm = ${sig(ppm, 4)}   b = ${sig(molal, 4)} mol/kg`,
+  }
+}
+
 export default function ConcentrationConverter() {
   const [sourceValue, setSourceValue] = useState('')
   const [sourceUnit, setSourceUnit] = useState<SourceUnit>('mol/L')
@@ -154,10 +186,7 @@ export default function ConcentrationConverter() {
 
   return (
     <div className="flex flex-col gap-5 max-w-lg">
-      <ExampleBox>{`12.1 M HCl (ρ = 1.19 g/mL, Mw = 36.46 g/mol)
-  = 37.0% (w/w)
-  = 440,800 ppm
-  = 13.17 mol/kg`}</ExampleBox>
+      <WorkedExample generate={generateConcExample} />
 
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">

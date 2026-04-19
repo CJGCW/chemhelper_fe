@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import ExampleBox from './ExampleBox'
+import WorkedExample, { pick } from './WorkedExample'
 import { motion, AnimatePresence } from 'framer-motion'
 import { resolveFormula, resolveSmiles } from '../../api/calculations'
 import { useElementStore } from '../../stores/elementStore'
@@ -31,6 +31,80 @@ function validateSmiles(v: string): string | null {
   if (!v) return null
   if (!SMILES_CHARS.test(v)) return 'Invalid SMILES characters detected'
   return null
+}
+
+const PCT_EXAMPLES = [
+  {
+    name: 'H₂O', M: 18.015,
+    scenario: 'Find the percent composition of water (H₂O, M = 18.015 g/mol).',
+    steps: [
+      '%H  = (2 × 1.008) / 18.015 × 100',
+      '%H  = 2.016 / 18.015 × 100 = 11.19%',
+      '%O  = 16.000 / 18.015 × 100',
+      '%O  = 88.81%',
+      'Check: 11.19 + 88.81 = 100% ✓',
+    ],
+    result: 'H: 11.19%   O: 88.81%',
+  },
+  {
+    name: 'CO₂', M: 44.010,
+    scenario: 'Find the percent composition of carbon dioxide (CO₂, M = 44.010 g/mol).',
+    steps: [
+      '%C  = 12.011 / 44.010 × 100',
+      '%C  = 27.29%',
+      '%O  = (2 × 15.999) / 44.010 × 100',
+      '%O  = 31.998 / 44.010 × 100 = 72.71%',
+      'Check: 27.29 + 72.71 = 100% ✓',
+    ],
+    result: 'C: 27.29%   O: 72.71%',
+  },
+  {
+    name: 'NaCl', M: 58.443,
+    scenario: 'Find the percent composition of sodium chloride (NaCl, M = 58.443 g/mol).',
+    steps: [
+      '%Na  = 22.990 / 58.443 × 100',
+      '%Na  = 39.34%',
+      '%Cl  = 35.453 / 58.443 × 100',
+      '%Cl  = 60.66%',
+    ],
+    result: 'Na: 39.34%   Cl: 60.66%',
+  },
+  {
+    name: 'H₂SO₄', M: 98.079,
+    scenario: 'Find the percent composition of sulfuric acid (H₂SO₄, M = 98.079 g/mol).',
+    steps: [
+      '%H  = (2 × 1.008) / 98.079 × 100 = 2.06%',
+      '%S  = 32.065 / 98.079 × 100 = 32.69%',
+      '%O  = (4 × 15.999) / 98.079 × 100 = 65.25%',
+      'Check: 2.06 + 32.69 + 65.25 = 100% ✓',
+    ],
+    result: 'H: 2.06%   S: 32.69%   O: 65.25%',
+  },
+  {
+    name: 'CaCO₃', M: 100.089,
+    scenario: 'Find the percent composition of calcium carbonate (CaCO₃, M = 100.089 g/mol).',
+    steps: [
+      '%Ca  = 40.078 / 100.089 × 100 = 40.04%',
+      '%C   = 12.011 / 100.089 × 100 = 12.00%',
+      '%O   = (3 × 15.999) / 100.089 × 100 = 47.96%',
+      'Check: 40.04 + 12.00 + 47.96 = 100% ✓',
+    ],
+    result: 'Ca: 40.04%   C: 12.00%   O: 47.96%',
+  },
+  {
+    name: 'Fe₂O₃', M: 159.688,
+    scenario: 'Find the percent composition of iron(III) oxide (Fe₂O₃, M = 159.688 g/mol).',
+    steps: [
+      '%Fe  = (2 × 55.845) / 159.688 × 100',
+      '%Fe  = 111.690 / 159.688 × 100 = 69.94%',
+      '%O   = (3 × 15.999) / 159.688 × 100 = 30.06%',
+    ],
+    result: 'Fe: 69.94%   O: 30.06%',
+  },
+]
+
+function generatePctExample() {
+  return pick(PCT_EXAMPLES)
 }
 
 export default function PercentCompositionCalc() {
@@ -109,9 +183,7 @@ export default function PercentCompositionCalc() {
         Mass percent = (element mass contribution / molar mass) × 100.
       </p>
 
-      <ExampleBox>{`H₂O (M = 18.015 g/mol)
-  H: (2 × 1.008) / 18.015 × 100 = 11.19%
-  O:  16.00 / 18.015 × 100       = 88.81%`}</ExampleBox>
+      <WorkedExample generate={generatePctExample} />
 
       {/* Mode tabs */}
       <div className="flex gap-0 rounded-sm overflow-hidden border border-border self-start">

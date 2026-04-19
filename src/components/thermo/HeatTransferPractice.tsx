@@ -1,6 +1,13 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genHeatTransferProblem, checkHeatTransferAnswer, type HeatTransferProblem } from '../../utils/heatTransferPractice'
+import WorkedExample from '../calculations/WorkedExample'
+
+function generateExample() {
+  const p = genHeatTransferProblem()
+  const last = p.solutionSteps.length - 1
+  return { scenario: p.question, steps: p.solutionSteps.slice(0, last), result: p.solutionSteps[last] }
+}
 
 export default function HeatTransferPractice() {
   const [problem, setProblem]     = useState<HeatTransferProblem>(() => genHeatTransferProblem())
@@ -35,6 +42,8 @@ export default function HeatTransferPractice() {
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
+
+      <WorkedExample generate={generateExample} />
 
       {/* Score bar */}
       {score.total > 0 && (

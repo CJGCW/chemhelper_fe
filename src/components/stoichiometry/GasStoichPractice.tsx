@@ -6,6 +6,7 @@ import {
   type GasStandard,
   type GasStoichProblem,
 } from '../../utils/gasStoichPractice'
+import WorkedExample from '../calculations/WorkedExample'
 
 type CheckState = 'idle' | 'correct' | 'wrong'
 type Filter = 'all' | GasStandard
@@ -15,6 +16,12 @@ const FILTERS: { value: Filter; label: string; sub: string }[] = [
   { value: 'STP',  label: 'STP',  sub: '0 °C, 1 atm'    },
   { value: 'SATP', label: 'SATP', sub: '25 °C, 100 kPa'  },
 ]
+
+function generateExample() {
+  const p = generateGasStoichProblem()
+  const last = p.steps.length - 1
+  return { scenario: p.question, steps: p.steps.slice(0, last), result: p.steps[last] }
+}
 
 export default function GasStoichPractice() {
   const [filter,     setFilter]     = useState<Filter>('all')
@@ -45,6 +52,8 @@ export default function GasStoichPractice() {
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
+
+      <WorkedExample generate={generateExample} />
 
       {/* Intro */}
       <p className="font-sans text-sm text-secondary leading-relaxed">

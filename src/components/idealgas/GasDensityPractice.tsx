@@ -1,8 +1,15 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generateGasDensityProblem, checkGasDensityAnswer, type GasDensityProblem } from '../../utils/gasDensityPractice'
+import WorkedExample from '../calculations/WorkedExample'
 
 type CheckState = 'idle' | 'correct' | 'wrong'
+
+function generateExample() {
+  const p = generateGasDensityProblem()
+  const last = p.steps.length - 1
+  return { scenario: p.question, steps: p.steps.slice(0, last), result: p.steps[last] }
+}
 
 export default function GasDensityPractice() {
   const [problem,    setProblem]    = useState<GasDensityProblem>(generateGasDensityProblem)
@@ -31,6 +38,8 @@ export default function GasDensityPractice() {
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
+
+      <WorkedExample generate={generateExample} />
 
       <p className="font-sans text-sm text-secondary leading-relaxed">
         Apply the gas density equation.

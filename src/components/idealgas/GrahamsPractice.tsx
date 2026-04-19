@@ -1,8 +1,15 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generateGrahamsProblem, checkGrahamsAnswer, type GrahamsProblem } from '../../utils/grahamsPractice'
+import WorkedExample from '../calculations/WorkedExample'
 
 type CheckState = 'idle' | 'correct' | 'wrong'
+
+function generateExample() {
+  const p = generateGrahamsProblem()
+  const last = p.steps.length - 1
+  return { scenario: p.question, steps: p.steps.slice(0, last), result: p.steps[last] }
+}
 
 export default function GrahamsPractice() {
   const [problem,    setProblem]    = useState<GrahamsProblem>(generateGrahamsProblem)
@@ -33,6 +40,8 @@ export default function GrahamsPractice() {
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
+
+      <WorkedExample generate={generateExample} />
 
       <p className="font-sans text-sm text-secondary leading-relaxed">
         Apply Graham's Law of Effusion.

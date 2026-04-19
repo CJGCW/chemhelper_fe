@@ -1,6 +1,13 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genGasProblem, checkGasAnswer, gasSolutionSteps, type GasProblem } from '../../utils/idealGasPractice'
+import WorkedExample from '../calculations/WorkedExample'
+
+function generateExample() {
+  const p = genGasProblem()
+  const allSteps = gasSolutionSteps(p)
+  return { scenario: p.question, steps: allSteps.slice(0, -1), result: allSteps[allSteps.length - 1] }
+}
 
 export default function IdealGasPractice() {
   const [problem, setProblem]     = useState<GasProblem>(() => genGasProblem())
@@ -45,6 +52,8 @@ export default function IdealGasPractice() {
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
+
+      <WorkedExample generate={generateExample} />
 
       {/* Score */}
       {score.total > 0 && (

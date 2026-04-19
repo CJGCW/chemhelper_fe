@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generateMolarProblem } from '../../utils/molarPractice'
 import type { MolarCalcType, ProblemStyle, MolarProblem } from '../../utils/molarPractice'
+import WorkedExample from './WorkedExample'
 
 // ── Type filter options ───────────────────────────────────────────────────────
 
@@ -45,6 +46,14 @@ const TYPE_LABELS: Record<MolarCalcType, string> = {
 interface Score { correct: number; total: number }
 
 // ── Main component ────────────────────────────────────────────────────────────
+
+function generateExample() {
+  const types: MolarCalcType[] = ['moles', 'molarity', 'molality', 'bpe', 'fpd']
+  const t = types[Math.floor(Math.random() * types.length)]
+  const p = generateMolarProblem(t, 'word')
+  const last = p.steps.length - 1
+  return { scenario: p.question, steps: p.steps.slice(0, last), result: p.steps[last] }
+}
 
 export default function MolarPractice() {
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
@@ -102,6 +111,8 @@ export default function MolarPractice() {
 
   return (
     <div className="flex flex-col gap-6">
+
+      <WorkedExample generate={generateExample} />
 
       {/* Controls row */}
       <div className="flex flex-wrap items-center gap-4">

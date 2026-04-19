@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ExampleBox from "./ExampleBox";
+import WorkedExample, { pick, randBetween, roundTo, sig } from './WorkedExample'
 import { motion, AnimatePresence } from "framer-motion";
 import NumberField from "./NumberField";
 import UnitSelect, { MASS_UNITS } from "./UnitSelect";
@@ -46,6 +46,38 @@ const SOLVENTS: Solvent[] = [
   { name: "Carbon Tetrachloride", bp: 76.7, fp: -22.9, kb: 5.02, kf: 29.8 },
   { name: "Chloroform", bp: 61.2, fp: -63.5, kb: 3.63, kf: 4.68 },
 ];
+
+const COLLIG_SOLUTES_i1 = ['glucose', 'sucrose', 'urea', 'ethanol', 'glycerol']
+const COLLIG_SOLUTES_i2 = ['NaCl', 'KCl', 'NaOH', 'KBr', 'LiCl']
+const COLLIG_SOLUTES_i3 = ['CaCl₂', 'MgCl₂', 'Na₂SO₄', 'K₂SO₄']
+
+function generateColligativeExample(
+  mode: 'bpe' | 'fpd',
+  solvent: { name: string; bp: number; fp: number; kb: number; kf: number }
+) {
+  const iChoice = pick([1, 1, 2, 2, 3])
+  const soluteName = iChoice === 1 ? pick(COLLIG_SOLUTES_i1)
+    : iChoice === 2 ? pick(COLLIG_SOLUTES_i2)
+    : pick(COLLIG_SOLUTES_i3)
+  const b = roundTo(randBetween(0.2, 2.5), 2)
+  const K = mode === 'bpe' ? solvent.kb : solvent.kf
+  const Ksym = mode === 'bpe' ? 'Kb' : 'Kf'
+  const dSym = mode === 'bpe' ? 'ΔTb' : 'ΔTf'
+  const baseT = mode === 'bpe' ? solvent.bp : solvent.fp
+  const dT = iChoice * K * b
+  const newT = mode === 'bpe' ? baseT + dT : baseT - dT
+  const sign = mode === 'bpe' ? '+' : '−'
+  return {
+    scenario: `${b} mol/kg ${soluteName} (i = ${iChoice}) in ${solvent.name} (${Ksym} = ${K} °C·kg/mol). Find ${dSym} and the new ${mode === 'bpe' ? 'boiling' : 'freezing'} point.`,
+    steps: [
+      `${dSym} = i × ${Ksym} × b`,
+      `${dSym} = ${iChoice} × ${K} × ${b}`,
+      `${dSym} = ${sig(dT, 4)} °C`,
+      `New ${mode === 'bpe' ? 'b.p.' : 'f.p.'} = ${baseT} ${sign} ${sig(dT, 3)} = ${sig(newT, 5)} °C`,
+    ],
+    result: `${dSym} = ${sig(dT, 3)} °C  →  new point = ${sig(newT, 4)} °C`,
+  }
+}
 
 interface Props { initialMode?: 'bpe' | 'fpd' }
 
@@ -268,13 +300,7 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
         ))}
       </div>
 
-      <ExampleBox>{mode === 'bpe'
-          ? `BPE: 1.000 mol/kg NaCl in water (i = 2, Kb = 0.512 °C·kg/mol)
-  ΔTb = i × Kb × b = 2 × 0.512 × 1.000 = 1.024 °C
-  New b.p. = 100.0 + 1.024 = 101.0 °C`
-          : `FPD: 1.000 mol/kg NaCl in water (i = 2, Kf = 1.86 °C·kg/mol)
-  ΔTf = i × Kf × b = 2 × 1.86 × 1.000 = 3.720 °C
-  New f.p. = 0.0 − 3.720 = −3.720 °C`}</ExampleBox>
+      <WorkedExample generate={() => generateColligativeExample(mode, solvent)} />
 
       {/* Solvent selector */}
       <div className="flex flex-col gap-1.5">

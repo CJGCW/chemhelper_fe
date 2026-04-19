@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import ExampleBox from './ExampleBox'
+import WorkedExample, { pick, randBetween, roundTo, sig } from './WorkedExample'
 import NumberField from './NumberField'
 import ResultDisplay from './ResultDisplay'
 import StepsPanel from './StepsPanel'
@@ -35,6 +35,40 @@ const STANDARDS: { id: Standard; label: string; temp: string; pressure: string; 
 ]
 
 // ── Component ─────────────────────────────────────────────────────────────────
+
+const GAS_NAMES = ['O₂', 'N₂', 'CO₂', 'H₂', 'CH₄', 'Ar', 'He', 'Cl₂', 'NH₃', 'SO₂']
+
+function generateMolarVolumeExample(standard: string, Vm: number) {
+  const gas = pick(GAS_NAMES)
+  const type = pick(['V', 'V', 'n'])
+  if (type === 'V') {
+    const n = roundTo(randBetween(0.5, 5), 2)
+    const V = n * Vm
+    return {
+      scenario: `What volume does ${n} mol of ${gas} occupy at ${standard}? (Vm = ${Vm} L/mol)`,
+      steps: [
+        `V = n × Vm`,
+        `V = ${n} mol × ${Vm} L/mol`,
+        `V = ${sig(V, 5)} L`,
+        `Rounded to 3 sf: ${sig(V, 3)} L`,
+      ],
+      result: `V = ${sig(V, 3)} L`,
+    }
+  }
+  // find n from V
+  const V = roundTo(randBetween(5, 100), 1)
+  const n = V / Vm
+  return {
+    scenario: `How many moles of ${gas} occupy ${V} L at ${standard}? (Vm = ${Vm} L/mol)`,
+    steps: [
+      `n = V / Vm`,
+      `n = ${V} L ÷ ${Vm} L/mol`,
+      `n = ${sig(n, 5)} mol`,
+      `Rounded to 3 sf: ${sig(n, 3)} mol`,
+    ],
+    result: `n = ${sig(n, 3)} mol`,
+  }
+}
 
 export default function MolarVolumeCalc() {
   const [standard, setStandard] = useState<Standard>('STP')
@@ -138,8 +172,7 @@ export default function MolarVolumeCalc() {
   return (
     <div className="flex flex-col gap-5 max-w-lg">
 
-      <ExampleBox>{`Volume of 3.00 mol CO₂ at STP (Vm = 22.414 L/mol)
-  V = n × Vm = 3.00 mol × 22.414 L/mol = 67.24 L`}</ExampleBox>
+      <WorkedExample generate={() => generateMolarVolumeExample(standard, std.Vm)} />
 
       {/* Standard toggle */}
       <div className="flex flex-col gap-2">

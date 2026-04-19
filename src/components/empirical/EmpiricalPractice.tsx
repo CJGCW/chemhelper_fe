@@ -10,6 +10,8 @@ import {
   type GeneratedProblem,
   type Difficulty,
 } from '../../utils/empiricalFormula'
+import { generateEmpiricalProblem } from '../../utils/empiricalPractice'
+import WorkedExample from '../calculations/WorkedExample'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -120,6 +122,13 @@ function SolutionSteps({
 
 type CheckState = 'idle' | 'correct' | 'wrong'
 
+function generateExample() {
+  const p = generateEmpiricalProblem()
+  const scenario = `Find the empirical formula of ${p.compoundName} given: ${p.elements.map(e => `${e.symbol} ${e.percent}%`).join(', ')}.`
+  const last = p.steps.length - 1
+  return { scenario, steps: p.steps.slice(0, last), result: p.steps[last] }
+}
+
 export default function EmpiricalPractice() {
   const elements = useElementStore(s => s.elements)
   const molarMasses = useMemo(() => buildMolarMasses(elements), [elements])
@@ -184,6 +193,8 @@ export default function EmpiricalPractice() {
 
   return (
     <div className="flex flex-col gap-5">
+
+      <WorkedExample generate={generateExample} />
 
       {/* Difficulty filter */}
       <div className="flex items-center gap-2 flex-wrap">

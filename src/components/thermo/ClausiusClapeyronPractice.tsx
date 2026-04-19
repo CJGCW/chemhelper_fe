@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import WorkedExample from '../calculations/WorkedExample'
 
 const R = 8.314  // J/(mol·K)
 
@@ -289,6 +290,12 @@ const SF_COLOR: Record<SolveFor, string> = {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
+function generateExample() {
+  const p = generateProblem()
+  const last = p.steps.length - 1
+  return { scenario: p.question, steps: p.steps.slice(0, last), result: p.steps[last] }
+}
+
 export default function ClausiusClapeyronPractice() {
   const [problem,     setProblem]     = useState<Problem>(() => generateProblem())
   const [showAnswer,  setShowAnswer]  = useState(false)
@@ -304,6 +311,8 @@ export default function ClausiusClapeyronPractice() {
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
+
+      <WorkedExample generate={generateExample} />
 
       {/* Header row */}
       <div className="flex items-center justify-between">

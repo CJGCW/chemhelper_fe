@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ExampleBox from "./ExampleBox";
+import WorkedExample, { pick, randBetween, roundTo, sig } from './WorkedExample'
 import NumberField from "./NumberField";
 import UnitSelect, { MASS_UNITS } from "./UnitSelect";
 import type { UnitOption } from "./UnitSelect";
@@ -16,6 +16,40 @@ import {
   lowestSigFigs,
 } from "../../utils/sigfigs";
 import type { SigFigBreakdown } from "../../utils/sigfigs";
+
+const MOLAL_SOLUTES = [
+  { name: 'NaCl', M: 58.44 },
+  { name: 'glucose (C₆H₁₂O₆)', M: 180.16 },
+  { name: 'sucrose', M: 342.30 },
+  { name: 'KCl', M: 74.55 },
+  { name: 'urea (CH₄N₂O)', M: 60.06 },
+  { name: 'NaOH', M: 40.00 },
+  { name: 'CaCl₂', M: 110.98 },
+  { name: 'ethylene glycol', M: 62.07 },
+]
+const MOLAL_SOLVENTS = ['water', 'benzene', 'ethanol', 'acetone']
+
+function generateMolalityExample() {
+  const solute = pick(MOLAL_SOLUTES)
+  const solvent = pick(MOLAL_SOLVENTS)
+  const n = roundTo(randBetween(0.1, 2.5), 3)
+  const mSolvent_g = pick([100, 150, 200, 250, 300, 400, 500])
+  const mSolvent_kg = mSolvent_g / 1000
+  const b = n / mSolvent_kg
+  return {
+    scenario: `${roundTo(n * solute.M, 2)} g of ${solute.name} (M = ${solute.M} g/mol) is dissolved in ${mSolvent_g} g of ${solvent}. Find the molality.`,
+    steps: [
+      `Step 1 — moles of solute`,
+      `n = ${roundTo(n * solute.M, 2)} g ÷ ${solute.M} g/mol = ${sig(n, 4)} mol`,
+      `Step 2 — mass of solvent in kg`,
+      `m = ${mSolvent_g} g ÷ 1000 = ${mSolvent_kg} kg`,
+      `Step 3 — molality`,
+      `b = n / m = ${sig(n, 4)} mol ÷ ${mSolvent_kg} kg`,
+      `b = ${sig(b, 5)} mol/kg → rounded: ${sig(b, 3)} mol/kg`,
+    ],
+    result: `b = ${sig(b, 3)} mol/kg`,
+  }
+}
 
 export default function MolalityCalc() {
   const [molesValue, setMolesValue] = useState("");
@@ -192,9 +226,7 @@ export default function MolalityCalc() {
 
   return (
     <div className="flex flex-col gap-5 max-w-lg">
-      <ExampleBox>{`Find molality: 0.500 mol glucose in 500.0 g of water.
-  m_solvent = 500.0 g → 0.5000 kg
-  b = n / m = 0.500 mol ÷ 0.5000 kg = 1.000 mol/kg`}</ExampleBox>
+      <WorkedExample generate={generateMolalityExample} />
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-1.5">
           <label className="font-sans text-sm font-medium text-primary">

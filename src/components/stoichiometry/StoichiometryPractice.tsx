@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { StoichProblemType } from '../../utils/stoichiometryPractice'
 import { generateStoichProblem, checkStoichAnswer } from '../../utils/stoichiometryPractice'
+import WorkedExample from '../calculations/WorkedExample'
 
 const TYPES: { id: StoichProblemType | 'random'; label: string; formula: string }[] = [
   { id: 'random',           label: 'Random',            formula: '?'       },
@@ -11,6 +12,15 @@ const TYPES: { id: StoichProblemType | 'random'; label: string; formula: string 
   { id: 'theoretical_yield',label: 'Theoretical Yield', formula: 'TY'      },
   { id: 'percent_yield',    label: 'Percent Yield',     formula: '% yield' },
 ]
+
+const NUMERIC_TYPES: StoichProblemType[] = ['mole_ratio', 'mass_to_mass', 'theoretical_yield', 'percent_yield']
+
+function generateExample() {
+  const t = NUMERIC_TYPES[Math.floor(Math.random() * NUMERIC_TYPES.length)]
+  const p = generateStoichProblem(t)
+  const last = p.steps.length - 1
+  return { scenario: p.question, steps: p.steps.slice(0, last), result: p.steps[last] }
+}
 
 export default function StoichiometryPractice() {
   const [selectedType, setSelectedType] = useState<StoichProblemType | 'random'>('random')
@@ -68,6 +78,8 @@ export default function StoichiometryPractice() {
 
   return (
     <div className="flex flex-col gap-5 max-w-2xl">
+
+      <WorkedExample generate={generateExample} />
 
       {/* Type selector */}
       <div className="flex flex-wrap gap-1.5">

@@ -1,12 +1,19 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genCalorimetryProblem, checkCalorimetryAnswer, type CalorimetryProblem } from '../../utils/calorimetryPractice'
+import WorkedExample from '../calculations/WorkedExample'
 
 const MODE_LABELS: Record<string, string> = {
   mcdt:   'q = mcΔT',
   cdt:    'q = CΔT',
   coffee: 'Coffee-Cup',
   bomb:   'Bomb Calorimeter',
+}
+
+function generateExample() {
+  const p = genCalorimetryProblem()
+  const last = p.steps.length - 1
+  return { scenario: p.question, steps: p.steps.slice(0, last), result: p.steps[last] }
 }
 
 export default function CalorimetryPractice() {
@@ -42,6 +49,8 @@ export default function CalorimetryPractice() {
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
+
+      <WorkedExample generate={generateExample} />
 
       {/* Score bar */}
       {score.total > 0 && (

@@ -1,10 +1,17 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generateVdWProblem, checkVdWAnswer, type VdWProblem } from '../../utils/vanDerWaalsPractice'
+import WorkedExample from '../calculations/WorkedExample'
 
 type CheckState = 'idle' | 'correct' | 'wrong'
 
 function freshProblem(): VdWProblem { return generateVdWProblem() }
+
+function generateExample() {
+  const p = generateVdWProblem()
+  const last = p.steps.length - 1
+  return { scenario: p.question, steps: p.steps.slice(0, last), result: p.steps[last] }
+}
 
 export default function VanDerWaalsPractice() {
   const [problem,    setProblem]    = useState<VdWProblem>(freshProblem)
@@ -40,6 +47,8 @@ export default function VanDerWaalsPractice() {
         Use <span className="font-mono text-primary">P = nRT / (V − nb) − a(n/V)²</span> with the
         given a and b constants.
       </p>
+
+      <WorkedExample generate={generateExample} />
 
       {/* Score bar */}
       {score.total > 0 && (

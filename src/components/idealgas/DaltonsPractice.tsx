@@ -1,8 +1,15 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generateDaltonsProblem, checkDaltonsAnswer, type DaltonsProblem } from '../../utils/daltonsPractice'
+import WorkedExample from '../calculations/WorkedExample'
 
 type CheckState = 'idle' | 'correct' | 'wrong'
+
+function generateExample() {
+  const p = generateDaltonsProblem()
+  const last = p.steps.length - 1
+  return { scenario: p.question, steps: p.steps.slice(0, last), result: p.steps[last] }
+}
 
 export default function DaltonsPractice() {
   const [problem,    setProblem]    = useState<DaltonsProblem>(generateDaltonsProblem)
@@ -33,6 +40,8 @@ export default function DaltonsPractice() {
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
+
+      <WorkedExample generate={generateExample} />
 
       <p className="font-sans text-sm text-secondary leading-relaxed">
         Apply Dalton's Law of Partial Pressures.

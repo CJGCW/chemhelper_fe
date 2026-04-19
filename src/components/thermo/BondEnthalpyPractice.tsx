@@ -1,6 +1,13 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genBondEnthalpyProblem, checkBondEnthalpyAnswer, type BondEnthalpyProblem } from '../../utils/bondEnthalpyPractice'
+import WorkedExample from '../calculations/WorkedExample'
+
+function generateExample() {
+  const p = genBondEnthalpyProblem()
+  const last = p.solutionSteps.length - 1
+  return { scenario: `${p.description}: ${p.reaction}`, steps: p.solutionSteps.slice(0, last), result: p.solutionSteps[last] }
+}
 
 export default function BondEnthalpyPractice() {
   const [problem, setProblem]     = useState<BondEnthalpyProblem>(() => genBondEnthalpyProblem())
@@ -37,6 +44,8 @@ export default function BondEnthalpyPractice() {
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
+
+      <WorkedExample generate={generateExample} />
 
       {/* Score */}
       {score.total > 0 && (

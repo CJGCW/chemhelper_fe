@@ -1,6 +1,13 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genHessProblem, checkHessAnswer, type HessProblem } from '../../utils/hessLawPractice'
+import WorkedExample from '../calculations/WorkedExample'
+
+function generateExample() {
+  const p = genHessProblem()
+  const last = p.solutionSteps.length - 1
+  return { scenario: `Find ΔH for: ${p.target}`, steps: p.solutionSteps.slice(0, last), result: p.solutionSteps[last] }
+}
 
 export default function HessPractice() {
   const [problem, setProblem]     = useState<HessProblem>(() => genHessProblem())
@@ -35,6 +42,8 @@ export default function HessPractice() {
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
+
+      <WorkedExample generate={generateExample} />
 
       {/* Score */}
       {score.total > 0 && (

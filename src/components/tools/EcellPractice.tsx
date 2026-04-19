@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { EcellSubtype } from '../../utils/ecellPractice'
 import { genEcellProblem, checkEcellAnswer } from '../../utils/ecellPractice'
+import WorkedExample from '../calculations/WorkedExample'
 
 type Selection = EcellSubtype | 'random'
 
@@ -18,6 +19,12 @@ const SUBTYPES: EcellSubtype[] = ['calc_e0cell', 'spontaneity', 'nernst', 'delta
 function freshProblem(sel: Selection) {
   const sub: EcellSubtype = sel === 'random' ? SUBTYPES[Math.floor(Math.random() * SUBTYPES.length)] : sel
   return genEcellProblem(sub)
+}
+
+function generateExample() {
+  const p = freshProblem('random')
+  const last = p.steps.length - 1
+  return { scenario: p.question, steps: p.steps.slice(0, last), result: p.steps[last] }
 }
 
 export default function EcellPractice() {
@@ -62,6 +69,8 @@ export default function EcellPractice() {
 
   return (
     <div className="flex flex-col gap-5 max-w-2xl">
+
+      <WorkedExample generate={generateExample} />
 
       {/* Type selector */}
       <div className="flex flex-wrap gap-1.5">

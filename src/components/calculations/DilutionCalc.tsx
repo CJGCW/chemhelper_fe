@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import ExampleBox from './ExampleBox'
+import WorkedExample, { pick, sig } from './WorkedExample'
 import NumberField from './NumberField'
 import UnitSelect, { VOLUME_UNITS } from './UnitSelect'
 import type { UnitOption } from './UnitSelect'
@@ -82,6 +82,34 @@ function MiniBeaker({ label, volumeLabel, concLabel, fillFrac, colorAlpha, parti
       <span className="font-mono text-xs text-secondary uppercase tracking-widest">{label}</span>
     </div>
   )
+}
+
+const DILUTION_STOCKS = [
+  { name: 'HCl', C1: 12.0 }, { name: 'HCl', C1: 6.0 }, { name: 'HCl', C1: 3.0 },
+  { name: 'NaOH', C1: 5.0 }, { name: 'NaOH', C1: 2.0 },
+  { name: 'H₂SO₄', C1: 9.0 }, { name: 'H₂SO₄', C1: 4.0 },
+  { name: 'NaCl', C1: 3.0 }, { name: 'KCl', C1: 2.0 },
+  { name: 'glucose', C1: 1.0 }, { name: 'acetic acid', C1: 5.0 },
+]
+const DILUTION_V1_mL = [10, 15, 20, 25, 30, 40, 50, 75, 100]
+const DILUTION_V2_mL = [100, 150, 200, 250, 300, 400, 500, 750, 1000]
+
+function generateDilutionExample() {
+  const stock = pick(DILUTION_STOCKS)
+  const V1 = pick(DILUTION_V1_mL)
+  const V2 = pick(DILUTION_V2_mL.filter(v => v > V1 * 2))
+  const C2 = (stock.C1 * V1) / V2
+  return {
+    scenario: `Dilute ${V1} mL of ${stock.C1} mol/L ${stock.name} to a final volume of ${V2} mL. Find C₂.`,
+    steps: [
+      `C₁V₁ = C₂V₂  →  C₂ = C₁V₁ / V₂`,
+      `C₂ = (${stock.C1} mol/L × ${V1} mL) / ${V2} mL`,
+      `C₂ = ${(stock.C1 * V1).toFixed(2)} / ${V2}`,
+      `C₂ = ${sig(C2, 5)} mol/L`,
+      `Rounded to 3 sf: ${sig(C2, 3)} mol/L`,
+    ],
+    result: `C₂ = ${sig(C2, 3)} mol/L`,
+  }
 }
 
 export default function DilutionCalc() {
@@ -255,10 +283,7 @@ export default function DilutionCalc() {
 
   return (
     <div className="flex flex-col gap-5 max-w-lg">
-      <ExampleBox>{`Dilute 50.0 mL of 6.00 M HCl to 300.0 mL. Find C₂.
-  C₁V₁ = C₂V₂
-  C₂ = (6.00 M × 50.0 mL) / 300.0 mL
-  C₂ = 1.00 M`}</ExampleBox>
+      <WorkedExample generate={generateDilutionExample} />
 
       <div className="flex flex-col gap-5">
         <div className="grid grid-cols-2 gap-4">

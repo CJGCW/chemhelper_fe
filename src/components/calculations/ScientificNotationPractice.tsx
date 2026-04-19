@@ -5,6 +5,7 @@ import {
   checkSciAnswer,
   type SciNotationProblem,
 } from '../../utils/sciNotationPractice'
+import WorkedExample from './WorkedExample'
 
 type Result = 'correct' | 'wrong' | 'format_error' | null
 
@@ -41,6 +42,38 @@ function answerHint(p: SciNotationProblem): string {
   return 'e.g. 0.00456'
 }
 
+const SCI_EXAMPLES = [
+  {
+    scenario: 'Convert 0.000456 to scientific notation.',
+    steps: ['Count decimal places moved right: 4', 'Coefficient: 4.56'],
+    result: '4.56 × 10⁻⁴',
+  },
+  {
+    scenario: 'Convert 3.02 × 10⁵ to standard form.',
+    steps: ['Positive exponent 5: move decimal right 5 places', '302000.'],
+    result: '302,000',
+  },
+  {
+    scenario: 'Multiply: (2.4 × 10³) × (3.0 × 10²)',
+    steps: ['Multiply coefficients: 2.4 × 3.0 = 7.2', 'Add exponents: 10³⁺² = 10⁵'],
+    result: '7.2 × 10⁵',
+  },
+  {
+    scenario: 'Divide: (6.0 × 10⁸) ÷ (2.0 × 10³)',
+    steps: ['Divide coefficients: 6.0 ÷ 2.0 = 3.0', 'Subtract exponents: 10⁸⁻³ = 10⁵'],
+    result: '3.0 × 10⁵',
+  },
+  {
+    scenario: 'Convert 5,800,000 to scientific notation.',
+    steps: ['Move decimal left 6 places: coefficient = 5.8', 'Exponent = +6'],
+    result: '5.8 × 10⁶',
+  },
+]
+
+function generateExample() {
+  return SCI_EXAMPLES[Math.floor(Math.random() * SCI_EXAMPLES.length)]
+}
+
 export default function ScientificNotationPractice() {
   const [states, setStates] = useState<ProblemState[]>(() => makeStates(genSciNotationProblems(8)))
   const [submitted, setSubmitted] = useState(false)
@@ -72,6 +105,8 @@ export default function ScientificNotationPractice() {
 
   return (
     <div className="flex flex-col gap-6">
+
+      <WorkedExample generate={generateExample} />
 
       {/* Controls */}
       <div className="flex items-center gap-3">

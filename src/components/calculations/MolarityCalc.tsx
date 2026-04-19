@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ExampleBox from "./ExampleBox";
+import WorkedExample, { pick, randBetween, roundTo, sig } from './WorkedExample'
 import NumberField from "./NumberField";
 import UnitSelect, { VOLUME_UNITS } from "./UnitSelect";
 import type { UnitOption } from "./UnitSelect";
@@ -21,6 +21,42 @@ import {
   lowestSigFigs,
 } from "../../utils/sigfigs";
 import type { SigFigBreakdown } from "../../utils/sigfigs";
+
+const MOLARITY_SOLUTES = [
+  { name: 'NaCl', M: 58.44 },
+  { name: 'NaOH', M: 40.00 },
+  { name: 'KCl', M: 74.55 },
+  { name: 'HCl', M: 36.46 },
+  { name: 'H₂SO₄', M: 98.08 },
+  { name: 'glucose (C₆H₁₂O₆)', M: 180.16 },
+  { name: 'CuSO₄', M: 159.61 },
+  { name: 'NH₄Cl', M: 53.49 },
+  { name: 'KNO₃', M: 101.10 },
+  { name: 'MgCl₂', M: 95.21 },
+]
+const VOL_OPTIONS_mL = [100, 150, 200, 250, 500, 750, 1000]
+
+function generateMolarityExample() {
+  const solute = pick(MOLARITY_SOLUTES)
+  const mass = roundTo(randBetween(2, 50), 2)
+  const vol_mL = pick(VOL_OPTIONS_mL)
+  const V = vol_mL / 1000
+  const n = mass / solute.M
+  const C = n / V
+  return {
+    scenario: `${mass} g of ${solute.name} (M = ${solute.M} g/mol) is dissolved to make ${vol_mL} mL of solution. Find the molarity.`,
+    steps: [
+      `Step 1 — moles of solute`,
+      `n = m / M = ${mass} g ÷ ${solute.M} g/mol = ${sig(n, 4)} mol`,
+      `Step 2 — volume in litres`,
+      `V = ${vol_mL} mL ÷ 1000 = ${V} L`,
+      `Step 3 — molarity`,
+      `C = n / V = ${sig(n, 4)} mol ÷ ${V} L`,
+      `C = ${sig(C, 5)} mol/L → rounded: ${sig(C, 3)} mol/L`,
+    ],
+    result: `C = ${sig(C, 3)} mol/L`,
+  }
+}
 
 export default function MolarityCalc() {
   const [molesValue, setMolesValue] = useState("");
@@ -199,9 +235,7 @@ export default function MolarityCalc() {
 
   return (
     <div className="flex flex-col gap-5 max-w-lg">
-      <ExampleBox>{`Find molarity: 0.500 mol HCl dissolved in 250.0 mL solution.
-  V = 250.0 mL → 0.2500 L
-  C = n / V = 0.500 mol ÷ 0.2500 L = 2.000 mol/L`}</ExampleBox>
+      <WorkedExample generate={generateMolarityExample} />
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-1.5">
           <label className="font-sans text-sm font-medium text-primary">

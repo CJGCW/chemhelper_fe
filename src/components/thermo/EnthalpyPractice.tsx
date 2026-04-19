@@ -1,6 +1,13 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genEnthalpyProblem, checkEnthalpyAnswer, type EnthalpyProblem } from '../../utils/enthalpyPractice'
+import WorkedExample from '../calculations/WorkedExample'
+
+function generateExample() {
+  const p = genEnthalpyProblem()
+  const last = p.steps.length - 1
+  return { scenario: `Calculate ΔH for ${p.description}: ${p.equation}`, steps: p.steps.slice(0, last), result: p.steps[last] }
+}
 
 export default function EnthalpyPractice() {
   const [problem, setProblem]     = useState<EnthalpyProblem>(() => genEnthalpyProblem())
@@ -35,6 +42,8 @@ export default function EnthalpyPractice() {
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
+
+      <WorkedExample generate={generateExample} />
 
       {/* Score */}
       {score.total > 0 && (
