@@ -163,7 +163,7 @@ const GROUPS: Group[] = [
 const ALL_SECTIONS = GROUPS.flatMap(g => g.sections)
 const DEFAULT_TAB: Tab = 'calorimetry-reference'
 
-const EXPLANATIONS: Partial<Record<Tab, ExplanationContent>> = {
+const _EXP: Record<string, ExplanationContent> = {
   calorimetry: {
     title: 'Calorimetry',
     formula: 'q = mcΔT',
@@ -307,6 +307,31 @@ const EXPLANATIONS: Partial<Record<Tab, ExplanationContent>> = {
       result: 'P₂ = 0.697 atm',
     },
   },
+}
+
+const EXPLANATIONS: Partial<Record<Tab, ExplanationContent>> = {
+  'calorimetry':           _EXP.calorimetry,
+  'calorimetry-reference': _EXP.calorimetry,
+  'calorimetry-practice':  _EXP.calorimetry,
+  'enthalpy':              _EXP.enthalpy,
+  'enthalpy-reference':    _EXP.enthalpy,
+  'enthalpy-practice':     _EXP.enthalpy,
+  'hess':                  _EXP.hess,
+  'hess-reference':        _EXP.hess,
+  'hess-practice':         _EXP.hess,
+  'bond':                  _EXP.bond,
+  'bond-reference':        _EXP.bond,
+  'bond-practice':         _EXP.bond,
+  'heattransfer':          _EXP.heattransfer,
+  'heattransfer-reference':_EXP.heattransfer,
+  'heattransfer-practice': _EXP.heattransfer,
+  'heating-curve':          _EXP['heating-curve'],
+  'heating-curve-reference':_EXP['heating-curve'],
+  'heating-curve-problems': _EXP['heating-curve'],
+  'cc':                    _EXP.cc,
+  'cc-reference':          _EXP.cc,
+  'cc-practice':           _EXP.cc,
+  'vapor-pressure':        _EXP.cc,
 }
 
 export default function ThermochemistryPage() {

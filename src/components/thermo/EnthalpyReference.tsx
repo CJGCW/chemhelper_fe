@@ -66,8 +66,8 @@ export default function EnthalpyReference() {
 
       {/* Main formula */}
       <div className="rounded-sm border border-border bg-raised px-6 py-5 flex flex-col gap-4">
-        <p className="font-mono text-2xl font-bold text-bright">
-          ΔH<sub>rxn</sub> = ΣΔHf°(products) − ΣΔHf°(reactants)
+        <p className="font-sans text-2xl font-bold text-bright">
+          Enthalpy of reaction
         </p>
         <div className="flex flex-col gap-2 pt-3 border-t border-border">
           <p className="font-mono text-sm text-primary">

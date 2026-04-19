@@ -438,7 +438,7 @@ export default function BaseCalculationsPage() {
 
               {/* ── Sig Fig Counter ── */}
               <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
-                <p className="font-sans text-sm font-semibold text-primary tracking-wide uppercase">Sig Fig Counter</p>
+                <p className="font-mono text-xs text-secondary tracking-widest uppercase">Sig Fig Counter</p>
 
                 <input
                   type="text"
@@ -501,7 +501,7 @@ export default function BaseCalculationsPage() {
               {/* ── Operation Calculator ── */}
               <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
                 <div className="flex items-center justify-between">
-                  <p className="font-sans text-sm font-semibold text-primary tracking-wide uppercase">Operation Calculator</p>
+                  <p className="font-mono text-xs text-secondary tracking-widest uppercase">Operation Calculator</p>
                   <span className="font-sans text-xs text-secondary">
                     {isMultDiv ? 'fewest sig figs' : 'fewest decimal places'}
                   </span>
@@ -595,7 +595,7 @@ export default function BaseCalculationsPage() {
 
             {/* Rules Reference */}
             <div className="flex flex-col gap-3">
-              <p className="font-sans text-sm font-semibold text-primary tracking-wide uppercase">Rules Reference</p>
+              <p className="font-mono text-xs text-secondary tracking-widest uppercase">Rules Reference</p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {SF_RULES.map((r, i) => (
@@ -667,7 +667,7 @@ export default function BaseCalculationsPage() {
             {/* Scientific Notation */}
             <div className="flex flex-col gap-3">
               <div className="flex flex-col gap-1">
-                <p className="font-sans text-sm font-semibold text-primary tracking-wide uppercase">Sig Figs in Scientific Notation</p>
+                <p className="font-mono text-xs text-secondary tracking-widest uppercase">Sig Figs in Scientific Notation</p>
                 <p className="font-sans text-xs text-secondary">
                   Only the coefficient (mantissa) determines significant figures. The × 10ⁿ part is exact and never limits precision.
                 </p>
@@ -714,7 +714,7 @@ export default function BaseCalculationsPage() {
             {/* Exact Numbers */}
             <div className="flex flex-col gap-3">
               <div className="flex flex-col gap-1">
-                <p className="font-sans text-sm font-semibold text-primary tracking-wide uppercase">
+                <p className="font-mono text-xs text-secondary tracking-widest uppercase">
                   When Sig Figs <span className="text-bright font-bold text-base">Don't</span> Apply
                 </p>
                 <p className="font-sans text-xs text-secondary">
@@ -744,7 +744,7 @@ export default function BaseCalculationsPage() {
                         </div>
                       ))}
                     </div>
-                    <p className="font-sans text-[11px] text-secondary leading-relaxed border-t border-border pt-2">{ex.note}</p>
+                    <p className="font-sans text-xs text-secondary leading-relaxed border-t border-border pt-2">{ex.note}</p>
                   </div>
                 ))}
               </div>

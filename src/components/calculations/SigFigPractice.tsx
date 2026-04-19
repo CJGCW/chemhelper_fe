@@ -122,7 +122,7 @@ export default function SigFigPractice() {
         </div>
 
         <button onClick={generate} disabled={noneSelected}
-          className="self-start px-6 py-2.5 rounded-sm font-sans font-medium text-base transition-all disabled:opacity-40"
+          className="self-start px-6 py-2.5 rounded-sm font-sans font-medium text-sm transition-all disabled:opacity-40"
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
@@ -200,7 +200,7 @@ export default function SigFigPractice() {
                           if (results) setResults(prev => prev ? { ...prev, [p.id]: checkSigFigAnswer(e.target.value, p) } : null)
                         }}
                         placeholder={p.kind === 'count' ? '# sig figs' : 'answer'}
-                        className="w-36 font-mono text-base bg-raised rounded-sm px-3 py-2 text-primary placeholder-dim focus:outline-none transition-colors"
+                        className="w-36 font-mono text-sm bg-raised border border-border rounded-sm px-3 py-1.5 text-primary placeholder-dim focus:outline-none transition-colors"
                         style={{ border: `1px solid ${borderColor(result)}` }}
                       />
                       {result === 'correct' && (
@@ -238,7 +238,7 @@ export default function SigFigPractice() {
             })}
 
             <button onClick={checkAll}
-              className="self-start px-6 py-2.5 rounded-sm font-sans font-medium text-base transition-all"
+              className="self-start px-6 py-2.5 rounded-sm font-sans font-medium text-sm transition-all"
               style={{
                 background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
                 border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
