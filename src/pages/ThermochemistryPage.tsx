@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import CalorimetryCalc from '../components/thermo/CalorimetryCalc'
@@ -166,31 +165,6 @@ export default function ThermochemistryPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const tab: Tab = (searchParams.get('tab') as Tab) ?? DEFAULT_TAB
 
-  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
-    const active = GROUPS.find(g => g.sections.some(s => s.tabs.some(t => t.id === tab)))
-    return new Set(active ? [active.id] : ['thermo'])
-  })
-
-  useEffect(() => {
-    const active = GROUPS.find(g => g.sections.some(s => s.tabs.some(t => t.id === tab)))
-    if (active) {
-      setOpenGroups(prev => {
-        if (prev.has(active.id)) return prev
-        const next = new Set(prev)
-        next.add(active.id)
-        return next
-      })
-    }
-  }, [tab])
-
-  function toggleGroup(id: string) {
-    setOpenGroups(prev => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
-  }
-
   function setTab(t: Tab) {
     setSearchParams({ tab: t }, { replace: true })
   }
@@ -216,65 +190,33 @@ export default function ThermochemistryPage() {
           )}
         </div>
 
-        <div className="flex flex-col gap-1.5 print:hidden">
-          {GROUPS.map(group => {
-            const isOpen = openGroups.has(group.id)
-            const groupActive = group.sections.some(s => s.tabs.some(t => t.id === tab))
-            return (
-              <div key={group.id} className="flex flex-col gap-1">
-                <button
-                  onClick={() => toggleGroup(group.id)}
-                  className="relative flex items-center self-start px-3 py-1.5 rounded-sm font-sans text-xs font-semibold transition-colors"
-                  style={{ color: groupActive ? 'var(--c-halogen)' : isOpen ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.35)' }}
-                >
-                  {groupActive ? (
-                    <motion.div
-                      layoutId={`thermo-group-bg-${group.id}`}
-                      className="absolute inset-0 rounded-sm"
-                      style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 32 }}
-                    />
-                  ) : (
-                    <div className="absolute inset-0 rounded-sm" style={{ background: '#0e1016', border: '1px solid #1c1f2e' }} />
-                  )}
-                  <span className="relative z-10">{group.label}</span>
-                </button>
-                <AnimatePresence initial={false}>
-                  {isOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2, ease: 'easeInOut' }}
-                      className="overflow-hidden"
-                    >
-                      <div className="flex items-center gap-1 flex-wrap pb-0.5">
-                        {group.sections.map(s => {
-                          const sectionActive = s.tabs.some(t => t.id === tab)
-                          return (
-                            <button key={s.heading}
-                              onClick={() => setTab(s.tabs[0].id)}
-                              className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
-                              style={{ color: sectionActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
-                              {sectionActive && (
-                                <motion.div layoutId="thermo-section-pill" className="absolute inset-0 rounded-sm"
-                                  style={{
-                                    background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
-                                    border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
-                                  }}
-                                  transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
-                              )}
-                              <span className="relative z-10">{s.heading}</span>
-                            </button>
-                          )
-                        })}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+        <div className="flex flex-col gap-3 print:hidden">
+          {GROUPS.map(group => (
+            <div key={group.id} className="flex flex-col gap-2">
+              <p className="font-mono text-xs text-secondary tracking-widest uppercase">{group.label}</p>
+              <div className="flex items-center gap-1 flex-wrap">
+                {group.sections.map(s => {
+                  const sectionActive = s.tabs.some(t => t.id === tab)
+                  return (
+                    <button key={s.heading}
+                      onClick={() => setTab(s.tabs[0].id)}
+                      className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
+                      style={{ color: sectionActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
+                      {sectionActive && (
+                        <motion.div layoutId="thermo-section-pill" className="absolute inset-0 rounded-sm"
+                          style={{
+                            background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                            border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                          }}
+                          transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
+                      )}
+                      <span className="relative z-10">{s.heading}</span>
+                    </button>
+                  )
+                })}
               </div>
-            )
-          })}
+            </div>
+          ))}
 
           {/* Mode tabs for active section */}
           {currentSection && currentSection.tabs.length > 1 && (

@@ -157,7 +157,7 @@ function SolventTable() {
 
 // ── Topic types ───────────────────────────────────────────────────────────────
 
-export type RefTopic = 'moles' | 'molarity' | 'molality' | 'colligative' | 'molar-volume' | 'dilution' | 'other'
+export type RefTopic = 'moles' | 'molarity' | 'molality' | 'colligative' | 'colligative-bpe' | 'colligative-fpd' | 'molar-volume' | 'dilution' | 'other'
 export const VISUAL_REF_TOPICS = new Set<RefTopic>(['moles', 'molarity', 'molality', 'dilution'])
 
 // ── Per-topic views ───────────────────────────────────────────────────────────
@@ -303,6 +303,74 @@ function ColligativeTopic() {
           }}
         />
       </div>
+      <SolventTable />
+    </div>
+  )
+}
+
+function ColligativeBPETopic() {
+  return (
+    <div className="flex flex-col gap-5">
+      <ConceptCard
+        title="Boiling Point Elevation"
+        formula="ΔTb = i · Kb · b"
+        tagline="Dissolving a solute raises the boiling point of a solvent — the more particles, the larger the effect."
+        points={[
+          { heading: 'Why it happens', body: "Solute particles disrupt solvent molecules from escaping into the gas phase, reducing vapor pressure. A higher temperature is needed to reach atmospheric pressure — so the boiling point rises." },
+          { heading: "Van't Hoff factor (i)", body: "i accounts for dissociation. NaCl → Na⁺ + Cl⁻ gives i ≈ 2. Glucose doesn't dissociate, so i = 1. CaCl₂ gives 3 ions, i ≈ 3." },
+          { heading: 'Molality, not molarity', body: 'Molality (b, mol/kg solvent) is temperature-independent, making it the correct concentration unit for colligative property calculations.' },
+        ]}
+      />
+      <RefCard
+        title="Boiling Point Elevation"
+        formula="ΔTb = i × Kb × b"
+        rearranged={['b = ΔTb / (i × Kb)', 'i = ΔTb / (Kb × b)', 'Tbfinal = Tbnormal + ΔTb']}
+        vars={[
+          { symbol: 'ΔTb', meaning: 'Boiling point elevation', unit: '°C'        },
+          { symbol: 'i',   meaning: "Van't Hoff factor",        unit: '—'         },
+          { symbol: 'Kb',  meaning: 'Ebullioscopic constant',   unit: '°C·kg/mol' },
+          { symbol: 'b',   meaning: 'Molality of solution',     unit: 'mol/kg'    },
+        ]}
+        example={{
+          scenario: '1.00 mol/kg NaCl (i = 2) dissolved in water (Kb = 0.512 °C·kg/mol). Find ΔTb and the new boiling point.',
+          steps: ['ΔTb = i × Kb × b', 'ΔTb = 2 × 0.512 × 1.00 = 1.024 °C', 'New bp = 100.0 + 1.024'],
+          result: 'ΔTb = 1.024 °C  →  bp = 101.024 °C',
+        }}
+      />
+      <SolventTable />
+    </div>
+  )
+}
+
+function ColligativeFPDTopic() {
+  return (
+    <div className="flex flex-col gap-5">
+      <ConceptCard
+        title="Freezing Point Depression"
+        formula="ΔTf = i · Kf · b"
+        tagline="Dissolving a solute lowers the freezing point of a solvent — the more particles, the larger the depression."
+        points={[
+          { heading: 'Why it happens', body: "Solute particles disrupt the ordered crystal lattice that forms when a liquid freezes. The solvent must reach a lower temperature to achieve enough order to solidify." },
+          { heading: "Van't Hoff factor (i)", body: "i accounts for dissociation. NaCl → Na⁺ + Cl⁻ gives i ≈ 2. Glucose doesn't dissociate, so i = 1. CaCl₂ gives 3 ions, i ≈ 3." },
+          { heading: 'Real-world use', body: 'Road salt (NaCl or CaCl₂) depresses the freezing point of water on icy roads. Antifreeze (ethylene glycol, i = 1) lowers the freezing point of engine coolant.' },
+        ]}
+      />
+      <RefCard
+        title="Freezing Point Depression"
+        formula="ΔTf = i × Kf × b"
+        rearranged={['b = ΔTf / (i × Kf)', 'i = ΔTf / (Kf × b)', 'Tffinal = Tfnormal − ΔTf']}
+        vars={[
+          { symbol: 'ΔTf', meaning: 'Freezing point depression', unit: '°C'        },
+          { symbol: 'i',   meaning: "Van't Hoff factor",          unit: '—'         },
+          { symbol: 'Kf',  meaning: 'Cryoscopic constant',        unit: '°C·kg/mol' },
+          { symbol: 'b',   meaning: 'Molality of solution',       unit: 'mol/kg'    },
+        ]}
+        example={{
+          scenario: '0.50 mol/kg glucose (i = 1) in water (Kf = 1.86 °C·kg/mol). Find ΔTf and the new freezing point.',
+          steps: ['ΔTf = i × Kf × b', 'ΔTf = 1 × 1.86 × 0.50 = 0.93 °C', 'New fp = 0.0 − 0.93'],
+          result: 'ΔTf = 0.93 °C  →  fp = −0.93 °C',
+        }}
+      />
       <SolventTable />
     </div>
   )
@@ -621,7 +689,9 @@ export default function MolarReference({ section = 'guide', topic, view = 'refer
   if (topic === 'moles')       return <MolesTopic />
   if (topic === 'molarity')    return <MolarityTopic />
   if (topic === 'molality')    return <MolalityTopic />
-  if (topic === 'colligative') return <ColligativeTopic />
+  if (topic === 'colligative')     return <ColligativeTopic />
+  if (topic === 'colligative-bpe') return <ColligativeBPETopic />
+  if (topic === 'colligative-fpd') return <ColligativeFPDTopic />
   if (topic === 'molar-volume') return <MolarVolumeTopic />
   if (topic === 'dilution')    return <DilutionTopic />
   if (topic === 'other')       return <OtherTopic />

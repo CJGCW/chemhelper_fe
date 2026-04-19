@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchParams } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { } from 'react'
 import IdealGasReference from '../components/idealgas/IdealGasReference'
 import IdealGasSolver from '../components/idealgas/IdealGasSolver'
 import IdealGasPractice from '../components/idealgas/IdealGasPractice'
@@ -99,21 +99,6 @@ const PROBLEMS_TAB_IDS = new Set<Tab>(PROBLEMS_GROUPS.flatMap(g => g.pills.map(p
 
 export default function IdealGasPage() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
-    const params = new URLSearchParams(window.location.search)
-    const tab = (params.get('tab') as Tab) ?? 'ref-combined'
-    const allGroups = [...REFERENCE_GROUPS, ...PRACTICE_GROUPS, ...PROBLEMS_GROUPS]
-    const group = allGroups.find(g => g.pills.some(p => p.id === tab))
-    return group ? new Set([group.id]) : new Set<string>()
-  })
-
-  function toggleGroup(id: string) {
-    setOpenGroups(prev => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
-  }
 
   const activeTab = (searchParams.get('tab') as Tab) ?? 'ref-combined'
 
@@ -139,13 +124,6 @@ export default function IdealGasPage() {
   const activeGroups = activeMode === 'problems' ? PROBLEMS_GROUPS
     : activeMode === 'practice' ? PRACTICE_GROUPS
     : REFERENCE_GROUPS
-
-  useEffect(() => {
-    const group = activeGroups.find(g => g.pills.some(p => p.id === activeTab))
-    if (group) {
-      setOpenGroups(prev => prev.has(group.id) ? prev : new Set([...prev, group.id]))
-    }
-  }, [activeTab, activeGroups])
 
   return (
     <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
@@ -188,69 +166,37 @@ export default function IdealGasPage() {
           })}
         </div>
 
-        {/* Collapsible sub-tab groups */}
-        <div className="flex flex-col gap-1.5 print:hidden">
-          {activeGroups.map(group => {
-            const isOpen = openGroups.has(group.id)
-            const groupActive = group.pills.some(p => p.id === activeTab)
-            return (
-              <div key={group.id} className="flex flex-col gap-1">
-                <button
-                  onClick={() => toggleGroup(group.id)}
-                  className="relative flex items-center self-start px-3 py-1.5 rounded-sm font-sans text-xs font-semibold transition-colors"
-                  style={{ color: groupActive ? 'var(--c-halogen)' : isOpen ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.35)' }}
-                >
-                  {groupActive ? (
-                    <motion.div
-                      layoutId={`idealgas-group-bg-${group.id}`}
-                      className="absolute inset-0 rounded-sm"
-                      style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 32 }}
-                    />
-                  ) : (
-                    <div className="absolute inset-0 rounded-sm" style={{ background: '#0e1016', border: '1px solid #1c1f2e' }} />
-                  )}
-                  <span className="relative z-10">{group.label}</span>
-                </button>
-                <AnimatePresence initial={false}>
-                  {isOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2, ease: 'easeInOut' }}
-                      className="overflow-hidden"
+        {/* Sub-tab groups */}
+        <div className="flex flex-col gap-3 print:hidden">
+          {activeGroups.map(group => (
+            <div key={group.id} className="flex flex-col gap-2">
+              <p className="font-mono text-xs text-secondary tracking-widest uppercase">{group.label}</p>
+              <div className="flex items-center gap-1 flex-wrap">
+                {group.pills.map(pill => {
+                  const isActive = activeTab === pill.id
+                  return (
+                    <button
+                      key={pill.id}
+                      onClick={() => setTab(pill.id)}
+                      className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
+                      style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}
                     >
-                      <div className="flex items-center gap-1 flex-wrap pb-0.5">
-                        {group.pills.map(pill => {
-                          const isActive = activeTab === pill.id
-                          return (
-                            <button
-                              key={pill.id}
-                              onClick={() => setTab(pill.id)}
-                              className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
-                              style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}
-                            >
-                              {isActive && (
-                                <motion.div
-                                  layoutId="idealgas-tab-pill"
-                                  className="absolute inset-0 rounded-sm"
-                                  style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
-                                  transition={{ type: 'spring', stiffness: 400, damping: 32 }}
-                                />
-                              )}
-                              <span className="relative z-10">{pill.label}</span>
-                              <span className="relative z-10 font-mono text-[10px] ml-1.5 opacity-50">{pill.formula}</span>
-                            </button>
-                          )
-                        })}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      {isActive && (
+                        <motion.div
+                          layoutId="idealgas-tab-pill"
+                          className="absolute inset-0 rounded-sm"
+                          style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
+                          transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                        />
+                      )}
+                      <span className="relative z-10">{pill.label}</span>
+                      <span className="relative z-10 font-mono text-[10px] ml-1.5 opacity-50">{pill.formula}</span>
+                    </button>
+                  )
+                })}
               </div>
-            )
-          })}
+            </div>
+          ))}
         </div>
       </div>
 

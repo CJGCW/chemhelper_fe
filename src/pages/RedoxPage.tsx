@@ -123,7 +123,6 @@ const MODE_DEFAULT: Record<Mode, Tab> = {
 
 export default function RedoxPage() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const [openGroups, setOpenGroups] = useState(() => new Set<string>())
   const [printingAll, setPrintingAll] = useState(false)
 
   const activeTab = (searchParams.get('tab') as Tab) ?? 'classifier'
@@ -137,18 +136,6 @@ export default function RedoxPage() {
   const activeGroups = activeMode === 'problems' ? PROBLEMS_GROUPS : PRACTICE_GROUPS
 
   useEffect(() => {
-    const group = activeGroups.find(g => g.pills.some(p => p.id === activeTab))
-    if (group) {
-      setOpenGroups(prev => {
-        if (prev.has(group.id)) return prev
-        const next = new Set(prev)
-        next.add(group.id)
-        return next
-      })
-    }
-  }, [activeTab, activeMode])
-
-  useEffect(() => {
     if (!printingAll) return
     const raf = requestAnimationFrame(() => requestAnimationFrame(() => window.print()))
     const handler = () => setPrintingAll(false)
@@ -158,14 +145,6 @@ export default function RedoxPage() {
       window.removeEventListener('afterprint', handler)
     }
   }, [printingAll])
-
-  function toggleGroup(id: string) {
-    setOpenGroups(prev => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
-  }
 
   function setTab(tab: Tab) {
     setSearchParams(prev => {
@@ -258,68 +237,36 @@ export default function RedoxPage() {
 
         {/* Tab pills for active mode */}
         {activeMode !== 'reference' && (
-          <div className="flex flex-col gap-1.5 print:hidden">
-            {activeGroups.map(group => {
-              const isOpen = openGroups.has(group.id)
-              const groupActive = group.pills.some(p => p.id === activeTab)
-              return (
-                <div key={group.id} className="flex flex-col gap-1">
-                  <button
-                    onClick={() => toggleGroup(group.id)}
-                    className="relative flex items-center self-start px-3 py-1.5 rounded-sm font-sans text-xs font-semibold transition-colors"
-                    style={{ color: groupActive ? 'var(--c-halogen)' : isOpen ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.35)' }}
-                  >
-                    {groupActive ? (
-                      <motion.div
-                        layoutId={`redox-group-bg-${group.id}`}
-                        className="absolute inset-0 rounded-sm"
-                        style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
-                        transition={{ type: 'spring', stiffness: 400, damping: 32 }}
-                      />
-                    ) : (
-                      <div className="absolute inset-0 rounded-sm" style={{ background: '#0e1016', border: '1px solid #1c1f2e' }} />
-                    )}
-                    <span className="relative z-10">{group.label}</span>
-                  </button>
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2, ease: 'easeInOut' }}
-                        className="overflow-hidden"
+          <div className="flex flex-col gap-3 print:hidden">
+            {activeGroups.map(group => (
+              <div key={group.id} className="flex flex-col gap-2">
+                <p className="font-mono text-xs text-secondary tracking-widest uppercase">{group.label}</p>
+                <div className="flex items-center gap-1 flex-wrap">
+                  {group.pills.map(pill => {
+                    const isActive = activeTab === pill.id
+                    return (
+                      <button
+                        key={pill.id}
+                        onClick={() => setTab(pill.id)}
+                        className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
+                        style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}
                       >
-                        <div className="flex items-center gap-1 flex-wrap pb-0.5">
-                          {group.pills.map(pill => {
-                            const isActive = activeTab === pill.id
-                            return (
-                              <button
-                                key={pill.id}
-                                onClick={() => setTab(pill.id)}
-                                className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
-                                style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}
-                              >
-                                {isActive && (
-                                  <motion.div
-                                    layoutId="redox-pill-bg"
-                                    className="absolute inset-0 rounded-sm"
-                                    style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
-                                    transition={{ type: 'spring', stiffness: 400, damping: 32 }}
-                                  />
-                                )}
-                                <span className="relative z-10">{pill.label}</span>
-                                <span className="relative z-10 font-mono text-[10px] ml-1.5 opacity-50">{pill.formula}</span>
-                              </button>
-                            )
-                          })}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                        {isActive && (
+                          <motion.div
+                            layoutId="redox-pill-bg"
+                            className="absolute inset-0 rounded-sm"
+                            style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
+                            transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                          />
+                        )}
+                        <span className="relative z-10">{pill.label}</span>
+                        <span className="relative z-10 font-mono text-[10px] ml-1.5 opacity-50">{pill.formula}</span>
+                      </button>
+                    )
+                  })}
                 </div>
-              )
-            })}
+              </div>
+            ))}
           </div>
         )}
       </div>

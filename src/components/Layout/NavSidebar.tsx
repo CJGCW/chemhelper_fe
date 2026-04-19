@@ -223,7 +223,8 @@ const CALC_GROUPS: { label: string; items: CalcItem[] }[] = [
   {
     label: 'Colligative',
     items: [
-      { tab: "ref-colligative", label: "Colligative", formula: "ΔT" },
+      { tab: "ref-colligative-bpe", label: "BP Elevation",  formula: "ΔTb" },
+      { tab: "ref-colligative-fpd", label: "FP Depression", formula: "ΔTf" },
     ],
   },
 ]

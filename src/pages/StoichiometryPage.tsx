@@ -236,8 +236,6 @@ const EXPLANATIONS: Partial<Record<Tab, ExplanationContent>> = {
 export default function StoichiometryPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [showExplanation, setShowExplanation] = useState(false)
-  const [openGroups, setOpenGroups]       = useState(() => new Set<string>())
-  const [refOpenGroups, setRefOpenGroups] = useState(() => new Set<string>(['stoich-ref']))
   const [refView, setRefView]             = useState<RefView>('guide')
   const [printingAll, setPrintingAll]     = useState(false)
 
@@ -252,30 +250,6 @@ export default function StoichiometryPage() {
   const activeGroups = activeMode === 'problems' ? PROBLEMS_GROUPS : PRACTICE_GROUPS
 
   useEffect(() => {
-    if (activeMode === 'reference') {
-      const group = REFERENCE_GROUPS.find(g => g.pills.some(p => p.id === activeTab))
-      if (group) {
-        setRefOpenGroups(prev => {
-          if (prev.has(group.id)) return prev
-          const next = new Set(prev)
-          next.add(group.id)
-          return next
-        })
-      }
-    } else {
-      const group = activeGroups.find(g => g.pills.some(p => p.id === activeTab))
-      if (group) {
-        setOpenGroups(prev => {
-          if (prev.has(group.id)) return prev
-          const next = new Set(prev)
-          next.add(group.id)
-          return next
-        })
-      }
-    }
-  }, [activeTab, activeMode])
-
-  useEffect(() => {
     if (!printingAll) return
     const id = requestAnimationFrame(() =>
       requestAnimationFrame(() => { window.print() })
@@ -287,22 +261,6 @@ export default function StoichiometryPage() {
       cancelAnimationFrame(id)
     }
   }, [printingAll])
-
-  function toggleGroup(id: string) {
-    setOpenGroups(prev => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
-  }
-
-  function toggleRefGroup(id: string) {
-    setRefOpenGroups(prev => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
-  }
 
   function setTab(tab: Tab) {
     setSearchParams(prev => {
@@ -319,70 +277,38 @@ export default function StoichiometryPage() {
     setTab(next)
   }
 
-  function renderGroups(groups: TabGroup[], openSet: Set<string>, toggle: (id: string) => void, layoutPrefix: string) {
+  function renderGroups(groups: TabGroup[], layoutPrefix: string) {
     return (
-      <div className="flex flex-col gap-1.5">
-        {groups.map(group => {
-          const isOpen = openSet.has(group.id)
-          const groupActive = group.pills.some(p => p.id === activeTab)
-          return (
-            <div key={group.id} className="flex flex-col gap-1">
-              <button
-                onClick={() => toggle(group.id)}
-                className="relative flex items-center self-start px-3 py-1.5 rounded-sm font-sans text-xs font-semibold transition-colors"
-                style={{ color: groupActive ? 'var(--c-halogen)' : isOpen ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.35)' }}
-              >
-                {groupActive ? (
-                  <motion.div
-                    layoutId={`${layoutPrefix}-group-bg-${group.id}`}
-                    className="absolute inset-0 rounded-sm"
-                    style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 32 }}
-                  />
-                ) : (
-                  <div className="absolute inset-0 rounded-sm" style={{ background: '#0e1016', border: '1px solid #1c1f2e' }} />
-                )}
-                <span className="relative z-10">{group.label}</span>
-              </button>
-              <AnimatePresence initial={false}>
-                {isOpen && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2, ease: 'easeInOut' }}
-                    className="overflow-hidden"
+      <div className="flex flex-col gap-3">
+        {groups.map(group => (
+          <div key={group.id} className="flex flex-col gap-2">
+            <p className="font-mono text-xs text-secondary tracking-widest uppercase">{group.label}</p>
+            <div className="flex items-center gap-1 flex-wrap">
+              {group.pills.map(pill => {
+                const isActive = activeTab === pill.id
+                return (
+                  <button
+                    key={pill.id}
+                    onClick={() => setTab(pill.id)}
+                    className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
+                    style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}
                   >
-                    <div className="flex items-center gap-1 flex-wrap pb-0.5">
-                      {group.pills.map(pill => {
-                        const isActive = activeTab === pill.id
-                        return (
-                          <button
-                            key={pill.id}
-                            onClick={() => setTab(pill.id)}
-                            className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
-                            style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}
-                          >
-                            {isActive && (
-                              <motion.div
-                                layoutId={`${layoutPrefix}-pill-bg`}
-                                className="absolute inset-0 rounded-sm"
-                                style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
-                                transition={{ type: 'spring', stiffness: 400, damping: 32 }}
-                              />
-                            )}
-                            <span className="relative z-10">{pill.label}</span>
-                            <span className="relative z-10 font-mono text-[10px] ml-1.5 opacity-50">{pill.formula}</span>
-                          </button>
-                        )
-                      })}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                    {isActive && (
+                      <motion.div
+                        layoutId={`${layoutPrefix}-pill-bg`}
+                        className="absolute inset-0 rounded-sm"
+                        style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                      />
+                    )}
+                    <span className="relative z-10">{pill.label}</span>
+                    <span className="relative z-10 font-mono text-[10px] ml-1.5 opacity-50">{pill.formula}</span>
+                  </button>
+                )
+              })}
             </div>
-          )
-        })}
+          </div>
+        ))}
       </div>
     )
   }
@@ -460,7 +386,7 @@ export default function StoichiometryPage() {
         {/* Tab pills / groups for active mode */}
         {activeMode === 'reference' ? (
           <div className="flex flex-col gap-3 print:hidden">
-            {renderGroups(REFERENCE_GROUPS, refOpenGroups, toggleRefGroup, 'ref')}
+            {renderGroups(REFERENCE_GROUPS, 'ref')}
 
             {/* Visual | Guide secondary toggle */}
             <div className="flex items-center gap-1 p-1 rounded-sm self-start"
@@ -487,7 +413,7 @@ export default function StoichiometryPage() {
           </div>
         ) : (
           <div className="print:hidden">
-            {renderGroups(activeGroups, openGroups, toggleGroup, 'stoich')}
+            {renderGroups(activeGroups, 'stoich')}
           </div>
         )}
       </div>

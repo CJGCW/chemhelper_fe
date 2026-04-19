@@ -19,7 +19,7 @@ import DilutionConcPractice from '../../components/calculations/DilutionConcPrac
 import { useState } from 'react'
 import { HideExamplesContext } from '../../components/calculations/ExampleBoxContext'
 
-type CalcType = 'moles' | 'molarity' | 'molality' | 'colligative' | 'colligative-bpe' | 'colligative-fpd' | 'molar-volume' | 'percent-comp' | 'dilution' | 'conc-converter' | 'practice' | 'perc-comp-practice' | 'sig-figs' | 'conc-practice' | 'reference' | 'visual' | 'ref-moles' | 'ref-molarity' | 'ref-molality' | 'ref-colligative' | 'ref-molar-volume' | 'ref-dilution' | 'ref-other'
+type CalcType = 'moles' | 'molarity' | 'molality' | 'colligative' | 'colligative-bpe' | 'colligative-fpd' | 'molar-volume' | 'percent-comp' | 'dilution' | 'conc-converter' | 'practice' | 'perc-comp-practice' | 'sig-figs' | 'conc-practice' | 'reference' | 'visual' | 'ref-moles' | 'ref-molarity' | 'ref-molality' | 'ref-colligative' | 'ref-colligative-bpe' | 'ref-colligative-fpd' | 'ref-molar-volume' | 'ref-dilution' | 'ref-other'
 type ColligativeMode = 'bpe' | 'fpd'
 type Mode = 'reference' | 'practice' | 'problems'
 
@@ -49,7 +49,8 @@ const REFERENCE_GROUPS: ReferenceGroup[] = [
     id: 'colligative',
     label: 'Colligative',
     pills: [
-      { value: 'ref-colligative', label: 'Colligative', formula: 'ΔT' },
+      { value: 'ref-colligative-bpe', label: 'BP Elevation',  formula: 'ΔTb' },
+      { value: 'ref-colligative-fpd', label: 'FP Depression', formula: 'ΔTf' },
     ],
   },
 ]
@@ -223,7 +224,9 @@ const REF_TOPIC_MAP: Partial<Record<CalcType, RefTopic>> = {
   'ref-moles':        'moles',
   'ref-molarity':     'molarity',
   'ref-molality':     'molality',
-  'ref-colligative':  'colligative',
+  'ref-colligative':     'colligative',
+  'ref-colligative-bpe': 'colligative-bpe',
+  'ref-colligative-fpd': 'colligative-fpd',
   'ref-molar-volume': 'molar-volume',
   'ref-dilution':     'dilution',
   'ref-other':        'other',
@@ -233,15 +236,6 @@ export default function MolarCalculationsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [showExplanation, setShowExplanation] = useState(false)
   const [printingAll, setPrintingAll] = useState(false)
-  const [openGroups, setOpenGroups] = useState(() => new Set<string>())
-
-  function toggleGroup(id: string) {
-    setOpenGroups(prev => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
-  }
 
   const activeTab = (searchParams.get('tab') as CalcType) ?? 'moles'
   const colligativeMode = (searchParams.get('mode') as ColligativeMode) ?? 'bpe'
@@ -250,19 +244,6 @@ export default function MolarCalculationsPage() {
   const activeMode: Mode = PROBLEMS_TAB_IDS.has(activeTab) ? 'problems'
     : PRACTICE_TAB_IDS.has(activeTab) ? 'practice'
     : 'reference'
-
-  useEffect(() => {
-    const groups = activeMode === 'reference' ? REFERENCE_GROUPS : PRACTICE_GROUPS
-    const activeGroup = groups.find(g => g.pills.some(p => p.value === activeTab))
-    if (activeGroup) {
-      setOpenGroups(prev => {
-        if (prev.has(activeGroup.id)) return prev
-        const next = new Set(prev)
-        next.add(activeGroup.id)
-        return next
-      })
-    }
-  }, [activeTab, activeMode])
 
   useEffect(() => {
     if (!printingAll) return
@@ -395,68 +376,36 @@ export default function MolarCalculationsPage() {
             })}
           </div>
         ) : (
-          <div className="flex flex-col gap-1.5 print:hidden">
-            {(activeMode === 'reference' ? REFERENCE_GROUPS : PRACTICE_GROUPS).map(group => {
-              const isOpen = openGroups.has(group.id)
-              const groupActive = group.pills.some(p => p.value === activeTab)
-              return (
-                <div key={group.id} className="flex flex-col gap-1">
-                  <button
-                    onClick={() => toggleGroup(group.id)}
-                    className="relative flex items-center self-start px-3 py-1.5 rounded-sm font-sans text-xs font-semibold transition-colors"
-                    style={{ color: groupActive ? 'var(--c-halogen)' : isOpen ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.35)' }}
-                  >
-                    {groupActive ? (
-                      <motion.div
-                        layoutId={`calc-group-bg-${group.id}`}
-                        className="absolute inset-0 rounded-sm"
-                        style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
-                        transition={{ type: 'spring', stiffness: 400, damping: 32 }}
-                      />
-                    ) : (
-                      <div className="absolute inset-0 rounded-sm" style={{ background: '#0e1016', border: '1px solid #1c1f2e' }} />
-                    )}
-                    <span className="relative z-10">{group.label}</span>
-                  </button>
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2, ease: 'easeInOut' }}
-                        className="overflow-hidden"
+          <div className="flex flex-col gap-3 print:hidden">
+            {(activeMode === 'reference' ? REFERENCE_GROUPS : PRACTICE_GROUPS).map(group => (
+              <div key={group.id} className="flex flex-col gap-2">
+                <p className="font-mono text-xs text-secondary tracking-widest uppercase">{group.label}</p>
+                <div className="flex items-center gap-1 flex-wrap">
+                  {group.pills.map(pill => {
+                    const isActive = activeTab === pill.value
+                    return (
+                      <button
+                        key={pill.value}
+                        onClick={() => setTab(pill.value)}
+                        className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
+                        style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}
                       >
-                        <div className="flex items-center gap-1 flex-wrap pb-0.5">
-                          {group.pills.map(pill => {
-                            const isActive = activeTab === pill.value
-                            return (
-                              <button
-                                key={pill.value}
-                                onClick={() => setTab(pill.value)}
-                                className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
-                                style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}
-                              >
-                                {isActive && (
-                                  <motion.div
-                                    layoutId="calc-pill-bg"
-                                    className="absolute inset-0 rounded-sm"
-                                    style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
-                                    transition={{ type: 'spring', stiffness: 400, damping: 32 }}
-                                  />
-                                )}
-                                <span className="relative z-10">{pill.label}</span>
-                                <span className="relative z-10 font-mono text-[10px] ml-1.5 opacity-50">{pill.formula}</span>
-                              </button>
-                            )
-                          })}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                        {isActive && (
+                          <motion.div
+                            layoutId="calc-pill-bg"
+                            className="absolute inset-0 rounded-sm"
+                            style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
+                            transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                          />
+                        )}
+                        <span className="relative z-10">{pill.label}</span>
+                        <span className="relative z-10 font-mono text-[10px] ml-1.5 opacity-50">{pill.formula}</span>
+                      </button>
+                    )
+                  })}
                 </div>
-              )
-            })}
+              </div>
+            ))}
           </div>
         )}
 
