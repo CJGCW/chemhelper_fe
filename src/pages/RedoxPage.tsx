@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 import RedoxPractice from '../components/redox/RedoxPractice'
 import RedoxReference, { type RefTopic } from '../components/redox/RedoxReference'
 import ReactionClassifier from '../components/tools/ReactionClassifier'
@@ -121,9 +122,139 @@ const MODE_DEFAULT: Record<Mode, Tab> = {
   problems:  'practice',
 }
 
+const EXPLANATIONS: Partial<Record<Tab, ExplanationContent>> = {
+  classifier: {
+    title: 'Reaction Classification',
+    formula: 'synthesis · decomposition · single-disp · double-disp · combustion',
+    formulaVars: [
+      { symbol: 'Synthesis',    meaning: 'A + B → AB  (two or more reactants → one product)',        unit: '≥2 → 1'       },
+      { symbol: 'Decomp.',      meaning: 'AB → A + B  (one compound breaks into simpler products)',   unit: '1 → ≥2'       },
+      { symbol: 'Single disp.', meaning: 'A + BC → AC + B  (element replaces element in compound)',  unit: 'check activity' },
+      { symbol: 'Double disp.', meaning: 'AB + CD → AD + CB  (ions swap between two compounds)',     unit: 'ppt / gas / H₂O' },
+      { symbol: 'Combustion',   meaning: 'fuel + O₂ → CO₂ + H₂O  (complete combustion)',            unit: 'exothermic'    },
+    ],
+    description:
+      'Identify the reaction type by its structural pattern. Single displacement requires an element displacing an ion — check the activity series for feasibility. ' +
+      'Double displacement (metathesis) usually forms a precipitate, gas, or water. Combustion burns a fuel with O₂ to produce CO₂ and H₂O.',
+    example: {
+      scenario: 'Zn(s) + CuSO₄(aq) → ZnSO₄(aq) + Cu(s)',
+      steps: ['An element (Zn) displaces a metal ion (Cu²⁺) from solution', 'Zn is above Cu on the activity series'],
+      result: 'Single displacement',
+    },
+  },
+  'net-ionic': {
+    title: 'Net Ionic Equations',
+    formula: 'full → complete ionic → net ionic',
+    formulaVars: [
+      { symbol: 'aq', meaning: 'Dissolved ions — write dissociated', unit: 'ionic form'  },
+      { symbol: 's, l, g', meaning: 'Keep as molecular formula',    unit: 'molecular'   },
+      { symbol: 'spectator', meaning: 'Ions unchanged — cancel out', unit: 'cancel'      },
+    ],
+    description:
+      'Write the full molecular equation, then split all soluble ionic compounds into their ions (complete ionic equation). ' +
+      'Cancel spectator ions that appear identically on both sides. What remains is the net ionic equation, which shows only the actual chemical change.',
+    example: {
+      scenario: 'AgNO₃(aq) + NaCl(aq) → AgCl(s) + NaNO₃(aq)',
+      steps: ['Complete ionic: Ag⁺ + NO₃⁻ + Na⁺ + Cl⁻ → AgCl(s) + Na⁺ + NO₃⁻', 'Cancel Na⁺ and NO₃⁻ (spectators)'],
+      result: 'Net ionic: Ag⁺(aq) + Cl⁻(aq) → AgCl(s)',
+    },
+  },
+  predictor: {
+    title: 'Reaction Predictor',
+    formula: 'reactants → products (precipitation, acid-base, redox)',
+    formulaVars: [
+      { symbol: 'solubility', meaning: 'Determines if a precipitate forms',    unit: 'solubility rules' },
+      { symbol: 'activity',   meaning: 'Determines single-displacement outcome', unit: 'activity series' },
+    ],
+    description:
+      'Predict products by identifying the reaction type: for ionic solutions, apply solubility rules to find precipitates. ' +
+      'For single displacement, use the activity series. For combustion, produce CO₂ and H₂O. Balance the resulting equation.',
+    example: {
+      scenario: 'Mix Pb(NO₃)₂(aq) + KI(aq)',
+      steps: ['Possible products: PbI₂ and KNO₃', 'Solubility: PbI₂ is insoluble (precipitates); KNO₃ is soluble'],
+      result: 'Pb(NO₃)₂ + 2KI → PbI₂(s) + 2KNO₃',
+    },
+  },
+  activity: {
+    title: 'Activity Series',
+    formula: 'more active metal displaces less active metal ion',
+    formulaVars: [
+      { symbol: 'activity ↑', meaning: 'Higher on series = more easily oxidised', unit: '— more reactive' },
+      { symbol: 'M + M\'X', meaning: 'Reaction occurs if M is above M\' in series', unit: 'yes/no' },
+    ],
+    description:
+      'The activity series ranks metals by their tendency to lose electrons (be oxidised). ' +
+      'A metal higher on the list will displace a lower metal from its ionic solution. ' +
+      'Metals above H₂ react with acids; only the most active react with water.',
+    example: {
+      scenario: 'Will Fe react with CuSO₄(aq)?',
+      steps: ['Fe is above Cu in the activity series', 'Fe is more easily oxidised than Cu', 'Fe → Fe²⁺ + 2e⁻; Cu²⁺ + 2e⁻ → Cu'],
+      result: 'Yes: Fe(s) + CuSO₄(aq) → FeSO₄(aq) + Cu(s)',
+    },
+  },
+  electrolyte: {
+    title: 'Electrolyte Classification',
+    formula: 'strong → weak → non-electrolyte',
+    formulaVars: [
+      { symbol: 'strong',  meaning: 'Fully dissociates in water', unit: 'strong acids, strong bases, soluble salts' },
+      { symbol: 'weak',    meaning: 'Partially dissociates',      unit: 'weak acids/bases'                         },
+      { symbol: 'non',     meaning: 'Does not dissociate',        unit: 'molecular compounds (sugar, alcohols)'    },
+    ],
+    description:
+      'Electrolytes conduct electricity in solution by producing ions. Strong electrolytes dissociate completely (100%). ' +
+      'Weak electrolytes (weak acids/bases) exist mostly as molecules with a small fraction as ions. ' +
+      'Non-electrolytes dissolve but produce no ions.',
+    example: {
+      scenario: 'Classify: HCl, CH₃COOH, glucose (C₆H₁₂O₆) in water.',
+      steps: ['HCl → H⁺ + Cl⁻ completely: strong electrolyte', 'CH₃COOH ⇌ H⁺ + CH₃COO⁻ partially: weak electrolyte', 'Glucose dissolves intact: non-electrolyte'],
+      result: 'HCl: strong · CH₃COOH: weak · glucose: non-electrolyte',
+    },
+  },
+  'redox-practice': {
+    title: 'Redox Reactions',
+    formula: 'OA gains e⁻ (reduced) · RA loses e⁻ (oxidised)',
+    formulaVars: [
+      { symbol: 'OA', meaning: 'Oxidising agent — gains electrons, is reduced', unit: 'oxidation state ↓' },
+      { symbol: 'RA', meaning: 'Reducing agent — loses electrons, is oxidised', unit: 'oxidation state ↑' },
+    ],
+    description:
+      'Assign oxidation states to identify what is oxidised (ox. state increases) and what is reduced (ox. state decreases). ' +
+      'Balance redox equations using the half-reaction method: split into oxidation and reduction half-reactions, balance atoms and charge, then combine.',
+    example: {
+      scenario: 'MnO₄⁻ + Fe²⁺ → Mn²⁺ + Fe³⁺ in acid — what is oxidised?',
+      steps: ['Mn: +7 → +2 (decrease, reduced — MnO₄⁻ is the oxidising agent)', 'Fe: +2 → +3 (increase, oxidised — Fe²⁺ is the reducing agent)'],
+      result: 'Fe²⁺ is oxidised; MnO₄⁻ is reduced',
+    },
+  },
+  ecell: {
+    title: 'E°cell and Nernst Equation',
+    formula: 'E°cell = E°cathode − E°anode    E = E° − (0.05916/n) log Q',
+    formulaVars: [
+      { symbol: 'E°',  meaning: 'Standard cell potential', unit: 'V'            },
+      { symbol: 'n',   meaning: 'Moles of electrons transferred', unit: 'mol'  },
+      { symbol: 'Q',   meaning: 'Reaction quotient',        unit: '—'           },
+      { symbol: 'R, F', meaning: 'Gas constant, Faraday constant', unit: 'J/mol·K, C/mol' },
+    ],
+    description:
+      'E°cell = E°cathode − E°anode gives the cell potential under standard conditions (1 M, 1 atm, 25°C). ' +
+      'The Nernst equation corrects for non-standard concentrations: at 25°C, E = E° − (0.05916/n)·log Q. ' +
+      'Positive E°cell means spontaneous under standard conditions.',
+    example: {
+      scenario: 'Zn | Zn²⁺(0.10 M) || Cu²⁺(1.0 M) | Cu.  E°(Zn²⁺/Zn)=−0.763 V, E°(Cu²⁺/Cu)=+0.337 V.  n=2.',
+      steps: [
+        'E°cell = 0.337 − (−0.763) = 1.100 V',
+        'Q = [Zn²⁺]/[Cu²⁺] = 0.10/1.0 = 0.10',
+        'E = 1.100 − (0.05916/2)·log(0.10) = 1.100 + 0.0296',
+      ],
+      result: 'E = 1.130 V',
+    },
+  },
+}
+
 export default function RedoxPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [printingAll, setPrintingAll] = useState(false)
+  const [showExplanation, setShowExplanation] = useState(false)
 
   const activeTab = (searchParams.get('tab') as Tab) ?? 'classifier'
 
@@ -188,6 +319,16 @@ export default function RedoxPage() {
               <span>Print All</span>
             </button>
           )}
+          {EXPLANATIONS[activeTab] && (
+            <button
+              onClick={() => setShowExplanation(true)}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm border border-border
+                         font-sans text-xs text-secondary hover:text-primary hover:border-muted transition-colors"
+            >
+              <span className="font-mono">?</span>
+              <span>What is this</span>
+            </button>
+          )}
         </div>
         {/* Mode toggle switch */}
         <div className="flex items-center gap-1 p-1 rounded-full self-start print:hidden"
@@ -237,9 +378,10 @@ export default function RedoxPage() {
 
         {/* Tab pills for active mode */}
         {activeMode !== 'reference' && (
-          <div className="flex flex-col gap-3 print:hidden">
+          <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:gap-x-6 md:gap-y-3 print:hidden">
             {activeGroups.map(group => (
-              <div key={group.id} className="flex flex-col gap-2">
+              <div key={group.id} className="flex flex-col gap-2 px-3 py-2 rounded-sm"
+                style={{ background: '#0a0c12', border: '1px solid #1c1f2e' }}>
                 <p className="font-mono text-xs text-secondary tracking-widest uppercase">{group.label}</p>
                 <div className="flex items-center gap-1 flex-wrap">
                   {group.pills.map(pill => {
@@ -373,6 +515,14 @@ export default function RedoxPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {EXPLANATIONS[activeTab] && (
+        <ExplanationModal
+          content={EXPLANATIONS[activeTab]!}
+          open={showExplanation}
+          onClose={() => setShowExplanation(false)}
+        />
+      )}
     </div>
   )
 }

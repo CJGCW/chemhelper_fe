@@ -1,5 +1,6 @@
 import type React from 'react'
 import { MolesExample, MolarityExample, MolalityExample, ConcentrationExample } from './animations/MolarExamples'
+import { ColligativeVisual } from './animations/ColligativeVisual'
 
 // ── Concept cards ─────────────────────────────────────────────────────────────
 
@@ -643,15 +644,18 @@ export default function MolarReference({ section = 'guide', topic, view = 'refer
   // Per-topic visual view
   if (topic && view === 'visual') {
     const VISUALS: Partial<Record<RefTopic, { title: string; formula: string; node: React.ReactNode }>> = {
-      moles:    { title: 'Moles from Mass',         formula: 'n = m / M',    node: <MolesExample /> },
-      molarity: { title: 'Molarity',                formula: 'C = n / V',    node: <MolarityExample /> },
-      molality: { title: 'Molality',                formula: 'b = n / m',    node: <MolalityExample /> },
-      dilution: { title: 'Concentration & Dilution', formula: 'C₁V₁ = C₂V₂', node: <ConcentrationExample /> },
+      moles:           { title: 'Moles from Mass',           formula: 'n = m / M',      node: <MolesExample /> },
+      molarity:        { title: 'Molarity',                  formula: 'C = n / V',      node: <MolarityExample /> },
+      molality:        { title: 'Molality',                  formula: 'b = n / m',      node: <MolalityExample /> },
+      dilution:        { title: 'Concentration & Dilution',  formula: 'C₁V₁ = C₂V₂',   node: <ConcentrationExample /> },
+      'colligative-bpe': { title: 'Boiling Point Elevation', formula: 'ΔTb = i · Kb · b', node: <ColligativeVisual mode="bpe" /> },
+      'colligative-fpd': { title: 'Freezing Point Depression', formula: 'ΔTf = i · Kf · b', node: <ColligativeVisual mode="fpd" /> },
     }
     const viz = VISUALS[topic]
     if (!viz) return null
+    const wide = topic === 'colligative-bpe' || topic === 'colligative-fpd'
     return (
-      <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2 max-w-lg">
+      <div className={`rounded-sm border border-border bg-surface p-4 flex flex-col gap-2 ${wide ? 'max-w-2xl' : 'max-w-lg'}`}>
         <p className="font-sans text-sm font-semibold text-bright">{viz.title}</p>
         <p className="font-mono text-xs text-secondary">{viz.formula}</p>
         {viz.node}

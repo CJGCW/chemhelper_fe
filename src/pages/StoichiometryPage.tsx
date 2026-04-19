@@ -279,9 +279,10 @@ export default function StoichiometryPage() {
 
   function renderGroups(groups: TabGroup[], layoutPrefix: string) {
     return (
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:gap-x-6 md:gap-y-3">
         {groups.map(group => (
-          <div key={group.id} className="flex flex-col gap-2">
+          <div key={group.id} className="flex flex-col gap-2 px-3 py-2 rounded-sm"
+            style={{ background: '#0a0c12', border: '1px solid #1c1f2e' }}>
             <p className="font-mono text-xs text-secondary tracking-widest uppercase">{group.label}</p>
             <div className="flex items-center gap-1 flex-wrap">
               {group.pills.map(pill => {

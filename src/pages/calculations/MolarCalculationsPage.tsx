@@ -56,7 +56,7 @@ const REFERENCE_GROUPS: ReferenceGroup[] = [
 ]
 
 // Topics that have animated visual counterparts
-const VISUAL_TAB_IDS = new Set<CalcType>(['ref-moles', 'ref-molarity', 'ref-molality', 'ref-dilution'])
+const VISUAL_TAB_IDS = new Set<CalcType>(['ref-moles', 'ref-molarity', 'ref-molality', 'ref-dilution', 'ref-colligative-bpe', 'ref-colligative-fpd'])
 
 type PracticePill = { value: CalcType; label: string; formula: string }
 type PracticeGroup = { id: string; label: string; pills: PracticePill[] }
@@ -104,39 +104,57 @@ const PRACTICE_TAB_IDS = new Set<CalcType>([
 ])
 const PROBLEMS_TAB_IDS = new Set<CalcType>(PROBLEMS_PILLS.map(p => p.value))
 
-const EXPLANATIONS: Partial<Record<CalcType, ExplanationContent>> = {
-  colligative: {
-    title: 'Colligative Properties',
-    formula: 'ΔT = i · K · b',
-    formulaVars: [
-      { symbol: 'ΔT', meaning: 'Change in boiling/freezing point', unit: '°C' },
-      { symbol: 'i',  meaning: "van't Hoff factor", unit: '—' },
-      { symbol: 'K',  meaning: 'Ebullioscopic (Kb) or cryoscopic (Kf) constant', unit: '°C·kg/mol' },
-      { symbol: 'b',  meaning: 'Molality of solution', unit: 'mol/kg' },
-    ],
-    description:
-      'Colligative properties depend only on the number of dissolved particles, not their identity. ' +
-      'Boiling point elevation (ΔTb = i·Kb·b) raises the boiling point; freezing point depression ' +
-      '(ΔTf = i·Kf·b) lowers the freezing point.',
-    example: {
-      scenario: '1.00 mol/kg NaCl (i=2) in water — find boiling point elevation.',
-      steps: ['ΔTb = i · Kb · b = 2 × 0.512 × 1.00', 'ΔTb = 1.024 °C'],
-      result: 'ΔTb = 1.024 °C',
-    },
-  },
+const TAB_TO_TOPIC: Partial<Record<CalcType, string>> = {
+  'ref-moles':          'moles',        'moles':          'moles',
+  'ref-molarity':       'molarity',     'molarity':       'molarity',
+  'ref-molality':       'molality',     'molality':       'molality',
+  'ref-molar-volume':   'molar-volume', 'molar-volume':   'molar-volume',
+  'ref-dilution':       'dilution',     'dilution':       'dilution',     'conc-practice': 'dilution',
+  'ref-other':          'conc-cvt',     'conc-converter': 'conc-cvt',
+  'ref-colligative-bpe':'collig-bpe',   'colligative-bpe':'collig-bpe',
+  'ref-colligative-fpd':'collig-fpd',   'colligative-fpd':'collig-fpd',
+  'percent-comp':       'pct-comp',     'perc-comp-practice': 'pct-comp',
+  'practice':           'moles',        // problems default maps back to moles
+  'sig-figs':           'sig-figs',
+}
+
+const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, CalcType>>> = {
+  'moles':       { reference: 'ref-moles',          practice: 'moles',          problems: 'practice'          },
+  'molarity':    { reference: 'ref-molarity',        practice: 'molarity',       problems: 'practice'          },
+  'molality':    { reference: 'ref-molality',        practice: 'molality',       problems: 'practice'          },
+  'molar-volume':{ reference: 'ref-molar-volume',    practice: 'molar-volume',   problems: 'practice'          },
+  'dilution':    { reference: 'ref-dilution',        practice: 'dilution',       problems: 'conc-practice'     },
+  'conc-cvt':    { reference: 'ref-other',           practice: 'conc-converter', problems: 'conc-practice'     },
+  'pct-comp':    { reference: 'ref-other',           practice: 'percent-comp',   problems: 'perc-comp-practice'},
+  'collig-bpe':  { reference: 'ref-colligative-bpe', practice: 'colligative-bpe',problems: 'practice'          },
+  'collig-fpd':  { reference: 'ref-colligative-fpd', practice: 'colligative-fpd',problems: 'practice'          },
+  'sig-figs':    { problems: 'sig-figs' },
+}
+
+const MODE_DEFAULT: Record<Mode, CalcType> = {
+  reference: 'ref-moles',
+  practice:  'moles',
+  problems:  'practice',
+}
+
+// Shared content objects — reused across reference, practice, and problems tabs
+const _EXP: Record<string, ExplanationContent> = {
   moles: {
     title: 'Mole Calculations',
     formula: 'n = m / M',
     formulaVars: [
-      { symbol: 'n', meaning: 'Amount of substance', unit: 'mol' },
-      { symbol: 'm', meaning: 'Mass of substance', unit: 'g' },
-      { symbol: 'M', meaning: 'Molar mass', unit: 'g/mol' },
+      { symbol: 'n', meaning: 'Amount of substance', unit: 'mol'   },
+      { symbol: 'm', meaning: 'Mass of substance',   unit: 'g'     },
+      { symbol: 'M', meaning: 'Molar mass',          unit: 'g/mol' },
     ],
-    description: 'The mole is the SI unit for amount of substance.',
+    description:
+      'The mole (mol) is the SI unit for amount of substance — 6.022×10²³ particles. ' +
+      'Divide the mass by the molar mass to get moles; multiply moles by molar mass to get grams. ' +
+      'Molar mass equals the atomic/formula mass in g/mol.',
     example: {
-      scenario: 'How many moles are in 18.02 g of water (M = 18.02 g/mol)?',
-      steps: ['n = m / M = 18.02 ÷ 18.02', 'n = 1.000 mol'],
-      result: 'n = 1.000 mol',
+      scenario: 'How many moles are in 45.0 g of water (M = 18.02 g/mol)?',
+      steps: ['n = m / M = 45.0 g ÷ 18.02 g/mol', 'n = 2.498 mol'],
+      result: 'n = 2.50 mol (3 sf)',
     },
   },
   molarity: {
@@ -144,79 +162,193 @@ const EXPLANATIONS: Partial<Record<CalcType, ExplanationContent>> = {
     formula: 'C = n / V',
     formulaVars: [
       { symbol: 'C', meaning: 'Molar concentration', unit: 'mol/L' },
-      { symbol: 'n', meaning: 'Moles of solute', unit: 'mol' },
-      { symbol: 'V', meaning: 'Volume of solution', unit: 'L' },
+      { symbol: 'n', meaning: 'Moles of solute',     unit: 'mol'   },
+      { symbol: 'V', meaning: 'Volume of solution',  unit: 'L'     },
     ],
-    description: 'Molarity expresses moles of solute per litre of solution.',
+    description:
+      'Molarity (C) expresses moles of solute per litre of solution — not per litre of solvent. ' +
+      'Rearrange to find n = C·V or V = n/C. Always convert volumes to litres before calculating.',
     example: {
-      scenario: '5.85 g NaCl in 250.0 mL. Find molarity.',
-      steps: ['n = 5.85/58.44 = 0.1001 mol', 'C = 0.1001/0.2500 = 0.4003 mol/L'],
+      scenario: '5.85 g NaCl (M = 58.44 g/mol) dissolved to make 250.0 mL of solution. Find C.',
+      steps: ['n = 5.85 / 58.44 = 0.1001 mol', 'C = n / V = 0.1001 / 0.2500'],
       result: 'C = 0.4003 mol/L',
+    },
+  },
+  molality: {
+    title: 'Molality',
+    formula: 'b = n / m_solvent',
+    formulaVars: [
+      { symbol: 'b', meaning: 'Molality',            unit: 'mol/kg' },
+      { symbol: 'n', meaning: 'Moles of solute',     unit: 'mol'    },
+      { symbol: 'm', meaning: 'Mass of solvent',     unit: 'kg'     },
+    ],
+    description:
+      'Molality (b) uses mass of solvent rather than volume of solution, making it temperature-independent. ' +
+      'Used in colligative property calculations (ΔTb, ΔTf). ' +
+      'Convert solvent mass to kg: divide grams by 1000.',
+    example: {
+      scenario: '10.0 g glucose (M = 180.2 g/mol) dissolved in 200.0 g of water. Find b.',
+      steps: ['n = 10.0 / 180.2 = 0.05549 mol', 'b = n / m = 0.05549 mol / 0.2000 kg'],
+      result: 'b = 0.277 mol/kg',
+    },
+  },
+  'molar-volume': {
+    title: 'Molar Volume',
+    formula: 'V = n × Vm',
+    formulaVars: [
+      { symbol: 'V',  meaning: 'Volume of gas',  unit: 'L'     },
+      { symbol: 'n',  meaning: 'Moles of gas',   unit: 'mol'   },
+      { symbol: 'Vm', meaning: 'Molar volume',   unit: 'L/mol' },
+    ],
+    description:
+      'At standard conditions, one mole of any ideal gas occupies the molar volume. ' +
+      'STP (0°C, 1 atm): Vm = 22.414 L/mol. SATP (25°C, 100 kPa): Vm = 24.789 L/mol. ' +
+      'Rearrange to find n = V / Vm.',
+    example: {
+      scenario: 'What volume does 3.00 mol of O₂ occupy at STP?',
+      steps: ['V = n × Vm = 3.00 mol × 22.414 L/mol'],
+      result: 'V = 67.2 L',
+    },
+  },
+  'percent-comp': {
+    title: 'Percent Composition',
+    formula: '% element = (mass of element / molar mass) × 100',
+    formulaVars: [
+      { symbol: '%',  meaning: 'Mass percent of element',     unit: '%'     },
+      { symbol: 'M_element', meaning: 'Mass of element in 1 mol formula', unit: 'g/mol' },
+      { symbol: 'M_formula', meaning: 'Molar mass of compound', unit: 'g/mol' },
+    ],
+    description:
+      'Percent composition gives the mass fraction of each element in a compound. ' +
+      'Multiply element\'s atomic mass by its subscript, divide by the formula\'s molar mass, multiply by 100. ' +
+      'All element percentages in a compound must sum to 100%.',
+    example: {
+      scenario: 'Find the % composition of H₂O (M = 18.02 g/mol).',
+      steps: ['%H = (2 × 1.008 / 18.02) × 100 = 11.19%', '%O = (16.00 / 18.02) × 100 = 88.81%'],
+      result: '%H = 11.19%, %O = 88.81%',
     },
   },
   dilution: {
     title: 'Dilution',
     formula: 'C₁V₁ = C₂V₂',
     formulaVars: [
-      { symbol: 'C₁', meaning: 'Initial concentration', unit: 'mol/L' },
-      { symbol: 'V₁', meaning: 'Initial volume', unit: 'L or mL' },
-      { symbol: 'C₂', meaning: 'Final concentration', unit: 'mol/L' },
-      { symbol: 'V₂', meaning: 'Final volume', unit: 'L or mL' },
+      { symbol: 'C₁', meaning: 'Initial concentration', unit: 'mol/L'    },
+      { symbol: 'V₁', meaning: 'Initial volume',         unit: 'L or mL' },
+      { symbol: 'C₂', meaning: 'Final concentration',   unit: 'mol/L'    },
+      { symbol: 'V₂', meaning: 'Final volume',           unit: 'L or mL' },
     ],
     description:
-      'Dilution is the process of adding solvent to reduce the concentration of a solution. ' +
-      'Moles of solute are conserved: n = C·V, so C₁V₁ = C₂V₂. ' +
-      'Solve for any unknown by rearranging: C₂ = C₁V₁/V₂, V₂ = C₁V₁/C₂, V₁ = C₂V₂/C₁.',
+      'Dilution adds solvent to reduce concentration while keeping moles of solute constant (n = C·V). ' +
+      'C₁V₁ = C₂V₂ — rearrange to find any unknown. Units of volume can be mL as long as they match on both sides.',
     example: {
-      scenario: 'Dilute 25.0 mL of 6.00 M HCl to 150.0 mL. Find C₂.',
-      steps: [
-        'C₂ = C₁V₁ / V₂ = (6.00 mol/L × 25.0 mL) / 150.0 mL',
-        'C₂ = 150.0 / 150.0 = 1.00 mol/L',
-      ],
+      scenario: 'Dilute 25.0 mL of 6.00 M HCl to a final volume of 150.0 mL. Find C₂.',
+      steps: ['C₂ = C₁V₁ / V₂ = (6.00 × 25.0) / 150.0'],
       result: 'C₂ = 1.00 mol/L',
     },
   },
   'conc-converter': {
-    title: 'Concentration Units',
-    formula: 'C ↔ w% ↔ ppm ↔ χ',
+    title: 'Concentration Unit Interconversions',
+    formula: 'C ↔ w% ↔ b ↔ χ ↔ ppm',
     formulaVars: [
-      { symbol: 'C',   meaning: 'Molarity',     unit: 'mol/L'  },
-      { symbol: 'w%',  meaning: 'Mass percent',  unit: '% w/w'  },
-      { symbol: 'ppm', meaning: 'Parts per million (dilute aq.)', unit: 'mg/L' },
-      { symbol: 'χ',   meaning: 'Mole fraction', unit: '—'      },
-      { symbol: 'b',   meaning: 'Molality',       unit: 'mol/kg' },
+      { symbol: 'C',   meaning: 'Molarity',                        unit: 'mol/L'  },
+      { symbol: 'w%',  meaning: 'Mass percent',                    unit: '% w/w'  },
+      { symbol: 'b',   meaning: 'Molality',                        unit: 'mol/kg' },
+      { symbol: 'χ',   meaning: 'Mole fraction',                   unit: '—'      },
+      { symbol: 'ppm', meaning: 'Parts per million (dilute aq.)',  unit: 'mg/L'   },
     ],
     description:
-      'Key interconversion formulas (ρ = solution density in g/mL, Mw = molar mass in g/mol): ' +
-      'C = (w/100 × ρ × 1000) / Mw · · · ' +
-      'w% = (C × Mw) / (ρ × 10) · · · ' +
-      'C = ppm / (Mw × 1000) [for dilute aq.] · · · ' +
-      'b = (C × 1000) / (ρ × 1000 − C × Mw)',
+      'All concentration units express amount of solute per amount of solution or solvent, but use different bases. ' +
+      'Key interconversions require density (ρ, g/mL) and molar mass (M, g/mol). ' +
+      'C = (w% × ρ × 10) / M   ·   b = (C × 1000) / (ρ × 1000 − C × M).',
     example: {
-      scenario: 'Concentrated HCl: 37.0% (w/w), ρ = 1.19 g/mL, Mw = 36.46 g/mol. Find molarity.',
-      steps: [
-        'C = (37.0/100 × 1.19 × 1000) / 36.46',
-        'C = 440.3 / 36.46',
-        'C = 12.07 mol/L',
-      ],
+      scenario: 'Conc. HCl: 37.0% (w/w), ρ = 1.19 g/mL, M = 36.46 g/mol. Find C.',
+      steps: ['C = (37.0 × 1.19 × 10) / 36.46 = 440.3 / 36.46'],
       result: 'C ≈ 12.1 mol/L',
     },
   },
-  molality: {
-    title: 'Molality',
-    formula: 'b = n / m',
+  'colligative-bpe': {
+    title: 'Boiling Point Elevation',
+    formula: 'ΔTb = i · Kb · b',
     formulaVars: [
-      { symbol: 'b', meaning: 'Molality', unit: 'mol/kg' },
-      { symbol: 'n', meaning: 'Moles of solute', unit: 'mol' },
-      { symbol: 'm', meaning: 'Mass of solvent', unit: 'kg' },
+      { symbol: 'ΔTb', meaning: 'Boiling point elevation',  unit: '°C'        },
+      { symbol: 'i',   meaning: "Van't Hoff factor",         unit: '—'         },
+      { symbol: 'Kb',  meaning: 'Ebullioscopic constant',   unit: '°C·kg/mol' },
+      { symbol: 'b',   meaning: 'Molality',                  unit: 'mol/kg'    },
     ],
-    description: 'Molality is temperature-independent, used in colligative property calculations.',
+    description:
+      'Dissolved solute particles reduce the vapour pressure of the solvent, requiring a higher temperature to boil. ' +
+      'i accounts for dissociation: NaCl → 2 ions (i≈2), glucose stays molecular (i=1). ' +
+      'New boiling point = normal b.p. + ΔTb.',
     example: {
-      scenario: '10.0 g glucose (M=180.2) in 200.0 g water.',
-      steps: ['n = 10.0/180.2 = 0.05549 mol', 'b = 0.05549/0.2000 = 0.2775 mol/kg'],
-      result: 'b = 0.2775 mol/kg',
+      scenario: '1.00 mol/kg NaCl (i=2) in water (Kb = 0.512 °C·kg/mol). Find ΔTb.',
+      steps: ['ΔTb = i × Kb × b = 2 × 0.512 × 1.00', 'New b.p. = 100.0 + 1.024'],
+      result: 'ΔTb = 1.024 °C → b.p. = 101.024°C',
     },
   },
+  'colligative-fpd': {
+    title: 'Freezing Point Depression',
+    formula: 'ΔTf = i · Kf · b',
+    formulaVars: [
+      { symbol: 'ΔTf', meaning: 'Freezing point depression', unit: '°C'        },
+      { symbol: 'i',   meaning: "Van't Hoff factor",          unit: '—'         },
+      { symbol: 'Kf',  meaning: 'Cryoscopic constant',        unit: '°C·kg/mol' },
+      { symbol: 'b',   meaning: 'Molality',                   unit: 'mol/kg'    },
+    ],
+    description:
+      'Solute particles disrupt the crystal lattice that forms when the solvent freezes, lowering the freezing point. ' +
+      'i accounts for dissociation. ' +
+      'New freezing point = normal f.p. − ΔTf.',
+    example: {
+      scenario: '0.50 mol/kg glucose (i=1) in water (Kf = 1.86 °C·kg/mol). Find ΔTf.',
+      steps: ['ΔTf = 1 × 1.86 × 0.50 = 0.93°C', 'New f.p. = 0.0 − 0.93'],
+      result: 'ΔTf = 0.93°C → f.p. = −0.93°C',
+    },
+  },
+  'sig-figs': {
+    title: 'Significant Figures',
+    formula: 'result sf = fewest sf in inputs',
+    formulaVars: [
+      { symbol: '×÷', meaning: 'Multiply/divide → match fewest sf in inputs', unit: 'count sf' },
+      { symbol: '±',  meaning: 'Add/subtract → match fewest decimal places',  unit: 'decimal places' },
+    ],
+    description:
+      'Sig figs reflect measurement precision. Non-zero digits always count; zeros between non-zeros count; ' +
+      'trailing zeros after a decimal count; leading zeros never count. ' +
+      'For × and ÷, round the result to the fewest sig figs of any input. For + and −, round to the fewest decimal places.',
+    example: {
+      scenario: '12.5 × 1.23 = ?',
+      steps: ['12.5 has 3 sf; 1.23 has 3 sf', 'Result: 15.375 → round to 3 sf'],
+      result: '15.4',
+    },
+  },
+}
+
+const EXPLANATIONS: Partial<Record<CalcType, ExplanationContent>> = {
+  // Practice tabs
+  'moles':           _EXP.moles,
+  'molarity':        _EXP.molarity,
+  'molality':        _EXP.molality,
+  'molar-volume':    _EXP['molar-volume'],
+  'percent-comp':    _EXP['percent-comp'],
+  'dilution':        _EXP.dilution,
+  'conc-converter':  _EXP['conc-converter'],
+  'colligative-bpe': _EXP['colligative-bpe'],
+  'colligative-fpd': _EXP['colligative-fpd'],
+  'colligative':     _EXP['colligative-bpe'],  // backwards compat
+  // Reference tabs — same content
+  'ref-moles':           _EXP.moles,
+  'ref-molarity':        _EXP.molarity,
+  'ref-molality':        _EXP.molality,
+  'ref-molar-volume':    _EXP['molar-volume'],
+  'ref-dilution':        _EXP.dilution,
+  'ref-other':           _EXP['conc-converter'],
+  'ref-colligative-bpe': _EXP['colligative-bpe'],
+  'ref-colligative-fpd': _EXP['colligative-fpd'],
+  // Problems tabs
+  'practice':           _EXP.moles,
+  'perc-comp-practice': _EXP['percent-comp'],
+  'conc-practice':      _EXP.dilution,
+  'sig-figs':           _EXP['sig-figs'],
 }
 
 // Map ref-* tab values to RefTopic
@@ -277,9 +409,9 @@ export default function MolarCalculationsPage() {
 
   function setMode(mode: Mode) {
     if (mode === activeMode) return
-    if (mode === 'practice') setTab('moles')
-    else if (mode === 'problems') setTab('practice')
-    else setTab('ref-moles')
+    const topic = TAB_TO_TOPIC[activeTab]
+    const next = (topic ? TOPIC_MODE_TAB[topic]?.[mode] : undefined) ?? MODE_DEFAULT[mode]
+    setTab(next as CalcType)
   }
 
   const showExplanationButton = !!EXPLANATIONS[activeTab]
@@ -376,9 +508,10 @@ export default function MolarCalculationsPage() {
             })}
           </div>
         ) : (
-          <div className="flex flex-col gap-3 print:hidden">
+          <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:gap-x-8 md:gap-y-3 print:hidden">
             {(activeMode === 'reference' ? REFERENCE_GROUPS : PRACTICE_GROUPS).map(group => (
-              <div key={group.id} className="flex flex-col gap-2">
+              <div key={group.id} className="flex flex-col gap-2 px-3 py-2 rounded-sm"
+                style={{ background: '#0a0c12', border: '1px solid #1c1f2e' }}>
                 <p className="font-mono text-xs text-secondary tracking-widest uppercase">{group.label}</p>
                 <div className="flex items-center gap-1 flex-wrap">
                   {group.pills.map(pill => {
@@ -468,7 +601,7 @@ export default function MolarCalculationsPage() {
       )}
       </HideExamplesContext.Provider>
 
-      {activeTab !== 'practice' && EXPLANATIONS[activeTab] && (
+      {EXPLANATIONS[activeTab] && (
         <ExplanationModal
           content={EXPLANATIONS[activeTab]!}
           open={showExplanation}

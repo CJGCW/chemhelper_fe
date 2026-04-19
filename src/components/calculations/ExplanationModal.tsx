@@ -67,7 +67,7 @@ export default function ExplanationModal({ content, open, onClose }: Props) {
                   {content.formulaVars.map(v => (
                     <div key={v.symbol} className="flex items-baseline gap-3 py-2">
                       <span
-                        className="font-mono text-base w-6 shrink-0"
+                        className="font-mono text-base shrink-0 whitespace-nowrap"
                         style={{ color: 'var(--c-halogen)' }}
                       >
                         {v.symbol}

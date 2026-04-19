@@ -44,7 +44,7 @@ function SubItem({ formula, label, isActive, onClick }: {
       style={{ width: "calc(100% - 16px)" }}
     >
       <span className="font-mono text-[9px] opacity-50 shrink-0">{formula}</span>
-      <span className="truncate text-xs">{label}</span>
+      <span className="truncate text-[14px]">{label}</span>
     </button>
   )
 }
@@ -136,7 +136,7 @@ function TableGroupedItems({ onNavigate }: { onNavigate: () => void }) {
               onClick={() => toggleGroup(group.label)}
               className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
             >
-              <span className={`font-mono text-[11px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
+              <span className={`font-mono text-[13px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
                 {group.label}
               </span>
               <motion.span
@@ -269,7 +269,7 @@ function CalcGroupedItems({ onNavigate }: { onNavigate: () => void }) {
               onClick={() => toggleGroup(group.label)}
               className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
             >
-              <span className={`font-mono text-[11px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
+              <span className={`font-mono text-[13px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
                 {group.label}
               </span>
               <motion.span
@@ -365,7 +365,7 @@ function IdealGasGroupedItems({ onNavigate }: { onNavigate: () => void }) {
               onClick={() => toggleGroup(group.label)}
               className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
             >
-              <span className={`font-mono text-[11px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
+              <span className={`font-mono text-[13px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
                 {group.label}
               </span>
               <motion.span
@@ -462,7 +462,7 @@ function StoichGroupedItems({ onNavigate }: { onNavigate: () => void }) {
               onClick={() => toggleGroup(group.label)}
               className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
             >
-              <span className={`font-mono text-[11px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
+              <span className={`font-mono text-[13px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
                 {group.label}
               </span>
               <motion.span
@@ -559,7 +559,7 @@ function RedoxGroupedItems({ onNavigate }: { onNavigate: () => void }) {
               onClick={() => toggleGroup(group.label)}
               className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
             >
-              <span className={`font-mono text-[11px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
+              <span className={`font-mono text-[13px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
                 {group.label}
               </span>
               <motion.span
@@ -660,7 +660,7 @@ function ThermoGroupedItems({ onNavigate }: { onNavigate: () => void }) {
               onClick={() => toggleGroup(group.label)}
               className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
             >
-              <span className={`font-mono text-[11px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
+              <span className={`font-mono text-[13px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
                 {group.label}
               </span>
               <motion.span

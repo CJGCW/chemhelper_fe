@@ -56,7 +56,7 @@ export default function AppLayout() {
             <span className="block h-px w-full bg-secondary" />
           </button>
 
-          <h1 className="font-sans font-medium text-primary text-sm lg:text-base tracking-wide">
+          <h1 className="font-sans font-medium text-bright text-sm lg:text-base tracking-wide">
             {title}
           </h1>
 
@@ -65,7 +65,10 @@ export default function AppLayout() {
         </header>
 
         {/* Page content */}
-        <main ref={mainRef} className="flex-1 overflow-y-auto overflow-x-hidden print:overflow-visible">
+        <main
+          ref={mainRef}
+          className="flex-1 overflow-y-auto overflow-x-hidden print:overflow-visible"
+        >
           <Outlet />
         </main>
       </div>

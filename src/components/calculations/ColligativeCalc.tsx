@@ -8,9 +8,7 @@ import MassToMolesHelper from "./MassToMolesHelper";
 import ResultDisplay from "./ResultDisplay";
 import StepsPanel from "./StepsPanel";
 import SigFigPanel from "./SigFigPanel";
-import Beaker from "./animations/Beaker";
-import Thermometer from "./animations/Thermometer";
-import { sanitize, hasValue, ANIMATION_RESTART_DELAY_MS } from "../../utils/calcHelpers";
+import { sanitize, hasValue } from "../../utils/calcHelpers";
 
 /** Format a raw number cleanly — no scientific notation, no trailing zeros */
 function fmtRaw(n: number): string {
@@ -79,10 +77,6 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [verified, setVerified] = useState<VerifyState>(null);
 
-  // Animation state
-  const [beakerMolality, setBeakerMolality] = useState<number | null>(null);
-  const [beakerPlaying, setBeakerPlaying] = useState(false);
-  const [thermoTemp, setThermoTemp] = useState<number | null>(null);
 
   const K = mode === "bpe" ? solvent.kb : solvent.kf;
   const baseT = mode === "bpe" ? solvent.bp : solvent.fp;
@@ -97,13 +91,6 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
     setSteps([]);
     setError(null);
     setVerified(null);
-  }
-
-  function triggerAnimations(newTempC: number, molality: number) {
-    setBeakerMolality(molality);
-    setThermoTemp(newTempC);
-    setBeakerPlaying(false);
-    setTimeout(() => setBeakerPlaying(true), ANIMATION_RESTART_DELAY_MS);
   }
 
   function handleMassToMolesResolved(
@@ -189,7 +176,6 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
         setResultUnit("°C");
         setResultLabel(dSym);
         setResultNewPoint(`${npStr(expected, limSF)} °C`);
-        triggerAnimations(npVal(expected), b);
         return;
       }
 
@@ -219,7 +205,6 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
             "°C",
           ),
         );
-        triggerAnimations(npVal(res), b);
       } else {
         if (isNaN(dT) || K === 0 || i === 0) {
           setError("Invalid values.");
@@ -244,7 +229,6 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
             "mol/kg",
           ),
         );
-        triggerAnimations(baseT, res);
       }
     } catch {
       setError("An unexpected error occurred.");
@@ -257,7 +241,7 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
   const isVerify = hasValue(molalityValue) && hasValue(deltaValue);
 
   const form = (
-    <div className="flex flex-col gap-5 h-full">
+    <div className="flex flex-col gap-5">
       {/* BPE / FPD sub-pills */}
       <div className="flex gap-0 rounded-sm overflow-hidden border border-border self-start">
         {(["bpe", "fpd"] as Mode[]).map((m) => (
@@ -545,40 +529,7 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Two-column: form + animations */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-        {form}
-
-        {/* Animations — beaker left, thermometer right */}
-        <div className="flex items-end justify-center gap-4">
-          <div className="min-w-0 flex-1 max-w-[480px]">
-            <Beaker
-              liquidAmount={
-                solventMassValue && beakerMolality != null
-                  ? (parseFloat(solventMassValue) * solventMassUnit.toGrams) /
-                    1000
-                  : beakerMolality != null
-                    ? 0.5
-                    : null
-              }
-              concentration={beakerMolality}
-              concMax={5}
-              concUnit="mol/kg"
-              concDisplay={null}
-              moles={beakerMolality != null ? beakerMolality * 0.5 : null}
-              playing={beakerPlaying}
-              onComplete={() => setBeakerPlaying(false)}
-            />
-          </div>
-          <div className="w-[220px] shrink-0">
-            <Thermometer
-              temperature={thermoTemp}
-              pureTemperature={baseT}
-              mode={mode}
-            />
-          </div>
-        </div>
-      </div>
+      {form}
 
       {/* Results — full width */}
       {(steps.length > 0 || result) && (
