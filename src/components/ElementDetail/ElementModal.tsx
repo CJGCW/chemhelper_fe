@@ -100,7 +100,7 @@ function IonsTab({ el, color }: { el: NonNullable<Element>; color: string }) {
   if (isNobleGas || ions.length === 0) {
     return (
       <div className="py-6 flex flex-col items-center gap-2">
-        <span className="font-mono text-2xl" style={{ color: 'rgba(255,255,255,0.15)' }}>—</span>
+        <span className="font-mono text-2xl" style={{ color: 'rgba(var(--overlay),0.15)' }}>—</span>
         <p className="font-sans text-xs text-dim text-center">
           {isNobleGas
             ? 'Noble gases have a full valence shell and do not form stable ions under ordinary conditions.'
@@ -157,7 +157,7 @@ function IonRow({
       style={{
         borderColor: ion.common
           ? `color-mix(in srgb, ${color} 35%, transparent)`
-          : 'rgba(255,255,255,0.06)',
+          : 'rgba(var(--overlay),0.06)',
         background: ion.common
           ? `color-mix(in srgb, ${color} 7%, transparent)`
           : 'transparent',
@@ -214,7 +214,7 @@ function IsotopesTab({ el, color }: { el: NonNullable<Element>; color: string })
   if (isotopes.length === 0) {
     return (
       <div className="py-6 flex flex-col items-center gap-2">
-        <span className="font-mono text-2xl" style={{ color: 'rgba(255,255,255,0.15)' }}>—</span>
+        <span className="font-mono text-2xl" style={{ color: 'rgba(var(--overlay),0.15)' }}>—</span>
         <p className="font-sans text-xs text-dim text-center">No isotope data available for this element.</p>
       </div>
     )
@@ -245,7 +245,7 @@ function IsotopesTab({ el, color }: { el: NonNullable<Element>; color: string })
               <span className="font-mono text-xs text-secondary leading-none" style={{ verticalAlign: 'super', fontSize: '8px' }}>
                 {iso.A}
               </span>
-              <span className="font-mono text-sm font-medium" style={{ color: iso.name ? color : 'rgba(255,255,255,0.8)' }}>
+              <span className="font-mono text-sm font-medium" style={{ color: iso.name ? color : 'rgba(var(--overlay),0.8)' }}>
                 {el.symbol}
               </span>
               {iso.name && (
@@ -304,11 +304,11 @@ function IsotopesTab({ el, color }: { el: NonNullable<Element>; color: string })
 function ConfigBox({ up, down }: { up: boolean; down: boolean }) {
   return (
     <div className="w-6 h-7 rounded-sm flex items-center justify-center gap-px shrink-0"
-      style={{ border: '1px solid rgba(255,255,255,0.15)', background: (up || down) ? 'rgba(255,255,255,0.03)' : 'transparent' }}>
+      style={{ border: '1px solid rgba(var(--overlay),0.15)', background: (up || down) ? 'rgba(var(--overlay),0.03)' : 'transparent' }}>
       <span className="font-mono text-[10px] leading-none select-none"
-        style={{ color: up ? 'var(--c-halogen)' : 'rgba(255,255,255,0.08)' }}>↑</span>
+        style={{ color: up ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.08)' }}>↑</span>
       <span className="font-mono text-[10px] leading-none select-none"
-        style={{ color: down ? 'var(--c-halogen)' : 'rgba(255,255,255,0.08)' }}>↓</span>
+        style={{ color: down ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.08)' }}>↓</span>
     </div>
   )
 }
@@ -317,7 +317,7 @@ function ConfigSubshell({ sub }: { sub: SubshellFill }) {
   const states = orbitalStates(sub.electrons, sub.orbitals)
   return (
     <div className="flex flex-col items-start gap-1">
-      <span className="font-mono text-[9px] tracking-wide" style={{ color: 'rgba(255,255,255,0.35)' }}>
+      <span className="font-mono text-[9px] tracking-wide" style={{ color: 'rgba(var(--overlay),0.35)' }}>
         {sub.label}
       </span>
       <div className="flex gap-0.5">
@@ -368,8 +368,8 @@ function ElectronConfigTab({ el, color }: { el: Element; color: string }) {
             onClick={() => setShowFull(f => !f)}
             className="font-mono text-[10px] px-2 py-1 rounded-sm border transition-colors"
             style={{
-              borderColor: showFull ? `color-mix(in srgb, ${color} 40%, transparent)` : 'rgba(255,255,255,0.12)',
-              color: showFull ? color : 'rgba(255,255,255,0.4)',
+              borderColor: showFull ? `color-mix(in srgb, ${color} 40%, transparent)` : 'rgba(var(--overlay),0.12)',
+              color: showFull ? color : 'rgba(var(--overlay),0.4)',
               background: showFull ? `color-mix(in srgb, ${color} 10%, transparent)` : 'transparent',
             }}
           >
@@ -381,13 +381,13 @@ function ElectronConfigTab({ el, color }: { el: Element; color: string }) {
       {/* Written notation */}
       <motion.div variants={rowVariants}
         className="p-3 rounded-sm border border-border flex flex-wrap gap-x-1 gap-y-0.5"
-        style={{ background: '#0e1016' }}>
+        style={{ background: 'rgb(var(--color-surface))' }}>
         {displayCore && (
           <span className="font-mono text-sm text-dim">{displayCore} </span>
         )}
         {displaySubshells.map(s => (
           <span key={s.label + s.aufbauIdx} className="font-mono text-sm"
-            style={{ color: 'rgba(255,255,255,0.75)' }}>
+            style={{ color: 'rgba(var(--overlay),0.75)' }}>
             {s.label}<sup style={{ fontSize: '0.65em' }}>{s.electrons}</sup>
           </span>
         ))}
@@ -411,7 +411,7 @@ function ElectronConfigTab({ el, color }: { el: Element; color: string }) {
         <p className="font-mono text-xs tracking-widest text-secondary uppercase mb-1">Orbital Box Diagram</p>
         {shellRows.map(([n, subs]) => (
           <div key={n} className="flex items-end gap-3 p-2.5 rounded-sm border border-border"
-            style={{ background: '#0e1016' }}>
+            style={{ background: 'rgb(var(--color-surface))' }}>
             <span className="font-mono text-xs text-secondary w-7 shrink-0 pb-0.5">n={n}</span>
             <div className="flex items-end gap-3 flex-wrap">
               {subs.map(sub => <ConfigSubshell key={sub.label} sub={sub} />)}
@@ -468,8 +468,8 @@ export default function ElementModal() {
                 width: 'min(440px, 92vw)',
                 maxHeight: '88vh',
                 borderRadius: '6px',
-                border: `1px solid color-mix(in srgb, ${color} 30%, #1c1f2e)`,
-                background: '#0e1016',
+                border: `1px solid color-mix(in srgb, ${color} 30%, rgb(var(--color-border)))`,
+                background: 'rgb(var(--color-surface))',
                 boxShadow: `0 24px 64px rgba(0,0,0,0.7), 0 0 0 1px color-mix(in srgb, ${color} 15%, transparent)`,
               }}
             >
@@ -489,9 +489,9 @@ export default function ElementModal() {
                 className="relative flex flex-col items-start justify-end p-6 pb-5 shrink-0"
                 style={{
                   background: `linear-gradient(135deg,
-                    color-mix(in srgb, ${color} 18%, #0e1016) 0%,
-                    #0e1016 65%)`,
-                  borderBottom: `1px solid color-mix(in srgb, ${color} 20%, #1c1f2e)`,
+                    color-mix(in srgb, ${color} 18%, rgb(var(--color-surface))) 0%,
+                    rgb(var(--color-surface)) 65%)`,
+                  borderBottom: `1px solid color-mix(in srgb, ${color} 20%, rgb(var(--color-border)))`,
                 }}
               >
                 <motion.div
@@ -533,7 +533,7 @@ export default function ElementModal() {
                     key={t}
                     onClick={() => setTab(t)}
                     className="flex-1 py-2.5 font-mono text-[11px] tracking-widest uppercase transition-colors"
-                    style={{ color: tab === t ? color : 'rgba(255,255,255,0.3)' }}
+                    style={{ color: tab === t ? color : 'rgba(var(--overlay),0.3)' }}
                   >
                     {t === 'config' ? 'e⁻ config' : t}
                   </button>

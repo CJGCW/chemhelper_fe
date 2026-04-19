@@ -118,7 +118,7 @@ export function buildFormula(cat: CationDef, ani: AnionDef): string {
 export const SOL_LABEL: Record<Sol,string> = { S:'Soluble', I:'Insoluble', SS:'Slightly Soluble' }
 export const SOL_COLOR: Record<Sol,string> = { S:'var(--c-halogen)', I:'#e05050', SS:'#f5c518' }
 export const SOL_BG:    Record<Sol,string> = {
-  S:  'color-mix(in srgb, var(--c-halogen) 13%, #141620)',
-  I:  'color-mix(in srgb, #e05050 13%, #141620)',
-  SS: 'color-mix(in srgb, #f5c518 10%, #141620)',
+  S:  'color-mix(in srgb, var(--c-halogen) 13%, rgb(var(--color-raised)))',
+  I:  'color-mix(in srgb, #e05050 13%, rgb(var(--color-raised)))',
+  SS: 'color-mix(in srgb, #f5c518 10%, rgb(var(--color-raised)))',
 }

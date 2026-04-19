@@ -15,12 +15,12 @@ function UnitPill({
         <button key={o} onClick={() => onChange(o)}
           className="px-2 py-0.5 rounded-sm font-mono text-xs transition-colors"
           style={active === o ? {
-            background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           } : {
-            border: '1px solid rgba(255,255,255,0.12)',
-            color: 'rgba(255,255,255,0.35)',
+            border: '1px solid rgba(var(--overlay),0.12)',
+            color: 'rgba(var(--overlay),0.35)',
           }}
         >{o}</button>
       ))}
@@ -247,7 +247,7 @@ export default function IdealGasSolver() {
         <button onClick={handleCalculate} disabled={filledCount < 3}
           className="flex-1 py-2.5 rounded-sm font-sans font-medium text-sm transition-all disabled:opacity-40"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           }}>
@@ -286,8 +286,8 @@ export default function IdealGasSolver() {
                     ? verifiedColors[verified]
                     : 'color-mix(in srgb, var(--c-halogen) 35%, transparent)',
                   background: verified
-                    ? `color-mix(in srgb, ${verifiedColors[verified]} 6%, #0e1016)`
-                    : 'color-mix(in srgb, var(--c-halogen) 6%, #0e1016)',
+                    ? `color-mix(in srgb, ${verifiedColors[verified]} 6%, rgb(var(--color-surface)))`
+                    : 'color-mix(in srgb, var(--c-halogen) 6%, rgb(var(--color-surface)))',
                 }}>
                 {verified && (
                   <span className="font-mono text-xs mb-1" style={{ color: verifiedColors[verified] }}>

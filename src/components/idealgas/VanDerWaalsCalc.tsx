@@ -108,12 +108,12 @@ export default function VanDerWaalsCalc() {
             <button key={g.formula} onClick={() => { setGas(g); setResult(null) }}
               className="px-2.5 py-1 rounded-sm font-mono text-sm transition-colors"
               style={gas.formula === g.formula ? {
-                background: 'color-mix(in srgb, var(--c-halogen) 15%, #141620)',
+                background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
                 border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               } : {
-                border: '1px solid rgba(255,255,255,0.12)',
-                color: 'rgba(255,255,255,0.45)',
+                border: '1px solid rgba(var(--overlay),0.12)',
+                color: 'rgba(var(--overlay),0.45)',
               }}>
               {g.formula}
             </button>
@@ -138,12 +138,12 @@ export default function VanDerWaalsCalc() {
                 <button key={u} onClick={() => setTUnit(u)}
                   className="px-1.5 py-0.5 rounded-sm font-mono text-xs transition-colors"
                   style={tUnit === u ? {
-                    background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                     border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                     color: 'var(--c-halogen)',
                   } : {
-                    border: '1px solid rgba(255,255,255,0.12)',
-                    color: 'rgba(255,255,255,0.35)',
+                    border: '1px solid rgba(var(--overlay),0.12)',
+                    color: 'rgba(var(--overlay),0.35)',
                   }}>
                   {u === 'C' ? '°C' : 'K'}
                 </button>
@@ -168,7 +168,7 @@ export default function VanDerWaalsCalc() {
           disabled={!nVal.trim() || !vVal.trim() || !tVal.trim()}
           className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-40"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
             color: 'var(--c-halogen)',
           }}>
@@ -204,7 +204,7 @@ export default function VanDerWaalsCalc() {
               <div className="rounded-sm border p-4 flex flex-col gap-1"
                 style={{
                   borderColor: `color-mix(in srgb, ${devColor} 40%, transparent)`,
-                  background: `color-mix(in srgb, ${devColor} 8%, #0e1016)`,
+                  background: `color-mix(in srgb, ${devColor} 8%, rgb(var(--color-surface)))`,
                 }}>
                 <span className="font-mono text-xs tracking-widest uppercase" style={{ color: devColor, opacity: 0.7 }}>
                   Real Gas (vdW)

@@ -48,14 +48,14 @@ function ClickableOrbitalBox({
   disabled: boolean
 }) {
   const borderColor = {
-    neutral:     'rgba(255,255,255,0.18)',
+    neutral:     'rgba(var(--overlay),0.18)',
     correct:     '#22c55e',
     'wrong-count': '#ef4444',
     'wrong-hund':  '#f59e0b',
   }[status]
 
   const bg = {
-    neutral:     value > 0 ? 'rgba(255,255,255,0.04)' : 'transparent',
+    neutral:     value > 0 ? 'rgba(var(--overlay),0.04)' : 'transparent',
     correct:     'rgba(34,197,94,0.08)',
     'wrong-count': 'rgba(239,68,68,0.08)',
     'wrong-hund':  'rgba(245,158,11,0.08)',
@@ -72,9 +72,9 @@ function ClickableOrbitalBox({
       title={disabled ? undefined : 'Click to cycle: empty → ↑ → ↑↓ → empty'}
     >
       <span className="font-mono text-xs leading-none select-none"
-        style={{ color: value >= 1 ? arrowColor : 'rgba(255,255,255,0.08)' }}>↑</span>
+        style={{ color: value >= 1 ? arrowColor : 'rgba(var(--overlay),0.08)' }}>↑</span>
       <span className="font-mono text-xs leading-none select-none"
-        style={{ color: value === 2 ? arrowColor : 'rgba(255,255,255,0.08)' }}>↓</span>
+        style={{ color: value === 2 ? arrowColor : 'rgba(var(--overlay),0.08)' }}>↓</span>
     </button>
   )
 }
@@ -102,14 +102,14 @@ function BoxDiagramInput({
     <div className="flex flex-col gap-1">
       {coreLabel && (
         <div className="flex items-center gap-3 px-3 py-2 rounded-sm border border-border"
-          style={{ background: '#0e1016' }}>
+          style={{ background: 'rgb(var(--color-surface))' }}>
           <span className="font-mono text-xs text-secondary w-8 text-center shrink-0">core</span>
           <span className="font-mono text-sm text-dim">{coreLabel} — pre-filled</span>
         </div>
       )}
       {shellRows.map(([n, subs]) => (
         <div key={n} className="flex items-end gap-4 p-3 rounded-sm border border-border"
-          style={{ background: '#0e1016' }}>
+          style={{ background: 'rgb(var(--color-surface))' }}>
           <div className="w-8 shrink-0 flex items-center justify-center pb-0.5">
             <span className="font-mono text-xs text-secondary">n={n}</span>
           </div>
@@ -123,7 +123,7 @@ function BoxDiagramInput({
                       color: status === 'correct' ? '#22c55e'
                            : status === 'wrong-count' ? '#ef4444'
                            : status === 'wrong-hund' ? '#f59e0b'
-                           : 'rgba(255,255,255,0.35)',
+                           : 'rgba(var(--overlay),0.35)',
                     }}>
                     {sub.label}
                   </span>
@@ -268,7 +268,7 @@ export default function ElectronConfigPractice() {
   if (phase === 'settings') {
     return (
       <div className="flex flex-col gap-6 max-w-lg">
-        <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+        <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
           <p className="font-mono text-xs tracking-widest text-secondary uppercase">Element Range</p>
           <div className="flex flex-col gap-1.5">
             {PRESETS.map((p, i) => (
@@ -277,9 +277,9 @@ export default function ElectronConfigPractice() {
                 style={{
                   border: presetIdx === i
                     ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)'
-                    : '1px solid rgba(255,255,255,0.1)',
+                    : '1px solid rgba(var(--overlay),0.1)',
                   background: presetIdx === i ? 'color-mix(in srgb, var(--c-halogen) 10%, transparent)' : 'transparent',
-                  color: presetIdx === i ? 'var(--c-halogen)' : 'rgba(255,255,255,0.55)',
+                  color: presetIdx === i ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.55)',
                 }}>
                 <span className="font-sans text-sm">{p.label}</span>
                 <span className="font-mono text-xs text-dim ml-auto">Z = {p.min}–{p.max}</span>
@@ -289,16 +289,16 @@ export default function ElectronConfigPractice() {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="flex flex-col gap-3 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+          <div className="flex flex-col gap-3 p-4 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
             <p className="font-mono text-xs tracking-widest text-secondary uppercase">Problems</p>
             <div className="flex gap-2">
               {[5, 10, 15].map(n => (
                 <button key={n} onClick={() => setCount(n)}
                   className="flex-1 py-1.5 rounded-sm border font-mono text-sm transition-colors"
                   style={{
-                    border: count === n ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '1px solid rgba(255,255,255,0.1)',
+                    border: count === n ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '1px solid rgba(var(--overlay),0.1)',
                     background: count === n ? 'color-mix(in srgb, var(--c-halogen) 10%, transparent)' : 'transparent',
-                    color: count === n ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)',
+                    color: count === n ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
                   }}>
                   {n}
                 </button>
@@ -306,14 +306,14 @@ export default function ElectronConfigPractice() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+          <div className="flex flex-col gap-3 p-4 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
             <p className="font-mono text-xs tracking-widest text-secondary uppercase">Noble Gas Core</p>
             <button onClick={() => setNobleHint(h => !h)}
               className="py-1.5 rounded-sm border font-sans text-sm transition-colors"
               style={{
-                border: nobleHint ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '1px solid rgba(255,255,255,0.1)',
+                border: nobleHint ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '1px solid rgba(var(--overlay),0.1)',
                 background: nobleHint ? 'color-mix(in srgb, var(--c-halogen) 10%, transparent)' : 'transparent',
-                color: nobleHint ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)',
+                color: nobleHint ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
               }}>
               {nobleHint ? 'Core shown (easier)' : 'Core hidden (harder)'}
             </button>
@@ -323,7 +323,7 @@ export default function ElectronConfigPractice() {
         <button onClick={startPractice}
           className="py-2.5 rounded-sm font-sans font-medium text-sm transition-all"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           }}>
@@ -342,7 +342,7 @@ export default function ElectronConfigPractice() {
     return (
       <div className="flex flex-col gap-6 max-w-lg">
         <div className="flex flex-col gap-4 p-6 rounded-sm border border-border items-center text-center"
-          style={{ background: '#0e1016' }}>
+          style={{ background: 'rgb(var(--color-surface))' }}>
           <span className="font-mono text-5xl font-bold" style={{ color: 'var(--c-halogen)' }}>
             {bothCorrect}/{total}
           </span>
@@ -355,7 +355,7 @@ export default function ElectronConfigPractice() {
             const el = ELEMENTS[r.z]
             return (
               <div key={i} className="flex items-center gap-3 px-3 py-2 rounded-sm border border-border"
-                style={{ background: '#0e1016' }}>
+                style={{ background: 'rgb(var(--color-surface))' }}>
                 <span className="font-mono text-sm font-semibold w-8 shrink-0"
                   style={{ color: 'var(--c-halogen)' }}>{el.symbol}</span>
                 <span className="font-sans text-xs text-secondary flex-1">{el.name}</span>
@@ -373,7 +373,7 @@ export default function ElectronConfigPractice() {
         <button onClick={() => setPhase('settings')}
           className="py-2.5 rounded-sm font-sans font-medium text-sm transition-all"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           }}>
@@ -390,7 +390,7 @@ export default function ElectronConfigPractice() {
 
       {/* Progress bar + score */}
       <div className="flex items-center gap-3">
-        <div className="flex-1 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
+        <div className="flex-1 h-1 rounded-full" style={{ background: 'rgba(var(--overlay),0.08)' }}>
           <div className="h-1 rounded-full transition-all"
             style={{ width: `${((idx) / problems.length) * 100}%`, background: 'var(--c-halogen)' }} />
         </div>
@@ -401,7 +401,7 @@ export default function ElectronConfigPractice() {
       </div>
 
       {/* Element card */}
-      <div className="flex items-center gap-4 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+      <div className="flex items-center gap-4 p-4 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
         <div className="flex flex-col items-center w-16 shrink-0">
           <span className="font-mono text-5xl font-bold leading-none" style={{ color: 'var(--c-halogen)' }}>
             {element.symbol}
@@ -533,7 +533,7 @@ export default function ElectronConfigPractice() {
           <button onClick={checkAnswers}
             className="flex-1 py-2.5 rounded-sm font-sans font-medium text-sm transition-all"
             style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
               border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
             }}>
@@ -543,7 +543,7 @@ export default function ElectronConfigPractice() {
           <button onClick={nextProblem}
             className="flex-1 py-2.5 rounded-sm font-sans font-medium text-sm transition-all"
             style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
               border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
             }}>

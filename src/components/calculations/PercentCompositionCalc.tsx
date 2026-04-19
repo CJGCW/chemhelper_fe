@@ -119,9 +119,9 @@ export default function PercentCompositionCalc() {
           <button key={m} onClick={() => handleModeChange(m)}
             className="px-3 py-1.5 font-mono text-xs transition-colors"
             style={{
-              background: mode === m ? 'color-mix(in srgb, var(--c-halogen) 15%, #141620)' : '#141620',
-              color: mode === m ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)',
-              borderRight: m === 'formula' ? '1px solid #1c1f2e' : 'none',
+              background: mode === m ? 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))' : 'rgb(var(--color-raised))',
+              color: mode === m ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
+              borderRight: m === 'formula' ? '1px solid rgb(var(--color-border))' : 'none',
             }}>
             {m === 'formula' ? 'Formula' : 'SMILES'}
           </button>
@@ -143,7 +143,7 @@ export default function PercentCompositionCalc() {
             placeholder={mode === 'formula' ? 'e.g. H2O' : 'e.g. CCO'}
             className="w-full font-mono text-sm bg-raised border rounded-sm px-3 py-2
                        text-bright placeholder-dim focus:outline-none transition-colors"
-            style={{ borderColor: inputError ? '#f87171' : '#1c1f2e' }}
+            style={{ borderColor: inputError ? '#f87171' : 'rgb(var(--color-border))' }}
           />
           {inputError && <p className="font-mono text-[10px] text-red-400">{inputError}</p>}
         </div>
@@ -151,7 +151,7 @@ export default function PercentCompositionCalc() {
           className="shrink-0 px-5 font-sans text-sm font-medium rounded-sm border transition-colors
                      disabled:opacity-40"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 14%, #0e1016)',
+            background: 'color-mix(in srgb, var(--c-halogen) 14%, rgb(var(--color-surface)))',
             borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
             paddingTop: '0.5rem', paddingBottom: '0.5rem',
@@ -177,7 +177,7 @@ export default function PercentCompositionCalc() {
               <div className="rounded-sm border border-border overflow-hidden">
                 {/* Header */}
                 <div className="grid grid-cols-5 px-3 py-2 font-mono text-xs text-secondary tracking-widest uppercase"
-                  style={{ background: 'rgba(255,255,255,0.03)' }}>
+                  style={{ background: 'rgba(var(--overlay),0.03)' }}>
                   <span className="col-span-2">Element</span>
                   <span className="text-right">Count</span>
                   <span className="text-right">At. Wt.</span>
@@ -206,8 +206,8 @@ export default function PercentCompositionCalc() {
                 {/* Total */}
                 <div className="grid grid-cols-5 px-3 py-2 border-t font-mono text-xs font-medium"
                   style={{
-                    borderColor: 'color-mix(in srgb, var(--c-halogen) 25%, #1c1f2e)',
-                    background: 'color-mix(in srgb, var(--c-halogen) 6%, #0e1016)',
+                    borderColor: 'color-mix(in srgb, var(--c-halogen) 25%, rgb(var(--color-border)))',
+                    background: 'color-mix(in srgb, var(--c-halogen) 6%, rgb(var(--color-surface)))',
                   }}>
                   <span className="col-span-2 text-secondary">Molar Mass</span>
                   <span className="col-span-2 text-right text-secondary">{totalMW.toFixed(4)} g/mol</span>

@@ -90,17 +90,17 @@ export default function SolutionStoichSolver() {
 
       {/* Mode tabs */}
       <div className="flex items-center gap-1 p-1 rounded-sm self-start"
-        style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+        style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
         {MODES.map(m => {
           const isActive = mode === m.id
           return (
             <button key={m.id} onClick={() => switchMode(m.id)}
               className="relative px-3.5 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
-              style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
+              style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)' }}>
               {isActive && (
                 <motion.div layoutId="sol-solver-mode" className="absolute inset-0 rounded-sm"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                     border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                   }}
                   transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
@@ -196,7 +196,7 @@ export default function SolutionStoichSolver() {
         className="self-start px-5 py-2 rounded-sm font-sans text-sm font-semibold
                    transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
         style={{
-          background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+          background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
           border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           color: 'var(--c-halogen)',
         }}>
@@ -212,7 +212,7 @@ export default function SolutionStoichSolver() {
               <div className="rounded-sm border px-4 py-3"
                 style={{
                   borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
-                  background: 'color-mix(in srgb, var(--c-halogen) 8%, #0e1016)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 8%, rgb(var(--color-surface)))',
                 }}>
                 <span className="font-mono text-xs text-secondary tracking-widest uppercase block mb-1">Result</span>
                 <span className="font-mono text-2xl font-semibold" style={{ color: 'var(--c-halogen)' }}>

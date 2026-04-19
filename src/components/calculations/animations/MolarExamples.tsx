@@ -85,7 +85,7 @@ export function MolesExample() {
           height={20}
           rx="2"
           fill="#111420"
-          stroke="#1c1f2e"
+          stroke="rgb(var(--color-border))"
           strokeWidth="0.5"
         />
 
@@ -96,7 +96,7 @@ export function MolesExample() {
           rx={54}
           ry={8}
           fill="#111520"
-          stroke="#2a2d3d"
+          stroke="rgb(var(--color-muted))"
           strokeWidth="1.5"
         />
         <ellipse
@@ -157,8 +157,8 @@ export function MolesExample() {
           width={balW}
           height={balH}
           rx="5"
-          fill="#141620"
-          stroke="#1c1f2e"
+          fill="rgb(var(--color-raised))"
+          stroke="rgb(var(--color-border))"
           strokeWidth="1"
         />
         <rect
@@ -167,7 +167,7 @@ export function MolesExample() {
           width={balW}
           height={3}
           rx="2"
-          fill="#2a2d3d"
+          fill="rgb(var(--color-muted))"
           opacity="0.5"
         />
 
@@ -230,7 +230,7 @@ export function MolesExample() {
           cx={balX + balW - 14}
           cy={balY + balH - 11}
           r="4"
-          fill={remaining > 0.005 ? "#4fffc8" : "#1c1f2e"}
+          fill={remaining > 0.005 ? "#4fffc8" : "rgb(var(--color-border))"}
           style={{
             filter: remaining > 0.005 ? "drop-shadow(0 0 4px #4fffc8)" : "none",
           }}
@@ -250,7 +250,7 @@ export function MolesExample() {
               width={108}
               height={48}
               rx="5"
-              fill="color-mix(in srgb, var(--c-halogen) 12%, #141620)"
+              fill="color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))"
               stroke="color-mix(in srgb, var(--c-halogen) 30%, transparent)"
               strokeWidth="1"
             />
@@ -689,7 +689,7 @@ export function MolalityExample() {
           height={14}
           rx="2"
           fill="#111420"
-          stroke="#1c1f2e"
+          stroke="rgb(var(--color-border))"
           strokeWidth="0.5"
         />
 
@@ -700,7 +700,7 @@ export function MolalityExample() {
           rx={40}
           ry={6}
           fill="#111520"
-          stroke="#2a2d3d"
+          stroke="rgb(var(--color-muted))"
           strokeWidth="1.2"
         />
         <ellipse
@@ -749,8 +749,8 @@ export function MolalityExample() {
           width={balW}
           height={balH}
           rx="4"
-          fill="#141620"
-          stroke="#1c1f2e"
+          fill="rgb(var(--color-raised))"
+          stroke="rgb(var(--color-border))"
           strokeWidth="1"
         />
         <rect
@@ -759,7 +759,7 @@ export function MolalityExample() {
           width={balW}
           height={3}
           rx="2"
-          fill="#2a2d3d"
+          fill="rgb(var(--color-muted))"
           opacity="0.5"
         />
 
@@ -824,7 +824,7 @@ export function MolalityExample() {
           textAnchor="middle"
           fontFamily="IBM Plex Mono"
           fontSize="8"
-          fill="rgba(255,255,255,0.35)"
+          fill="rgba(var(--overlay),0.35)"
         >
           solvent mass
         </text>

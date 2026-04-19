@@ -43,7 +43,7 @@ export default function StepsPanel({ steps }: Props) {
       <button
         onClick={open ? handleClose : handleOpen}
         className="flex items-center gap-2 font-sans text-sm font-medium transition-colors self-start"
-        style={{ color: open ? 'var(--c-halogen)' : 'rgba(255,255,255,0.55)' }}
+        style={{ color: open ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.55)' }}
       >
         <motion.span
           animate={{ rotate: open ? 90 : 0 }}
@@ -82,8 +82,8 @@ export default function StepsPanel({ steps }: Props) {
                     180deg,
                     transparent,
                     transparent 28px,
-                    rgba(255,255,255,0.015) 28px,
-                    rgba(255,255,255,0.015) 29px
+                    rgba(var(--overlay),0.015) 28px,
+                    rgba(var(--overlay),0.015) 29px
                   )`,
                 }}
               />
@@ -128,7 +128,7 @@ export default function StepsPanel({ steps }: Props) {
                         fontSize: '1.25rem',
                         lineHeight: '1.5',
                         color: 'rgba(240, 237, 228, 0.92)',
-                        textShadow: '0 0 6px rgba(255,255,255,0.15), 1px 1px 0 rgba(0,0,0,0.3)',
+                        textShadow: '0 0 6px rgba(var(--overlay),0.15), 1px 1px 0 rgba(0,0,0,0.3)',
                         letterSpacing: '0.03em',
                         display: 'inline-block',
                       }}

@@ -57,7 +57,7 @@ function HalfRxnSelect({
       {value && (
         <div
           className="rounded-sm border px-3 py-2 flex items-center justify-between gap-2"
-          style={{ borderColor: `color-mix(in srgb, ${color} 35%, transparent)`, background: `color-mix(in srgb, ${color} 8%, #0e1016)` }}
+          style={{ borderColor: `color-mix(in srgb, ${color} 35%, transparent)`, background: `color-mix(in srgb, ${color} 8%, rgb(var(--color-surface)))` }}
         >
           <div className="flex flex-col gap-0.5 min-w-0">
             <span className="font-mono text-xs text-primary leading-snug truncate">{value.cathode}</span>
@@ -88,7 +88,7 @@ function HalfRxnSelect({
           {open && (
             <div
               className="absolute top-full left-0 right-0 mt-1 rounded-sm border border-border z-30 overflow-y-auto"
-              style={{ background: '#0e1016', maxHeight: 240 }}
+              style={{ background: 'rgb(var(--color-surface))', maxHeight: 240 }}
             >
               {matches.map(hr => (
                 <button
@@ -134,10 +134,10 @@ function ReferenceTable() {
         className="w-full font-mono text-sm bg-raised border border-border rounded-sm px-3 py-2
                    text-primary placeholder-dim focus:outline-none"
       />
-      <div className="overflow-x-auto rounded-sm border border-border" style={{ background: '#0a0c12' }}>
+      <div className="overflow-x-auto rounded-sm border border-border" style={{ background: 'rgb(var(--color-base))' }}>
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr style={{ borderBottom: '1px solid #1c1f2e' }}>
+            <tr style={{ borderBottom: '1px solid rgb(var(--color-border))' }}>
               <th className="font-mono text-xs tracking-widest uppercase text-secondary px-3 py-2">Half-Reaction (reduction)</th>
               <th className="font-mono text-xs tracking-widest uppercase text-secondary px-3 py-2 text-right whitespace-nowrap">E° (V)</th>
               <th className="font-mono text-xs tracking-widest uppercase text-secondary px-3 py-2 text-right">n</th>
@@ -145,9 +145,9 @@ function ReferenceTable() {
           </thead>
           <tbody>
             {rows.map((hr, i) => {
-              const color = hr.e0 > 0.3 ? '#4ade80' : hr.e0 < -0.3 ? '#f87171' : 'rgba(255,255,255,0.55)'
+              const color = hr.e0 > 0.3 ? '#4ade80' : hr.e0 < -0.3 ? '#f87171' : 'rgba(var(--overlay),0.55)'
               return (
-                <tr key={hr.id} style={{ borderBottom: i < rows.length - 1 ? '1px solid #1c1f2e' : undefined }}>
+                <tr key={hr.id} style={{ borderBottom: i < rows.length - 1 ? '1px solid rgb(var(--color-border))' : undefined }}>
                   <td className="font-mono text-xs text-secondary px-3 py-1.5 leading-snug">{hr.cathode}</td>
                   <td className="font-mono text-xs px-3 py-1.5 text-right whitespace-nowrap" style={{ color }}>
                     {fmt(hr.e0)}
@@ -218,17 +218,17 @@ export default function EcellCalc() {
 
       {/* View toggle */}
       <div className="flex items-center gap-1 p-1 rounded-sm self-start"
-        style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+        style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
         {(['calc', 'table'] as View[]).map(v => {
           const active = view === v
           return (
             <button key={v} onClick={() => setView(v)}
               className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors capitalize"
-              style={{ color: active ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)' }}>
+              style={{ color: active ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)' }}>
               {active && (
                 <motion.div layoutId="ecell-view-pill" className="absolute inset-0 rounded-sm"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                     border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                   }}
                   transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
@@ -284,8 +284,8 @@ export default function EcellCalc() {
                         ? 'color-mix(in srgb, #4ade80 35%, transparent)'
                         : 'color-mix(in srgb, #f87171 35%, transparent)',
                       background: e0cell > 0
-                        ? 'color-mix(in srgb, #4ade80 6%, #0e1016)'
-                        : 'color-mix(in srgb, #f87171 6%, #0e1016)',
+                        ? 'color-mix(in srgb, #4ade80 6%, rgb(var(--color-surface)))'
+                        : 'color-mix(in srgb, #f87171 6%, rgb(var(--color-surface)))',
                     }}
                   >
                     <div className="flex items-center justify-between flex-wrap gap-2">
@@ -297,8 +297,8 @@ export default function EcellCalc() {
                         style={{
                           color: e0cell > 0 ? '#4ade80' : '#f87171',
                           background: e0cell > 0
-                            ? 'color-mix(in srgb, #4ade80 14%, #141620)'
-                            : 'color-mix(in srgb, #f87171 14%, #141620)',
+                            ? 'color-mix(in srgb, #4ade80 14%, rgb(var(--color-raised)))'
+                            : 'color-mix(in srgb, #f87171 14%, rgb(var(--color-raised)))',
                           border: `1px solid ${e0cell > 0 ? 'color-mix(in srgb, #4ade80 30%, transparent)' : 'color-mix(in srgb, #f87171 30%, transparent)'}`,
                         }}
                       >

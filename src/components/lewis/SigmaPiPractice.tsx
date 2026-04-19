@@ -64,7 +64,7 @@ export default function SigmaPiPractice() {
       <div className="rounded-sm border border-border bg-surface overflow-hidden">
         {/* Header */}
         <div className="px-4 py-3 border-b border-border"
-          style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, #141620)' }}>
+          style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, rgb(var(--color-raised)))' }}>
           <div className="flex items-baseline gap-2">
             <span className="font-sans text-base font-semibold text-primary">{problem.name}</span>
           </div>
@@ -129,7 +129,7 @@ export default function SigmaPiPractice() {
               className="self-start px-4 py-1.5 rounded-sm font-sans text-sm font-medium
                          transition-all disabled:opacity-40"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
                 border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               }}>
@@ -139,7 +139,7 @@ export default function SigmaPiPractice() {
             <button onClick={loadNext}
               className="self-start px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-all"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
                 border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               }}>
@@ -155,8 +155,8 @@ export default function SigmaPiPractice() {
           style={{
             borderColor: status === 'correct' ? '#34d39950' : '#f8717150',
             background: status === 'correct'
-              ? 'color-mix(in srgb, #34d399 6%, #0e1016)'
-              : 'color-mix(in srgb, #f87171 6%, #0e1016)',
+              ? 'color-mix(in srgb, #34d399 6%, rgb(var(--color-surface)))'
+              : 'color-mix(in srgb, #f87171 6%, rgb(var(--color-surface)))',
           }}>
           <div className="px-4 py-2 border-b" style={{ borderColor: 'inherit' }}>
             {status === 'correct' && (

@@ -28,7 +28,7 @@ const TYPE_LABELS: Record<string, string> = {
 }
 
 const resultColor = (r: Result) =>
-  r === 'correct' ? '#22c55e' : r === 'wrong' || r === 'format_error' ? '#ef4444' : 'rgba(255,255,255,0.12)'
+  r === 'correct' ? '#22c55e' : r === 'wrong' || r === 'format_error' ? '#ef4444' : 'rgba(var(--overlay),0.12)'
 
 const resultBg = (r: Result) =>
   r === 'correct' ? 'color-mix(in srgb, #22c55e 10%, transparent)' :
@@ -79,7 +79,7 @@ export default function ScientificNotationPractice() {
           onClick={checkAll}
           className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-all"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           }}
@@ -112,8 +112,8 @@ export default function ScientificNotationPractice() {
             key={i}
             className="flex flex-col gap-3 p-4 rounded-sm border transition-colors"
             style={{
-              background: s.result ? resultBg(s.result) : '#0e1016',
-              borderColor: s.result ? resultColor(s.result) : 'rgba(255,255,255,0.1)',
+              background: s.result ? resultBg(s.result) : 'rgb(var(--color-surface))',
+              borderColor: s.result ? resultColor(s.result) : 'rgba(var(--overlay),0.1)',
             }}
           >
             {/* Problem header */}

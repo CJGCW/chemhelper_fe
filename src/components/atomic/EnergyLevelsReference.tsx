@@ -43,12 +43,12 @@ function LevelBar({ n, active, ni, nf }: { n: number; active: boolean; ni: numbe
           background: isTransition
             ? 'var(--c-halogen)'
             : active
-            ? 'rgba(255,255,255,0.3)'
-            : 'rgba(255,255,255,0.12)',
+            ? 'rgba(var(--overlay),0.3)'
+            : 'rgba(var(--overlay),0.12)',
         }}
       />
       <span className="font-mono text-xs w-24 text-right shrink-0"
-        style={{ color: isTransition ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)' }}>
+        style={{ color: isTransition ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)' }}>
         {fmt(E(n), 3)} eV
       </span>
     </div>
@@ -185,12 +185,12 @@ export default function EnergyLevelsReference() {
                     onClick={() => set(n)}
                     className="w-8 h-8 rounded-sm font-mono text-sm transition-colors"
                     style={val === n ? {
-                      background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+                      background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                       border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                       color: 'var(--c-halogen)',
                     } : {
-                      border: '1px solid rgba(255,255,255,0.12)',
-                      color: 'rgba(255,255,255,0.4)',
+                      border: '1px solid rgba(var(--overlay),0.12)',
+                      color: 'rgba(var(--overlay),0.4)',
                     }}
                   >{n}</button>
                 ))}

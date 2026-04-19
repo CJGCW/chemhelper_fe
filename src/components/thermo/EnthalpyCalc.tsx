@@ -79,7 +79,7 @@ function SpeciesRow({ row, canDelete, onChange, onDelete, onPickSuggestion }: Ro
         {showSugg && suggestions.length > 0 && (
           <div
             className="absolute left-0 right-0 top-full mt-0.5 z-20 rounded-sm border border-border overflow-hidden"
-            style={{ background: '#0e1016' }}
+            style={{ background: 'rgb(var(--color-surface))' }}
           >
             {suggestions.map((entry, i) => (
               <button
@@ -149,7 +149,7 @@ interface Result {
 function ResultPanel({ result }: { result: Result }) {
   const [showSteps, setShowSteps] = useState(false)
   const sign = result.dhrxn < 0 ? 'exothermic' : result.dhrxn > 0 ? 'endothermic' : 'thermoneutral'
-  const color = result.dhrxn < 0 ? '#34d399' : result.dhrxn > 0 ? '#f87171' : 'rgba(255,255,255,0.6)'
+  const color = result.dhrxn < 0 ? '#34d399' : result.dhrxn > 0 ? '#f87171' : 'rgba(var(--overlay),0.6)'
 
   return (
     <motion.div
@@ -359,7 +359,7 @@ export default function EnthalpyCalc() {
           onClick={calculate}
           className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-all"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           }}
@@ -369,7 +369,7 @@ export default function EnthalpyCalc() {
         <button
           onClick={reset}
           className="px-4 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
-          style={{ background: '#141620', border: '1px solid #2a2e42', color: 'rgba(255,255,255,0.45)' }}
+          style={{ background: 'rgb(var(--color-raised))', border: '1px solid rgb(var(--color-muted))', color: 'rgba(var(--overlay),0.45)' }}
         >
           Reset
         </button>

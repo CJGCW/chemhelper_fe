@@ -31,10 +31,10 @@ function pct(n: number): string {
 function StepTable({ result, mode }: { result: SolverResult; mode: 'percent' | 'mass' }) {
   const colLabel = mode === 'percent' ? 'Input (g in 100 g)' : 'Mass (g)'
   return (
-    <div className="overflow-x-auto rounded-sm border border-border" style={{ background: '#080a0f' }}>
+    <div className="overflow-x-auto rounded-sm border border-border" style={{ background: 'rgb(var(--color-base))' }}>
       <table className="w-full border-collapse text-xs font-mono min-w-max">
         <thead>
-          <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
+          <tr style={{ background: 'rgba(var(--overlay),0.03)' }}>
             {['Element', 'M (g/mol)', colLabel, 'Moles', '÷ min', result.multiplier > 1 ? `× ${result.multiplier}` : null, 'Subscript']
               .filter(Boolean)
               .map(h => (
@@ -76,7 +76,7 @@ function FormulaDisplay({ label, formula, sub }: { label: string; formula: strin
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.2 }}
       className="flex flex-col items-center gap-1 px-6 py-4 rounded-sm border"
-      style={{ background: 'color-mix(in srgb, #4ade80 6%, #080a0f)', borderColor: 'color-mix(in srgb, #4ade80 25%, transparent)' }}
+      style={{ background: 'color-mix(in srgb, #4ade80 6%, rgb(var(--color-base)))', borderColor: 'color-mix(in srgb, #4ade80 25%, transparent)' }}
     >
       <span className="font-mono text-xs text-secondary tracking-widest uppercase">{label}</span>
       <span className="font-mono text-2xl font-bold" style={{ color: '#4ade80' }}>{formula}</span>
@@ -140,17 +140,17 @@ export default function EmpiricalSolver() {
       <div className="flex items-center gap-3">
         <span className="font-sans text-xs text-secondary">Input as</span>
         <div className="flex items-center gap-1 p-1 rounded-sm"
-          style={{ background: '#080a0f', border: '1px solid #1c1f2e' }}>
+          style={{ background: 'rgb(var(--color-base))', border: '1px solid rgb(var(--color-border))' }}>
           {(['percent', 'mass'] as const).map(m => (
             <button key={m}
               onClick={() => setMode(m)}
               className="relative px-3 py-1 rounded-sm font-sans text-xs font-medium transition-colors"
-              style={{ color: mode === m ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}
+              style={{ color: mode === m ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)' }}
             >
               {mode === m && (
                 <motion.div layoutId="solver-mode-bg" className="absolute inset-0 rounded-sm"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                     border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                   }}
                   transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
@@ -211,7 +211,7 @@ export default function EmpiricalSolver() {
         <button
           onClick={addRow}
           className="self-start font-mono text-[11px] px-3 py-1 rounded-sm border transition-colors mt-1"
-          style={{ borderColor: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.4)' }}
+          style={{ borderColor: 'rgba(var(--overlay),0.12)', color: 'rgba(var(--overlay),0.4)' }}
         >
           + add element
         </button>

@@ -129,7 +129,7 @@ export function EditorBondEdge({
           x={mx + px * (order === 2 ? 12 : 16)}
           y={my + py * (order === 2 ? 12 : 16)}
           textAnchor="middle" dominantBaseline="central"
-          fontSize={9} fill="rgba(255,255,255,0.4)"
+          fontSize={9} fill="rgba(var(--overlay),0.4)"
           fontFamily="system-ui, sans-serif"
           style={{ pointerEvents: 'none', userSelect: 'none' }}
         >

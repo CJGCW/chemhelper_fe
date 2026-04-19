@@ -255,14 +255,14 @@ export default function VseprPractice() {
                     borderColor: isRight  ? 'color-mix(in srgb, #4ade80 40%, transparent)'
                                : isWrong ? 'color-mix(in srgb, #f87171 40%, transparent)'
                                : isSelected ? 'color-mix(in srgb, var(--c-halogen) 40%, transparent)'
-                               : '#1c1f2e',
-                    background:  isRight  ? 'color-mix(in srgb, #4ade80 8%, #0e1016)'
-                               : isWrong ? 'color-mix(in srgb, #f87171 8%, #0e1016)'
-                               : isSelected ? 'color-mix(in srgb, var(--c-halogen) 8%, #0e1016)'
-                               : '#0e1016',
+                               : 'rgb(var(--color-border))',
+                    background:  isRight  ? 'color-mix(in srgb, #4ade80 8%, rgb(var(--color-surface)))'
+                               : isWrong ? 'color-mix(in srgb, #f87171 8%, rgb(var(--color-surface)))'
+                               : isSelected ? 'color-mix(in srgb, var(--c-halogen) 8%, rgb(var(--color-surface)))'
+                               : 'rgb(var(--color-surface))',
                     color:       isRight  ? '#4ade80'
                                : isWrong ? '#f87171'
-                               : 'rgba(255,255,255,0.75)',
+                               : 'rgba(var(--overlay),0.75)',
                     cursor:      answered ? 'default' : 'pointer',
                   }}
                 >
@@ -278,7 +278,7 @@ export default function VseprPractice() {
               <div className="flex flex-col gap-1 px-3 py-2.5 rounded-sm border"
                 style={{
                   borderColor: isCorrect ? 'color-mix(in srgb, #4ade80 30%, transparent)' : 'color-mix(in srgb, #f87171 30%, transparent)',
-                  background:  isCorrect ? 'color-mix(in srgb, #4ade80 5%, #0e1016)' : 'color-mix(in srgb, #f87171 5%, #0e1016)',
+                  background:  isCorrect ? 'color-mix(in srgb, #4ade80 5%, rgb(var(--color-surface)))' : 'color-mix(in srgb, #f87171 5%, rgb(var(--color-surface)))',
                 }}>
                 <span className="font-sans text-sm font-medium" style={{ color: isCorrect ? '#4ade80' : '#f87171' }}>
                   {isCorrect ? '✓ Correct!' : `✗ The answer is ${q.correct}`}
@@ -290,7 +290,7 @@ export default function VseprPractice() {
               <button onClick={handleNext}
                 className="self-start px-5 py-2 rounded-sm font-sans text-sm font-medium transition-all"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
                   border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                 }}>

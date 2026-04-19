@@ -241,25 +241,25 @@ function DiagramSVG({ data, onHover }: {
       </defs>
 
       {/* Plot background */}
-      <rect x={ML} y={MT} width={PW} height={PH} fill="rgba(255,255,255,0.015)" rx="2" />
+      <rect x={ML} y={MT} width={PW} height={PH} fill="rgba(var(--overlay),0.015)" rx="2" />
 
       {/* Grid */}
       {tTicks.map(t => (
         <line key={`gt${t}`} x1={xS(t)} y1={MT} x2={xS(t)} y2={MT + PH}
-          stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+          stroke="rgba(var(--overlay),0.05)" strokeWidth="1" />
       ))}
       {pTicks.map(lp => (
         <line key={`gp${lp}`} x1={ML} y1={yS(10 ** lp)} x2={ML + PW} y2={yS(10 ** lp)}
-          stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+          stroke="rgba(var(--overlay),0.05)" strokeWidth="1" />
       ))}
 
       {/* 1 atm reference */}
       {showAtm && (
         <g clipPath="url(#pd-plot)">
           <line x1={ML} y1={y_atm} x2={ML + PW} y2={y_atm}
-            stroke="rgba(255,255,255,0.22)" strokeWidth="1" strokeDasharray="5 3" />
+            stroke="rgba(var(--overlay),0.22)" strokeWidth="1" strokeDasharray="5 3" />
           <text x={ML + 4} y={y_atm - 4}
-            fill="rgba(255,255,255,0.35)" fontSize="8.5" fontFamily="monospace">
+            fill="rgba(var(--overlay),0.35)" fontSize="8.5" fontFamily="monospace">
             1 atm
           </text>
         </g>
@@ -275,7 +275,7 @@ function DiagramSVG({ data, onHover }: {
       {/* Normal bp/mp markers on 1 atm line */}
       {showAtm && vapAtm !== null && vapAtm >= Tmin && vapAtm <= Tmax && (
         <g>
-          <circle cx={xS(vapAtm)} cy={y_atm} r="4" fill="#f43f5e" stroke="#0a0c10" strokeWidth="1.5" />
+          <circle cx={xS(vapAtm)} cy={y_atm} r="4" fill="#f43f5e" stroke="rgb(var(--color-base))" strokeWidth="1.5" />
           <text x={xS(vapAtm)} y={y_atm + 14} textAnchor="middle"
             fill="rgba(243,63,94,0.8)" fontSize="8.5" fontFamily="monospace">
             bp {vapAtm.toFixed(1)}°C
@@ -284,7 +284,7 @@ function DiagramSVG({ data, onHover }: {
       )}
       {showAtm && subAtm !== null && subAtm >= Tmin && subAtm <= Tmax && (
         <g>
-          <circle cx={xS(subAtm)} cy={y_atm} r="4" fill="#fb923c" stroke="#0a0c10" strokeWidth="1.5" />
+          <circle cx={xS(subAtm)} cy={y_atm} r="4" fill="#fb923c" stroke="rgb(var(--color-base))" strokeWidth="1.5" />
           <text x={xS(subAtm) + 6} y={y_atm - 6}
             fill="rgba(251,146,60,0.8)" fontSize="8.5" fontFamily="monospace">
             sub {subAtm.toFixed(1)}°C
@@ -298,7 +298,7 @@ function DiagramSVG({ data, onHover }: {
         const labelRight = tx < ML + PW * 0.75
         return (
           <g>
-            <circle cx={tx} cy={ty} r="5.5" fill="#fbbf24" stroke="#0a0c10" strokeWidth="1.5" />
+            <circle cx={tx} cy={ty} r="5.5" fill="#fbbf24" stroke="rgb(var(--color-base))" strokeWidth="1.5" />
             <text x={labelRight ? tx + 9 : tx - 9} y={ty - 6}
               textAnchor={labelRight ? 'start' : 'end'}
               fill="#fbbf24" fontSize="9" fontFamily="monospace" fontWeight="600">
@@ -321,7 +321,7 @@ function DiagramSVG({ data, onHover }: {
         const labelRight = cx_ < ML + PW * 0.75
         return (
           <g>
-            <circle cx={cx_} cy={cy_} r="5.5" fill="#f43f5e" stroke="#0a0c10" strokeWidth="1.5" />
+            <circle cx={cx_} cy={cy_} r="5.5" fill="#f43f5e" stroke="rgb(var(--color-base))" strokeWidth="1.5" />
             {nearTop ? (
               <>
                 <text x={cx_} y={cy_ + 15} textAnchor="middle"
@@ -375,26 +375,26 @@ function DiagramSVG({ data, onHover }: {
       {crosshair && (
         <g clipPath="url(#pd-plot)" pointerEvents="none">
           <line x1={crosshair.x} y1={MT} x2={crosshair.x} y2={MT + PH}
-            stroke="rgba(255,255,255,0.15)" strokeWidth="1" strokeDasharray="3 2" />
+            stroke="rgba(var(--overlay),0.15)" strokeWidth="1" strokeDasharray="3 2" />
           <line x1={ML} y1={crosshair.y} x2={ML + PW} y2={crosshair.y}
-            stroke="rgba(255,255,255,0.15)" strokeWidth="1" strokeDasharray="3 2" />
+            stroke="rgba(var(--overlay),0.15)" strokeWidth="1" strokeDasharray="3 2" />
           <circle cx={crosshair.x} cy={crosshair.y} r="3" fill="white" opacity="0.6" />
         </g>
       )}
 
       {/* Axes */}
       <line x1={ML} y1={MT} x2={ML} y2={MT + PH + 6}
-        stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+        stroke="rgba(var(--overlay),0.3)" strokeWidth="1" />
       <line x1={ML - 4} y1={MT + PH} x2={ML + PW} y2={MT + PH}
-        stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+        stroke="rgba(var(--overlay),0.3)" strokeWidth="1" />
 
       {/* T-axis ticks + labels */}
       {tTicks.map(t => (
         <g key={`tt${t}`}>
           <line x1={xS(t)} y1={MT + PH} x2={xS(t)} y2={MT + PH + 4}
-            stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
+            stroke="rgba(var(--overlay),0.35)" strokeWidth="1" />
           <text x={xS(t)} y={MT + PH + 14} textAnchor="middle"
-            fill="rgba(255,255,255,0.45)" fontSize="9" fontFamily="monospace">
+            fill="rgba(var(--overlay),0.45)" fontSize="9" fontFamily="monospace">
             {t}
           </text>
         </g>
@@ -404,9 +404,9 @@ function DiagramSVG({ data, onHover }: {
       {pTicks.map(lp => (
         <g key={`pt${lp}`}>
           <line x1={ML - 3} y1={yS(10 ** lp)} x2={ML} y2={yS(10 ** lp)}
-            stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
+            stroke="rgba(var(--overlay),0.35)" strokeWidth="1" />
           <text x={ML - 6} y={yS(10 ** lp)} textAnchor="end" dominantBaseline="middle"
-            fill="rgba(255,255,255,0.45)" fontSize="8" fontFamily="monospace">
+            fill="rgba(var(--overlay),0.45)" fontSize="8" fontFamily="monospace">
             {pTickLabel(lp)}
           </text>
         </g>
@@ -414,11 +414,11 @@ function DiagramSVG({ data, onHover }: {
 
       {/* Axis labels */}
       <text x={ML + PW / 2} y={H - 6} textAnchor="middle"
-        fill="rgba(255,255,255,0.3)" fontSize="10" fontFamily="system-ui">
+        fill="rgba(var(--overlay),0.3)" fontSize="10" fontFamily="system-ui">
         Temperature (°C)
       </text>
       <text x={14} y={MT + PH / 2} textAnchor="middle"
-        fill="rgba(255,255,255,0.3)" fontSize="10" fontFamily="system-ui"
+        fill="rgba(var(--overlay),0.3)" fontSize="10" fontFamily="system-ui"
         transform={`rotate(-90, 14, ${MT + PH / 2})`}>
         Pressure
       </text>
@@ -432,7 +432,7 @@ function DiagramSVG({ data, onHover }: {
         <g key={label} transform={`translate(${ML + 6 + i * 96}, ${MT + 10})`}>
           <line x1={0} y1={0} x2={18} y2={0} stroke={color} strokeWidth="2.5" strokeLinecap="round" />
           <text x={22} y={0} dominantBaseline="middle"
-            fill="rgba(255,255,255,0.5)" fontSize="8.5" fontFamily="system-ui">
+            fill="rgba(var(--overlay),0.5)" fontSize="8.5" fontFamily="system-ui">
             {label}
           </text>
         </g>
@@ -460,11 +460,11 @@ export default function PhaseDiagram() {
               className="flex flex-col items-start px-3 py-2 rounded-sm border transition-colors text-left"
               style={subIdx === i ? {
                 borderColor: 'color-mix(in srgb, var(--c-halogen) 50%, transparent)',
-                background:  'color-mix(in srgb, var(--c-halogen) 10%, #141620)',
+                background:  'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))',
                 color: 'var(--c-halogen)',
               } : {
-                borderColor: '#1c1f2e', background: '#0e1016',
-                color: 'rgba(255,255,255,0.45)',
+                borderColor: 'rgb(var(--color-border))', background: 'rgb(var(--color-surface))',
+                color: 'rgba(var(--overlay),0.45)',
               }}>
               <span className="font-sans text-sm font-medium">{s.name}</span>
               <span className="font-mono text-[9px] opacity-60">{s.formula}</span>
@@ -482,7 +482,7 @@ export default function PhaseDiagram() {
           <span className="font-mono text-xs text-secondary">Hover to identify phase</span>
         </div>
 
-        <div className="rounded-sm border border-border overflow-hidden p-2" style={{ background: '#0a0c10' }}>
+        <div className="rounded-sm border border-border overflow-hidden p-2" style={{ background: 'rgb(var(--color-base))' }}>
           <DiagramSVG data={data} onHover={setHovered} />
         </div>
 

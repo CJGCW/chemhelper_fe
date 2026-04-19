@@ -142,12 +142,12 @@ export default function QuantumNumbersReference() {
                   onClick={() => setSelectedN(n)}
                   className="w-8 h-8 rounded-sm font-mono text-sm transition-colors"
                   style={selectedN === n ? {
-                    background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                     border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                     color: 'var(--c-halogen)',
                   } : {
-                    border: '1px solid rgba(255,255,255,0.12)',
-                    color: 'rgba(255,255,255,0.4)',
+                    border: '1px solid rgba(var(--overlay),0.12)',
+                    color: 'rgba(var(--overlay),0.4)',
                   }}
                 >
                   {n}

@@ -101,11 +101,11 @@ export default function TrendCompare({ elementA, elementB, onClear }: Props) {
             <tr>
               <th className="text-left px-4 py-0 font-normal border-b border-border w-40" />
               <th className="font-normal border-b border-border border-l"
-                style={{ borderColor: `color-mix(in srgb, ${A_COLOR} 30%, rgba(255,255,255,0.06))` }}>
+                style={{ borderColor: `color-mix(in srgb, ${A_COLOR} 30%, rgba(var(--overlay),0.06))` }}>
                 <Slot element={elementA} label="A" color={A_COLOR} />
               </th>
               <th className="font-normal border-b border-border border-l"
-                style={{ borderColor: `color-mix(in srgb, ${B_COLOR} 30%, rgba(255,255,255,0.06))` }}>
+                style={{ borderColor: `color-mix(in srgb, ${B_COLOR} 30%, rgba(var(--overlay),0.06))` }}>
                 <Slot element={elementB} label="B" color={B_COLOR} />
               </th>
             </tr>
@@ -131,8 +131,8 @@ export default function TrendCompare({ elementA, elementB, onClear }: Props) {
                   <td
                     className="px-4 py-2 text-center border-l"
                     style={{
-                      borderColor: `color-mix(in srgb, ${A_COLOR} 20%, rgba(255,255,255,0.06))`,
-                      color: aWins ? A_COLOR : rawA !== null ? 'rgba(255,255,255,0.75)' : 'rgba(255,255,255,0.2)',
+                      borderColor: `color-mix(in srgb, ${A_COLOR} 20%, rgba(var(--overlay),0.06))`,
+                      color: aWins ? A_COLOR : rawA !== null ? 'rgba(var(--overlay),0.75)' : 'rgba(var(--overlay),0.2)',
                       fontWeight: aWins ? 600 : 400,
                     }}
                   >
@@ -141,8 +141,8 @@ export default function TrendCompare({ elementA, elementB, onClear }: Props) {
                   <td
                     className="px-4 py-2 text-center border-l"
                     style={{
-                      borderColor: `color-mix(in srgb, ${B_COLOR} 20%, rgba(255,255,255,0.06))`,
-                      color: bWins ? B_COLOR : rawB !== null ? 'rgba(255,255,255,0.75)' : 'rgba(255,255,255,0.2)',
+                      borderColor: `color-mix(in srgb, ${B_COLOR} 20%, rgba(var(--overlay),0.06))`,
+                      color: bWins ? B_COLOR : rawB !== null ? 'rgba(var(--overlay),0.75)' : 'rgba(var(--overlay),0.2)',
                       fontWeight: bWins ? 600 : 400,
                     }}
                   >

@@ -108,12 +108,12 @@ export default function MaxwellBoltzmann() {
               <button key={p.label} onClick={() => setIdx1(i)}
                 className="px-2.5 py-1 rounded-sm font-mono text-sm transition-colors"
                 style={idx1 === i ? {
-                  background: 'color-mix(in srgb, var(--c-halogen) 15%, #141620)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
                   border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                 } : {
-                  border: '1px solid rgba(255,255,255,0.12)',
-                  color: 'rgba(255,255,255,0.4)',
+                  border: '1px solid rgba(var(--overlay),0.12)',
+                  color: 'rgba(var(--overlay),0.4)',
                 }}>
                 {p.label}
               </button>
@@ -134,36 +134,36 @@ export default function MaxwellBoltzmann() {
       </div>
 
       {/* SVG Plot */}
-      <div className="rounded-sm border border-border overflow-hidden" style={{ background: '#0a0c12' }}>
+      <div className="rounded-sm border border-border overflow-hidden" style={{ background: 'rgb(var(--color-base))' }}>
         <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} width="100%" style={{ display: 'block' }}>
 
           {/* Grid lines */}
           {[0.25, 0.5, 0.75].map(frac => {
             const y = MT + PH * (1 - frac * 0.88)
             return <line key={frac} x1={ML} y1={y} x2={ML + PW} y2={y}
-              stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+              stroke="rgba(var(--overlay),0.05)" strokeWidth="1" />
           })}
 
           {/* Axes */}
-          <line x1={ML} y1={MT} x2={ML} y2={baseY} stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
-          <line x1={ML} y1={baseY} x2={ML + PW} y2={baseY} stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+          <line x1={ML} y1={MT} x2={ML} y2={baseY} stroke="rgba(var(--overlay),0.15)" strokeWidth="1" />
+          <line x1={ML} y1={baseY} x2={ML + PW} y2={baseY} stroke="rgba(var(--overlay),0.15)" strokeWidth="1" />
 
           {/* X-axis ticks */}
           {xTicks.map(v => {
             const x = toX(v)
             return (
               <g key={v}>
-                <line x1={x} y1={baseY} x2={x} y2={baseY + 4} stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
-                <text x={x} y={baseY + 13} fontSize="9" fill="rgba(255,255,255,0.3)" textAnchor="middle">{v}</text>
+                <line x1={x} y1={baseY} x2={x} y2={baseY + 4} stroke="rgba(var(--overlay),0.2)" strokeWidth="1" />
+                <text x={x} y={baseY + 13} fontSize="9" fill="rgba(var(--overlay),0.3)" textAnchor="middle">{v}</text>
               </g>
             )
           })}
 
           {/* Axis labels */}
-          <text x={ML + PW / 2} y={SVG_H - 2} fontSize="9" fill="rgba(255,255,255,0.25)" textAnchor="middle">
+          <text x={ML + PW / 2} y={SVG_H - 2} fontSize="9" fill="rgba(var(--overlay),0.25)" textAnchor="middle">
             speed (m/s)
           </text>
-          <text x={7} y={MT + PH / 2} fontSize="8" fill="rgba(255,255,255,0.2)" textAnchor="middle"
+          <text x={7} y={MT + PH / 2} fontSize="8" fill="rgba(var(--overlay),0.2)" textAnchor="middle"
             transform={`rotate(-90, 7, ${MT + PH / 2})`}>
             f(v)
           </text>
@@ -253,8 +253,8 @@ export default function MaxwellBoltzmann() {
             background: 'rgba(251,146,60,0.08)',
             color: C2,
           } : {
-            border: '1px solid rgba(255,255,255,0.12)',
-            color: 'rgba(255,255,255,0.4)',
+            border: '1px solid rgba(var(--overlay),0.12)',
+            color: 'rgba(var(--overlay),0.4)',
           }}>
           {compare ? '▼ hide' : '+ Compare gas'}
         </button>
@@ -277,8 +277,8 @@ export default function MaxwellBoltzmann() {
                         border: '1px solid rgba(251,146,60,0.4)',
                         color: C2,
                       } : {
-                        border: '1px solid rgba(255,255,255,0.12)',
-                        color: 'rgba(255,255,255,0.4)',
+                        border: '1px solid rgba(var(--overlay),0.12)',
+                        color: 'rgba(var(--overlay),0.4)',
                       }}>
                       {p.label}
                     </button>

@@ -18,7 +18,7 @@ function EditorGuideModal({ onClose }: { onClose: () => void }) {
       >
         <motion.div
           className="relative w-full max-w-2xl rounded-sm border border-border flex flex-col"
-          style={{ background: '#0e1016' }}
+          style={{ background: 'rgb(var(--color-surface))' }}
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 12 }} transition={{ duration: 0.18 }}
           onClick={e => e.stopPropagation()}
@@ -133,9 +133,9 @@ export default function VseprDrawChallenge() {
             onClick={() => setGuideOpen(true)}
             className="px-3 py-1 rounded-sm font-sans text-xs font-medium transition-colors"
             style={{
-              background: '#141620',
-              border: '1px solid #1c1f2e',
-              color: '#7b82a0',
+              background: 'rgb(var(--color-raised))',
+              border: '1px solid rgb(var(--color-border))',
+              color: 'rgb(var(--color-secondary))',
             }}
           >
             Editor Guide
@@ -174,7 +174,7 @@ export default function VseprDrawChallenge() {
               onClick={nextProblem}
               className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors shrink-0"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                 border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                 color: 'var(--c-halogen)',
               }}

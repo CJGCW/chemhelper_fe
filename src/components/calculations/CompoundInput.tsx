@@ -119,7 +119,7 @@ export default function CompoundInput({ onResolved }: Props) {
       <button
         onClick={() => setOpen(o => !o)}
         className="flex items-center gap-2 font-sans text-sm font-medium transition-colors group"
-        style={{ color: resolved ? 'var(--c-halogen)' : 'rgba(255,255,255,0.45)' }}
+        style={{ color: resolved ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.45)' }}
       >
         <motion.span animate={{ rotate: open ? 90 : 0 }} transition={{ duration: 0.15 }}
           className="inline-block font-mono text-xs">▶</motion.span>
@@ -138,8 +138,8 @@ export default function CompoundInput({ onResolved }: Props) {
             exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }} style={{ overflow: 'hidden' }}>
             <div className="flex flex-col gap-3 mt-2 ml-1 p-3 rounded-sm border"
               style={{
-                borderColor: 'color-mix(in srgb, var(--c-halogen) 20%, #1c1f2e)',
-                background: 'color-mix(in srgb, var(--c-halogen) 4%, #0e1016)',
+                borderColor: 'color-mix(in srgb, var(--c-halogen) 20%, rgb(var(--color-border)))',
+                background: 'color-mix(in srgb, var(--c-halogen) 4%, rgb(var(--color-surface)))',
               }}>
 
               {/* Mode tabs */}
@@ -148,9 +148,9 @@ export default function CompoundInput({ onResolved }: Props) {
                   <button key={m} onClick={() => handleModeChange(m)}
                     className="px-3 py-1 font-mono text-[11px] transition-colors"
                     style={{
-                      background: mode === m ? 'color-mix(in srgb, var(--c-halogen) 15%, #141620)' : '#141620',
-                      color: mode === m ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)',
-                      borderRight: m === 'formula' ? '1px solid #1c1f2e' : 'none',
+                      background: mode === m ? 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))' : 'rgb(var(--color-raised))',
+                      color: mode === m ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
+                      borderRight: m === 'formula' ? '1px solid rgb(var(--color-border))' : 'none',
                     }}>
                     {m === 'formula' ? 'Formula' : 'SMILES'}
                   </button>
@@ -173,7 +173,7 @@ export default function CompoundInput({ onResolved }: Props) {
                     placeholder={mode === 'formula' ? 'e.g. H2O' : 'e.g. [Na+].[Cl-]'}
                     className="w-full font-mono text-sm bg-surface border rounded-sm px-3 py-2
                                text-primary placeholder-dim focus:outline-none transition-colors"
-                    style={{ borderColor: inputError ? '#f87171' : '#1c1f2e' }}
+                    style={{ borderColor: inputError ? '#f87171' : 'rgb(var(--color-border))' }}
                     autoFocus
                   />
                   {inputError && <p className="font-mono text-[10px] text-red-400">{inputError}</p>}
@@ -181,7 +181,7 @@ export default function CompoundInput({ onResolved }: Props) {
                 <button onClick={handleResolve} disabled={loading || !input.trim() || !!inputError}
                   className="px-4 font-sans text-sm font-medium rounded-sm border transition-colors disabled:opacity-40 shrink-0 self-start mt-0"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 14%, #0e1016)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 14%, rgb(var(--color-surface)))',
                     borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                     color: 'var(--c-halogen)',
                     paddingTop: '0.5rem', paddingBottom: '0.5rem',
@@ -203,9 +203,9 @@ export default function CompoundInput({ onResolved }: Props) {
             exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.2 }} style={{ overflow: 'hidden' }}
             className="mt-2">
             <div className="rounded-sm border overflow-hidden"
-              style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 20%, #1c1f2e)' }}>
+              style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 20%, rgb(var(--color-border)))' }}>
               <div className="grid grid-cols-4 px-3 py-1.5 font-mono text-xs text-secondary tracking-wider"
-                style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, #0e1016)' }}>
+                style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, rgb(var(--color-surface)))' }}>
                 <span>ELEMENT</span><span className="text-right">COUNT</span>
                 <span className="text-right">At. Wt.</span><span className="text-right">CONTRIB.</span>
               </div>
@@ -214,7 +214,7 @@ export default function CompoundInput({ onResolved }: Props) {
                   initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.05, type: 'spring', stiffness: 400, damping: 30 }}
                   className="grid grid-cols-4 px-3 py-1.5 border-t font-mono text-xs"
-                  style={{ borderColor: '#1c1f2e' }}>
+                  style={{ borderColor: 'rgb(var(--color-border))' }}>
                   <div className="flex items-center gap-1.5">
                     <span style={{ color: 'var(--c-halogen)' }}>{row.symbol}</span>
                     <span className="text-dim text-[10px] hidden sm:inline">{row.name}</span>
@@ -225,12 +225,12 @@ export default function CompoundInput({ onResolved }: Props) {
                 </motion.div>
               ))}
               <div className="grid grid-cols-4 px-3 py-2 border-t font-mono text-xs"
-                style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 25%, #1c1f2e)', background: 'color-mix(in srgb, var(--c-halogen) 6%, #0e1016)' }}>
+                style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 25%, rgb(var(--color-border)))', background: 'color-mix(in srgb, var(--c-halogen) 6%, rgb(var(--color-surface)))' }}>
                 <span className="col-span-3 text-secondary font-medium">Molar Mass</span>
                 <span className="text-right font-semibold" style={{ color: 'var(--c-halogen)' }}>{totalMW!.toFixed(4)}</span>
               </div>
               <div className="px-3 pb-1.5 font-mono text-[9px] text-right text-dim"
-                style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, #0e1016)' }}>g / mol</div>
+                style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, rgb(var(--color-surface)))' }}>g / mol</div>
             </div>
           </motion.div>
         )}

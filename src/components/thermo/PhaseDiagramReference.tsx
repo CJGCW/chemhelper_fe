@@ -33,7 +33,7 @@ function PhaseDiagramSVG() {
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full" aria-label="Generic phase diagram">
-      <rect x={ML} y={MT} width={PW} height={PH} fill="rgba(255,255,255,0.015)" rx="2" />
+      <rect x={ML} y={MT} width={PW} height={PH} fill="rgba(var(--overlay),0.015)" rx="2" />
 
       {/* Phase region fills */}
       {/* Solid region */}
@@ -51,9 +51,9 @@ function PhaseDiagramSVG() {
 
       {/* 1 atm dashed line */}
       <line x1={ML} y1={y(atm1)} x2={ML + PW} y2={y(atm1)}
-        stroke="rgba(255,255,255,0.14)" strokeWidth="1" strokeDasharray="5 3" />
+        stroke="rgba(var(--overlay),0.14)" strokeWidth="1" strokeDasharray="5 3" />
       <text x={ML - 4} y={y(atm1)} textAnchor="end" dominantBaseline="middle"
-        fill="rgba(255,255,255,0.3)" fontSize="8.5" fontFamily="monospace">
+        fill="rgba(var(--overlay),0.3)" fontSize="8.5" fontFamily="monospace">
         1 atm
       </text>
 
@@ -117,26 +117,26 @@ function PhaseDiagramSVG() {
 
       {/* Axes */}
       <line x1={ML} y1={MT} x2={ML} y2={MT + PH + 5}
-        stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+        stroke="rgba(var(--overlay),0.3)" strokeWidth="1" />
       <line x1={ML - 4} y1={MT + PH} x2={ML + PW} y2={MT + PH}
-        stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+        stroke="rgba(var(--overlay),0.3)" strokeWidth="1" />
 
       {/* Axis labels */}
       <text x={ML - 40} y={MT + PH / 2} textAnchor="middle"
-        fill="rgba(255,255,255,0.35)" fontSize="9.5" fontFamily="system-ui"
+        fill="rgba(var(--overlay),0.35)" fontSize="9.5" fontFamily="system-ui"
         transform={`rotate(-90, ${ML - 40}, ${MT + PH / 2})`}>
         Pressure
       </text>
       <text x={ML + PW / 2} y={H - 4} textAnchor="middle"
-        fill="rgba(255,255,255,0.35)" fontSize="9.5" fontFamily="system-ui">
+        fill="rgba(var(--overlay),0.35)" fontSize="9.5" fontFamily="system-ui">
         Temperature
       </text>
 
       {/* Arrow tips on axes */}
       <polygon points={`${ML},${MT - 2} ${ML - 3},${MT + 6} ${ML + 3},${MT + 6}`}
-        fill="rgba(255,255,255,0.3)" />
+        fill="rgba(var(--overlay),0.3)" />
       <polygon points={`${ML + PW + 4},${MT + PH} ${ML + PW - 4},${MT + PH - 3} ${ML + PW - 4},${MT + PH + 3}`}
-        fill="rgba(255,255,255,0.3)" />
+        fill="rgba(var(--overlay),0.3)" />
     </svg>
   )
 }
@@ -172,7 +172,7 @@ export default function PhaseDiagramReference() {
       <div className="flex flex-col gap-2 print:hidden">
         <SectionHead label="Generic Phase Diagram" />
         <div className="rounded-sm border border-border overflow-hidden p-3"
-          style={{ background: '#0a0c10' }}>
+          style={{ background: 'rgb(var(--color-base))' }}>
           <PhaseDiagramSVG />
         </div>
         <p className="font-sans text-xs text-dim px-1">

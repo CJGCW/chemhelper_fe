@@ -148,7 +148,7 @@ export default function HeatTransferReference() {
 
       {/* Assumption note */}
       <div className="rounded-sm border px-4 py-3"
-        style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 20%, transparent)', background: 'color-mix(in srgb, var(--c-halogen) 5%, #0e1016)' }}>
+        style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 20%, transparent)', background: 'color-mix(in srgb, var(--c-halogen) 5%, rgb(var(--color-surface)))' }}>
         <p className="font-mono text-xs text-secondary leading-relaxed">
           <span className="text-primary font-semibold">Assumption:</span> These calculations assume a perfectly insulated (calorimeter) system with no heat loss to the surroundings, no phase changes, and constant specific heats over the temperature range.
         </p>

@@ -243,7 +243,7 @@ export default function VsepPage() {
             disabled={!canSubmit}
             className="px-5 py-2 rounded-sm font-sans font-medium text-sm transition-all disabled:opacity-40 self-start"
             style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
               border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
               paddingTop: '0.625rem',

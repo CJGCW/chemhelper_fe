@@ -46,17 +46,17 @@ function HeatingCurveDiagram() {
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full" aria-label="Heating curve diagram">
-      <rect x={ML} y={MT} width={PW} height={PH} fill="rgba(255,255,255,0.015)" rx="2" />
+      <rect x={ML} y={MT} width={PW} height={PH} fill="rgba(var(--overlay),0.015)" rx="2" />
 
       {/* Dashed lines at mp and bp */}
       {transitions.map(({ yi, label }) => (
         <g key={label}>
           <line
             x1={ML} y1={y(yi)} x2={ML + PW} y2={y(yi)}
-            stroke="rgba(255,255,255,0.12)" strokeWidth="1" strokeDasharray="4 3"
+            stroke="rgba(var(--overlay),0.12)" strokeWidth="1" strokeDasharray="4 3"
           />
           <text x={ML - 5} y={y(yi)} textAnchor="end" dominantBaseline="middle"
-            fill="rgba(255,255,255,0.35)" fontSize="9" fontFamily="monospace">
+            fill="rgba(var(--overlay),0.35)" fontSize="9" fontFamily="monospace">
             {label}
           </text>
         </g>
@@ -84,7 +84,7 @@ function HeatingCurveDiagram() {
       {eqAnnotations.map(({ label, xi, yi }) => (
         <text key={label}
           x={x(xi)} y={y(yi) + 16}
-          textAnchor="middle" fill="rgba(255,255,255,0.28)"
+          textAnchor="middle" fill="rgba(var(--overlay),0.28)"
           fontSize="8" fontFamily="monospace">
           {label}
         </text>
@@ -92,18 +92,18 @@ function HeatingCurveDiagram() {
 
       {/* Axes */}
       <line x1={ML} y1={MT} x2={ML} y2={MT + PH + 5}
-        stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+        stroke="rgba(var(--overlay),0.3)" strokeWidth="1" />
       <line x1={ML - 4} y1={MT + PH} x2={ML + PW} y2={MT + PH}
-        stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+        stroke="rgba(var(--overlay),0.3)" strokeWidth="1" />
 
       {/* Axis labels */}
       <text x={ML - 36} y={MT + PH / 2} textAnchor="middle"
-        fill="rgba(255,255,255,0.35)" fontSize="9.5" fontFamily="system-ui"
+        fill="rgba(var(--overlay),0.35)" fontSize="9.5" fontFamily="system-ui"
         transform={`rotate(-90, ${ML - 36}, ${MT + PH / 2})`}>
         Temperature (°C)
       </text>
       <text x={ML + PW / 2} y={H - 4} textAnchor="middle"
-        fill="rgba(255,255,255,0.35)" fontSize="9.5" fontFamily="system-ui">
+        fill="rgba(var(--overlay),0.35)" fontSize="9.5" fontFamily="system-ui">
         Heat Added (kJ)
       </text>
     </svg>
@@ -130,7 +130,7 @@ export default function HeatingCurveReference() {
       <div className="flex flex-col gap-2 print:hidden">
         <SectionHead label="Heating Curve — Shape" />
         <div className="rounded-sm border border-border overflow-hidden p-3"
-          style={{ background: '#0a0c10' }}>
+          style={{ background: 'rgb(var(--color-base))' }}>
           <HeatingCurveDiagram />
         </div>
         <p className="font-sans text-xs text-dim px-1">

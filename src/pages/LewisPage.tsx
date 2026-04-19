@@ -190,7 +190,7 @@ export default function LewisPage({ embedded = false }: { embedded?: boolean }) 
         {/* Mode tabs — only shown when not embedded */}
         {!embedded && (
           <div className="flex items-center gap-1 p-1 rounded-sm self-start"
-            style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+            style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
             {(['generate', 'practice'] as Mode[]).map(m => {
               const isActive = mode === m
               return (
@@ -198,13 +198,13 @@ export default function LewisPage({ embedded = false }: { embedded?: boolean }) 
                   key={m}
                   onClick={() => setMode(m)}
                   className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors capitalize"
-                  style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}
+                  style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)' }}
                 >
                   {isActive && (
                     <motion.div
                       layoutId="lewis-tab-bg"
                       className="absolute inset-0 rounded-sm"
-                      style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
+                      style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
                       transition={{ type: 'spring', stiffness: 400, damping: 32 }}
                     />
                   )}
@@ -228,12 +228,12 @@ export default function LewisPage({ embedded = false }: { embedded?: boolean }) 
                 style={{
                   borderColor: input === ex.input && chargeRaw === String(ex.charge ?? 0)
                     ? 'color-mix(in srgb, var(--c-halogen) 50%, transparent)'
-                    : '#1c1f2e',
+                    : 'rgb(var(--color-border))',
                   color: input === ex.input && chargeRaw === String(ex.charge ?? 0)
                     ? 'var(--c-halogen)'
-                    : 'rgba(255,255,255,0.45)',
+                    : 'rgba(var(--overlay),0.45)',
                   background: input === ex.input && chargeRaw === String(ex.charge ?? 0)
-                    ? 'color-mix(in srgb, var(--c-halogen) 10%, #0e1016)'
+                    ? 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-surface)))'
                     : 'transparent',
                 }}
               >
@@ -302,7 +302,7 @@ export default function LewisPage({ embedded = false }: { embedded?: boolean }) 
             disabled={!canSubmit}
             className="px-5 py-2 rounded-sm font-sans font-medium text-sm transition-all disabled:opacity-40 self-start"
             style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
               border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
               paddingTop: '0.625rem',
@@ -405,7 +405,7 @@ export default function LewisPage({ embedded = false }: { embedded?: boolean }) 
             {result.notes && (
               <p
                 className="font-mono text-xs text-secondary rounded-sm px-3 py-2.5 border border-border"
-                style={{ background: '#0e1016' }}
+                style={{ background: 'rgb(var(--color-surface))' }}
               >
                 {result.notes}
               </p>

@@ -190,7 +190,7 @@ export default function BondEnthalpyCalc() {
             </p>
             <p className="font-mono text-sm">
               ΔH ≈ <span className="font-bold text-xl"
-                style={{ color: dh < 0 ? '#34d399' : dh > 0 ? '#f87171' : 'rgba(255,255,255,0.6)' }}>
+                style={{ color: dh < 0 ? '#34d399' : dh > 0 ? '#f87171' : 'rgba(var(--overlay),0.6)' }}>
                 {dh >= 0 ? '+' : ''}{dh.toFixed(0)} kJ
               </span>
               <span className="ml-3 text-xs text-dim">

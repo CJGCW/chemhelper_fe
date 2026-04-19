@@ -125,7 +125,7 @@ export default function ElementCell({ element, animationIndex = 0 }: Props) {
         className="relative w-full aspect-[4/5] flex flex-col items-center justify-center
                    rounded-sm border cursor-pointer select-none outline-none overflow-hidden
                    focus-visible:ring-1 focus-visible:ring-white/30"
-        style={{ borderColor: 'rgba(255,255,255,0.07)', backgroundColor: '#0e1016' }}
+        style={{ borderColor: 'rgba(var(--overlay),0.07)', backgroundColor: 'rgb(var(--color-surface))' }}
         initial={{ opacity: 0, scale: 0.7 }}
         animate={{
           opacity: isDimmed ? 0.12 : 1,
@@ -138,7 +138,7 @@ export default function ElementCell({ element, animationIndex = 0 }: Props) {
         whileHover={{
           scale: 1.18,
           zIndex: 20,
-          backgroundColor: `color-mix(in srgb, ${color} 22%, #0e1016)`,
+          backgroundColor: `color-mix(in srgb, ${color} 22%, rgb(var(--color-surface)))`,
           borderColor: color,
           transition: { duration: 0.1 },
         }}
@@ -174,7 +174,7 @@ export default function ElementCell({ element, animationIndex = 0 }: Props) {
 
         {/* Atomic number */}
         <span className="absolute top-[2px] left-[3px] font-mono leading-none"
-          style={{ color: 'rgba(255,255,255,0.55)', fontSize: 'clamp(6px, 1.3vw, 16px)' }}>
+          style={{ color: 'rgba(var(--overlay),0.55)', fontSize: 'clamp(6px, 1.3vw, 16px)' }}>
           {element.atomicNumber}
         </span>
 
@@ -198,14 +198,14 @@ export default function ElementCell({ element, animationIndex = 0 }: Props) {
         {showTrend && trend ? (
           <span className="font-mono mt-0.5 leading-none relative z-10"
             style={{
-              color: (trend.fillFrac > 0 || trend.circFrac > 0) ? trend.color : 'rgba(255,255,255,0.2)',
+              color: (trend.fillFrac > 0 || trend.circFrac > 0) ? trend.color : 'rgba(var(--overlay),0.2)',
               fontSize: 'clamp(6px, 1.1vw, 14px)',
             }}>
             {trend.label}
           </span>
         ) : (
           <span className="font-mono mt-0.5 leading-none"
-            style={{ color: 'rgba(255,255,255,0.28)', fontSize: 'clamp(6px, 1.1vw, 14px)' }}>
+            style={{ color: 'rgba(var(--overlay),0.28)', fontSize: 'clamp(6px, 1.1vw, 14px)' }}>
             {parseFloat(element.atomicWeight).toFixed(2)}
           </span>
         )}

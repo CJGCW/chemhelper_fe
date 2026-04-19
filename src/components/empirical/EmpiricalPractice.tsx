@@ -85,7 +85,7 @@ function SolutionSteps({
       {/* Formula result(s) */}
       <div className="flex flex-wrap gap-3 items-center pt-1">
         <div className="flex flex-col items-center px-4 py-2 rounded-sm border"
-          style={{ background: 'color-mix(in srgb, #4ade80 6%, #080a0f)', borderColor: 'color-mix(in srgb, #4ade80 25%, transparent)' }}>
+          style={{ background: 'color-mix(in srgb, #4ade80 6%, rgb(var(--color-base)))', borderColor: 'color-mix(in srgb, #4ade80 25%, transparent)' }}>
           <span className="font-mono text-xs text-secondary uppercase tracking-widest">Empirical</span>
           <span className="font-mono text-xl font-bold" style={{ color: '#4ade80' }}>{result.empiricalFormula}</span>
         </div>
@@ -99,7 +99,7 @@ function SolutionSteps({
               </span>
             </div>
             <div className="flex flex-col items-center px-4 py-2 rounded-sm border"
-              style={{ background: 'color-mix(in srgb, #818cf8 6%, #080a0f)', borderColor: 'color-mix(in srgb, #818cf8 25%, transparent)' }}>
+              style={{ background: 'color-mix(in srgb, #818cf8 6%, rgb(var(--color-base)))', borderColor: 'color-mix(in srgb, #818cf8 25%, transparent)' }}>
               <span className="font-mono text-xs text-secondary uppercase tracking-widest">Molecular</span>
               <span className="font-mono text-xl font-bold" style={{ color: '#818cf8' }}>{result.molecularFormula}</span>
             </div>
@@ -108,7 +108,7 @@ function SolutionSteps({
       </div>
 
       {problem.hint && (
-        <p className="font-sans text-xs text-dim italic border-l-2 pl-3" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+        <p className="font-sans text-xs text-dim italic border-l-2 pl-3" style={{ borderColor: 'rgba(var(--overlay),0.1)' }}>
           {problem.hint}
         </p>
       )}
@@ -189,17 +189,17 @@ export default function EmpiricalPractice() {
       <div className="flex items-center gap-2 flex-wrap">
         <span className="font-sans text-xs text-secondary">Difficulty</span>
         <div className="flex items-center gap-1 p-1 rounded-sm"
-          style={{ background: '#080a0f', border: '1px solid #1c1f2e' }}>
+          style={{ background: 'rgb(var(--color-base))', border: '1px solid rgb(var(--color-border))' }}>
           {(['all', 'easy', 'medium', 'hard'] as const).map(d => (
             <button key={d}
               onClick={() => handleDifficultyChange(d)}
               className="relative px-3 py-1 rounded-sm font-sans text-xs font-medium transition-colors capitalize"
-              style={{ color: difficulty === d ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}
+              style={{ color: difficulty === d ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)' }}
             >
               {difficulty === d && (
                 <motion.div layoutId="practice-diff-bg" className="absolute inset-0 rounded-sm"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                     border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                   }}
                   transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
@@ -220,7 +220,7 @@ export default function EmpiricalPractice() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.18 }}
             className="flex flex-col gap-4 p-4 rounded-sm border border-border"
-            style={{ background: '#080a0f' }}
+            style={{ background: 'rgb(var(--color-base))' }}
           >
             {/* Header row */}
             <div className="flex items-center justify-between">
@@ -241,7 +241,7 @@ export default function EmpiricalPractice() {
             {/* Percent composition table */}
             <div className="flex flex-col gap-2">
               <p className="font-sans text-xs text-secondary">Find the empirical formula from the percent composition:</p>
-              <div className="overflow-x-auto rounded-sm border border-border" style={{ background: 'rgba(255,255,255,0.02)' }}>
+              <div className="overflow-x-auto rounded-sm border border-border" style={{ background: 'rgba(var(--overlay),0.02)' }}>
                 <table className="border-collapse text-xs font-mono">
                   <thead>
                     <tr>

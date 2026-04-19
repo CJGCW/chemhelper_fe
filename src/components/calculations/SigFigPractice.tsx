@@ -45,7 +45,7 @@ function borderColor(r: SigFigCheckResult | undefined): string {
   if (r === 'correct')    return 'color-mix(in srgb, #22c55e 45%, transparent)'
   if (r === 'wrong_sf')   return 'color-mix(in srgb, #f97316 45%, transparent)'
   if (r === 'wrong_value' || r === 'empty') return 'color-mix(in srgb, #ef4444 45%, transparent)'
-  return 'rgba(255,255,255,0.12)'
+  return 'rgba(var(--overlay),0.12)'
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -77,18 +77,18 @@ export default function SigFigPractice() {
   const total = problems.length
 
   const pillStyle = (active: boolean) => ({
-    background: active ? 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)' : 'transparent',
+    background: active ? 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))' : 'transparent',
     border: active
       ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)'
-      : '1px solid rgba(255,255,255,0.1)',
-    color: active ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)',
+      : '1px solid rgba(var(--overlay),0.1)',
+    color: active ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
   })
 
   return (
     <div className="flex flex-col gap-5">
 
       {/* Settings */}
-      <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+      <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
         <p className="font-mono text-xs tracking-widest text-secondary uppercase">Settings</p>
 
         <div className="flex flex-wrap gap-5">
@@ -124,7 +124,7 @@ export default function SigFigPractice() {
         <button onClick={generate} disabled={noneSelected}
           className="self-start px-6 py-2.5 rounded-sm font-sans font-medium text-sm transition-all disabled:opacity-40"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           }}
@@ -150,8 +150,8 @@ export default function SigFigPractice() {
                 className="flex items-baseline gap-2 p-3 rounded-sm border"
                 style={{
                   background: correct === total
-                    ? 'color-mix(in srgb, #22c55e 10%, #0e1016)'
-                    : 'color-mix(in srgb, var(--c-halogen) 10%, #0e1016)',
+                    ? 'color-mix(in srgb, #22c55e 10%, rgb(var(--color-surface)))'
+                    : 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-surface)))',
                   border: correct === total
                     ? '1px solid color-mix(in srgb, #22c55e 30%, transparent)'
                     : '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
@@ -172,7 +172,7 @@ export default function SigFigPractice() {
               return (
                 <div key={p.id}
                   className="flex gap-3 p-4 rounded-sm border border-border"
-                  style={{ background: '#0e1016' }}
+                  style={{ background: 'rgb(var(--color-surface))' }}
                 >
                   <span className="font-mono text-xs text-dim shrink-0 pt-0.5">{idx + 1}.</span>
                   <div className="flex flex-col gap-2.5 flex-1 min-w-0">
@@ -226,7 +226,7 @@ export default function SigFigPractice() {
                           animate={{ opacity: 1, height: 'auto' }}
                           exit={{ opacity: 0, height: 0 }}
                           className="font-mono text-xs leading-relaxed"
-                          style={{ color: 'rgba(255,255,255,0.4)', overflow: 'hidden' }}
+                          style={{ color: 'rgba(var(--overlay),0.4)', overflow: 'hidden' }}
                         >
                           {result === 'empty' ? 'No answer entered.' : p.explanation}
                         </motion.p>
@@ -240,7 +240,7 @@ export default function SigFigPractice() {
             <button onClick={checkAll}
               className="self-start px-6 py-2.5 rounded-sm font-sans font-medium text-sm transition-all"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
                 border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               }}

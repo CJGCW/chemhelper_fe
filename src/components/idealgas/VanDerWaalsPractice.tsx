@@ -78,7 +78,7 @@ export default function VanDerWaalsPractice() {
 
           {/* Equation badge */}
           <p className="font-mono text-sm text-secondary rounded-sm px-3 py-2"
-            style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+            style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
             (P + an²/V²)(V − nb) = nRT
           </p>
 
@@ -106,7 +106,7 @@ export default function VanDerWaalsPractice() {
               <button onClick={handleCheck} disabled={!answer.trim()}
                 className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-30"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 15%, #141620)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
                   border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
                   color: 'var(--c-halogen)',
                 }}>

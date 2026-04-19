@@ -176,9 +176,9 @@ export default function EmpiricalVisual() {
               onClick={() => { setFormula(p.formula); setDraft(p.formula); setError('') }}
               className="px-3 py-1 rounded-full font-mono text-xs transition-all duration-150"
               style={{
-                border:     active ? '1px solid var(--c-halogen)' : '1px solid #1c1f2e',
-                background: active ? 'color-mix(in srgb, var(--c-halogen) 14%, #0a0c12)' : '#0d0f18',
-                color:      active ? 'var(--c-halogen)' : '#7b82a0',
+                border:     active ? '1px solid var(--c-halogen)' : '1px solid rgb(var(--color-border))',
+                background: active ? 'color-mix(in srgb, var(--c-halogen) 14%, rgb(var(--color-base)))' : '#0d0f18',
+                color:      active ? 'var(--c-halogen)' : 'rgb(var(--color-secondary))',
               }}
             >
               {p.label}
@@ -382,7 +382,7 @@ export default function EmpiricalVisual() {
                         {group.count > 1 ? (
                           <>
                             <span className="text-dim">×{group.count}</span>
-                            <span style={{ color: '#4a4f6a' }}>({group.perAtomPct.toFixed(2)}% each)</span>
+                            <span style={{ color: 'rgb(var(--color-dim))' }}>({group.perAtomPct.toFixed(2)}% each)</span>
                             <span className="font-semibold" style={{ color: group.color }}>{group.totalPct.toFixed(1)}% total</span>
                           </>
                         ) : (
@@ -415,7 +415,7 @@ export default function EmpiricalVisual() {
                 x={0} y={0}
                 width={visual.boxW} height={visual.boxH}
                 fill="#07090e"
-                stroke="#1c1f2e"
+                stroke="rgb(var(--color-border))"
                 strokeWidth={1.5}
                 rx={8}
               />

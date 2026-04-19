@@ -21,7 +21,7 @@ function BalanceViz({ leftAtoms, rightAtoms }: { leftAtoms: number; rightAtoms: 
   const total       = leftAtoms + rightAtoms
   const targetAngle = total > 0 ? Math.max(-20, Math.min(20, (diff / total) * 32)) : 0
   const isBalanced  = total > 0 && diff === 0
-  const beamColor   = isBalanced ? '#4ade80' : 'rgba(255,255,255,0.38)'
+  const beamColor   = isBalanced ? '#4ade80' : 'rgba(var(--overlay),0.38)'
 
   const springAngle = useSpring(0, { stiffness: 180, damping: 26 })
   const gRef        = useRef<SVGGElement>(null)
@@ -39,25 +39,25 @@ function BalanceViz({ leftAtoms, rightAtoms }: { leftAtoms: number; rightAtoms: 
     <div className="flex flex-col items-center gap-1">
       <svg viewBox="0 0 200 32" style={{ width: 180, height: 29 }} aria-hidden="true">
         {/* Static fulcrum */}
-        <polygon points="100,8 93,28 107,28" fill="rgba(255,255,255,0.18)" />
+        <polygon points="100,8 93,28 107,28" fill="rgba(var(--overlay),0.18)" />
         {/* Rotating beam + pans */}
         <g ref={gRef}>
           <line x1="10" y1="8" x2="190" y2="8" stroke={beamColor} strokeWidth="2" strokeLinecap="round" />
-          <line x1="10"  y1="8" x2="10"  y2="19" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
-          <line x1="190" y1="8" x2="190" y2="19" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+          <line x1="10"  y1="8" x2="10"  y2="19" stroke="rgba(var(--overlay),0.2)" strokeWidth="1" />
+          <line x1="190" y1="8" x2="190" y2="19" stroke="rgba(var(--overlay),0.2)" strokeWidth="1" />
           <rect x="3"   y="19" width="14" height="5" rx="1"
-            fill="rgba(255,255,255,0.06)" stroke={beamColor} strokeWidth="0.8" />
+            fill="rgba(var(--overlay),0.06)" stroke={beamColor} strokeWidth="0.8" />
           <rect x="183" y="19" width="14" height="5" rx="1"
-            fill="rgba(255,255,255,0.06)" stroke={beamColor} strokeWidth="0.8" />
+            fill="rgba(var(--overlay),0.06)" stroke={beamColor} strokeWidth="0.8" />
         </g>
         {/* Pivot dot */}
-        <circle cx="100" cy="8" r="2.5" fill="rgba(255,255,255,0.5)" />
+        <circle cx="100" cy="8" r="2.5" fill="rgba(var(--overlay),0.5)" />
       </svg>
       <div className="flex justify-between font-mono text-[10px]" style={{ width: 180 }}>
-        <span style={{ color: leftAtoms  > 0 ? beamColor : 'rgba(255,255,255,0.2)' }}>
+        <span style={{ color: leftAtoms  > 0 ? beamColor : 'rgba(var(--overlay),0.2)' }}>
           {leftAtoms  || '—'} atoms
         </span>
-        <span style={{ color: rightAtoms > 0 ? beamColor : 'rgba(255,255,255,0.2)' }}>
+        <span style={{ color: rightAtoms > 0 ? beamColor : 'rgba(var(--overlay),0.2)' }}>
           {rightAtoms || '—'} atoms
         </span>
       </div>
@@ -95,7 +95,7 @@ function CoeffInput({ value, onChange, correct, disabled, inputRef, onEnter }: C
   const borderColor =
     correct === true  ? 'rgba(52,211,153,0.7)'  :
     correct === false ? 'rgba(248,113,113,0.7)'  :
-                        'rgba(255,255,255,0.2)'
+                        'rgba(var(--overlay),0.2)'
 
   return (
     <input
@@ -283,13 +283,13 @@ export default function BalancingPractice() {
               onClick={() => handleDifficultyChange(d.id)}
               className="px-3 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
               style={isActive ? {
-                background: `color-mix(in srgb, ${color} 14%, #141620)`,
+                background: `color-mix(in srgb, ${color} 14%, rgb(var(--color-raised)))`,
                 border: `1px solid color-mix(in srgb, ${color} 40%, transparent)`,
                 color,
               } : {
-                background: '#0e1016',
-                border: '1px solid #1c1f2e',
-                color: 'rgba(255,255,255,0.4)',
+                background: 'rgb(var(--color-surface))',
+                border: '1px solid rgb(var(--color-border))',
+                color: 'rgba(var(--overlay),0.4)',
               }}
             >
               {d.label}
@@ -363,7 +363,7 @@ export default function BalancingPractice() {
               className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors
                          disabled:opacity-30 disabled:cursor-not-allowed"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 15%, #141620)',
+                background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
                 border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
                 color: 'var(--c-halogen)',
               }}

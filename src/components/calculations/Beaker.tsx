@@ -154,7 +154,7 @@ export default function Beaker({
         key={p.id}
         cx={px}
         r={p.size}
-        fill="rgba(255,255,255,0.9)"
+        fill="rgba(var(--overlay),0.9)"
         initial={{ cy: bTopY - 8, opacity: 0, scale: 0 }}
       />
     );
@@ -187,7 +187,7 @@ export default function Beaker({
         {/* ── INTERIOR BACKGROUND ── */}
         <polygon
           points={`${cx - iTopHW},${bTopY} ${cx + iTopHW},${bTopY} ${cx + iBotHW},${innerBotY} ${cx - iBotHW},${innerBotY}`}
-          fill="#0e1016"
+          fill="rgb(var(--color-surface))"
         />
 
         {/* ── LIQUID body — rect clipped to inner cylinder ── */}
@@ -214,7 +214,7 @@ export default function Beaker({
             rx={stirRX}
             ry={stirRY}
             fill="rgba(230,235,255,0.8)"
-            stroke="rgba(255,255,255,0.3)"
+            stroke="rgba(var(--overlay),0.3)"
             strokeWidth="0.8"
           />
         )}
@@ -224,27 +224,27 @@ export default function Beaker({
         <polygon
           points={`${cx - topHW},${bTopY} ${cx - iTopHW},${bTopY} ${cx - iBotHW},${innerBotY} ${cx - botHW},${bBotY}`}
           fill="#141825"
-          stroke="#2a2d3d"
+          stroke="rgb(var(--color-muted))"
           strokeWidth="0.8"
         />
         {/* Right wall */}
         <polygon
           points={`${cx + topHW},${bTopY} ${cx + botHW},${bBotY} ${cx + iBotHW},${innerBotY} ${cx + iTopHW},${bTopY}`}
           fill="#141825"
-          stroke="#2a2d3d"
+          stroke="rgb(var(--color-muted))"
           strokeWidth="0.8"
         />
         {/* Bottom */}
         <polygon
           points={`${cx - botHW},${bBotY} ${cx + botHW},${bBotY} ${cx + iBotHW},${innerBotY} ${cx - iBotHW},${innerBotY}`}
           fill="#0c0d10"
-          stroke="#2a2d3d"
+          stroke="rgb(var(--color-muted))"
           strokeWidth="0.8"
         />
         {/* Inner glass sheen */}
         <polygon
           points={`${cx - iTopHW},${bTopY} ${cx - iTopHW + 3},${bTopY} ${cx - iBotHW + 3},${innerBotY} ${cx - iBotHW},${innerBotY}`}
-          fill="rgba(255,255,255,0.025)"
+          fill="rgba(var(--overlay),0.025)"
         />
 
         {/* ── LIQUID SURFACE ELLIPSE — drawn AFTER walls so it sits on top ── */}
@@ -287,7 +287,7 @@ export default function Beaker({
           rx={botHW}
           ry={eRY}
           fill="#0c0d10"
-          stroke="#2a2d3d"
+          stroke="rgb(var(--color-muted))"
           strokeWidth="1.2"
         />
         <ellipse
@@ -296,7 +296,7 @@ export default function Beaker({
           rx={iBotHW}
           ry={eRY * 0.6}
           fill="transparent"
-          stroke="#1c1f2e"
+          stroke="rgb(var(--color-border))"
           strokeWidth="0.6"
         />
 
@@ -311,7 +311,7 @@ export default function Beaker({
             Z
           `}
           fill="#141825"
-          stroke="#2a2d3d"
+          stroke="rgb(var(--color-muted))"
           strokeWidth="1.2"
         />
         {/* Inner opening — front arc of inner ellipse */}
@@ -321,7 +321,7 @@ export default function Beaker({
             A ${iTopHW} ${eRY - 3} 0 0 0 ${cx + iTopHW},${bTopY}
           `}
           fill="none"
-          stroke="#1c1f2e"
+          stroke="rgb(var(--color-border))"
           strokeWidth="0.8"
         />
 
@@ -336,7 +336,7 @@ export default function Beaker({
                 y1={markY}
                 x2={cx + rx - 1}
                 y2={markY}
-                stroke="rgba(255,255,255,0.28)"
+                stroke="rgba(var(--overlay),0.28)"
                 strokeWidth="1.2"
                 strokeLinecap="round"
               />
@@ -346,7 +346,7 @@ export default function Beaker({
                 textAnchor="end"
                 fontFamily="IBM Plex Mono"
                 fontSize="7"
-                fill="rgba(255,255,255,0.28)"
+                fill="rgba(var(--overlay),0.28)"
               >
                 {fmtVol(f * beakerSize)}
               </text>
@@ -365,7 +365,7 @@ export default function Beaker({
               textAnchor="middle"
               fontFamily="IBM Plex Mono"
               fontSize="10"
-              fill="rgba(255,255,255,0.72)"
+              fill="rgba(var(--overlay),0.72)"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}

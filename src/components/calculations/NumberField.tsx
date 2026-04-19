@@ -49,8 +49,8 @@ export default function NumberField({
                      focus:outline-none focus:border-accent/40 transition-colors
                      disabled:opacity-40 disabled:cursor-not-allowed"
           style={solveFor ? {
-            borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, #1c1f2e)',
-            background: 'color-mix(in srgb, var(--c-halogen) 6%, #141620)',
+            borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, rgb(var(--color-border)))',
+            background: 'color-mix(in srgb, var(--c-halogen) 6%, rgb(var(--color-raised)))',
             color: 'var(--c-halogen)',
           } : undefined}
         />

@@ -49,12 +49,12 @@ function UnitPill({
           onClick={() => onChange(o)}
           className="px-2 py-0.5 rounded-sm font-mono text-xs transition-colors"
           style={active === o ? {
-            background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           } : {
-            border: '1px solid rgba(255,255,255,0.12)',
-            color: 'rgba(255,255,255,0.35)',
+            border: '1px solid rgba(var(--overlay),0.12)',
+            color: 'rgba(var(--overlay),0.35)',
           }}
         >{o}</button>
       ))}
@@ -221,7 +221,7 @@ function CombinedGasCalc() {
         <button onClick={handleCalc}
           className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
             color: 'var(--c-halogen)',
           }}>Calculate →</button>
@@ -468,7 +468,7 @@ export default function IdealGasCalc() {
       {/* Mode toggle + explanation button */}
       <div className="flex items-center gap-3 flex-wrap">
       <div className="flex gap-1 p-1 rounded-sm self-start flex-wrap"
-        style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+        style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
         {([
           { id: 'ideal',    label: 'PV = nRT'            },
           { id: 'combined', label: 'P₁V₁/T₁ = P₂V₂/T₂'  },
@@ -480,11 +480,11 @@ export default function IdealGasCalc() {
         ] as const).map(m => (
           <button key={m.id} onClick={() => setMode(m.id)}
             className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
-            style={{ color: mode === m.id ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
+            style={{ color: mode === m.id ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)' }}>
             {mode === m.id && (
               <motion.div layoutId="gas-calc-mode-pill" className="absolute inset-0 rounded-sm"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                   border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
@@ -569,7 +569,7 @@ export default function IdealGasCalc() {
           onClick={handleCalc}
           className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
             color: 'var(--c-halogen)',
           }}

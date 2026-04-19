@@ -97,8 +97,8 @@ export default function HessCalc() {
                   onClick={() => updateRow(row.id, 'flipped', !row.flipped)}
                   className="w-6 h-6 rounded-sm border flex items-center justify-center transition-colors text-[10px] font-mono"
                   style={row.flipped
-                    ? { background: 'color-mix(in srgb, var(--c-halogen) 20%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 50%, transparent)', color: 'var(--c-halogen)' }
-                    : { border: '1px solid rgba(255,255,255,0.15)', background: 'transparent', color: 'rgba(255,255,255,0.3)' }
+                    ? { background: 'color-mix(in srgb, var(--c-halogen) 20%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 50%, transparent)', color: 'var(--c-halogen)' }
+                    : { border: '1px solid rgba(var(--overlay),0.15)', background: 'transparent', color: 'rgba(var(--overlay),0.3)' }
                   }
                   title="Flip (reverse) this reaction"
                 >
@@ -149,7 +149,7 @@ export default function HessCalc() {
               {/* Contribution preview */}
               {p !== null && row.dh.trim() !== '' && (
                 <div className="ml-8 font-mono text-[11px] text-secondary">
-                  {row.flipped ? `−` : `+`}{Math.abs(p.mult) !== 1 ? `${Math.abs(p.mult)}×` : ''}({row.dh}) = <span style={{ color: p.contribution < 0 ? '#34d399' : p.contribution > 0 ? '#f87171' : 'rgba(255,255,255,0.5)' }}>{fmtDH(p.contribution)} kJ</span>
+                  {row.flipped ? `−` : `+`}{Math.abs(p.mult) !== 1 ? `${Math.abs(p.mult)}×` : ''}({row.dh}) = <span style={{ color: p.contribution < 0 ? '#34d399' : p.contribution > 0 ? '#f87171' : 'rgba(var(--overlay),0.5)' }}>{fmtDH(p.contribution)} kJ</span>
                   {row.flipped && <span className="text-dim ml-2">(reversed)</span>}
                 </div>
               )}
@@ -184,7 +184,7 @@ export default function HessCalc() {
               <div className="h-px bg-border my-1" />
               <p className="font-mono text-sm">
                 ΔH<sub>rxn</sub> = <span className="font-bold text-xl"
-                  style={{ color: total < 0 ? '#34d399' : total > 0 ? '#f87171' : 'rgba(255,255,255,0.6)' }}>
+                  style={{ color: total < 0 ? '#34d399' : total > 0 ? '#f87171' : 'rgba(var(--overlay),0.6)' }}>
                   {fmtDH(total)} kJ
                 </span>
                 <span className="ml-3 text-xs text-dim">

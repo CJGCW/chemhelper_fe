@@ -71,11 +71,11 @@ export default function EcellPractice() {
             <button key={t.id} onClick={() => handleTypeChange(t.id)}
               className="flex flex-col items-start px-3 py-2 rounded-sm font-sans text-sm font-medium transition-colors text-left"
               style={isActive ? {
-                background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                 border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
                 color: 'var(--c-halogen)',
               } : {
-                background: '#0e1016', border: '1px solid #1c1f2e', color: 'rgba(255,255,255,0.45)',
+                background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))', color: 'rgba(var(--overlay),0.45)',
               }}
             >
               <span className="text-sm">{t.label}</span>
@@ -111,7 +111,7 @@ export default function EcellPractice() {
         {/* Context block — half-reactions */}
         <pre
           className="font-mono text-xs text-secondary rounded-sm px-3 py-2.5 overflow-x-auto whitespace-pre-wrap"
-          style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}
+          style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}
         >
           {problem.context}
         </pre>
@@ -149,7 +149,7 @@ export default function EcellPractice() {
                                 ${checked
                                   ? correct ? 'border-emerald-700/60 text-emerald-400' : 'border-rose-700/60 text-rose-400'
                                   : 'border-border text-dim'}`}
-                style={{ background: '#0a0c12' }}>
+                style={{ background: 'rgb(var(--color-base))' }}>
                 {problem.answerUnit}
               </span>
             )}
@@ -159,7 +159,7 @@ export default function EcellPractice() {
             <button onClick={handleCheck} disabled={!answer.trim()}
               className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-30"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 15%, #141620)',
+                background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
                 border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
                 color: 'var(--c-halogen)',
               }}>

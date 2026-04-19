@@ -98,9 +98,9 @@ export default function LewisStructurePractice() {
             onClick={() => { setShowOther(false); setSelectedIdx(i) }}
             className="font-mono text-[11px] px-2 py-0.5 rounded-sm border transition-colors"
             style={{
-              borderColor: i === selectedIdx && !showOther ? 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '#1c1f2e',
-              color: i === selectedIdx && !showOther ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)',
-              background: i === selectedIdx && !showOther ? 'color-mix(in srgb, var(--c-halogen) 10%, #0e1016)' : 'transparent',
+              borderColor: i === selectedIdx && !showOther ? 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' : 'rgb(var(--color-border))',
+              color: i === selectedIdx && !showOther ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
+              background: i === selectedIdx && !showOther ? 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-surface)))' : 'transparent',
             }}
           >
             {p.label}
@@ -111,9 +111,9 @@ export default function LewisStructurePractice() {
           onClick={() => setShowOther(v => !v)}
           className="font-mono text-[11px] px-2 py-0.5 rounded-sm border transition-colors"
           style={{
-            borderColor: showOther ? 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '#1c1f2e',
-            color: showOther ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)',
-            background: showOther ? 'color-mix(in srgb, var(--c-halogen) 10%, #0e1016)' : 'transparent',
+            borderColor: showOther ? 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' : 'rgb(var(--color-border))',
+            color: showOther ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
+            background: showOther ? 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-surface)))' : 'transparent',
           }}
         >
           Other {showOther ? '▴' : '▾'}
@@ -137,7 +137,7 @@ export default function LewisStructurePractice() {
               onClick={loadOther}
               disabled={!otherFormula.trim() || fetching}
               className="font-mono text-[11px] px-2 py-0.5 rounded-sm border transition-colors disabled:opacity-40"
-              style={{ borderColor: '#1c1f2e', color: 'rgba(255,255,255,0.6)', background: '#141620' }}
+              style={{ borderColor: 'rgb(var(--color-border))', color: 'rgba(var(--overlay),0.6)', background: 'rgb(var(--color-raised))' }}
             >
               Load
             </button>

@@ -88,21 +88,21 @@ function InteractiveCurve({
       aria-label="Heating curve — click to answer"
     >
       {/* Plot background */}
-      <rect x={ML} y={MT} width={PW} height={PH} fill="rgba(255,255,255,0.015)" rx="2" />
+      <rect x={ML} y={MT} width={PW} height={PH} fill="rgba(var(--overlay),0.015)" rx="2" />
 
       {/* Vertical grid */}
       {xTicks.map((q, i) => (
         <line key={i} x1={xS(q)} y1={MT} x2={xS(q)} y2={MT + PH}
-          stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+          stroke="rgba(var(--overlay),0.05)" strokeWidth="1" />
       ))}
 
       {/* Dashed transition lines + y labels */}
       {transitionLines.map(({ t, label }) => (
         <g key={label}>
           <line x1={ML} y1={yS(t)} x2={ML + PW} y2={yS(t)}
-            stroke="rgba(255,255,255,0.12)" strokeWidth="1" strokeDasharray="4 3" />
+            stroke="rgba(var(--overlay),0.12)" strokeWidth="1" strokeDasharray="4 3" />
           <text x={ML - 4} y={yS(t)} textAnchor="end" dominantBaseline="middle"
-            fill="rgba(255,255,255,0.3)" fontSize="9" fontFamily="monospace">{label}</text>
+            fill="rgba(var(--overlay),0.3)" fontSize="9" fontFamily="monospace">{label}</text>
         </g>
       ))}
 
@@ -129,17 +129,17 @@ function InteractiveCurve({
 
       {/* Axes */}
       <line x1={ML} y1={MT} x2={ML} y2={MT + PH + 6}
-        stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+        stroke="rgba(var(--overlay),0.3)" strokeWidth="1" />
       <line x1={ML - 4} y1={MT + PH} x2={ML + PW} y2={MT + PH}
-        stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+        stroke="rgba(var(--overlay),0.3)" strokeWidth="1" />
 
       {/* Y ticks */}
       {yTicks.map(t => (
         <g key={t}>
           <line x1={ML - 3} y1={yS(t)} x2={ML} y2={yS(t)}
-            stroke="rgba(255,255,255,0.4)" strokeWidth="1" />
+            stroke="rgba(var(--overlay),0.4)" strokeWidth="1" />
           <text x={ML - 6} y={yS(t)} textAnchor="end" dominantBaseline="middle"
-            fill="rgba(255,255,255,0.5)" fontSize="9" fontFamily="monospace">
+            fill="rgba(var(--overlay),0.5)" fontSize="9" fontFamily="monospace">
             {t.toFixed(t % 1 === 0 ? 0 : 1)}°
           </text>
         </g>
@@ -149,9 +149,9 @@ function InteractiveCurve({
       {xTicks.map(q => (
         <g key={q}>
           <line x1={xS(q)} y1={MT + PH} x2={xS(q)} y2={MT + PH + 3}
-            stroke="rgba(255,255,255,0.4)" strokeWidth="1" />
+            stroke="rgba(var(--overlay),0.4)" strokeWidth="1" />
           <text x={xS(q)} y={MT + PH + 14} textAnchor="middle"
-            fill="rgba(255,255,255,0.4)" fontSize="8.5" fontFamily="monospace">
+            fill="rgba(var(--overlay),0.4)" fontSize="8.5" fontFamily="monospace">
             {kj(q)}
           </text>
         </g>
@@ -159,19 +159,19 @@ function InteractiveCurve({
 
       {/* Axis labels */}
       <text x={ML - 40} y={MT + PH / 2} textAnchor="middle"
-        fill="rgba(255,255,255,0.3)" fontSize="9.5" fontFamily="system-ui"
+        fill="rgba(var(--overlay),0.3)" fontSize="9.5" fontFamily="system-ui"
         transform={`rotate(-90, ${ML - 40}, ${MT + PH / 2})`}>
         Temperature (°C)
       </text>
       <text x={ML + PW / 2} y={H - 4} textAnchor="middle"
-        fill="rgba(255,255,255,0.3)" fontSize="9.5" fontFamily="system-ui">
+        fill="rgba(var(--overlay),0.3)" fontSize="9.5" fontFamily="system-ui">
         Heat Added (kJ)
       </text>
 
       {/* "Click the curve" hint */}
       {!answered && !clickSvgPos && (
         <text x={ML + PW / 2} y={MT + 15} textAnchor="middle"
-          fill="rgba(255,255,255,0.18)" fontSize="9" fontFamily="system-ui">
+          fill="rgba(var(--overlay),0.18)" fontSize="9" fontFamily="system-ui">
           click the curve to answer
         </text>
       )}
@@ -180,7 +180,7 @@ function InteractiveCurve({
       {clickSvgPos && (
         <circle cx={clickSvgPos.x} cy={clickSvgPos.y} r="8"
           fill={isCorrect ? '#34d399' : '#f87171'}
-          stroke="rgba(255,255,255,0.85)" strokeWidth="2" />
+          stroke="rgba(var(--overlay),0.85)" strokeWidth="2" />
       )}
     </svg>
   )
@@ -260,7 +260,7 @@ export default function HeatingCurveProblems() {
         >
           {/* Card header: substance info + legend */}
           <div className="px-4 py-3 border-b border-border flex items-center justify-between flex-wrap gap-3"
-            style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, #141620)' }}>
+            style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, rgb(var(--color-raised)))' }}>
             <div className="flex items-center gap-2">
               <span className="font-mono text-xs text-secondary tracking-widest uppercase">Identify the region</span>
               <span className="font-mono text-xs text-secondary">
@@ -291,7 +291,7 @@ export default function HeatingCurveProblems() {
           {/* Interactive curve */}
           <div className="px-4 pb-4">
             <div className="rounded-sm border border-border overflow-hidden"
-              style={{ background: '#0a0c10' }}>
+              style={{ background: 'rgb(var(--color-base))' }}>
               <InteractiveCurve
                 problem={problem}
                 onClickSeg={handleClickSeg}
@@ -330,7 +330,7 @@ export default function HeatingCurveProblems() {
                   <button onClick={next}
                     className="self-start mt-1 px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-all"
                     style={{
-                      background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+                      background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
                       border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                       color: 'var(--c-halogen)',
                     }}>

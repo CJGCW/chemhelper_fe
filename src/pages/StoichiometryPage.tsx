@@ -282,7 +282,7 @@ export default function StoichiometryPage() {
       <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:gap-x-6 md:gap-y-3">
         {groups.map(group => (
           <div key={group.id} className="flex flex-col gap-2 px-3 py-2 rounded-sm"
-            style={{ background: '#0a0c12', border: '1px solid #1c1f2e' }}>
+            style={{ background: 'rgb(var(--color-base))', border: '1px solid rgb(var(--color-border))' }}>
             <p className="font-mono text-xs text-secondary tracking-widest uppercase">{group.label}</p>
             <div className="flex items-center gap-1 flex-wrap">
               {group.pills.map(pill => {
@@ -292,13 +292,13 @@ export default function StoichiometryPage() {
                     key={pill.id}
                     onClick={() => setTab(pill.id)}
                     className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
-                    style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}
+                    style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)' }}
                   >
                     {isActive && (
                       <motion.div
                         layoutId={`${layoutPrefix}-pill-bg`}
                         className="absolute inset-0 rounded-sm"
-                        style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
+                        style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
                         transition={{ type: 'spring', stiffness: 400, damping: 32 }}
                       />
                     )}
@@ -363,17 +363,17 @@ export default function StoichiometryPage() {
 
         {/* Mode toggle switch */}
         <div className="flex items-center gap-1 p-1 rounded-full self-start print:hidden"
-          style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+          style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
           {(['reference', 'practice', 'problems'] as Mode[]).map(mode => {
             const isActive = activeMode === mode
             return (
               <button key={mode} onClick={() => setMode(mode)}
                 className="relative px-5 py-1.5 rounded-full font-sans text-sm font-medium transition-colors capitalize"
-                style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)' }}>
+                style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)' }}>
                 {isActive && (
                   <motion.div layoutId="stoich-mode-switch" className="absolute inset-0 rounded-full"
                     style={{
-                      background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                      background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                       border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                     }}
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
@@ -391,17 +391,17 @@ export default function StoichiometryPage() {
 
             {/* Visual | Guide secondary toggle */}
             <div className="flex items-center gap-1 p-1 rounded-sm self-start"
-              style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+              style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
               {(['guide', 'visual'] as RefView[]).map(v => {
                 const isActive = refView === v
                 return (
                   <button key={v} onClick={() => setRefView(v)}
                     className="relative px-3.5 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors capitalize"
-                    style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
+                    style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)' }}>
                     {isActive && (
                       <motion.div layoutId="stoich-refview-pill" className="absolute inset-0 rounded-sm"
                         style={{
-                          background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                          background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                           border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                         }}
                         transition={{ type: 'spring', stiffness: 400, damping: 32 }} />

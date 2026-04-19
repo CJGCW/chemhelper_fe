@@ -315,7 +315,7 @@ export default function ClausiusClapeyronPractice() {
           <span className="flex items-center gap-1.5 font-mono text-xs px-2 py-0.5 rounded-sm border"
             style={{
               borderColor: `color-mix(in srgb, ${SF_COLOR[problem.solveFor]} 35%, transparent)`,
-              background:  `color-mix(in srgb, ${SF_COLOR[problem.solveFor]} 8%, #0e1016)`,
+              background:  `color-mix(in srgb, ${SF_COLOR[problem.solveFor]} 8%, rgb(var(--color-surface)))`,
               color: SF_COLOR[problem.solveFor],
             }}>
             Solve for {SF_LABEL[problem.solveFor]}
@@ -356,17 +356,17 @@ export default function ClausiusClapeyronPractice() {
             className="px-3 py-1.5 rounded-sm border font-sans text-xs transition-colors"
             style={showAnswer ? {
               borderColor: `color-mix(in srgb, ${SF_COLOR[problem.solveFor]} 40%, transparent)`,
-              background:  `color-mix(in srgb, ${SF_COLOR[problem.solveFor]} 8%, #141620)`,
+              background:  `color-mix(in srgb, ${SF_COLOR[problem.solveFor]} 8%, rgb(var(--color-raised)))`,
               color: SF_COLOR[problem.solveFor],
-            } : { borderColor: '#1c1f2e', background: '#0e1016', color: 'rgba(255,255,255,0.45)' }}>
+            } : { borderColor: 'rgb(var(--color-border))', background: 'rgb(var(--color-surface))', color: 'rgba(var(--overlay),0.45)' }}>
             {showAnswer ? 'Hide answer' : 'Show answer'}
           </button>
           {showAnswer && (
             <button onClick={() => setShowSteps(s => !s)}
               className="px-3 py-1.5 rounded-sm border font-sans text-xs transition-colors"
               style={showSteps
-                ? { borderColor: '#2d3144', background: '#141620', color: 'rgba(255,255,255,0.6)' }
-                : { borderColor: '#1c1f2e', background: '#0e1016', color: 'rgba(255,255,255,0.35)' }}>
+                ? { borderColor: '#2d3144', background: 'rgb(var(--color-raised))', color: 'rgba(var(--overlay),0.6)' }
+                : { borderColor: 'rgb(var(--color-border))', background: 'rgb(var(--color-surface))', color: 'rgba(var(--overlay),0.35)' }}>
               {showSteps ? 'Hide steps' : 'Show steps'}
             </button>
           )}

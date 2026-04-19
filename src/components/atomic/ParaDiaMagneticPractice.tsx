@@ -79,13 +79,13 @@ function OrbBox({ up, down }: { up: boolean; down: boolean }) {
   return (
     <div className="w-7 h-8 rounded-sm flex items-center justify-center gap-px shrink-0"
       style={{
-        border: unpaired ? '1px solid rgba(245,158,11,0.55)' : '1px solid rgba(255,255,255,0.14)',
-        background: unpaired ? 'rgba(245,158,11,0.09)' : (up || down) ? 'rgba(255,255,255,0.03)' : 'transparent',
+        border: unpaired ? '1px solid rgba(245,158,11,0.55)' : '1px solid rgba(var(--overlay),0.14)',
+        background: unpaired ? 'rgba(245,158,11,0.09)' : (up || down) ? 'rgba(var(--overlay),0.03)' : 'transparent',
       }}>
       <span className="font-mono text-[11px] leading-none select-none"
-        style={{ color: up ? (unpaired ? '#f59e0b' : 'var(--c-halogen)') : 'rgba(255,255,255,0.08)' }}>↑</span>
+        style={{ color: up ? (unpaired ? '#f59e0b' : 'var(--c-halogen)') : 'rgba(var(--overlay),0.08)' }}>↑</span>
       <span className="font-mono text-[11px] leading-none select-none"
-        style={{ color: down ? 'var(--c-halogen)' : 'rgba(255,255,255,0.08)' }}>↓</span>
+        style={{ color: down ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.08)' }}>↓</span>
     </div>
   )
 }

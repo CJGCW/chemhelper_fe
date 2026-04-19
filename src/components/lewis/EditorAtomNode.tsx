@@ -172,8 +172,8 @@ export function EditorAtomNode({ id, data, selected }: NodeProps<AtomNodeType>) 
                     height: DOT_SIZE,
                     borderRadius: '50%',
                     flexShrink: 0,
-                    background: filled ? 'rgba(255,255,255,0.85)' : 'transparent',
-                    border: isGhost ? '1.5px dashed rgba(255,255,255,0.22)' : 'none',
+                    background: filled ? 'rgba(var(--overlay),0.85)' : 'transparent',
+                    border: isGhost ? '1.5px dashed rgba(var(--overlay),0.22)' : 'none',
                     cursor: 'pointer',
                     boxSizing: 'border-box',
                   }}
@@ -191,11 +191,11 @@ export function EditorAtomNode({ id, data, selected }: NodeProps<AtomNodeType>) 
           width: 12, height: 12,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 9, fontWeight: 700,
-          color: 'rgba(255,255,255,0.9)',
+          color: 'rgba(var(--overlay),0.9)',
           fontFamily: 'system-ui, sans-serif',
           lineHeight: 1,
           background: CANVAS_BG,
-          border: '0.5px solid rgba(255,255,255,0.25)',
+          border: '0.5px solid rgba(var(--overlay),0.25)',
           borderRadius: '50%',
           paddingBottom: '1px',
         }}>
@@ -215,7 +215,7 @@ export function EditorAtomNode({ id, data, selected }: NodeProps<AtomNodeType>) 
           background: CANVAS_BG,
           border: `1px solid ${selected
             ? 'var(--c-halogen)'
-            : 'rgba(255,255,255,0.13)'}`,
+            : 'rgba(var(--overlay),0.13)'}`,
           borderRadius: 2,
           boxShadow: selected
             ? '0 0 0 2px color-mix(in srgb, var(--c-halogen) 35%, transparent)'

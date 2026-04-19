@@ -111,17 +111,17 @@ export default function DilutionConcPractice() {
       {/* Controls row */}
       <div className="flex flex-wrap items-center gap-4">
         <div className="flex items-center gap-1 p-1 rounded-sm"
-          style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+          style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
           {FILTER_OPTIONS.map(opt => {
             const isActive = filter === opt.value
             return (
               <button key={opt.value} onClick={() => handleFilter(opt.value)}
                 className="relative px-3 py-1 rounded-sm font-sans text-sm font-medium transition-colors"
-                style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
+                style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)' }}>
                 {isActive && (
                   <motion.div layoutId="dilconc-type-bg" className="absolute inset-0 rounded-sm"
                     style={{
-                      background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                      background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                       border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                     }}
                     transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
@@ -216,7 +216,7 @@ export default function DilutionConcPractice() {
                 className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors
                            disabled:opacity-30 disabled:cursor-not-allowed"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 15%, #141620)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
                   border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
                   color: 'var(--c-halogen)',
                 }}
@@ -228,13 +228,13 @@ export default function DilutionConcPractice() {
                 {!correct && (
                   <button onClick={handleTryAgain}
                     className="px-4 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
-                    style={{ background: '#141620', border: '1px solid #2a2e42', color: 'rgba(255,255,255,0.55)' }}>
+                    style={{ background: 'rgb(var(--color-raised))', border: '1px solid rgb(var(--color-muted))', color: 'rgba(var(--overlay),0.55)' }}>
                     Try Again
                   </button>
                 )}
                 <button onClick={() => nextProblem(filter)}
                   className="px-4 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
-                  style={{ background: '#141620', border: '1px solid #2a2e42', color: 'rgba(255,255,255,0.75)' }}>
+                  style={{ background: 'rgb(var(--color-raised))', border: '1px solid rgb(var(--color-muted))', color: 'rgba(var(--overlay),0.75)' }}>
                   Next →
                 </button>
               </div>

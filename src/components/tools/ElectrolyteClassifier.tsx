@@ -409,12 +409,12 @@ export default function ElectrolyteClassifier() {
                       title={c.name}
                       className="px-2.5 py-1 rounded-sm font-mono text-sm transition-colors"
                       style={isSelected ? {
-                        background: `color-mix(in srgb, ${btnColor} 18%, #141620)`,
+                        background: `color-mix(in srgb, ${btnColor} 18%, rgb(var(--color-raised)))`,
                         border: `1px solid color-mix(in srgb, ${btnColor} 45%, transparent)`,
                         color: btnColor,
                       } : {
-                        border: '1px solid rgba(255,255,255,0.12)',
-                        color: 'rgba(255,255,255,0.45)',
+                        border: '1px solid rgba(var(--overlay),0.12)',
+                        color: 'rgba(var(--overlay),0.45)',
                       }}
                     >
                       {c.formula}
@@ -445,7 +445,7 @@ export default function ElectrolyteClassifier() {
               <div className="flex flex-wrap gap-2 ml-auto">
                 <span className="px-2.5 py-0.5 rounded-sm font-mono text-sm font-semibold"
                   style={{
-                    background: `color-mix(in srgb, ${color} 15%, #141620)`,
+                    background: `color-mix(in srgb, ${color} 15%, rgb(var(--color-raised)))`,
                     border: `1px solid color-mix(in srgb, ${color} 35%, transparent)`,
                     color,
                   }}>
@@ -459,7 +459,7 @@ export default function ElectrolyteClassifier() {
 
             {/* Dissociation equation */}
             <div className="font-mono text-base rounded-sm border border-border bg-raised px-4 py-3"
-              style={{ color: 'rgba(255,255,255,0.75)' }}>
+              style={{ color: 'rgba(var(--overlay),0.75)' }}>
               {selected.equation}
             </div>
 

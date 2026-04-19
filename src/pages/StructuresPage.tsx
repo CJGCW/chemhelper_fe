@@ -124,17 +124,17 @@ export default function StructuresPage() {
 
         {/* Mode toggle */}
         <div className="flex items-center gap-1 p-1 rounded-full self-start print:hidden"
-          style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+          style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
           {(['reference', 'practice', 'problems'] as Mode[]).map(mode => {
             const isActive = activeMode === mode
             return (
               <button key={mode} onClick={() => setMode(mode)}
                 className="relative px-5 py-1.5 rounded-full font-sans text-sm font-medium transition-colors capitalize"
-                style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)' }}>
+                style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)' }}>
                 {isActive && (
                   <motion.div layoutId="structures-mode-switch" className="absolute inset-0 rounded-full"
                     style={{
-                      background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                      background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                       border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                     }}
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
@@ -147,17 +147,17 @@ export default function StructuresPage() {
 
         {/* Sub-tabs */}
         <div className="flex items-center gap-1 p-1 rounded-sm self-start flex-wrap print:hidden"
-          style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+          style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
           {visibleTabs.map(tab => {
             const isActive = activeTab === tab.id
             return (
               <button key={tab.id} onClick={() => setTab(tab.id)}
                 className="relative flex-shrink-0 px-3.5 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
-                style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
+                style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)' }}>
                 {isActive && (
                   <motion.div layoutId="structures-tab-pill" className="absolute inset-0 rounded-sm"
                     style={{
-                      background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                      background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                       border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                     }}
                     transition={{ type: 'spring', stiffness: 400, damping: 32 }} />

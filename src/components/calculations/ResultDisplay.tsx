@@ -17,20 +17,20 @@ export default function ResultDisplay({ label, value, unit, sigFigsValue, verifi
   const isIncorrect = verified === 'incorrect'
 
   const borderColor = !hasVerification
-    ? (value ? 'color-mix(in srgb, var(--c-halogen) 35%, #1c1f2e)' : '#1c1f2e')
+    ? (value ? 'color-mix(in srgb, var(--c-halogen) 35%, rgb(var(--color-border)))' : 'rgb(var(--color-border))')
     : isSFWarning
-    ? 'color-mix(in srgb, #facc15 45%, #1c1f2e)'
+    ? 'color-mix(in srgb, #facc15 45%, rgb(var(--color-border)))'
     : isCorrect
-    ? 'color-mix(in srgb, #4ade80 45%, #1c1f2e)'
-    : 'color-mix(in srgb, #f87171 45%, #1c1f2e)'
+    ? 'color-mix(in srgb, #4ade80 45%, rgb(var(--color-border)))'
+    : 'color-mix(in srgb, #f87171 45%, rgb(var(--color-border)))'
 
   const bgColor = !hasVerification
-    ? (value ? 'color-mix(in srgb, var(--c-halogen) 6%, #0e1016)' : '#0e1016')
+    ? (value ? 'color-mix(in srgb, var(--c-halogen) 6%, rgb(var(--color-surface)))' : 'rgb(var(--color-surface))')
     : isSFWarning
-    ? 'color-mix(in srgb, #facc15 5%, #0e1016)'
+    ? 'color-mix(in srgb, #facc15 5%, rgb(var(--color-surface)))'
     : isCorrect
-    ? 'color-mix(in srgb, #4ade80 6%, #0e1016)'
-    : 'color-mix(in srgb, #f87171 6%, #0e1016)'
+    ? 'color-mix(in srgb, #4ade80 6%, rgb(var(--color-surface)))'
+    : 'color-mix(in srgb, #f87171 6%, rgb(var(--color-surface)))'
 
   const verifyColor  = isSFWarning ? '#facc15' : isCorrect ? '#4ade80' : '#f87171'
   const verifyBorder = isSFWarning

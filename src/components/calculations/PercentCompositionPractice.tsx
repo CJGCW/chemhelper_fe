@@ -53,13 +53,13 @@ export default function PercentCompositionPractice() {
             <button key={f.value} onClick={() => handleFilter(f.value)}
               className="px-3 py-1 rounded-sm font-sans text-xs font-medium transition-colors"
               style={filter === f.value ? {
-                background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                 border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               } : {
-                background: '#0e1016',
-                border: '1px solid #1c1f2e',
-                color: 'rgba(255,255,255,0.4)',
+                background: 'rgb(var(--color-surface))',
+                border: '1px solid rgb(var(--color-border))',
+                color: 'rgba(var(--overlay),0.4)',
               }}>
               {f.label}
             </button>
@@ -107,7 +107,7 @@ export default function PercentCompositionPractice() {
                 className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors
                            disabled:opacity-30 disabled:cursor-not-allowed"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                   border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                 }}>
@@ -163,7 +163,7 @@ export default function PercentCompositionPractice() {
                     <button onClick={() => newProblem()}
                       className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
                       style={{
-                        background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+                        background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                         border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                         color: 'var(--c-halogen)',
                       }}>

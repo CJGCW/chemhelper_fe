@@ -92,7 +92,7 @@ function PlaceholderCell({
       <span
         className="font-sans mt-0.5 leading-none text-center w-full truncate px-[1px]"
         style={{
-          color: "rgba(255,255,255,0.4)",
+          color: "rgba(var(--overlay),0.4)",
           fontSize: "clamp(4px, 1.0vw, 13px)",
         }}
       >
@@ -131,16 +131,16 @@ function TrendButton({
       onClick={onClick}
       className="flex items-center gap-2 px-3 py-1.5 rounded-sm border transition-all duration-150"
       style={{
-        borderColor: active ? color : "rgba(255,255,255,0.1)",
+        borderColor: active ? color : "rgba(var(--overlay),0.1)",
         background: active
-          ? `color-mix(in srgb, ${color} 12%, #0e1016)`
-          : "#0e1016",
-        color: active ? color : "rgba(255,255,255,0.4)",
+          ? `color-mix(in srgb, ${color} 12%, rgb(var(--color-surface)))`
+          : "rgb(var(--color-surface))",
+        color: active ? color : "rgba(var(--overlay),0.4)",
       }}
     >
       <div
         className="w-2 h-2 rounded-full shrink-0"
-        style={{ background: active ? color : "rgba(255,255,255,0.2)" }}
+        style={{ background: active ? color : "rgba(var(--overlay),0.2)" }}
       />
       <span className="font-mono text-[11px]">{label}</span>
       <span className="font-sans text-[10px] opacity-60">{sublabel}</span>
@@ -325,13 +325,13 @@ export default function PeriodicTable() {
           onClick={() => setCompareMode(!compareMode)}
           className="flex items-center gap-2 px-3 py-1.5 rounded-sm border transition-all duration-150"
           style={{
-            borderColor: compareMode ? '#60a5fa' : 'rgba(255,255,255,0.1)',
-            background: compareMode ? 'color-mix(in srgb, #60a5fa 12%, #0e1016)' : '#0e1016',
-            color: compareMode ? '#60a5fa' : 'rgba(255,255,255,0.4)',
+            borderColor: compareMode ? '#60a5fa' : 'rgba(var(--overlay),0.1)',
+            background: compareMode ? 'color-mix(in srgb, #60a5fa 12%, rgb(var(--color-surface)))' : 'rgb(var(--color-surface))',
+            color: compareMode ? '#60a5fa' : 'rgba(var(--overlay),0.4)',
           }}
         >
           <div className="w-2 h-2 rounded-full shrink-0"
-            style={{ background: compareMode ? '#60a5fa' : 'rgba(255,255,255,0.2)' }} />
+            style={{ background: compareMode ? '#60a5fa' : 'rgba(var(--overlay),0.2)' }} />
           <span className="font-mono text-[11px]">Compare</span>
           <span className="font-sans text-[10px] opacity-60">A vs B</span>
         </button>
@@ -475,7 +475,7 @@ export default function PeriodicTable() {
             />
             <span
               className="font-sans text-[11px] transition-colors"
-              style={{ color: "rgba(255,255,255,0.4)" }}
+              style={{ color: "rgba(var(--overlay),0.4)" }}
             >
               {GROUP_LABELS[cat]}
             </span>

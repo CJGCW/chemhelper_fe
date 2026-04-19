@@ -115,25 +115,25 @@ function InteractiveSVG({
       </defs>
 
       {/* Plot background */}
-      <rect x={ML} y={MT} width={PW} height={PH} fill="rgba(255,255,255,0.015)" rx="2" />
+      <rect x={ML} y={MT} width={PW} height={PH} fill="rgba(var(--overlay),0.015)" rx="2" />
 
       {/* Grid */}
       {tTicks.map(t => (
         <line key={`gt${t}`} x1={xS(t)} y1={MT} x2={xS(t)} y2={MT + PH}
-          stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+          stroke="rgba(var(--overlay),0.05)" strokeWidth="1" />
       ))}
       {pTicks.map(lp => (
         <line key={`gp${lp}`} x1={ML} y1={yS(10 ** lp)} x2={ML + PW} y2={yS(10 ** lp)}
-          stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+          stroke="rgba(var(--overlay),0.05)" strokeWidth="1" />
       ))}
 
       {/* 1 atm reference */}
       {showAtm && (
         <g clipPath="url(#pd-prob-plot)">
           <line x1={ML} y1={y_atm} x2={ML + PW} y2={y_atm}
-            stroke="rgba(255,255,255,0.22)" strokeWidth="1" strokeDasharray="5 3" />
+            stroke="rgba(var(--overlay),0.22)" strokeWidth="1" strokeDasharray="5 3" />
           <text x={ML + 4} y={y_atm - 4}
-            fill="rgba(255,255,255,0.35)" fontSize="8.5" fontFamily="monospace">1 atm</text>
+            fill="rgba(var(--overlay),0.35)" fontSize="8.5" fontFamily="monospace">1 atm</text>
         </g>
       )}
 
@@ -171,7 +171,7 @@ function InteractiveSVG({
               <circle cx={tpX} cy={tpY} r="16"
                 fill="none" stroke="#fbbf24" strokeWidth="1.5" strokeDasharray="4 3" opacity="0.7" />
             )}
-            <circle cx={tpX} cy={tpY} r="5.5" fill="#fbbf24" stroke="#0a0c10" strokeWidth="1.5" />
+            <circle cx={tpX} cy={tpY} r="5.5" fill="#fbbf24" stroke="rgb(var(--color-base))" strokeWidth="1.5" />
             <text x={labelRight ? tpX + 9 : tpX - 9} y={tpY - 6}
               textAnchor={labelRight ? 'start' : 'end'}
               fill={isTarget ? '#fbbf24' : 'rgba(251,191,36,0.35)'}
@@ -199,7 +199,7 @@ function InteractiveSVG({
               <circle cx={cpX} cy={cpY} r="16"
                 fill="none" stroke="#f43f5e" strokeWidth="1.5" strokeDasharray="4 3" opacity="0.7" />
             )}
-            <circle cx={cpX} cy={cpY} r="5.5" fill="#f43f5e" stroke="#0a0c10" strokeWidth="1.5" />
+            <circle cx={cpX} cy={cpY} r="5.5" fill="#f43f5e" stroke="rgb(var(--color-base))" strokeWidth="1.5" />
             {nearTop ? (
               <>
                 <text x={cpX} y={cpY + 15} textAnchor="middle"
@@ -229,7 +229,7 @@ function InteractiveSVG({
       {clickSvgPos && (
         <circle cx={clickSvgPos.x} cy={clickSvgPos.y} r="8"
           fill={isCorrect ? '#34d399' : '#f87171'}
-          stroke="rgba(255,255,255,0.85)" strokeWidth="2"
+          stroke="rgba(var(--overlay),0.85)" strokeWidth="2"
           clipPath="url(#pd-prob-plot)" />
       )}
 
@@ -244,24 +244,24 @@ function InteractiveSVG({
       {/* "click the diagram" hint */}
       {!answered && !clickSvgPos && (
         <text x={ML + PW / 2} y={MT + 15} textAnchor="middle"
-          fill="rgba(255,255,255,0.18)" fontSize="9" fontFamily="system-ui">
+          fill="rgba(var(--overlay),0.18)" fontSize="9" fontFamily="system-ui">
           click the diagram to answer
         </text>
       )}
 
       {/* Axes */}
       <line x1={ML} y1={MT} x2={ML} y2={MT + PH + 6}
-        stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+        stroke="rgba(var(--overlay),0.3)" strokeWidth="1" />
       <line x1={ML - 4} y1={MT + PH} x2={ML + PW} y2={MT + PH}
-        stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+        stroke="rgba(var(--overlay),0.3)" strokeWidth="1" />
 
       {/* T ticks */}
       {tTicks.map(t => (
         <g key={`tt${t}`}>
           <line x1={xS(t)} y1={MT + PH} x2={xS(t)} y2={MT + PH + 4}
-            stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
+            stroke="rgba(var(--overlay),0.35)" strokeWidth="1" />
           <text x={xS(t)} y={MT + PH + 14} textAnchor="middle"
-            fill="rgba(255,255,255,0.45)" fontSize="9" fontFamily="monospace">{t}</text>
+            fill="rgba(var(--overlay),0.45)" fontSize="9" fontFamily="monospace">{t}</text>
         </g>
       ))}
 
@@ -269,9 +269,9 @@ function InteractiveSVG({
       {pTicks.map(lp => (
         <g key={`pt${lp}`}>
           <line x1={ML - 3} y1={yS(10 ** lp)} x2={ML} y2={yS(10 ** lp)}
-            stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
+            stroke="rgba(var(--overlay),0.35)" strokeWidth="1" />
           <text x={ML - 6} y={yS(10 ** lp)} textAnchor="end" dominantBaseline="middle"
-            fill="rgba(255,255,255,0.45)" fontSize="8" fontFamily="monospace">
+            fill="rgba(var(--overlay),0.45)" fontSize="8" fontFamily="monospace">
             {pTickLabel(lp)}
           </text>
         </g>
@@ -279,11 +279,11 @@ function InteractiveSVG({
 
       {/* Axis labels */}
       <text x={ML + PW / 2} y={H - 6} textAnchor="middle"
-        fill="rgba(255,255,255,0.3)" fontSize="10" fontFamily="system-ui">
+        fill="rgba(var(--overlay),0.3)" fontSize="10" fontFamily="system-ui">
         Temperature (°C)
       </text>
       <text x={14} y={MT + PH / 2} textAnchor="middle"
-        fill="rgba(255,255,255,0.3)" fontSize="10" fontFamily="system-ui"
+        fill="rgba(var(--overlay),0.3)" fontSize="10" fontFamily="system-ui"
         transform={`rotate(-90, 14, ${MT + PH / 2})`}>
         Pressure
       </text>
@@ -297,7 +297,7 @@ function InteractiveSVG({
         <g key={label} transform={`translate(${ML + 6 + i * 96}, ${MT + 10})`}>
           <line x1={0} y1={0} x2={18} y2={0} stroke={color} strokeWidth="2.5" strokeLinecap="round" />
           <text x={22} y={0} dominantBaseline="middle"
-            fill="rgba(255,255,255,0.5)" fontSize="8.5" fontFamily="system-ui">{label}</text>
+            fill="rgba(var(--overlay),0.5)" fontSize="8.5" fontFamily="system-ui">{label}</text>
         </g>
       ))}
     </svg>
@@ -421,7 +421,7 @@ export default function PhaseDiagramProblems() {
         >
           {/* Card header */}
           <div className="px-4 py-3 border-b border-border flex items-center justify-between flex-wrap gap-3"
-            style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, #141620)' }}>
+            style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, rgb(var(--color-raised)))' }}>
             <div className="flex items-center gap-2">
               <span className="font-mono text-xs text-secondary tracking-widest uppercase">Identify the region / point</span>
               <span className="font-mono text-xs text-secondary">
@@ -440,7 +440,7 @@ export default function PhaseDiagramProblems() {
           {/* Interactive diagram */}
           <div className="px-4 pb-4">
             <div className="rounded-sm border border-border overflow-hidden p-2"
-              style={{ background: '#0a0c10' }}>
+              style={{ background: 'rgb(var(--color-base))' }}>
               <InteractiveSVG
                 problem={problem}
                 answered={answered}
@@ -480,7 +480,7 @@ export default function PhaseDiagramProblems() {
                   <button onClick={next}
                     className="self-start mt-1 px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-all"
                     style={{
-                      background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+                      background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
                       border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                       color: 'var(--c-halogen)',
                     }}>

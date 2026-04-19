@@ -108,7 +108,7 @@ export default function HeatTransferPractice() {
                 disabled={!input.trim()}
                 className="flex-1 py-2 rounded-sm font-sans text-sm font-medium transition-all disabled:opacity-30"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
                   border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                 }}>
@@ -118,7 +118,7 @@ export default function HeatTransferPractice() {
               <button onClick={handleNext}
                 className="flex-1 py-2 rounded-sm font-sans text-sm font-medium"
                 style={{
-                  background: 'color-mix(in srgb, #34d399 18%, #0e1016)',
+                  background: 'color-mix(in srgb, #34d399 18%, rgb(var(--color-surface)))',
                   border: '1px solid color-mix(in srgb, #34d399 40%, transparent)',
                   color: '#34d399',
                 }}>
@@ -129,7 +129,7 @@ export default function HeatTransferPractice() {
                 <button onClick={handleTryAgain}
                   className="flex-1 py-2 rounded-sm font-sans text-sm font-medium"
                   style={{
-                    background: 'color-mix(in srgb, #f87171 18%, #0e1016)',
+                    background: 'color-mix(in srgb, #f87171 18%, rgb(var(--color-surface)))',
                     border: '1px solid color-mix(in srgb, #f87171 40%, transparent)',
                     color: '#f87171',
                   }}>

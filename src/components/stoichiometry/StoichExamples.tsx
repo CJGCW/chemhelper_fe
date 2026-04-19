@@ -85,7 +85,7 @@ const SCENES: Scene[] = [
 function BondLines({ x1,y1,x2,y2,order=1 }: { x1:number;y1:number;x2:number;y2:number;order?:number }) {
   const dx=x2-x1, dy=y2-y1, len=Math.sqrt(dx*dx+dy*dy)||1
   const px=-dy/len, py=dx/len
-  const st='rgba(255,255,255,0.62)', sw=1.8
+  const st='rgba(var(--overlay),0.62)', sw=1.8
   if (order===2) { const d=3.5; return <g>
     <line x1={x1+px*d} y1={y1+py*d} x2={x2+px*d} y2={y2+py*d} stroke={st} strokeWidth={sw}/>
     <line x1={x1-px*d} y1={y1-py*d} x2={x2-px*d} y2={y2-py*d} stroke={st} strokeWidth={sw}/>
@@ -130,7 +130,7 @@ function ReactionViewer({ scene }: { scene: Scene }) {
       </div>
 
       {/* Canvas — keyed on runId so every replay gets a fresh Framer Motion state */}
-      <div className="rounded-sm border border-border" style={{ background: '#0e1016' }}>
+      <div className="rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
         <svg
           key={runId}
           viewBox={`0 0 ${scene.vw} ${scene.vh}`}
@@ -177,7 +177,7 @@ function ReactionViewer({ scene }: { scene: Scene }) {
                 : { type:'tween', duration:0 }
               }
             >
-              <circle r={ar(atom.el)} fill={ec(atom.el)} stroke="#0e1016" strokeWidth={1.5}/>
+              <circle r={ar(atom.el)} fill={ec(atom.el)} stroke="rgb(var(--color-surface))" strokeWidth={1.5}/>
               <text
                 dy="0.35em" textAnchor="middle"
                 fill="white" fontWeight="700"
@@ -247,7 +247,7 @@ function IngDot({ ing, batchOf, phase }: { ing: IngredientDef; batchOf: number; 
         height: ing.sz,
         background: ing.color,
         border: s === 'active'
-          ? '2px solid rgba(255,255,255,0.85)'
+          ? '2px solid rgba(var(--overlay),0.85)'
           : '1.5px solid rgba(0,0,0,0.3)',
         boxShadow: s === 'active' ? `0 0 10px 3px ${ing.color}90` : 'none',
         fontSize: ing.sz >= 24 ? 9 : 0,
@@ -328,7 +328,7 @@ function CookieLimitingAnimation() {
                     animate={{ opacity:1, x:0 }}
                     transition={{ duration:0.25 }}
                     className="font-mono text-[10px] shrink-0 ml-1"
-                    style={{ color: isLimiting ? 'var(--c-halogen)' : 'rgba(255,255,255,0.3)' }}
+                    style={{ color: isLimiting ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.3)' }}
                   >
                     {isLimiting ? '← limiting!' : `(${leftover} left)`}
                   </motion.span>
@@ -447,7 +447,7 @@ function TheoreticalYieldCookies() {
                         style={{
                           width: 40, height: 40,
                           background: FC, color: FT, fontSize: 9,
-                          border: active ? '2px solid rgba(255,255,255,0.85)' : '1.5px solid rgba(0,0,0,0.3)',
+                          border: active ? '2px solid rgba(var(--overlay),0.85)' : '1.5px solid rgba(0,0,0,0.3)',
                           boxShadow: active ? `0 0 10px 3px ${FC}90` : 'none',
                         }}
                       >F</motion.div>
@@ -652,18 +652,18 @@ export default function StoichExamples() {
     <div className="flex flex-col gap-5 max-w-2xl">
       {/* Tab bar */}
       <div className="flex items-center gap-1 p-1 rounded-sm self-start flex-wrap"
-        style={{ background:'#0e1016', border:'1px solid #1c1f2e' }}>
+        style={{ background:'rgb(var(--color-surface))', border:'1px solid rgb(var(--color-border))' }}>
         {TABS.map(t => {
           const isActive = active === t.id
           return (
             <button key={t.id} onClick={() => setActive(t.id)}
               className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
-              style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
+              style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)' }}>
               {isActive && (
                 <motion.div layoutId="ex-pill"
                   className="absolute inset-0 rounded-sm"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                     border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                   }}
                   transition={{ type:'spring', stiffness:400, damping:32 }}/>

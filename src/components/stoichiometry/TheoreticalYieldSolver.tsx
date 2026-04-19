@@ -116,7 +116,7 @@ export default function TheoreticalYieldSolver() {
         className="self-start px-5 py-2 rounded-sm font-sans text-sm font-semibold
                    transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
         style={{
-          background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+          background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
           border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           color: 'var(--c-halogen)',
         }}>
@@ -132,7 +132,7 @@ export default function TheoreticalYieldSolver() {
               <div className="rounded-sm border px-4 py-3"
                 style={{
                   borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
-                  background: 'color-mix(in srgb, var(--c-halogen) 8%, #0e1016)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 8%, rgb(var(--color-surface)))',
                 }}>
                 <span className="font-mono text-xs text-secondary tracking-widest uppercase block mb-1">
                   Theoretical Yield

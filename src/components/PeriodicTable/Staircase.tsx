@@ -51,7 +51,7 @@ export default function Staircase() {
       <polyline
         points={pointsStr}
         fill="none"
-        stroke="rgba(255,255,255,0.18)"
+        stroke="rgba(var(--overlay),0.18)"
         strokeWidth="0.12"
         strokeLinecap="square"
         filter="url(#staircase-glow)"
@@ -61,7 +61,7 @@ export default function Staircase() {
       <polyline
         points={pointsStr}
         fill="none"
-        stroke="rgba(255,255,255,0.55)"
+        stroke="rgba(var(--overlay),0.55)"
         strokeWidth="0.045"
         strokeLinecap="round"
       />

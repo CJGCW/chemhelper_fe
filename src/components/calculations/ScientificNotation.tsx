@@ -121,7 +121,7 @@ export function ScientificNotationReference() {
       <div className="flex flex-col gap-3">
         <p className="font-mono text-xs tracking-widest text-secondary uppercase">General Form</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex flex-col gap-3 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+          <div className="flex flex-col gap-3 p-4 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
             <div className="flex flex-col gap-1">
               <p className="font-mono text-xs text-secondary">Format</p>
               <p className="font-mono text-lg text-primary">a × 10ⁿ</p>
@@ -135,7 +135,7 @@ export function ScientificNotationReference() {
                 { label: 'a < 0', desc: 'negative number', ex: '−2.5 × 10²' },
               ].map((item, i) => (
                 <div key={i} className="flex flex-col gap-0.5 p-2 rounded-sm"
-                  style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  style={{ background: 'rgba(var(--overlay),0.03)', border: '1px solid rgba(var(--overlay),0.06)' }}>
                   <span className="font-mono text-sm font-semibold" style={{ color: 'var(--c-halogen)' }}>{item.label}</span>
                   <span className="font-sans text-xs text-secondary">{item.desc}</span>
                   <span className="font-mono text-xs text-secondary">{item.ex}</span>
@@ -145,7 +145,7 @@ export function ScientificNotationReference() {
           </div>
 
           {/* Sig figs note */}
-          <div className="flex flex-col gap-3 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+          <div className="flex flex-col gap-3 p-4 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
             <p className="font-mono text-xs tracking-widest text-secondary uppercase">Sig Figs in Sci Notation</p>
             <p className="font-sans text-xs text-secondary leading-relaxed">
               Only the <strong className="text-primary">coefficient</strong> (mantissa) determines significant figures.
@@ -180,7 +180,7 @@ export function ScientificNotationReference() {
         <p className="font-mono text-xs tracking-widest text-secondary uppercase">Converting</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {RULES.map((r, i) => (
-            <div key={i} className="flex flex-col gap-2 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+            <div key={i} className="flex flex-col gap-2 p-3 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
               <span className="font-sans text-xs font-semibold text-primary">{r.title}</span>
               <p className="font-sans text-xs text-secondary leading-relaxed">{r.desc}</p>
               <div className="flex flex-col gap-0.5 mt-auto pt-2 border-t border-border">
@@ -198,7 +198,7 @@ export function ScientificNotationReference() {
         <p className="font-mono text-xs tracking-widest text-secondary uppercase">Operations</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {OPERATIONS.map((op, i) => (
-            <div key={i} className="flex flex-col gap-2 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+            <div key={i} className="flex flex-col gap-2 p-3 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
               <div className="flex items-center gap-2">
                 <span
                   className="font-mono text-sm px-2 py-0.5 rounded-sm shrink-0"
@@ -217,7 +217,7 @@ export function ScientificNotationReference() {
               <div className="mt-auto pt-2 border-t border-border">
                 {op.example.split('\n').map((line, j, arr) => (
                   <p key={j} className="font-mono text-xs"
-                    style={{ color: j === 0 ? 'rgba(255,255,255,0.6)' : j === arr.length - 1 ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
+                    style={{ color: j === 0 ? 'rgba(var(--overlay),0.6)' : j === arr.length - 1 ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)' }}>
                     {line}
                   </p>
                 ))}
@@ -244,7 +244,7 @@ export function ScientificNotationPracticeConverter() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-      <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+      <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
         <p className="font-mono text-xs tracking-widest text-secondary uppercase">Notation Converter</p>
 
         <input
@@ -288,7 +288,7 @@ export function ScientificNotationPracticeConverter() {
         )}
       </div>
 
-      <div className="flex flex-col gap-3 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+      <div className="flex flex-col gap-3 p-4 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
         <p className="font-mono text-xs tracking-widest text-secondary uppercase">Reading Scientific Notation</p>
         <div className="flex flex-col gap-3">
           <div className="flex flex-col gap-1">
@@ -304,7 +304,7 @@ export function ScientificNotationPracticeConverter() {
               { label: 'a < 0', desc: 'negative number', ex: '−2.5 × 10²' },
             ].map((item, i) => (
               <div key={i} className="flex flex-col gap-0.5 p-2 rounded-sm"
-                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                style={{ background: 'rgba(var(--overlay),0.03)', border: '1px solid rgba(var(--overlay),0.06)' }}>
                 <span className="font-mono text-sm font-semibold" style={{ color: 'var(--c-halogen)' }}>{item.label}</span>
                 <span className="font-sans text-xs text-secondary">{item.desc}</span>
                 <span className="font-mono text-xs text-secondary">{item.ex}</span>

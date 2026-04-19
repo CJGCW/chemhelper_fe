@@ -16,7 +16,7 @@ export default function SigFigPanel({ breakdown }: Props) {
       <button
         onClick={() => setOpen(o => !o)}
         className="flex items-center gap-2 font-sans text-sm font-medium transition-colors self-start"
-        style={{ color: open ? '#f97316' : 'rgba(255,255,255,0.4)' }}
+        style={{ color: open ? '#f97316' : 'rgba(var(--overlay),0.4)' }}
       >
         <motion.span animate={{ rotate: open ? 90 : 0 }} transition={{ duration: 0.2 }}
           className="font-mono text-xs">
@@ -53,10 +53,10 @@ export default function SigFigPanel({ breakdown }: Props) {
                               : 'color-mix(in srgb, white 6%, transparent)',
                             color: inp.count === breakdown.limiting
                               ? '#f97316'
-                              : 'rgba(255,255,255,0.4)',
+                              : 'rgba(var(--overlay),0.4)',
                             border: inp.count === breakdown.limiting
                               ? '1px solid color-mix(in srgb, #f97316 35%, transparent)'
-                              : '1px solid rgba(255,255,255,0.08)',
+                              : '1px solid rgba(var(--overlay),0.08)',
                           }}
                         >
                           {inp.count} sf

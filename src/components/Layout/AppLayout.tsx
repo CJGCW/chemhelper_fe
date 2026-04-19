@@ -3,65 +3,46 @@ import { Outlet, useLocation } from "react-router-dom";
 import NavSidebar from "./NavSidebar";
 import { useElementStore } from "../../stores/elementStore";
 import ElementModal from "../ElementDetail/ElementModal";
-
-const PAGE_TITLES: Record<string, string> = {
-  "/table": "Periodic Table",
-  "/calculations": "Calculations",
-  "/calculations/bpe": "Boiling Point Elevation",
-  "/calculations/fpd": "Freezing Point Depression",
-  "/compound": "Compound Resolver",
-  "/structures": "Structures",
-  "/tools": "Tools & References",
-};
+import { useTheme } from "../../hooks/useTheme";
 
 export default function AppLayout() {
   const [navOpen, setNavOpen] = useState(false);
+  const { theme, toggle } = useTheme();
   const location = useLocation();
   const selectElement = useElementStore((s) => s.selectElement);
   const mainRef = useRef<HTMLElement>(null);
 
-  // Clear any selected element when navigating away from the table
   useEffect(() => {
     selectElement(null);
   }, [location.pathname, selectElement]);
 
-  // Reset scroll position on every page navigation
   useEffect(() => {
     mainRef.current?.scrollTo(0, 0);
   }, [location.pathname]);
-  const title = PAGE_TITLES[location.pathname] ?? "ChemHelper";
 
   return (
     <div className="flex h-screen overflow-hidden bg-base print:h-auto print:overflow-visible print:block">
       {/* Left nav — hidden when printing */}
       <div className="print:hidden contents">
-        <NavSidebar open={navOpen} onClose={() => setNavOpen(false)} />
+        <NavSidebar open={navOpen} onClose={() => setNavOpen(false)} theme={theme} onToggleTheme={toggle} />
       </div>
 
-      {/* Element detail sidebar — slides over content from the left on desktop */}
+      {/* Element detail sidebar */}
       <ElementModal />
 
       {/* Main content area */}
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden print:overflow-visible print:block">
-        {/* Top bar — hidden when printing */}
-        <header className="flex items-center gap-3 px-5 lg:px-8 py-3 lg:py-4 border-b border-border shrink-0 bg-surface print:hidden">
-          {/* Mobile hamburger */}
+        {/* Mobile-only top bar for hamburger */}
+        <header className="md:hidden flex items-center gap-3 px-4 py-3 border-b border-border shrink-0 bg-surface print:hidden">
           <button
             onClick={() => setNavOpen(true)}
-            className="md:hidden flex flex-col gap-1 w-6 shrink-0"
+            className="flex flex-col gap-1 w-6 shrink-0"
             aria-label="Open navigation"
           >
             <span className="block h-px w-full bg-secondary" />
             <span className="block h-px w-4 bg-secondary" />
             <span className="block h-px w-full bg-secondary" />
           </button>
-
-          <h1 className="font-sans font-medium text-bright text-sm lg:text-base tracking-wide">
-            {title}
-          </h1>
-
-          {/* Subtle divider line that spans to right */}
-          <div className="flex-1 h-px bg-border ml-2" />
         </header>
 
         {/* Page content */}

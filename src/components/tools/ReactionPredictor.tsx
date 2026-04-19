@@ -160,7 +160,7 @@ function Autocomplete({
   return (
     <div
       className="absolute top-full left-0 right-0 mt-1 rounded-sm border border-border z-30 overflow-hidden"
-      style={{ background: '#0e1016' }}
+      style={{ background: 'rgb(var(--color-surface))' }}
     >
       {matches.map(c => (
         <button
@@ -181,12 +181,12 @@ function ProductCard({ p }: { p: ProductInfo }) {
   return (
     <div
       className="flex-1 rounded-sm border p-3 flex flex-col gap-1.5"
-      style={{ borderColor: `color-mix(in srgb, ${color} 35%, transparent)`, background: `color-mix(in srgb, ${color} 8%, #0e1016)` }}
+      style={{ borderColor: `color-mix(in srgb, ${color} 35%, transparent)`, background: `color-mix(in srgb, ${color} 8%, rgb(var(--color-surface)))` }}
     >
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <span className="font-mono text-lg font-semibold text-primary">{p.formula}</span>
         <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded-sm"
-          style={{ color, background: `color-mix(in srgb, ${color} 18%, #141620)`, border: `1px solid color-mix(in srgb, ${color} 30%, transparent)` }}>
+          style={{ color, background: `color-mix(in srgb, ${color} 18%, rgb(var(--color-raised)))`, border: `1px solid color-mix(in srgb, ${color} 30%, transparent)` }}>
           {SOL_LABEL[p.sol]}
           {p.sol === 'I' && ' ↓'}
         </span>
@@ -303,7 +303,7 @@ export default function ReactionPredictor() {
             disabled={!q1.trim() || !q2.trim()}
             className="shrink-0 px-5 py-2.5 rounded-sm font-sans font-medium text-sm transition-all disabled:opacity-40"
             style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
               border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
             }}
@@ -351,7 +351,7 @@ export default function ReactionPredictor() {
                 <span className="font-mono text-xs px-2 py-0.5 rounded-sm"
                   style={{
                     color: '#4ade80',
-                    background: 'color-mix(in srgb, #4ade80 12%, #141620)',
+                    background: 'color-mix(in srgb, #4ade80 12%, rgb(var(--color-raised)))',
                     border: '1px solid color-mix(in srgb, #4ade80 30%, transparent)',
                   }}>
                   Reaction occurs ✓
@@ -359,9 +359,9 @@ export default function ReactionPredictor() {
               ) : (
                 <span className="font-mono text-xs px-2 py-0.5 rounded-sm"
                   style={{
-                    color: 'rgba(255,255,255,0.35)',
-                    background: '#141620',
-                    border: '1px solid #1c1f2e',
+                    color: 'rgba(var(--overlay),0.35)',
+                    background: 'rgb(var(--color-raised))',
+                    border: '1px solid rgb(var(--color-border))',
                   }}>
                   No reaction (NR)
                 </span>
@@ -371,7 +371,7 @@ export default function ReactionPredictor() {
             {/* Molecular equation */}
             <div
               className="rounded-sm border border-border px-4 py-3 font-mono text-sm text-primary overflow-x-auto"
-              style={{ background: '#0a0c12' }}
+              style={{ background: 'rgb(var(--color-base))' }}
             >
               {result.reactant1}(aq) + {result.reactant2}(aq) →{' '}
               {result.product1.formula}{result.product1.sol === 'I' ? '(s)' : '(aq)'}
@@ -392,7 +392,7 @@ export default function ReactionPredictor() {
                 <div
                   className="rounded-sm border px-4 py-3 font-mono text-sm text-primary overflow-x-auto"
                   style={{
-                    background: '#0a0c12',
+                    background: 'rgb(var(--color-base))',
                     borderColor: 'color-mix(in srgb, #4ade80 25%, transparent)',
                   }}
                 >

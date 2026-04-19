@@ -121,7 +121,7 @@ function MeniscusSVG() {
 
       {/* Water tube */}
       <rect x={lx} y={ty} width={tw} height={th} fill="rgba(96,165,250,0.06)"
-        stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" rx="2" />
+        stroke="rgba(var(--overlay),0.2)" strokeWidth="1.5" rx="2" />
       {/* Water fill */}
       <rect x={lx + 1.5} y={wMid + 10} width={tw - 3} height={wBot - wMid - 10}
         fill="rgba(96,165,250,0.25)" />
@@ -131,7 +131,7 @@ function MeniscusSVG() {
 
       {/* Mercury tube */}
       <rect x={rx} y={ty} width={tw} height={th} fill="rgba(156,163,175,0.06)"
-        stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" rx="2" />
+        stroke="rgba(var(--overlay),0.2)" strokeWidth="1.5" rx="2" />
       {/* Mercury fill */}
       <rect x={rx + 1.5} y={rMid + 8} width={tw - 3} height={wBot - rMid - 8}
         fill="rgba(156,163,175,0.25)" />
@@ -512,11 +512,11 @@ export default function LiquidProperties() {
                   className="flex flex-col items-start px-3 py-2 rounded-sm border transition-colors text-left"
                   style={imf === o.id ? {
                     borderColor: 'color-mix(in srgb, var(--c-halogen) 50%, transparent)',
-                    background: 'color-mix(in srgb, var(--c-halogen) 10%, #141620)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))',
                     color: 'var(--c-halogen)',
                   } : {
-                    borderColor: '#1c1f2e', background: '#0e1016',
-                    color: 'rgba(255,255,255,0.45)',
+                    borderColor: 'rgb(var(--color-border))', background: 'rgb(var(--color-surface))',
+                    color: 'rgba(var(--overlay),0.45)',
                   }}>
                   <span className="font-sans text-xs font-medium">{o.label}</span>
                   <span className="font-mono text-[9px] opacity-60">{o.sub}</span>
@@ -538,11 +538,11 @@ export default function LiquidProperties() {
                   className="flex flex-col items-start px-3 py-2 rounded-sm border transition-colors text-left"
                   style={size === o.id ? {
                     borderColor: 'color-mix(in srgb, var(--c-halogen) 50%, transparent)',
-                    background: 'color-mix(in srgb, var(--c-halogen) 10%, #141620)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))',
                     color: 'var(--c-halogen)',
                   } : {
-                    borderColor: '#1c1f2e', background: '#0e1016',
-                    color: 'rgba(255,255,255,0.45)',
+                    borderColor: 'rgb(var(--color-border))', background: 'rgb(var(--color-surface))',
+                    color: 'rgba(var(--overlay),0.45)',
                   }}>
                   <span className="font-sans text-xs font-medium">{o.label}</span>
                   <span className="font-mono text-[9px] opacity-60">{o.sub}</span>

@@ -53,7 +53,7 @@ function ok(n: number): boolean   { return isFinite(n) && !isNaN(n) }
 function InfoBox({ children }: { children: React.ReactNode }) {
   return (
     <div className="rounded-sm px-4 py-3 font-mono text-xs text-secondary"
-      style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+      style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
       {children}
     </div>
   )
@@ -77,7 +77,7 @@ function CalcButton({ onClick, label = 'Calculate' }: { onClick: () => void; lab
     <button onClick={onClick}
       className="w-full py-2.5 rounded-sm font-sans font-medium text-sm transition-all"
       style={{
-        background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+        background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
         border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
         color: 'var(--c-halogen)',
       }}>
@@ -822,11 +822,11 @@ export default function CalorimetryCalc() {
             <button key={m.id} onClick={() => setMode(m.id)}
               className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
               style={{
-                color: active ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)',
-                background: active ? 'color-mix(in srgb, var(--c-halogen) 12%, #141620)' : '#0e1016',
+                color: active ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
+                background: active ? 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))' : 'rgb(var(--color-surface))',
                 border: active
                   ? '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)'
-                  : '1px solid #1c1f2e',
+                  : '1px solid rgb(var(--color-border))',
               }}>
               <span className="font-mono text-[10px] opacity-60">{m.formula}</span>
               <span>{m.label}</span>

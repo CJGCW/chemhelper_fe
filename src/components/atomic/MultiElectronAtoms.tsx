@@ -192,7 +192,7 @@ export default function MultiElectronAtoms() {
           { label: 'Nuclear Charge Z',    val: `${z}`, color: 'var(--c-halogen)' },
           { label: 'Shielding σ (outer)', val: `${outermost.sigma}`, color: '#f59e0b' },
           { label: 'Z_eff (outer)',        val: `${outermost.zeff}`, color: '#34d399' },
-          { label: 'Outer subshell',       val: config.filter(s => s.electrons > 0).slice(-1)[0]?.label ?? '—', color: 'rgba(255,255,255,0.6)' },
+          { label: 'Outer subshell',       val: config.filter(s => s.electrons > 0).slice(-1)[0]?.label ?? '—', color: 'rgba(var(--overlay),0.6)' },
         ].map(item => (
           <div key={item.label} className="flex flex-col gap-1 px-4 py-3 rounded-sm bg-surface border border-border">
             <span className="font-mono text-xs text-secondary">{item.label}</span>
@@ -278,11 +278,11 @@ export default function MultiElectronAtoms() {
                           minHeight: 4,
                           background: isActive
                             ? 'var(--c-halogen)'
-                            : 'color-mix(in srgb, var(--c-halogen) 30%, #1c1f2e)',
+                            : 'color-mix(in srgb, var(--c-halogen) 30%, rgb(var(--color-border)))',
                           opacity: isActive ? 1 : 0.6,
                         }} />
                       <span className="font-mono text-[9px]"
-                        style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
+                        style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)' }}>
                         {e.symbol}
                       </span>
                     </div>

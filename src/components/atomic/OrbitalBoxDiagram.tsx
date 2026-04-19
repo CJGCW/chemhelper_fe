@@ -20,7 +20,7 @@ function WrittenNotation({
       {coreLabel && <span className="text-dim">{coreLabel} </span>}
       {subshells.map(s => (
         <span key={s.label + s.aufbauIdx}
-          style={{ color: activeLabel === s.label ? 'var(--c-halogen)' : 'rgba(255,255,255,0.75)' }}>
+          style={{ color: activeLabel === s.label ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.75)' }}>
           {s.label}<sup style={{ fontSize: '0.65em' }}>{s.electrons}</sup>
         </span>
       ))}
@@ -221,7 +221,7 @@ export default function OrbitalBoxDiagram() {
       {/* Element selector */}
       <div className="flex flex-col gap-3">
         <span className="font-mono text-xs text-secondary tracking-widest uppercase">Select Element</span>
-        <div className="flex items-center gap-4 flex-wrap p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+        <div className="flex items-center gap-4 flex-wrap p-4 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
           <ElementSelector z={z} onChange={handleElementChange} />
           <div className="flex items-baseline gap-2 ml-auto">
             <span className="font-mono text-2xl font-bold" style={{ color: 'var(--c-halogen)' }}>{valence}</span>
@@ -255,8 +255,8 @@ export default function OrbitalBoxDiagram() {
                   }
                   className="font-mono text-[10px] px-2 py-1 rounded-sm border transition-colors"
                   style={{
-                    border: on ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '1px solid rgba(255,255,255,0.12)',
-                    color: on ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)',
+                    border: on ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '1px solid rgba(var(--overlay),0.12)',
+                    color: on ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
                     background: on ? 'color-mix(in srgb, var(--c-halogen) 10%, transparent)' : 'transparent',
                   }}>
                   {mode}
@@ -270,7 +270,7 @@ export default function OrbitalBoxDiagram() {
           {stepMode && (
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }} style={{ overflow: 'hidden' }}>
-              <div className="flex flex-col gap-2 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+              <div className="flex flex-col gap-2 p-3 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-xs text-dim">Filling electron {step} of {z}</span>
                   <span className="font-mono text-xs" style={{ color: 'var(--c-halogen)' }}>
@@ -288,7 +288,7 @@ export default function OrbitalBoxDiagram() {
           )}
         </AnimatePresence>
 
-        <div className="p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+        <div className="p-3 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
           <WrittenNotation coreLabel={displayCore} subshells={displaySubshells} activeLabel={activeLabel} />
         </div>
 

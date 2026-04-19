@@ -97,7 +97,7 @@ function OxidationSection() {
               <span className="font-sans text-sm font-semibold text-bright print:text-black">{r.rule}</span>
               <span
                 className="font-mono text-xs px-1.5 py-0.5 rounded-sm shrink-0"
-                style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, #141620)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
+                style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
               >{r.value}</span>
             </div>
             <p className="font-mono text-xs text-secondary print:text-gray-600">{r.example}</p>
@@ -118,7 +118,7 @@ function ReactionTypesSection() {
             <div className="flex items-center gap-2">
               <span
                 className="font-mono text-sm font-bold w-7 h-7 rounded-sm flex items-center justify-center shrink-0"
-                style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, #141620)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
+                style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
               >{rt.symbol}</span>
               <h4 className="font-sans text-sm font-semibold text-bright print:text-black">{rt.type}</h4>
             </div>

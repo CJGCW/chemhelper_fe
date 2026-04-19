@@ -129,7 +129,7 @@ export default function MolesCalc() {
         {error && <p className="font-mono text-xs text-red-400">{error}</p>}
 
         <button onClick={calculate} className="w-full py-2.5 rounded-sm font-sans font-medium text-sm transition-all"
-          style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)', color: 'var(--c-halogen)' }}>
+          style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)', color: 'var(--c-halogen)' }}>
           {filledCount === 3 ? 'Verify' : 'Calculate'}
         </button>
       </div>

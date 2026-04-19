@@ -303,7 +303,7 @@ export default function VseprEditor({ correctStructure, onValidated }: VseprEdit
           className="self-start px-5 py-2 rounded-sm font-sans text-sm font-medium
                      transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 15%, #141620)',
+            background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
             color: 'var(--c-halogen)',
           }}
@@ -318,11 +318,11 @@ export default function VseprEditor({ correctStructure, onValidated }: VseprEdit
           className="rounded-sm border p-4 flex flex-col gap-3"
           style={{
             borderColor: validationResult.passed
-              ? 'color-mix(in srgb, #4ade80 30%, #1c1f2e)'
-              : 'color-mix(in srgb, #f87171 30%, #1c1f2e)',
+              ? 'color-mix(in srgb, #4ade80 30%, rgb(var(--color-border)))'
+              : 'color-mix(in srgb, #f87171 30%, rgb(var(--color-border)))',
             background: validationResult.passed
-              ? 'color-mix(in srgb, #4ade80 5%, #0e1016)'
-              : 'color-mix(in srgb, #f87171 5%, #0e1016)',
+              ? 'color-mix(in srgb, #4ade80 5%, rgb(var(--color-surface)))'
+              : 'color-mix(in srgb, #f87171 5%, rgb(var(--color-surface)))',
           }}
         >
           <div className="flex items-center gap-2">

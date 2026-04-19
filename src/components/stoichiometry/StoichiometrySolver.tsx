@@ -33,7 +33,7 @@ function GasVolumePanel({ onUse }: { onUse: (moles: string, note: string) => voi
     <div>
       <button onClick={() => setOpen(o => !o)}
         className="flex items-center gap-1.5 font-mono text-[11px] transition-colors"
-        style={{ color: open ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)' }}>
+        style={{ color: open ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)' }}>
         <motion.span animate={{ rotate: open ? 90 : 0 }} transition={{ duration: 0.15 }}
           className="inline-block text-[9px]">▶</motion.span>
         Start from a gas volume (STP/SATP)
@@ -58,8 +58,8 @@ function GasVolumePanel({ onUse }: { onUse: (moles: string, note: string) => voi
                     <button key={s.id} onClick={() => setStandard(s.id)}
                       className="px-2.5 py-1 font-mono text-xs transition-colors"
                       style={standard === s.id
-                        ? { background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)', color: 'var(--c-halogen)' }
-                        : { background: 'transparent', color: 'rgba(255,255,255,0.4)' }}>
+                        ? { background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', color: 'var(--c-halogen)' }
+                        : { background: 'transparent', color: 'rgba(var(--overlay),0.4)' }}>
                       {s.label}
                     </button>
                   ))}
@@ -76,7 +76,7 @@ function GasVolumePanel({ onUse }: { onUse: (moles: string, note: string) => voi
                   <button onClick={handleUse}
                     className="shrink-0 px-3 py-1 rounded-sm font-sans text-xs font-medium transition-colors"
                     style={{
-                      background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+                      background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                       border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                       color: 'var(--c-halogen)',
                     }}>
@@ -111,8 +111,8 @@ export function UnitToggle({ unit, onChange }: { unit: InputUnit; onChange: (u: 
         <button key={u} onClick={() => onChange(u)}
           className="px-2.5 py-1 font-mono text-xs transition-colors"
           style={unit === u
-            ? { background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)', color: 'var(--c-halogen)' }
-            : { background: 'transparent', color: 'rgba(255,255,255,0.4)' }}>
+            ? { background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', color: 'var(--c-halogen)' }
+            : { background: 'transparent', color: 'rgba(var(--overlay),0.4)' }}>
           {u}
         </button>
       ))}
@@ -298,7 +298,7 @@ export default function StoichiometrySolver() {
           {gasNote && (
             <span className="font-mono text-[9px] px-1.5 py-0.5 rounded-sm"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 12%, #0e1016)',
+                background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-surface)))',
                 color: 'var(--c-halogen)',
                 border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
               }}>
@@ -333,7 +333,7 @@ export default function StoichiometrySolver() {
         className="self-start px-5 py-2 rounded-sm font-sans text-sm font-semibold
                    transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
         style={{
-          background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+          background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
           border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           color: 'var(--c-halogen)',
         }}>
@@ -349,7 +349,7 @@ export default function StoichiometrySolver() {
               <div className="rounded-sm border px-4 py-3"
                 style={{
                   borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
-                  background: 'color-mix(in srgb, var(--c-halogen) 8%, #0e1016)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 8%, rgb(var(--color-surface)))',
                 }}>
                 <span className="font-mono text-xs text-secondary tracking-widest uppercase block mb-1">Result</span>
                 <span className="font-mono text-2xl font-semibold" style={{ color: 'var(--c-halogen)' }}>

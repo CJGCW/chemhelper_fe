@@ -111,11 +111,11 @@ export default function VaporPressureCalc() {
               className="flex flex-col items-start px-3 py-1.5 rounded-sm border transition-colors text-left"
               style={substanceId === s.name ? {
                 borderColor: 'color-mix(in srgb, var(--c-halogen) 50%, transparent)',
-                background:  'color-mix(in srgb, var(--c-halogen) 10%, #141620)',
+                background:  'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))',
                 color: 'var(--c-halogen)',
               } : {
-                borderColor: '#1c1f2e', background: '#0e1016',
-                color: 'rgba(255,255,255,0.45)',
+                borderColor: 'rgb(var(--color-border))', background: 'rgb(var(--color-surface))',
+                color: 'rgba(var(--overlay),0.45)',
               }}>
               <span className="font-mono text-xs font-semibold">{s.name}</span>
               <span className="font-mono text-[9px] opacity-60">{s.formula} · {s.dHvap} kJ/mol</span>
@@ -125,11 +125,11 @@ export default function VaporPressureCalc() {
             className="flex flex-col items-start px-3 py-1.5 rounded-sm border transition-colors text-left"
             style={isCustom ? {
               borderColor: 'color-mix(in srgb, var(--c-halogen) 50%, transparent)',
-              background:  'color-mix(in srgb, var(--c-halogen) 10%, #141620)',
+              background:  'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))',
               color: 'var(--c-halogen)',
             } : {
-              borderColor: '#1c1f2e', background: '#0e1016',
-              color: 'rgba(255,255,255,0.45)',
+              borderColor: 'rgb(var(--color-border))', background: 'rgb(var(--color-surface))',
+              color: 'rgba(var(--overlay),0.45)',
             }}>
             <span className="font-mono text-xs font-semibold">Custom</span>
             <span className="font-mono text-[9px] opacity-60">enter your own values</span>

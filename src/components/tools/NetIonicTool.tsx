@@ -589,8 +589,8 @@ function IonicEquation({ reactants, products, highlight }: {
         <span
           className="font-mono text-sm transition-all"
           style={chunk.spectator
-            ? { color: 'rgba(255,255,255,0.22)', textDecoration: 'line-through', textDecorationColor: 'rgba(255,255,255,0.18)' }
-            : { color: highlight ? 'var(--c-halogen)' : 'rgba(255,255,255,0.85)' }
+            ? { color: 'rgba(var(--overlay),0.22)', textDecoration: 'line-through', textDecorationColor: 'rgba(var(--overlay),0.18)' }
+            : { color: highlight ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.85)' }
           }
         >
           {chunk.text}
@@ -647,18 +647,18 @@ export default function NetIonicTool() {
 
       {/* Filter pills */}
       <div className="flex flex-wrap gap-1 p-1 rounded-sm self-start"
-        style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+        style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
         {(['all', 'precipitation', 'acid_base', 'gas_forming', 'redox'] as Filter[]).map(f => {
           const isActive = filter === f
           const meta = f === 'all' ? null : CATEGORY_META[f]
           return (
             <button key={f} onClick={() => setFilter(f)}
               className="relative flex-shrink-0 px-3 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
-              style={{ color: isActive ? (meta?.color ?? 'var(--c-halogen)') : 'rgba(255,255,255,0.4)' }}>
+              style={{ color: isActive ? (meta?.color ?? 'var(--c-halogen)') : 'rgba(var(--overlay),0.4)' }}>
               {isActive && (
                 <motion.div layoutId="net-ionic-pill" className="absolute inset-0 rounded-sm"
                   style={{
-                    background: `color-mix(in srgb, ${meta?.color ?? 'var(--c-halogen)'} 12%, #141620)`,
+                    background: `color-mix(in srgb, ${meta?.color ?? 'var(--c-halogen)'} 12%, rgb(var(--color-raised)))`,
                     border: `1px solid color-mix(in srgb, ${meta?.color ?? 'var(--c-halogen)'} 30%, transparent)`,
                   }}
                   transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
@@ -682,16 +682,16 @@ export default function NetIonicTool() {
               <button key={rxn.id} onClick={() => setSelected(isSelected ? null : rxn)}
                 className="flex flex-col gap-0.5 px-3 py-2.5 rounded-sm text-left transition-colors"
                 style={isSelected ? {
-                  background: `color-mix(in srgb, ${meta.color} 10%, #141620)`,
+                  background: `color-mix(in srgb, ${meta.color} 10%, rgb(var(--color-raised)))`,
                   border: `1px solid color-mix(in srgb, ${meta.color} 30%, transparent)`,
                 } : {
                   border: '1px solid transparent',
-                  background: 'rgba(255,255,255,0.03)',
+                  background: 'rgba(var(--overlay),0.03)',
                 }}
               >
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ background: meta.color }} />
-                  <span className="font-mono text-sm" style={{ color: isSelected ? meta.color : 'rgba(255,255,255,0.8)' }}>
+                  <span className="font-mono text-sm" style={{ color: isSelected ? meta.color : 'rgba(var(--overlay),0.8)' }}>
                     {rxn.title}
                   </span>
                 </div>
@@ -718,7 +718,7 @@ export default function NetIonicTool() {
                   <span className="font-sans text-base font-semibold text-bright">{selected.title}</span>
                   <span className="px-2 py-0.5 rounded-sm font-mono text-xs"
                     style={{
-                      background: `color-mix(in srgb, ${color} 15%, #141620)`,
+                      background: `color-mix(in srgb, ${color} 15%, rgb(var(--color-raised)))`,
                       border: `1px solid color-mix(in srgb, ${color} 35%, transparent)`,
                       color,
                     }}>
@@ -732,7 +732,7 @@ export default function NetIonicTool() {
                     Step 1 — Molecular Equation
                   </span>
                   <div className="rounded-sm border border-border bg-raised px-4 py-3">
-                    <span className="font-mono text-base" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                    <span className="font-mono text-base" style={{ color: 'rgba(var(--overlay),0.75)' }}>
                       {selected.molecular}
                     </span>
                   </div>
@@ -769,7 +769,7 @@ export default function NetIonicTool() {
                       {selected.spectatorIons.map(ion => (
                         <span key={ion}
                           className="px-2.5 py-1 rounded-sm font-mono text-sm border border-border text-secondary"
-                          style={{ textDecoration: 'line-through', textDecorationColor: 'rgba(255,255,255,0.3)' }}>
+                          style={{ textDecoration: 'line-through', textDecorationColor: 'rgba(var(--overlay),0.3)' }}>
                           {ion}
                         </span>
                       ))}
@@ -789,7 +789,7 @@ export default function NetIonicTool() {
                   <div className="rounded-sm border px-4 py-3 overflow-x-auto"
                     style={{
                       borderColor: `color-mix(in srgb, ${color} 35%, transparent)`,
-                      background: `color-mix(in srgb, ${color} 6%, #141620)`,
+                      background: `color-mix(in srgb, ${color} 6%, rgb(var(--color-raised)))`,
                     }}>
                     <span className="font-mono text-base font-semibold" style={{ color }}>
                       {selected.netIonic}

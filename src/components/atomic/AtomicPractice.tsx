@@ -100,7 +100,7 @@ export default function AtomicPractice({ subtopic }: Props) {
               className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors
                          disabled:opacity-30 disabled:cursor-not-allowed"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 15%, #141620)',
+                background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
                 border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
                 color: 'var(--c-halogen)',
               }}

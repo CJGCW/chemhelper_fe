@@ -132,7 +132,7 @@ export default function CompoundPage() {
               <span
                 className="absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] px-1.5 py-0.5 rounded-sm"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                   border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                   color: 'var(--c-halogen)',
                 }}
@@ -146,7 +146,7 @@ export default function CompoundPage() {
             disabled={!canSubmit}
             className="px-5 py-2 rounded-sm font-sans font-medium text-sm transition-all disabled:opacity-40 shrink-0"
             style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
               border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
             }}
@@ -183,7 +183,7 @@ export default function CompoundPage() {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
             className="flex flex-col gap-1 rounded-sm border border-border overflow-hidden"
-            style={{ background: '#0e1016' }}
+            style={{ background: 'rgb(var(--color-surface))' }}
           >
             {/* Header */}
             <div className="px-4 py-3 border-b border-border flex items-baseline gap-2 flex-wrap">
@@ -251,8 +251,8 @@ function Row({
         onClick={() => onCopy(value, id)}
         className="shrink-0 font-mono text-[10px] px-2 py-0.5 rounded-sm border transition-colors opacity-0 group-hover:opacity-100"
         style={{
-          borderColor: isCopied ? 'var(--c-halogen)' : 'rgba(255,255,255,0.15)',
-          color: isCopied ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)',
+          borderColor: isCopied ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.15)',
+          color: isCopied ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
           background: isCopied ? 'color-mix(in srgb, var(--c-halogen) 10%, transparent)' : 'transparent',
         }}
       >

@@ -238,15 +238,15 @@ export default function ElectronConfigPage() {
         {/* Per-topic mode toggle — only shown for topics with multiple modes */}
         {topicModes && topicModes.length > 1 && (
           <div className="flex items-center gap-1 p-1 rounded-full self-start"
-            style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+            style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
             {topicModes.map(m => (
               <button key={m} onClick={() => setMode(m)}
                 className="relative px-5 py-1.5 rounded-full font-sans text-sm font-medium transition-colors capitalize"
-                style={{ color: mode === m ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)' }}>
+                style={{ color: mode === m ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)' }}>
                 {mode === m && (
                   <motion.div layoutId="atomic-mode-switch" className="absolute inset-0 rounded-full"
                     style={{
-                      background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                      background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                       border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                     }}
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
@@ -261,7 +261,7 @@ export default function ElectronConfigPage() {
         <div className="flex flex-col gap-4 md:flex-row md:flex-wrap md:gap-x-6 md:gap-y-4">
           {TOPIC_GROUPS.map(group => (
             <div key={group.label} className="flex flex-col gap-2 px-3 py-2 rounded-sm"
-              style={{ background: '#0a0c12', border: '1px solid #1c1f2e' }}>
+              style={{ background: 'rgb(var(--color-base))', border: '1px solid rgb(var(--color-border))' }}>
               <p className="font-mono text-xs text-secondary tracking-widest uppercase">{group.label}</p>
               <div className="flex flex-wrap gap-1.5">
                 {group.topics.map(t => {
@@ -273,13 +273,13 @@ export default function ElectronConfigPage() {
                       className="relative flex flex-col items-start px-4 py-2 rounded-sm font-sans text-sm
                                  font-medium transition-all text-left"
                       style={isActive ? {
-                        background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                        background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                         border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
                         color: 'var(--c-halogen)',
                       } : {
-                        background: '#0e1016',
-                        border: '1px solid #1c1f2e',
-                        color: 'rgba(255,255,255,0.45)',
+                        background: 'rgb(var(--color-surface))',
+                        border: '1px solid rgb(var(--color-border))',
+                        color: 'rgba(var(--overlay),0.45)',
                       }}
                     >
                       <span>{t.label}</span>

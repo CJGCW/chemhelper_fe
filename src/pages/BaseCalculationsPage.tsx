@@ -338,17 +338,17 @@ export default function BaseCalculationsPage() {
         {/* Mode toggle — only for tabs with multiple modes */}
         {availableModes.length > 1 && (
           <div className="flex items-center gap-1 p-1 rounded-full self-start print:hidden"
-            style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+            style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
             {availableModes.map(m => {
               const isActive = mode === m
               return (
                 <button key={m} onClick={() => setMode(m)}
                   className="relative px-5 py-1.5 rounded-full font-sans text-sm font-medium transition-colors capitalize"
-                  style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)' }}>
+                  style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)' }}>
                   {isActive && (
                     <motion.div layoutId="base-calc-mode-switch" className="absolute inset-0 rounded-full"
                       style={{
-                        background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                        background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                         border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                       }}
                       transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
@@ -437,7 +437,7 @@ export default function BaseCalculationsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
 
               {/* ── Sig Fig Counter ── */}
-              <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+              <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
                 <p className="font-mono text-xs text-secondary tracking-widest uppercase">Sig Fig Counter</p>
 
                 <input
@@ -462,10 +462,10 @@ export default function BaseCalculationsPage() {
                             className="font-mono text-4xl font-semibold leading-none"
                             style={{
                               color: ac.char === '.' || ac.char === '-'
-                                ? 'rgba(255,255,255,0.2)'
+                                ? 'rgba(var(--overlay),0.2)'
                                 : ac.significant
                                   ? 'var(--c-halogen)'
-                                  : 'rgba(255,255,255,0.22)',
+                                  : 'rgba(var(--overlay),0.22)',
                             }}
                           >
                             {ac.char}
@@ -476,7 +476,7 @@ export default function BaseCalculationsPage() {
                               style={{
                                 background: ac.significant
                                   ? 'var(--c-halogen)'
-                                  : 'rgba(255,255,255,0.12)',
+                                  : 'rgba(var(--overlay),0.12)',
                               }}
                             />
                           )}
@@ -499,7 +499,7 @@ export default function BaseCalculationsPage() {
               </div>
 
               {/* ── Operation Calculator ── */}
-              <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+              <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
                 <div className="flex items-center justify-between">
                   <p className="font-mono text-xs text-secondary tracking-widest uppercase">Operation Calculator</p>
                   <span className="font-sans text-xs text-secondary">
@@ -522,12 +522,12 @@ export default function BaseCalculationsPage() {
                         className="w-8 h-8 rounded-sm font-mono text-sm font-semibold transition-colors"
                         style={{
                           background: operation === op
-                            ? 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)'
+                            ? 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))'
                             : 'transparent',
                           border: operation === op
                             ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)'
-                            : '1px solid rgba(255,255,255,0.1)',
-                          color: operation === op ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)',
+                            : '1px solid rgba(var(--overlay),0.1)',
+                          color: operation === op ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)',
                         }}
                       >
                         {op}
@@ -548,7 +548,7 @@ export default function BaseCalculationsPage() {
                   onClick={calculate}
                   className="w-full py-2 rounded-sm font-sans font-medium text-sm transition-all"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
                     border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                     color: 'var(--c-halogen)',
                   }}
@@ -599,7 +599,7 @@ export default function BaseCalculationsPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {SF_RULES.map((r, i) => (
-                  <div key={i} className="flex flex-col gap-3 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+                  <div key={i} className="flex flex-col gap-3 p-3 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
                     <div className="flex items-start justify-between gap-2">
                       <span className="font-sans text-xs font-medium text-primary leading-snug">{r.rule}</span>
                       <span
@@ -621,10 +621,10 @@ export default function BaseCalculationsPage() {
                             className="font-mono text-2xl font-semibold leading-none"
                             style={{
                               color: ac.char === '.'
-                                ? 'rgba(255,255,255,0.2)'
+                                ? 'rgba(var(--overlay),0.2)'
                                 : ac.significant
                                   ? 'var(--c-halogen)'
-                                  : 'rgba(255,255,255,0.22)',
+                                  : 'rgba(var(--overlay),0.22)',
                             }}
                           >
                             {ac.char}
@@ -632,7 +632,7 @@ export default function BaseCalculationsPage() {
                           {ac.char !== '.' && (
                             <div
                               className="w-1.5 h-1.5 rounded-full"
-                              style={{ background: ac.significant ? 'var(--c-halogen)' : 'rgba(255,255,255,0.12)' }}
+                              style={{ background: ac.significant ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.12)' }}
                             />
                           )}
                         </div>
@@ -644,7 +644,7 @@ export default function BaseCalculationsPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {OP_EXAMPLES.map((ex, i) => (
-                  <div key={i} className="flex flex-col gap-2 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+                  <div key={i} className="flex flex-col gap-2 p-3 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
                     <div className="flex items-center gap-2">
                       <span
                         className="font-mono text-xs px-2 py-0.5 rounded-sm shrink-0"
@@ -675,21 +675,21 @@ export default function BaseCalculationsPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {SCI_NOTATION_EXAMPLES.map((ex, i) => (
-                  <div key={i} className="flex flex-col gap-3 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+                  <div key={i} className="flex flex-col gap-3 p-3 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
                     <div className="flex items-end gap-1 flex-wrap">
                       {annotateNumber(ex.coefficient).map((ac, j) => (
                         <div key={j} className="flex flex-col items-center gap-1.5">
                           <span className="font-mono text-2xl font-semibold leading-none"
                             style={{
                               color: ac.char === '.'
-                                ? 'rgba(255,255,255,0.2)'
-                                : ac.significant ? 'var(--c-halogen)' : 'rgba(255,255,255,0.22)',
+                                ? 'rgba(var(--overlay),0.2)'
+                                : ac.significant ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.22)',
                             }}>
                             {ac.char}
                           </span>
                           {ac.char !== '.' && (
                             <div className="w-1.5 h-1.5 rounded-full"
-                              style={{ background: ac.significant ? 'var(--c-halogen)' : 'rgba(255,255,255,0.12)' }} />
+                              style={{ background: ac.significant ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.12)' }} />
                           )}
                         </div>
                       ))}
@@ -724,7 +724,7 @@ export default function BaseCalculationsPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {EXACT_EXAMPLES.map((ex, i) => (
-                  <div key={i} className="flex flex-col gap-3 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+                  <div key={i} className="flex flex-col gap-3 p-3 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
                     <div className="flex items-start justify-between gap-2">
                       <span className="font-sans text-xs font-medium text-primary leading-snug">{ex.category}</span>
                       <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm shrink-0"

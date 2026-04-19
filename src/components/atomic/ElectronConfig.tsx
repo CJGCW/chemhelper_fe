@@ -18,19 +18,19 @@ function OrbitalBox({ up, down, active, hund }: { up: boolean; down: boolean; ac
           ? '1px solid color-mix(in srgb, var(--c-halogen) 70%, transparent)'
           : hund
             ? '1px solid rgba(245,158,11,0.5)'
-            : '1px solid rgba(255,255,255,0.15)',
+            : '1px solid rgba(var(--overlay),0.15)',
         background: active
           ? 'color-mix(in srgb, var(--c-halogen) 14%, transparent)'
           : hund
             ? 'rgba(245,158,11,0.06)'
-            : (up || down) ? 'rgba(255,255,255,0.03)' : 'transparent',
+            : (up || down) ? 'rgba(var(--overlay),0.03)' : 'transparent',
         transition: 'background 0.15s, border-color 0.15s',
       }}
     >
       <span className="font-mono text-xs leading-none select-none"
-        style={{ color: up ? 'var(--c-halogen)' : 'rgba(255,255,255,0.08)' }}>↑</span>
+        style={{ color: up ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.08)' }}>↑</span>
       <span className="font-mono text-xs leading-none select-none"
-        style={{ color: down ? 'var(--c-halogen)' : 'rgba(255,255,255,0.08)' }}>↓</span>
+        style={{ color: down ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.08)' }}>↓</span>
     </div>
   )
 }
@@ -42,7 +42,7 @@ function SubshellGroup({ sub, active }: { sub: SubshellFill; active?: boolean })
     <div className="flex flex-col items-start gap-1">
       <div className="flex items-center gap-1.5">
         <span className="font-mono text-[10px] tracking-wide"
-          style={{ color: active ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)' }}>
+          style={{ color: active ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)' }}>
           {sub.label}
         </span>
         {isHundActive && !active && (
@@ -78,7 +78,7 @@ function WrittenNotation({
       {coreLabel && <span className="text-dim">{coreLabel} </span>}
       {subshells.map(s => (
         <span key={s.label + s.aufbauIdx}
-          style={{ color: activeLabel === s.label ? 'var(--c-halogen)' : 'rgba(255,255,255,0.75)' }}>
+          style={{ color: activeLabel === s.label ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.75)' }}>
           {s.label}<sup style={{ fontSize: '0.65em' }}>{s.electrons}</sup>
         </span>
       ))}
@@ -135,7 +135,7 @@ export default function ElectronConfig() {
     <div className="flex flex-col gap-6">
 
       {/* ── Element selector ── */}
-      <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+      <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
         <div className="flex items-center gap-4 flex-wrap">
           <div className="flex flex-col items-center w-16 shrink-0">
             <span className="font-mono text-5xl font-bold leading-none" style={{ color: 'var(--c-halogen)' }}>
@@ -195,8 +195,8 @@ export default function ElectronConfig() {
                   onClick={() => mode === 'full' ? setShowFull(f => !f) : (setStepMode(s => !s), setStep(z))}
                   className="font-mono text-[10px] px-2 py-1 rounded-sm border transition-colors"
                   style={{
-                    border: on ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '1px solid rgba(255,255,255,0.12)',
-                    color: on ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)',
+                    border: on ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '1px solid rgba(var(--overlay),0.12)',
+                    color: on ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
                     background: on ? 'color-mix(in srgb, var(--c-halogen) 10%, transparent)' : 'transparent',
                   }}>
                   {mode}
@@ -210,7 +210,7 @@ export default function ElectronConfig() {
           {stepMode && (
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }} style={{ overflow: 'hidden' }}>
-              <div className="flex flex-col gap-2 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+              <div className="flex flex-col gap-2 p-3 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-xs text-dim">Filling electron {step} of {z}</span>
                   <span className="font-mono text-xs" style={{ color: 'var(--c-halogen)' }}>
@@ -228,7 +228,7 @@ export default function ElectronConfig() {
           )}
         </AnimatePresence>
 
-        <div className="p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+        <div className="p-3 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
           <WrittenNotation coreLabel={displayCore} subshells={displaySubshells} activeLabel={activeLabel} />
         </div>
 
@@ -249,7 +249,7 @@ export default function ElectronConfig() {
         <p className="font-mono text-xs tracking-widest text-secondary uppercase">Orbital Box Diagram</p>
         <div className="flex flex-col gap-1">
           {shellRows.map(([n, subs]) => (
-            <div key={n} className="flex items-end gap-4 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+            <div key={n} className="flex items-end gap-4 p-3 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
               <div className="w-8 shrink-0 flex items-center justify-center pb-0.5">
                 <span className="font-mono text-xs text-secondary">n={n}</span>
               </div>
@@ -262,7 +262,7 @@ export default function ElectronConfig() {
           ))}
         </div>
 
-        <div className="flex flex-col gap-1 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+        <div className="flex flex-col gap-1 p-3 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
           <p className="font-mono text-xs tracking-widest text-secondary uppercase mb-2">Aufbau Filling Order</p>
           <div className="flex flex-wrap gap-1.5">
             {AUFBAU.map((s, i) => {
@@ -271,9 +271,9 @@ export default function ElectronConfig() {
               return (
                 <span key={i} className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
                   style={{
-                    background: isActive ? 'color-mix(in srgb, var(--c-halogen) 20%, transparent)' : isFilled ? 'rgba(255,255,255,0.07)' : 'transparent',
-                    color: isActive ? 'var(--c-halogen)' : isFilled ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.15)',
-                    border: isActive ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '1px solid rgba(255,255,255,0.07)',
+                    background: isActive ? 'color-mix(in srgb, var(--c-halogen) 20%, transparent)' : isFilled ? 'rgba(var(--overlay),0.07)' : 'transparent',
+                    color: isActive ? 'var(--c-halogen)' : isFilled ? 'rgba(var(--overlay),0.5)' : 'rgba(var(--overlay),0.15)',
+                    border: isActive ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '1px solid rgba(var(--overlay),0.07)',
                   }}>
                   {i + 1}. {s.label}
                 </span>

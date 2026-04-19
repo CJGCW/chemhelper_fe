@@ -76,7 +76,7 @@ export default function TrendExplainer({ trendMode }: { trendMode: TrendMode }) 
   return (
     <div
       className="rounded-sm border overflow-hidden"
-      style={{ borderColor: `color-mix(in srgb, ${info.color} 30%, rgba(255,255,255,0.08))` }}
+      style={{ borderColor: `color-mix(in srgb, ${info.color} 30%, rgba(var(--overlay),0.08))` }}
     >
       <button
         onClick={() => setOpen(o => !o)}
@@ -102,7 +102,7 @@ export default function TrendExplainer({ trendMode }: { trendMode: TrendMode }) 
             style={{ overflow: 'hidden' }}
           >
             <div className="px-4 pb-4 pt-2 border-t border-border flex flex-col gap-3"
-              style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+              style={{ borderColor: 'rgba(var(--overlay),0.06)' }}>
 
               {/* Key concept */}
               <div className="flex items-center gap-2">
@@ -137,7 +137,7 @@ export default function TrendExplainer({ trendMode }: { trendMode: TrendMode }) 
               {/* Extra note */}
               {info.extra && (
                 <p className="font-mono text-[11px] text-dim leading-relaxed border-t pt-2"
-                  style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+                  style={{ borderColor: 'rgba(var(--overlay),0.06)' }}>
                   {info.extra}
                 </p>
               )}

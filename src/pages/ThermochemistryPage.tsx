@@ -377,17 +377,17 @@ export default function ThermochemistryPage() {
         {/* Mode tabs for active section */}
         {currentSection && currentSection.tabs.length > 1 && (
           <div className="flex items-center gap-1 p-1 rounded-full self-start print:hidden"
-            style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+            style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
             {currentSection.tabs.map(t => {
               const active = tab === t.id
               return (
                 <button key={t.id} onClick={() => setTab(t.id)}
                   className="relative px-5 py-1.5 rounded-full font-sans text-sm font-medium transition-colors"
-                  style={{ color: active ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)' }}>
+                  style={{ color: active ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)' }}>
                   {active && (
                     <motion.div layoutId="thermo-mode-switch" className="absolute inset-0 rounded-full"
                       style={{
-                        background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                        background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                         border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                       }}
                       transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
@@ -402,7 +402,7 @@ export default function ThermochemistryPage() {
         <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:gap-x-6 md:gap-y-3 print:hidden">
           {GROUPS.map(group => (
             <div key={group.id} className="flex flex-col gap-2 px-3 py-2 rounded-sm"
-              style={{ background: '#0a0c12', border: '1px solid #1c1f2e' }}>
+              style={{ background: 'rgb(var(--color-base))', border: '1px solid rgb(var(--color-border))' }}>
               <p className="font-mono text-xs text-secondary tracking-widest uppercase">{group.label}</p>
               <div className="flex items-center gap-1 flex-wrap">
                 {group.sections.map(s => {
@@ -411,11 +411,11 @@ export default function ThermochemistryPage() {
                     <button key={s.heading}
                       onClick={() => setTab(s.tabs[0].id)}
                       className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
-                      style={{ color: sectionActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
+                      style={{ color: sectionActive ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)' }}>
                       {sectionActive && (
                         <motion.div layoutId="thermo-section-pill" className="absolute inset-0 rounded-sm"
                           style={{
-                            background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                            background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                             border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                           }}
                           transition={{ type: 'spring', stiffness: 400, damping: 32 }} />

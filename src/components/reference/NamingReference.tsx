@@ -446,18 +446,18 @@ export default function NamingReference() {
 
       {/* Pill bar */}
       <div className="flex items-center gap-1 p-1 rounded-sm self-start flex-wrap print:hidden"
-        style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+        style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
         {SECTIONS.map(s => {
           const isActive = active === s.id
           return (
             <button key={s.id} onClick={() => setActive(s.id)}
               className="relative flex-shrink-0 px-3.5 py-1.5 rounded-sm font-sans text-sm
                          font-medium transition-colors"
-              style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
+              style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)' }}>
               {isActive && (
                 <motion.div layoutId="naming-pill" className="absolute inset-0 rounded-sm"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                     border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                   }}
                   transition={{ type: 'spring', stiffness: 400, damping: 32 }} />

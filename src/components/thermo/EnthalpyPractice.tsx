@@ -172,7 +172,7 @@ export default function EnthalpyPractice() {
             disabled={!input.trim()}
             className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
               border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
               color: 'var(--c-halogen)',
             }}
@@ -183,14 +183,14 @@ export default function EnthalpyPractice() {
               <button
                 onClick={handleTryAgain}
                 className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
-                style={{ background: '#141620', border: '1px solid #2a2e42', color: 'rgba(255,255,255,0.55)' }}
+                style={{ background: 'rgb(var(--color-raised))', border: '1px solid rgb(var(--color-muted))', color: 'rgba(var(--overlay),0.55)' }}
               >Try Again</button>
             )}
             <button
               onClick={handleNext}
               className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                 border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
                 color: 'var(--c-halogen)',
               }}

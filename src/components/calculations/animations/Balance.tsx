@@ -127,7 +127,7 @@ export default function Balance({
         <polygon
           points={rfPts}
           fill="#090b0f"
-          stroke="#1c1f2e"
+          stroke="rgb(var(--color-border))"
           strokeWidth="0.8"
         />
 
@@ -138,15 +138,15 @@ export default function Balance({
           width={fw}
           height={fh}
           rx="7"
-          fill="#141620"
-          stroke="#1c1f2e"
+          fill="rgb(var(--color-raised))"
+          stroke="rgb(var(--color-border))"
           strokeWidth="1"
         />
         {/* Subtle gradient overlay for depth */}
         <defs>
           <linearGradient id="frontGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#1c1f2e" stopOpacity="0.6" />
-            <stop offset="100%" stopColor="#0a0c10" stopOpacity="0.0" />
+            <stop offset="0%" stopColor="rgb(var(--color-border))" stopOpacity="0.6" />
+            <stop offset="100%" stopColor="rgb(var(--color-base))" stopOpacity="0.0" />
           </linearGradient>
           <linearGradient
             id="panGrad"
@@ -157,8 +157,8 @@ export default function Balance({
             fy="35%"
             gradientUnits="objectBoundingBox"
           >
-            <stop offset="0%" stopColor="#2a2d3d" />
-            <stop offset="100%" stopColor="#0e1016" />
+            <stop offset="0%" stopColor="rgb(var(--color-muted))" />
+            <stop offset="100%" stopColor="rgb(var(--color-surface))" />
           </linearGradient>
           <radialGradient
             id="panSheen"
@@ -170,7 +170,7 @@ export default function Balance({
           >
             <stop offset="0%" stopColor="#2a3040" />
             <stop offset="60%" stopColor="#111520" />
-            <stop offset="100%" stopColor="#0a0c12" />
+            <stop offset="100%" stopColor="rgb(var(--color-base))" />
           </radialGradient>
         </defs>
         <rect
@@ -189,7 +189,7 @@ export default function Balance({
           width={fw}
           height="3"
           rx="2"
-          fill="#2a2d3d"
+          fill="rgb(var(--color-muted))"
           opacity="0.5"
         />
 
@@ -247,7 +247,7 @@ export default function Balance({
           textAnchor="end"
           fontFamily="IBM Plex Mono"
           fontSize="7"
-          fill={displayLit ? "#1a4a3a" : "#0e1016"}
+          fill={displayLit ? "#1a4a3a" : "rgb(var(--color-surface))"}
         >
           {displayLit
             ? stage === "counting"
@@ -270,8 +270,8 @@ export default function Balance({
               width="22"
               height="18"
               rx="3"
-              fill="#0e1016"
-              stroke="#2a2d3d"
+              fill="rgb(var(--color-surface))"
+              stroke="rgb(var(--color-muted))"
               strokeWidth="0.8"
             />
             <text
@@ -291,7 +291,7 @@ export default function Balance({
           cx={fx + fw - 14}
           cy={fy + fh - 12}
           r="4"
-          fill={displayLit ? "#4fffc8" : "#1c1f2e"}
+          fill={displayLit ? "#4fffc8" : "rgb(var(--color-border))"}
           style={{
             filter: displayLit ? "drop-shadow(0 0 4px #4fffc8)" : "none",
           }}
@@ -301,8 +301,8 @@ export default function Balance({
           cx={fx + fw - 14}
           cy={fy + fh - 26}
           r="4"
-          fill="#0e1016"
-          stroke="#2a2d3d"
+          fill="rgb(var(--color-surface))"
+          stroke="rgb(var(--color-muted))"
           strokeWidth="0.8"
         />
         <circle
@@ -317,7 +317,7 @@ export default function Balance({
         <polygon
           points={topPts}
           fill="#181b26"
-          stroke="#2a2d3d"
+          stroke="rgb(var(--color-muted))"
           strokeWidth="0.8"
         />
         {/* Top face highlight on front edge */}
@@ -326,7 +326,7 @@ export default function Balance({
           y1={fy}
           x2={fx + fw}
           y2={fy}
-          stroke="#2a2d3d"
+          stroke="rgb(var(--color-muted))"
           strokeWidth="1.5"
         />
 
@@ -338,8 +338,8 @@ export default function Balance({
             cy={panCY + 4}
             rx="3"
             ry="2"
-            fill="#0e1016"
-            stroke="#1c1f2e"
+            fill="rgb(var(--color-surface))"
+            stroke="rgb(var(--color-border))"
             strokeWidth="0.5"
           />
         ))}
@@ -350,7 +350,7 @@ export default function Balance({
           height="8"
           rx="2"
           fill="#111420"
-          stroke="#1c1f2e"
+          stroke="rgb(var(--color-border))"
           strokeWidth="0.5"
         />
 
@@ -370,7 +370,7 @@ export default function Balance({
           rx="74"
           ry="10"
           fill="url(#panSheen)"
-          stroke="#2a2d3d"
+          stroke="rgb(var(--color-muted))"
           strokeWidth="1.5"
         />
         {/* Pan rim highlight */}

@@ -254,7 +254,7 @@ function AnimatedUnitTag({
           left: 0, right: 0,
           top: '50%',
           height: '1.5px',
-          background: '#4a4f6a',
+          background: 'rgb(var(--color-dim))',
           transformOrigin: 'left center',
         }}
         initial={{ scaleX: 0, y: '-50%' }}
@@ -366,7 +366,7 @@ export default function ConversionExamples() {
     : 0
 
   return (
-    <div className="flex flex-col gap-5 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+    <div className="flex flex-col gap-5 p-4 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
       <div className="flex flex-col gap-1">
         <p className="font-sans text-sm font-semibold text-primary tracking-wide uppercase">
           Conversion Examples
@@ -385,16 +385,16 @@ export default function ConversionExamples() {
               onClick={() => { setPathway(p.id); setValue(''); setMolarMass('') }}
               className="flex flex-col gap-0.5 px-3 py-1.5 rounded-sm border text-left transition-all"
               style={{
-                borderColor: active ? 'color-mix(in srgb, var(--c-halogen) 50%, transparent)' : 'rgba(255,255,255,0.08)',
+                borderColor: active ? 'color-mix(in srgb, var(--c-halogen) 50%, transparent)' : 'rgba(var(--overlay),0.08)',
                 background:  active ? 'color-mix(in srgb, var(--c-halogen) 10%, transparent)' : 'transparent',
               }}
             >
               <span className="font-mono text-xs"
-                style={{ color: active ? 'var(--c-halogen)' : 'rgba(255,255,255,0.5)' }}>
+                style={{ color: active ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.5)' }}>
                 {p.label}
               </span>
               <span className="font-sans text-[10px]"
-                style={{ color: active ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.22)' }}>
+                style={{ color: active ? 'rgba(var(--overlay),0.45)' : 'rgba(var(--overlay),0.22)' }}>
                 {p.desc}
               </span>
             </button>
@@ -435,8 +435,8 @@ export default function ConversionExamples() {
                     onClick={() => setMolarMass(String(el.molarMass))}
                     className="font-mono text-[10px] px-1.5 py-0.5 rounded-sm border transition-colors"
                     style={{
-                      borderColor: active ? 'color-mix(in srgb, var(--c-halogen) 50%, transparent)' : 'rgba(255,255,255,0.1)',
-                      color:       active ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)',
+                      borderColor: active ? 'color-mix(in srgb, var(--c-halogen) 50%, transparent)' : 'rgba(var(--overlay),0.1)',
+                      color:       active ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)',
                       background:  active ? 'color-mix(in srgb, var(--c-halogen) 10%, transparent)' : 'transparent',
                     }}
                   >
@@ -459,7 +459,7 @@ export default function ConversionExamples() {
           >
             {/* ── Equation display ── */}
             <div className="rounded-sm border border-border overflow-x-auto"
-              style={{ background: '#080a0f' }}>
+              style={{ background: 'rgb(var(--color-base))' }}>
               <div className="flex items-center gap-5 px-5 py-5 min-w-max">
 
                 {/* Start block */}
@@ -513,7 +513,7 @@ export default function ConversionExamples() {
                 <span className="font-sans text-xs text-secondary">— carries forward</span>
               </div>
               <div className="flex items-center gap-1">
-                <span className="font-mono text-xs" style={{ color: '#4a4f6a', textDecoration: 'line-through' }}>unit</span>
+                <span className="font-mono text-xs" style={{ color: 'rgb(var(--color-dim))', textDecoration: 'line-through' }}>unit</span>
                 <span className="font-sans text-xs text-secondary">— cancelled</span>
               </div>
               <div className="flex items-center gap-1">
@@ -538,7 +538,7 @@ export default function ConversionExamples() {
                       {step.numValue} {step.numUnit} / {step.denValue} {step.denUnit}
                     </span>
                     {step.note && <> ({step.note})</>}.{' '}
-                    The <span className="font-mono" style={{ color: '#4a4f6a', textDecoration: 'line-through' }}>{step.denUnit}</span> cancels.
+                    The <span className="font-mono" style={{ color: 'rgb(var(--color-dim))', textDecoration: 'line-through' }}>{step.denUnit}</span> cancels.
                   </p>
                 </motion.div>
               ))}

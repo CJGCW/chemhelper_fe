@@ -19,11 +19,11 @@ export default function SolveForPills<T extends string>({ options, value, onChan
               style={{
                 borderColor: active
                   ? 'color-mix(in srgb, var(--c-halogen) 60%, transparent)'
-                  : 'rgba(255,255,255,0.1)',
+                  : 'rgba(var(--overlay),0.1)',
                 background: active
-                  ? 'color-mix(in srgb, var(--c-halogen) 14%, #0e1016)'
-                  : '#0e1016',
-                color: active ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)',
+                  ? 'color-mix(in srgb, var(--c-halogen) 14%, rgb(var(--color-surface)))'
+                  : 'rgb(var(--color-surface))',
+                color: active ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
               }}
             >
               {opt.label}

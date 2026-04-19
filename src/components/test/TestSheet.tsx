@@ -1248,7 +1248,7 @@ export default function TestSheet({ test, onBack }: Props) {
               onClick={() => setDrawModal({ q, review: false })}
               className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                 border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                 color: 'var(--c-halogen)',
               }}
@@ -1450,9 +1450,9 @@ export default function TestSheet({ test, onBack }: Props) {
                         onClick={() => setDrawModal({ q, review: true })}
                         className="self-start px-3 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
                         style={{
-                          background: '#141620',
-                          border: '1px solid #1c1f2e',
-                          color: '#7b82a0',
+                          background: 'rgb(var(--color-raised))',
+                          border: '1px solid rgb(var(--color-border))',
+                          color: 'rgb(var(--color-secondary))',
                         }}
                       >
                         View submitted drawing →
@@ -1526,7 +1526,7 @@ export default function TestSheet({ test, onBack }: Props) {
                 className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors
                            disabled:opacity-30 disabled:cursor-not-allowed"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 15%, #141620)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
                   border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
                   color: 'var(--c-halogen)',
                 }}
@@ -1584,7 +1584,7 @@ export default function TestSheet({ test, onBack }: Props) {
             className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors
                        disabled:opacity-30 disabled:cursor-not-allowed"
             style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 15%, #141620)',
+              background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
               border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
               color: 'var(--c-halogen)',
             }}

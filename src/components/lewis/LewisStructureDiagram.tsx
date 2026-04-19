@@ -369,8 +369,8 @@ function AtomNode({
         const dy = Math.sin(perpRad) * LP_DOT_SEP;
         return (
           <g key={i}>
-            <circle cx={lpCx + dx} cy={lpCy + dy} r={LP_R} fill="rgba(255,255,255,0.80)" />
-            <circle cx={lpCx - dx} cy={lpCy - dy} r={LP_R} fill="rgba(255,255,255,0.80)" />
+            <circle cx={lpCx + dx} cy={lpCy + dy} r={LP_R} fill="rgba(var(--overlay),0.80)" />
+            <circle cx={lpCx - dx} cy={lpCy - dy} r={LP_R} fill="rgba(var(--overlay),0.80)" />
           </g>
         );
       })}
@@ -380,13 +380,13 @@ function AtomNode({
         <g>
           <circle cx={chargeBx} cy={chargeBy} r={BADGE_R}
             fill={CANVAS_BG}
-            stroke="rgba(255,255,255,0.35)" strokeWidth="0.8"
+            stroke="rgba(var(--overlay),0.35)" strokeWidth="0.8"
           />
           <text
             x={chargeBx} y={chargeBy}
             textAnchor="middle" dominantBaseline="central"
             dy="-1"
-            fill="rgba(255,255,255,0.9)"
+            fill="rgba(var(--overlay),0.9)"
             fontSize={chargeLabel.length > 1 ? 6 : 7}
             fontWeight="bold"
             fontFamily="system-ui, sans-serif"
@@ -519,7 +519,7 @@ export default function LewisStructureDiagram({ structure }: { structure: LewisS
         {/* Subtle grid for visual grounding */}
         <defs>
           <pattern id="lewis-grid" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.025)" strokeWidth="0.5"/>
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(var(--overlay),0.025)" strokeWidth="0.5"/>
           </pattern>
         </defs>
         <rect width={SVG_W} height={SVG_H} fill="url(#lewis-grid)" />

@@ -357,15 +357,15 @@ function CompoundPicker({ label, selected, other, onSelect }: {
                     title={c.name}
                     className="px-2 py-1 rounded-sm font-mono text-sm transition-colors"
                     style={isSelected ? {
-                      background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+                      background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                       border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                       color: 'var(--c-halogen)',
                     } : unclassified ? {
-                      border: '1px solid rgba(255,255,255,0.06)',
-                      color: 'rgba(255,255,255,0.18)',
+                      border: '1px solid rgba(var(--overlay),0.06)',
+                      color: 'rgba(var(--overlay),0.18)',
                     } : {
-                      border: '1px solid rgba(255,255,255,0.12)',
-                      color: 'rgba(255,255,255,0.45)',
+                      border: '1px solid rgba(var(--overlay),0.12)',
+                      color: 'rgba(var(--overlay),0.45)',
                     }}
                   >
                     {c.formula}
@@ -426,11 +426,11 @@ export default function ReactionClassifier() {
 
       {/* Selected summary + classify button */}
       <div className="flex flex-wrap items-center gap-3 p-3 rounded-sm border border-border bg-surface">
-        <span className="font-mono text-sm" style={{ color: reactantA ? 'var(--c-halogen)' : 'rgba(255,255,255,0.25)' }}>
+        <span className="font-mono text-sm" style={{ color: reactantA ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.25)' }}>
           {reactantA ? reactantA.formula : '—'}
         </span>
         <span className="font-mono text-sm text-dim">+</span>
-        <span className="font-mono text-sm" style={{ color: reactantB ? 'var(--c-halogen)' : 'rgba(255,255,255,0.25)' }}>
+        <span className="font-mono text-sm" style={{ color: reactantB ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.25)' }}>
           {reactantB ? reactantB.formula : '—'}
         </span>
         <span className="font-mono text-sm text-dim">→</span>
@@ -448,7 +448,7 @@ export default function ReactionClassifier() {
             disabled={!reactantA || !reactantB}
             className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
               border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
               color: 'var(--c-halogen)',
             }}
@@ -471,7 +471,7 @@ export default function ReactionClassifier() {
             <div className="flex flex-wrap items-center gap-3">
               <span className="px-3 py-1 rounded-sm font-mono text-base font-semibold"
                 style={{
-                  background: `color-mix(in srgb, ${color} 15%, #141620)`,
+                  background: `color-mix(in srgb, ${color} 15%, rgb(var(--color-raised)))`,
                   border: `1px solid color-mix(in srgb, ${color} 35%, transparent)`,
                   color,
                 }}>
@@ -485,7 +485,7 @@ export default function ReactionClassifier() {
             {/* Equation */}
             {result.equation && (
               <div className="font-mono text-base rounded-sm border border-border bg-raised px-4 py-3"
-                style={{ color: 'rgba(255,255,255,0.75)' }}>
+                style={{ color: 'rgba(var(--overlay),0.75)' }}>
                 {result.equation}
               </div>
             )}

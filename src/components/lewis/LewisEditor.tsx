@@ -390,8 +390,8 @@ function AtomSvg({ atom, allAtoms, bonds, hovered, onLP, onDelete }: {
         const ddx = Math.cos(pr) * LP_DOT_SEP, ddy = Math.sin(pr) * LP_DOT_SEP
         return (
           <g key={i} style={{ pointerEvents: 'none' }}>
-            <circle cx={lpx+ddx} cy={lpy+ddy} r={LP_R} fill="rgba(255,255,255,0.80)"/>
-            <circle cx={lpx-ddx} cy={lpy-ddy} r={LP_R} fill="rgba(255,255,255,0.80)"/>
+            <circle cx={lpx+ddx} cy={lpy+ddy} r={LP_R} fill="rgba(var(--overlay),0.80)"/>
+            <circle cx={lpx-ddx} cy={lpy-ddy} r={LP_R} fill="rgba(var(--overlay),0.80)"/>
           </g>
         )
       })}
@@ -399,9 +399,9 @@ function AtomSvg({ atom, allAtoms, bonds, hovered, onLP, onDelete }: {
       {/* Formal charge badge */}
       {fcLabel && (
         <g>
-          <circle cx={cbx} cy={cby} r={BADGE_R} fill={CANVAS_BG} stroke="rgba(255,255,255,0.35)" strokeWidth="0.8"/>
+          <circle cx={cbx} cy={cby} r={BADGE_R} fill={CANVAS_BG} stroke="rgba(var(--overlay),0.35)" strokeWidth="0.8"/>
           <text x={cbx} y={cby} textAnchor="middle" dominantBaseline="central" dy="-1"
-            fill="rgba(255,255,255,0.9)" fontSize={fcLabel.length > 1 ? 6 : 7}
+            fill="rgba(var(--overlay),0.9)" fontSize={fcLabel.length > 1 ? 6 : 7}
             fontWeight="bold" fontFamily="system-ui, sans-serif"
             style={{ pointerEvents: 'none', userSelect: 'none' }}>
             {fcLabel}
@@ -417,17 +417,17 @@ function AtomSvg({ atom, allAtoms, bonds, hovered, onLP, onDelete }: {
           <g onClick={e => { e.stopPropagation(); onLP(-1) }} style={{ cursor: 'pointer' }}>
             <rect x={atom.x-26} y={atom.y-hh-22} width={17} height={17} rx={3} fill="transparent"/>
             <text x={atom.x-17} y={atom.y-hh-13} textAnchor="middle" dominantBaseline="central"
-              fill="rgba(255,255,255,0.65)" fontSize={14} fontFamily="system-ui" style={{ userSelect: 'none' }}>−</text>
+              fill="rgba(var(--overlay),0.65)" fontSize={14} fontFamily="system-ui" style={{ userSelect: 'none' }}>−</text>
           </g>
           <text x={atom.x} y={atom.y-hh-13} textAnchor="middle" dominantBaseline="central"
-            fill="rgba(255,255,255,0.45)" fontSize={9} fontFamily="system-ui"
+            fill="rgba(var(--overlay),0.45)" fontSize={9} fontFamily="system-ui"
             style={{ pointerEvents: 'none', userSelect: 'none' }}>
             {atom.lonePairs} LP
           </text>
           <g onClick={e => { e.stopPropagation(); onLP(+1) }} style={{ cursor: 'pointer' }}>
             <rect x={atom.x+9} y={atom.y-hh-22} width={17} height={17} rx={3} fill="transparent"/>
             <text x={atom.x+17} y={atom.y-hh-13} textAnchor="middle" dominantBaseline="central"
-              fill="rgba(255,255,255,0.65)" fontSize={11} fontFamily="system-ui" style={{ userSelect: 'none' }}>+</text>
+              fill="rgba(var(--overlay),0.65)" fontSize={11} fontFamily="system-ui" style={{ userSelect: 'none' }}>+</text>
           </g>
           {/* Delete button */}
           <g onClick={e => { e.stopPropagation(); onDelete() }} style={{ cursor: 'pointer' }}>
@@ -716,13 +716,13 @@ const LewisEditor = forwardRef<LewisEditorHandle, Props>(function LewisEditor(
   // ── Render ──────────────────────────────────────────────────────────────────
 
   const btnBase: React.CSSProperties = {
-    height: 32, padding: '0 12px', borderRadius: 3, border: '1px solid #1c1f2e',
+    height: 32, padding: '0 12px', borderRadius: 3, border: '1px solid rgb(var(--color-border))',
     fontSize: 12, fontWeight: 600, fontFamily: 'system-ui, sans-serif',
-    background: '#141620', color: 'rgba(255,255,255,0.5)', cursor: 'pointer',
+    background: 'rgb(var(--color-raised))', color: 'rgba(var(--overlay),0.5)', cursor: 'pointer',
   }
   const btnActive: React.CSSProperties = {
     ...btnBase,
-    background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
     border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
     color: 'var(--c-halogen)',
   }
@@ -733,7 +733,7 @@ const LewisEditor = forwardRef<LewisEditorHandle, Props>(function LewisEditor(
     <div className="flex flex-col gap-3">
 
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-2 p-2 rounded-sm border border-border" style={{ background: '#0a0b0f' }}>
+      <div className="flex flex-wrap items-center gap-2 p-2 rounded-sm border border-border" style={{ background: 'rgb(var(--color-base))' }}>
         {/* Elements + Other/Load — all in one inline group */}
         <div className="flex items-center gap-1 flex-wrap">
           {COMMON_ELEMENTS.map(el => (
@@ -742,7 +742,7 @@ const LewisEditor = forwardRef<LewisEditorHandle, Props>(function LewisEditor(
               style={{
                 ...( activeEl === el && tool === 'draw' ? btnActive : btnBase ),
                 width: 32,
-                color: activeEl === el && tool === 'draw' ? 'var(--c-halogen)' : (ELEM_COLORS[el] ?? 'rgba(255,255,255,0.6)'),
+                color: activeEl === el && tool === 'draw' ? 'var(--c-halogen)' : (ELEM_COLORS[el] ?? 'rgba(var(--overlay),0.6)'),
                 fontFamily: "ui-monospace, 'Cascadia Code', monospace",
               }}
             >{el}</button>
@@ -759,7 +759,7 @@ const LewisEditor = forwardRef<LewisEditorHandle, Props>(function LewisEditor(
           </div>
         </div>
 
-        <div style={{ width: 1, height: 24, background: '#1c1f2e', margin: '0 4px' }} />
+        <div style={{ width: 1, height: 24, background: 'rgb(var(--color-border))', margin: '0 4px' }} />
 
         {/* Mode */}
         <button onClick={() => setTool('draw')} style={tool === 'draw' ? btnActive : btnBase}>✎ Draw</button>
@@ -783,7 +783,7 @@ const LewisEditor = forwardRef<LewisEditorHandle, Props>(function LewisEditor(
       </p>
 
       {/* SVG canvas */}
-      <div style={{ height: canvasHeight, borderRadius: 6, overflow: 'hidden', border: '1px solid #1c1f2e' }}>
+      <div style={{ height: canvasHeight, borderRadius: 6, overflow: 'hidden', border: '1px solid rgb(var(--color-border))' }}>
         <svg ref={svgRef} width="100%" height={canvasHeight}
           style={{ background: CANVAS_BG, display: 'block', cursor: tool === 'draw' ? 'crosshair' : 'default' }}
           onPointerDown={handlePointerDown}
@@ -793,7 +793,7 @@ const LewisEditor = forwardRef<LewisEditorHandle, Props>(function LewisEditor(
         >
           <defs>
             <pattern id="lewis-ed-grid" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-              <circle cx="1" cy="1" r="0.7" fill="rgba(255,255,255,0.025)"/>
+              <circle cx="1" cy="1" r="0.7" fill="rgba(var(--overlay),0.025)"/>
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#lewis-ed-grid)"/>
@@ -822,8 +822,8 @@ const LewisEditor = forwardRef<LewisEditorHandle, Props>(function LewisEditor(
       {/* Validation */}
       {validationResult && (
         <div className="rounded-sm border p-4 flex flex-col gap-3" style={{
-          borderColor: validationResult.passed ? 'color-mix(in srgb, #4ade80 30%, #1c1f2e)' : 'color-mix(in srgb, #f87171 30%, #1c1f2e)',
-          background: validationResult.passed ? 'color-mix(in srgb, #4ade80 5%, #0e1016)' : 'color-mix(in srgb, #f87171 5%, #0e1016)',
+          borderColor: validationResult.passed ? 'color-mix(in srgb, #4ade80 30%, rgb(var(--color-border)))' : 'color-mix(in srgb, #f87171 30%, rgb(var(--color-border)))',
+          background: validationResult.passed ? 'color-mix(in srgb, #4ade80 5%, rgb(var(--color-surface)))' : 'color-mix(in srgb, #f87171 5%, rgb(var(--color-surface)))',
         }}>
           <div className="flex items-center gap-2">
             <span style={{ fontSize: 18 }}>{validationResult.passed ? '✓' : '✗'}</span>

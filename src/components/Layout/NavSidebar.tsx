@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 interface Props {
   open: boolean;
   onClose: () => void;
+  theme: 'dark' | 'light';
+  onToggleTheme: () => void;
 }
 
 function NavGroup({ label, expanded, onToggle }: { label: string; expanded: boolean; onToggle: () => void }) {
@@ -719,7 +721,7 @@ function PracticeNavItem({ path, icon, label, onNavigate }: {
     >
       <span
         className={`font-mono leading-none shrink-0 w-4 text-center ${icon.length > 2 ? 'text-[9px]' : 'text-base'}`}
-        style={{ color: isActive ? "var(--c-halogen)" : "#7b82a0" }}
+        style={{ color: isActive ? "var(--c-halogen)" : "rgb(var(--color-secondary))" }}
       >
         {icon}
       </span>
@@ -742,7 +744,7 @@ function TestNavItem({ onNavigate }: { onNavigate: () => void }) {
       style={{ width: "calc(100% - 16px)" }}
     >
       <span className="font-mono text-base leading-none shrink-0 w-4 text-center"
-        style={{ color: isActive ? "var(--c-halogen)" : "#7b82a0" }}>
+        style={{ color: isActive ? "var(--c-halogen)" : "rgb(var(--color-secondary))" }}>
         ✎
       </span>
       <span className="flex-1">Test Generator</span>
@@ -766,7 +768,7 @@ function ExpandableSection({ icon, label, isActive, expanded, onToggle, children
       >
         <span
           className={`font-mono leading-none shrink-0 w-4 text-center ${icon.length > 2 ? 'text-[9px]' : 'text-base'}`}
-          style={{ color: isActive ? "var(--c-halogen)" : "#7b82a0" }}
+          style={{ color: isActive ? "var(--c-halogen)" : "rgb(var(--color-secondary))" }}
         >
           {icon}
         </span>
@@ -794,7 +796,7 @@ function ExpandableSection({ icon, label, isActive, expanded, onToggle, children
 
 // ── Main sidebar ──────────────────────────────────────────────────────────────
 
-export default function NavSidebar({ open, onClose }: Props) {
+export default function NavSidebar({ open, onClose, theme, onToggleTheme }: Props) {
   const location = useLocation()
 
   const currentPath   = location.pathname
@@ -948,6 +950,17 @@ export default function NavSidebar({ open, onClose }: Props) {
               <PracticeNavItem path="/tools?tool=ketcher" icon="✎" label="Ketcher Editor" onNavigate={onClose} />
               <PracticeNavItem path="/compound" icon="◈" label="Compound" onNavigate={onClose} />
               <PracticeNavItem path="/reference?tab=naming" icon="Nm" label="Naming" onNavigate={onClose} />
+              <button
+                onClick={onToggleTheme}
+                title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                className="w-full flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px] transition-all duration-150 text-left text-secondary hover:text-primary"
+                style={{ width: 'calc(100% - 16px)' }}
+              >
+                <span className="font-mono text-base leading-none shrink-0 w-4 text-center" style={{ color: 'rgb(var(--color-secondary))' }}>
+                  {theme === 'dark' ? '☀' : '☾'}
+                </span>
+                <span className="flex-1">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+              </button>
             </motion.div>
           )}
         </AnimatePresence>

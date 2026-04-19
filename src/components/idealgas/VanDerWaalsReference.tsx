@@ -83,7 +83,7 @@ function ReferenceContent() {
       {/* Constants table */}
       <div className="flex flex-col gap-2">
         <SectionHead label="Van der Waals Constants" />
-        <div className="rounded-sm border border-border overflow-hidden" style={{ background: '#0e1016' }}>
+        <div className="rounded-sm border border-border overflow-hidden" style={{ background: 'rgb(var(--color-surface))' }}>
           <div className="grid grid-cols-[3rem_1fr_5rem_5rem] px-4 py-2 bg-raised border-b border-border">
             <span className="font-mono text-xs text-secondary uppercase tracking-widest">Gas</span>
             <span className="font-mono text-xs text-secondary uppercase tracking-widest">Name</span>
@@ -208,15 +208,15 @@ export default function VanDerWaalsReference() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex gap-1 p-1 rounded-sm self-start print:hidden"
-        style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+        style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
         {(['reference', 'examples'] as const).map(p => (
           <button key={p} onClick={() => setPill(p)}
             className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors capitalize"
-            style={{ color: pill === p ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
+            style={{ color: pill === p ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)' }}>
             {pill === p && (
               <motion.div layoutId="vdw-ref-pill" className="absolute inset-0 rounded-sm"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                   border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 32 }} />

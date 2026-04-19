@@ -42,11 +42,11 @@ function ModeCard({ active, onClick, title, sub }: { active: boolean; onClick: (
     <button onClick={onClick}
       className="flex flex-col items-start px-4 py-3 rounded-sm font-sans text-sm font-medium transition-colors text-left flex-1"
       style={active ? {
-        background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+        background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
         border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
         color: 'var(--c-halogen)',
       } : {
-        background: '#0e1016', border: '1px solid #1c1f2e', color: 'rgba(255,255,255,0.45)',
+        background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))', color: 'rgba(var(--overlay),0.45)',
       }}>
       <span className="font-semibold">{title}</span>
       <span className="font-mono text-[10px] mt-0.5 opacity-70">{sub}</span>
@@ -61,11 +61,11 @@ function UnitPills({ active, onChange }: { active: PUnit; onChange: (u: PUnit) =
         <button key={u} onClick={() => onChange(u)}
           className="px-2.5 py-0.5 rounded-sm font-mono text-xs transition-colors"
           style={active === u ? {
-            background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           } : {
-            background: '#0e1016', border: '1px solid #1c1f2e', color: 'rgba(255,255,255,0.4)',
+            background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))', color: 'rgba(var(--overlay),0.4)',
           }}>
           {u}
         </button>
@@ -271,11 +271,11 @@ export default function DaltonsLawCalc() {
               <button key={f} onClick={() => handleFracInputChange(f)}
                 className="px-3 py-1 rounded-sm font-sans text-xs font-medium transition-colors"
                 style={fracInput === f ? {
-                  background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                   border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                 } : {
-                  background: '#0e1016', border: '1px solid #1c1f2e', color: 'rgba(255,255,255,0.4)',
+                  background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))', color: 'rgba(var(--overlay),0.4)',
                 }}>
                 {f === 'chi' ? 'Mole fractions (χ)' : 'Moles (n)'}
               </button>
@@ -290,7 +290,7 @@ export default function DaltonsLawCalc() {
           <label className="font-sans text-sm font-medium text-primary">Gas components</label>
           <button onClick={addRow}
             className="flex items-center gap-1 px-2.5 py-1 rounded-sm font-mono text-xs transition-colors"
-            style={{ background: '#0e1016', border: '1px solid #1c1f2e', color: 'rgba(255,255,255,0.5)' }}>
+            style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))', color: 'rgba(var(--overlay),0.5)' }}>
             + Add gas
           </button>
         </div>
@@ -298,7 +298,7 @@ export default function DaltonsLawCalc() {
         <div className="rounded-sm border border-border overflow-hidden">
           {/* Header */}
           <div className="grid gap-2 px-3 py-2 border-b border-border"
-            style={{ background: '#0e1016', gridTemplateColumns: '1fr 1.4fr auto' }}>
+            style={{ background: 'rgb(var(--color-surface))', gridTemplateColumns: '1fr 1.4fr auto' }}>
             <span className="font-mono text-xs uppercase tracking-widest text-secondary">Label</span>
             <span className="font-mono text-xs uppercase tracking-widest text-secondary">
               {mode === 'partial' ? `Partial pressure (${unit})` : fracInput === 'chi' ? 'Mole fraction (χ)' : 'Moles (n)'}
@@ -383,7 +383,7 @@ export default function DaltonsLawCalc() {
         disabled={!canCalculate}
         className="w-full py-2.5 rounded-sm font-sans font-medium text-sm transition-all disabled:opacity-40"
         style={{
-          background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+          background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
           border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           color: 'var(--c-halogen)',
         }}
@@ -401,14 +401,14 @@ export default function DaltonsLawCalc() {
             <div
               className="flex flex-col gap-2 p-5 rounded-sm border"
               style={{
-                borderColor: verified === 'correct' ? 'color-mix(in srgb, #4ade80 45%, #1c1f2e)'
-                  : verified === 'sig_fig_warning' ? 'color-mix(in srgb, #facc15 45%, #1c1f2e)'
-                  : verified === 'incorrect'       ? 'color-mix(in srgb, #f87171 45%, #1c1f2e)'
-                  : 'color-mix(in srgb, var(--c-halogen) 35%, #1c1f2e)',
-                background: verified === 'correct' ? 'color-mix(in srgb, #4ade80 6%, #0e1016)'
-                  : verified === 'sig_fig_warning' ? 'color-mix(in srgb, #facc15 5%, #0e1016)'
-                  : verified === 'incorrect'       ? 'color-mix(in srgb, #f87171 6%, #0e1016)'
-                  : 'color-mix(in srgb, var(--c-halogen) 6%, #0e1016)',
+                borderColor: verified === 'correct' ? 'color-mix(in srgb, #4ade80 45%, rgb(var(--color-border)))'
+                  : verified === 'sig_fig_warning' ? 'color-mix(in srgb, #facc15 45%, rgb(var(--color-border)))'
+                  : verified === 'incorrect'       ? 'color-mix(in srgb, #f87171 45%, rgb(var(--color-border)))'
+                  : 'color-mix(in srgb, var(--c-halogen) 35%, rgb(var(--color-border)))',
+                background: verified === 'correct' ? 'color-mix(in srgb, #4ade80 6%, rgb(var(--color-surface)))'
+                  : verified === 'sig_fig_warning' ? 'color-mix(in srgb, #facc15 5%, rgb(var(--color-surface)))'
+                  : verified === 'incorrect'       ? 'color-mix(in srgb, #f87171 6%, rgb(var(--color-surface)))'
+                  : 'color-mix(in srgb, var(--c-halogen) 6%, rgb(var(--color-surface)))',
               }}
             >
               <span className="font-sans text-sm font-medium text-secondary">Total Pressure (P_total)</span>
@@ -437,9 +437,9 @@ export default function DaltonsLawCalc() {
           {/* Mode 2: per-gas partial pressures table */}
           {mode === 'fraction' && partialResults.length > 0 && (
             <div className="rounded-sm border border-border overflow-hidden"
-              style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 35%, #1c1f2e)' }}>
+              style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 35%, rgb(var(--color-border)))' }}>
               <div className="grid gap-3 px-4 py-2 border-b border-border"
-                style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, #0e1016)', gridTemplateColumns: '1fr auto auto' }}>
+                style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, rgb(var(--color-surface)))', gridTemplateColumns: '1fr auto auto' }}>
                 <span className="font-sans text-sm font-medium text-secondary">Gas</span>
                 <span className="font-sans text-sm font-medium text-secondary text-right">Mole fraction (χ)</span>
                 <span className="font-sans text-sm font-medium text-secondary text-right">Partial pressure</span>

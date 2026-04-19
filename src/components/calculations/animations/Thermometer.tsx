@@ -69,8 +69,8 @@ export default function Thermometer({
       >
         <defs>
           <linearGradient id="therm-grad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="rgba(255,255,255,0.09)" />
-            <stop offset="50%" stopColor="rgba(255,255,255,0.02)" />
+            <stop offset="0%" stopColor="rgba(var(--overlay),0.09)" />
+            <stop offset="50%" stopColor="rgba(var(--overlay),0.02)" />
             <stop offset="100%" stopColor="rgba(0,0,0,0.18)" />
           </linearGradient>
           <clipPath id="stem-clip">
@@ -96,7 +96,7 @@ export default function Thermometer({
           height={stemH}
           rx={stemW}
           fill="#141825"
-          stroke="#2a2d3d"
+          stroke="rgb(var(--color-muted))"
           strokeWidth="1.2"
         />
 
@@ -118,7 +118,7 @@ export default function Thermometer({
           height={stemH}
           rx={stemW}
           fill="url(#therm-grad)"
-          stroke="#2a2d3d"
+          stroke="rgb(var(--color-muted))"
           strokeWidth="1.2"
         />
 
@@ -128,14 +128,14 @@ export default function Thermometer({
           cy={bulbCY}
           r={bulbR}
           fill={temperature != null ? bulbColor : "#141825"}
-          stroke="#2a2d3d"
+          stroke="rgb(var(--color-muted))"
           strokeWidth="1.4"
         />
         <circle
           cx={bulbCX - 6}
           cy={bulbCY - 6}
           r={6}
-          fill="rgba(255,255,255,0.13)"
+          fill="rgba(var(--overlay),0.13)"
         />
 
         {/* Tick marks — on the RIGHT of the stem, suppress label near mercury top */}
@@ -157,8 +157,8 @@ export default function Thermometer({
                 y2={y}
                 stroke={
                   isPure || isNew
-                    ? "rgba(255,255,255,0.45)"
-                    : "rgba(255,255,255,0.22)"
+                    ? "rgba(var(--overlay),0.45)"
+                    : "rgba(var(--overlay),0.22)"
                 }
                 strokeWidth={isPure || isNew ? 1.2 : 0.8}
               />
@@ -170,8 +170,8 @@ export default function Thermometer({
                   fontSize="8"
                   fill={
                     isPure || isNew
-                      ? "rgba(255,255,255,0.45)"
-                      : "rgba(255,255,255,0.25)"
+                      ? "rgba(var(--overlay),0.45)"
+                      : "rgba(var(--overlay),0.25)"
                   }
                 >
                   {t}°

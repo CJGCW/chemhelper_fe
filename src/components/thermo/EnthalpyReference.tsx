@@ -172,7 +172,7 @@ export default function EnthalpyReference() {
                 <span className="font-mono text-sm font-semibold text-bright">{e.formula}</span>
                 <span className="font-sans text-sm text-primary">{e.name}</span>
                 <span className="font-mono text-sm text-secondary">({e.state})</span>
-                <span className="font-mono text-sm text-right" style={{ color: e.dhf === 0 ? 'rgba(255,255,255,0.35)' : e.dhf < 0 ? '#34d399' : '#f87171' }}>
+                <span className="font-mono text-sm text-right" style={{ color: e.dhf === 0 ? 'rgba(var(--overlay),0.35)' : e.dhf < 0 ? '#34d399' : '#f87171' }}>
                   {e.dhf === 0 ? '0' : e.dhf}
                 </span>
               </div>
@@ -205,7 +205,7 @@ export default function EnthalpyReference() {
                           <span className="font-sans text-sm text-primary">{e.name}</span>
                           <span className="font-mono text-sm text-secondary">({e.state})</span>
                           <span className="font-mono text-sm text-right"
-                            style={{ color: e.dhf === 0 ? 'rgba(255,255,255,0.35)' : e.dhf < 0 ? '#34d399' : '#f87171' }}>
+                            style={{ color: e.dhf === 0 ? 'rgba(var(--overlay),0.35)' : e.dhf < 0 ? '#34d399' : '#f87171' }}>
                             {e.dhf === 0 ? '0' : e.dhf}
                           </span>
                         </div>

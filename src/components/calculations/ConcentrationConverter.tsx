@@ -59,8 +59,8 @@ function ResultRow({ label, value, unit, accentColor, note }: ResultRowProps) {
     <div
       className="flex items-center justify-between rounded-sm px-4 py-3 border"
       style={{
-        background: `color-mix(in srgb, ${accentColor} 5%, #0e1016)`,
-        borderColor: `color-mix(in srgb, ${accentColor} 25%, #1c1f2e)`,
+        background: `color-mix(in srgb, ${accentColor} 5%, rgb(var(--color-surface)))`,
+        borderColor: `color-mix(in srgb, ${accentColor} 25%, rgb(var(--color-border)))`,
       }}
     >
       <div className="flex flex-col gap-0.5">
@@ -224,7 +224,7 @@ export default function ConcentrationConverter() {
           <label className="font-sans text-sm font-medium text-secondary text-xs">Solvent</label>
           <div
             className="font-mono text-xs text-secondary px-3 py-2 rounded-sm border border-border"
-            style={{ background: '#0e1016' }}
+            style={{ background: 'rgb(var(--color-surface))' }}
           >
             Water, 18.015 g/mol
           </div>
@@ -236,7 +236,7 @@ export default function ConcentrationConverter() {
           onClick={convert}
           className="w-full py-2.5 rounded-sm font-sans font-medium text-sm transition-all"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           }}

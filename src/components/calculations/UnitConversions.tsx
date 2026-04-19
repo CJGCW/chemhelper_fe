@@ -87,7 +87,7 @@ function ConverterCard({
   const outputUnits = unitKeys.filter(u => u !== fromUnit)
 
   return (
-    <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+    <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <p className="font-mono text-xs tracking-widest text-secondary uppercase">{title}</p>
@@ -250,10 +250,10 @@ export default function UnitConversions({ tab = 'converter' }: { tab?: ConvTab }
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
 
           {/* Mass */}
-          <div className="rounded-sm border border-border overflow-hidden" style={{ background: '#0e1016' }}>
+          <div className="rounded-sm border border-border overflow-hidden" style={{ background: 'rgb(var(--color-surface))' }}>
             <table className="w-full border-collapse">
               <thead>
-                <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
+                <tr style={{ background: 'rgba(var(--overlay),0.03)' }}>
                   <TH>Unit</TH><TH>Symbol</TH><TH>Equivalent</TH>
                 </tr>
               </thead>
@@ -270,10 +270,10 @@ export default function UnitConversions({ tab = 'converter' }: { tab?: ConvTab }
           </div>
 
           {/* Volume */}
-          <div className="rounded-sm border border-border overflow-hidden" style={{ background: '#0e1016' }}>
+          <div className="rounded-sm border border-border overflow-hidden" style={{ background: 'rgb(var(--color-surface))' }}>
             <table className="w-full border-collapse">
               <thead>
-                <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
+                <tr style={{ background: 'rgba(var(--overlay),0.03)' }}>
                   <TH>Unit</TH><TH>Symbol</TH><TH>Equivalent</TH>
                 </tr>
               </thead>
@@ -290,10 +290,10 @@ export default function UnitConversions({ tab = 'converter' }: { tab?: ConvTab }
           </div>
 
           {/* Temperature */}
-          <div className="rounded-sm border border-border overflow-hidden" style={{ background: '#0e1016' }}>
+          <div className="rounded-sm border border-border overflow-hidden" style={{ background: 'rgb(var(--color-surface))' }}>
             <table className="w-full border-collapse">
               <thead>
-                <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
+                <tr style={{ background: 'rgba(var(--overlay),0.03)' }}>
                   <TH>From</TH><TH>To</TH><TH>Formula</TH>
                 </tr>
               </thead>
@@ -316,10 +316,10 @@ export default function UnitConversions({ tab = 'converter' }: { tab?: ConvTab }
       <div className="flex flex-col gap-4">
         <p className="font-mono text-xs tracking-widest text-secondary uppercase">Metric Prefixes</p>
 
-        <div className="rounded-sm border border-border overflow-hidden" style={{ background: '#0e1016' }}>
+        <div className="rounded-sm border border-border overflow-hidden" style={{ background: 'rgb(var(--color-surface))' }}>
           <table className="w-full border-collapse">
             <thead>
-              <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
+              <tr style={{ background: 'rgba(var(--overlay),0.03)' }}>
                 <TH>Prefix</TH>
                 <TH>Symbol</TH>
                 <TH>Power</TH>

@@ -137,7 +137,7 @@ export default function SolidTypesReference() {
           <div key={t.id} className="rounded-sm border border-border bg-surface overflow-hidden">
             {/* Header */}
             <div className="px-4 py-3 border-b border-border"
-              style={{ background: `color-mix(in srgb, ${t.color} 8%, #141620)` }}>
+              style={{ background: `color-mix(in srgb, ${t.color} 8%, rgb(var(--color-raised)))` }}>
               <span className="font-sans text-base font-semibold" style={{ color: t.color }}>
                 {t.name} Solid
               </span>
@@ -171,7 +171,7 @@ export default function SolidTypesReference() {
                     className="font-mono text-[10px] px-2 py-0.5 rounded-sm border border-border"
                     style={{
                       color: t.color,
-                      background: `color-mix(in srgb, ${t.color} 6%, #0e1016)`,
+                      background: `color-mix(in srgb, ${t.color} 6%, rgb(var(--color-surface)))`,
                       borderColor: `color-mix(in srgb, ${t.color} 20%, transparent)`,
                     }}>
                     {e.formula}

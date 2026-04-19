@@ -11,15 +11,15 @@ export default function SolutionStoichTab() {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center gap-1 p-1 rounded-sm self-start"
-        style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+        style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
         {(['reference', 'practice'] as Mode[]).map(m => (
           <button key={m} onClick={() => setMode(m)}
             className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors capitalize"
-            style={{ color: mode === m ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
+            style={{ color: mode === m ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)' }}>
             {mode === m && (
               <motion.div layoutId="sol-stoich-mode" className="absolute inset-0 rounded-sm"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                   border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 32 }} />

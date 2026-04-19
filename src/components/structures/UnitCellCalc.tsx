@@ -85,7 +85,7 @@ const CLR_CORNER = '#60a5fa'; const CLR_BODY = '#fb923c'; const CLR_FACE = '#34d
 
 function seg(a: readonly [number,number], b: readonly [number,number], hidden = false) {
   return <line x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]}
-    stroke="rgba(255,255,255,0.22)" strokeWidth={hidden ? 0.7 : 1.1}
+    stroke="rgba(var(--overlay),0.22)" strokeWidth={hidden ? 0.7 : 1.1}
     strokeDasharray={hidden ? '2,2' : undefined} />
 }
 function dot(p: readonly [number,number], r: number, fill: string, opacity = 1) {
@@ -227,7 +227,7 @@ function renderCanvas(
     const d  = (pa.depth+pb.depth)/2
     const alpha = 0.12 + 0.22*Math.max(0,Math.min(1,1-d/(cells*0.7)))
     ctx.beginPath(); ctx.moveTo(pa.sx,pa.sy); ctx.lineTo(pb.sx,pb.sy)
-    ctx.strokeStyle = `rgba(255,255,255,${alpha.toFixed(3)})`
+    ctx.strokeStyle = `rgba(var(--overlay),${alpha.toFixed(3)})`
     ctx.lineWidth = 1; ctx.stroke()
   }
 
@@ -321,7 +321,7 @@ function CrystalCanvas({ structureId }: { structureId: StructureId }) {
   return (
     <div className="flex flex-col gap-3">
       <div className="relative rounded-sm border border-border overflow-hidden"
-        style={{ background: '#080b12' }}>
+        style={{ background: 'rgb(var(--color-base))' }}>
         <canvas
           ref={canvasRef}
           style={{ width:'100%', height:'340px', cursor:'grab', display:'block' }}
@@ -345,15 +345,15 @@ function CrystalCanvas({ structureId }: { structureId: StructureId }) {
       {/* Supercell selector */}
       <div className="flex items-center gap-2">
         <span className="font-mono text-xs text-secondary tracking-widest uppercase">Supercell</span>
-        <div className="flex gap-1 p-1 rounded-sm" style={{ background:'#0e1016', border:'1px solid #1c1f2e' }}>
+        <div className="flex gap-1 p-1 rounded-sm" style={{ background:'rgb(var(--color-surface))', border:'1px solid rgb(var(--color-border))' }}>
           {([1,2,3] as const).map(n => {
             const active = cells === n
             return (
               <button key={n} onClick={() => setCells(n)}
                 className="relative px-3.5 py-1 rounded-sm font-mono text-xs transition-colors"
-                style={{ color: active ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)' }}>
+                style={{ color: active ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)' }}>
                 {active && <span className="absolute inset-0 rounded-sm" style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                   border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                 }} />}
                 <span className="relative z-10">{n}×{n}×{n}</span>
@@ -427,9 +427,9 @@ export default function UnitCellCalc() {
               <button key={id} onClick={() => setStructureId(id)}
                 className="flex flex-col items-center gap-2 px-5 py-3 rounded-sm border transition-colors"
                 style={{
-                  borderColor: active ? 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '#1c1f2e',
-                  background:  active ? 'color-mix(in srgb, var(--c-halogen) 8%, #141620)' : '#0e1016',
-                  color: active ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)',
+                  borderColor: active ? 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' : 'rgb(var(--color-border))',
+                  background:  active ? 'color-mix(in srgb, var(--c-halogen) 8%, rgb(var(--color-raised)))' : 'rgb(var(--color-surface))',
+                  color: active ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
                 }}>
                 <UnitCellSVG id={id} />
                 <span className="font-mono text-sm font-bold">{id.toUpperCase()}</span>
@@ -456,9 +456,9 @@ export default function UnitCellCalc() {
               <button key={u} onClick={() => switchUnit(u)}
                 className="px-3 py-1.5 rounded-sm font-mono text-xs border transition-colors"
                 style={{
-                  borderColor: edgeUnit===u ? 'color-mix(in srgb, var(--c-halogen) 35%, transparent)' : '#1c1f2e',
-                  background:  edgeUnit===u ? 'color-mix(in srgb, var(--c-halogen) 10%, #0e1016)' : '#0e1016',
-                  color: edgeUnit===u ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)',
+                  borderColor: edgeUnit===u ? 'color-mix(in srgb, var(--c-halogen) 35%, transparent)' : 'rgb(var(--color-border))',
+                  background:  edgeUnit===u ? 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-surface)))' : 'rgb(var(--color-surface))',
+                  color: edgeUnit===u ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
                 }}>{u}</button>
             ))}
           </div>
@@ -582,9 +582,9 @@ export default function UnitCellCalc() {
         <button onClick={() => setShow3D(v=>!v)}
           className="self-start flex items-center gap-2 px-4 py-2 rounded-sm border transition-colors font-mono text-sm"
           style={{
-            borderColor: show3D ? 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '#1c1f2e',
-            background:  show3D ? 'color-mix(in srgb, var(--c-halogen) 8%, #141620)' : '#0e1016',
-            color: show3D ? 'var(--c-halogen)' : 'rgba(255,255,255,0.5)',
+            borderColor: show3D ? 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' : 'rgb(var(--color-border))',
+            background:  show3D ? 'color-mix(in srgb, var(--c-halogen) 8%, rgb(var(--color-raised)))' : 'rgb(var(--color-surface))',
+            color: show3D ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.5)',
           }}>
           <span>{show3D ? '▾' : '▸'}</span>
           <span>3D View</span>

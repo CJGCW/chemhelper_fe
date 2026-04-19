@@ -73,12 +73,12 @@ function formatCharge(c: number): string {
 
 function ionColor(charge: number): { bg: string; border: string; label: string } {
   if (charge < 0) return {
-    bg:     'color-mix(in srgb, #38bdf8 14%, #0e1016)',
+    bg:     'color-mix(in srgb, #38bdf8 14%, rgb(var(--color-surface)))',
     border: 'color-mix(in srgb, #38bdf8 40%, transparent)',
     label:  '#38bdf8',
   }
   return {
-    bg:     'color-mix(in srgb, #fb923c 14%, #0e1016)',
+    bg:     'color-mix(in srgb, #fb923c 14%, rgb(var(--color-surface)))',
     border: 'color-mix(in srgb, #fb923c 40%, transparent)',
     label:  '#fb923c',
   }
@@ -114,13 +114,13 @@ export default function IsoelectronicSeries() {
           <button key={s.electrons} onClick={() => setSeriesIdx(i)}
             className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
             style={seriesIdx === i ? {
-              background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
               border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
             } : {
-              background: '#0e1016',
-              border: '1px solid #1c1f2e',
-              color: 'rgba(255,255,255,0.4)',
+              background: 'rgb(var(--color-surface))',
+              border: '1px solid rgb(var(--color-border))',
+              color: 'rgba(var(--overlay),0.4)',
             }}>
             {s.label}
           </button>
@@ -200,7 +200,7 @@ export default function IsoelectronicSeries() {
                   return (
                     <tr key={ion.symbol}
                       className="border-b border-border/50 last:border-0"
-                      style={{ background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)' }}>
+                      style={{ background: i % 2 === 0 ? 'transparent' : 'rgba(var(--overlay),0.02)' }}>
                       <td className="px-3 py-2 font-semibold" style={{ color: colors.label }}>
                         {ion.symbol}{formatCharge(ion.charge)}
                       </td>

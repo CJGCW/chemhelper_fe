@@ -59,13 +59,13 @@ export default function SolutionStoichPractice() {
             <button key={f.id} onClick={() => handleFilter(f.id)}
               className="flex flex-col items-center px-3 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
               style={isActive ? {
-                background: 'color-mix(in srgb, var(--c-halogen) 14%, #141620)',
+                background: 'color-mix(in srgb, var(--c-halogen) 14%, rgb(var(--color-raised)))',
                 border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               } : {
-                background: '#0e1016',
-                border: '1px solid #1c1f2e',
-                color: 'rgba(255,255,255,0.4)',
+                background: 'rgb(var(--color-surface))',
+                border: '1px solid rgb(var(--color-border))',
+                color: 'rgba(var(--overlay),0.4)',
               }}>
               <span>{f.label}</span>
               <span className="font-mono text-[9px] opacity-60">{f.subtitle}</span>
@@ -124,7 +124,7 @@ export default function SolutionStoichPractice() {
               className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors
                          disabled:opacity-30 disabled:cursor-not-allowed"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 15%, #141620)',
+                background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
                 border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
                 color: 'var(--c-halogen)',
               }}>

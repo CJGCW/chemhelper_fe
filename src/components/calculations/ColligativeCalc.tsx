@@ -255,10 +255,10 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
             style={{
               background:
                 mode === m
-                  ? "color-mix(in srgb, var(--c-halogen) 15%, #141620)"
-                  : "#0e1016",
-              color: mode === m ? "var(--c-halogen)" : "rgba(255,255,255,0.4)",
-              borderRight: m === "bpe" ? "1px solid #1c1f2e" : "none",
+                  ? "color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))"
+                  : "rgb(var(--color-surface))",
+              color: mode === m ? "var(--c-halogen)" : "rgba(var(--overlay),0.4)",
+              borderRight: m === "bpe" ? "1px solid rgb(var(--color-border))" : "none",
             }}
           >
             {m === "bpe"
@@ -293,16 +293,16 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
               style={{
                 background:
                   solvent.name === s.name
-                    ? "color-mix(in srgb, var(--c-halogen) 14%, #141620)"
-                    : "#0e1016",
+                    ? "color-mix(in srgb, var(--c-halogen) 14%, rgb(var(--color-raised)))"
+                    : "rgb(var(--color-surface))",
                 borderColor:
                   solvent.name === s.name
                     ? "color-mix(in srgb, var(--c-halogen) 40%, transparent)"
-                    : "#1c1f2e",
+                    : "rgb(var(--color-border))",
                 color:
                   solvent.name === s.name
                     ? "var(--c-halogen)"
-                    : "rgba(255,255,255,0.45)",
+                    : "rgba(var(--overlay),0.45)",
               }}
             >
               {s.name}
@@ -322,7 +322,7 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
           style={{
             color: solventMassValue
               ? "var(--c-halogen)"
-              : "rgba(255,255,255,0.4)",
+              : "rgba(var(--overlay),0.4)",
           }}
         >
           <motion.span
@@ -350,9 +350,9 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
                 className="flex flex-col gap-3 p-3 rounded-sm border"
                 style={{
                   borderColor:
-                    "color-mix(in srgb, var(--c-halogen) 20%, #1c1f2e)",
+                    "color-mix(in srgb, var(--c-halogen) 20%, rgb(var(--color-border)))",
                   background:
-                    "color-mix(in srgb, var(--c-halogen) 4%, #0e1016)",
+                    "color-mix(in srgb, var(--c-halogen) 4%, rgb(var(--color-surface)))",
                 }}
               >
                 <p className="font-mono text-xs text-secondary">
@@ -382,7 +382,7 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
                       onChange={e => { setHelperMolesValue(sanitize(e.target.value)); setHelperMolesFromMass(false); }}
                       placeholder="e.g. 0.500"
                       className="flex-1 font-mono text-sm bg-surface border border-border rounded-sm px-3 py-2 text-primary placeholder-dim focus:outline-none focus:border-accent/40 transition-colors"
-                      style={helperMolesFromMass ? { borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, #1c1f2e)', background: 'color-mix(in srgb, var(--c-halogen) 5%, #141620)' } : undefined}
+                      style={helperMolesFromMass ? { borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, rgb(var(--color-border)))', background: 'color-mix(in srgb, var(--c-halogen) 5%, rgb(var(--color-raised)))' } : undefined}
                     />
                     <span className="font-mono text-sm text-secondary px-2 flex items-center">mol</span>
                   </div>
@@ -394,7 +394,7 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
                   disabled={!hasValue(helperMolesValue) || !hasValue(solventMassValue)}
                   className="w-full py-2 rounded-sm font-sans font-medium text-sm transition-all disabled:opacity-40"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 14%, #0e1016)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 14%, rgb(var(--color-surface)))',
                     border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
                     color: 'var(--c-halogen)',
                   }}
@@ -423,9 +423,9 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
                 className="flex items-center justify-between gap-3 px-3 py-2 rounded-sm border mt-1"
                 style={{
                   borderColor:
-                    "color-mix(in srgb, var(--c-halogen) 30%, #1c1f2e)",
+                    "color-mix(in srgb, var(--c-halogen) 30%, rgb(var(--color-border)))",
                   background:
-                    "color-mix(in srgb, var(--c-halogen) 5%, #0e1016)",
+                    "color-mix(in srgb, var(--c-halogen) 5%, rgb(var(--color-surface)))",
                 }}
               >
                 <div className="flex flex-col gap-0.5">
@@ -448,7 +448,7 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
                     className="px-2.5 py-1 rounded-sm font-sans font-medium text-xs transition-colors"
                     style={{
                       background:
-                        "color-mix(in srgb, var(--c-halogen) 18%, #0e1016)",
+                        "color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))",
                       border:
                         "1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)",
                       color: "var(--c-halogen)",
@@ -516,7 +516,7 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
         onClick={calculate}
         className="w-full py-2.5 rounded-sm font-sans font-medium text-sm transition-all mt-auto"
         style={{
-          background: "color-mix(in srgb, var(--c-halogen) 18%, #0e1016)",
+          background: "color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))",
           border:
             "1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)",
           color: "var(--c-halogen)",
@@ -552,9 +552,9 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
                 className="flex flex-col gap-1.5 p-4 rounded-sm border"
                 style={{
                   borderColor:
-                    "color-mix(in srgb, var(--c-halogen) 25%, #1c1f2e)",
+                    "color-mix(in srgb, var(--c-halogen) 25%, rgb(var(--color-border)))",
                   background:
-                    "color-mix(in srgb, var(--c-halogen) 4%, #0e1016)",
+                    "color-mix(in srgb, var(--c-halogen) 4%, rgb(var(--color-surface)))",
                 }}
               >
                 <span className="font-sans text-sm font-medium text-secondary">

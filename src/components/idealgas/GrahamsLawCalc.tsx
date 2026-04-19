@@ -191,18 +191,18 @@ export default function GrahamsLawCalc() {
       {/* Mode toggle */}
       <div className="flex items-center gap-3 flex-wrap">
         <div className="flex gap-1 p-1 rounded-sm self-start"
-          style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+          style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
           {([
             { id: 'rate', label: 'Effusion Rates' },
             { id: 'time', label: 'Effusion Times'  },
           ] as const).map(m => (
             <button key={m.id} onClick={() => handleModeChange(m.id)}
               className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
-              style={{ color: inputMode === m.id ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
+              style={{ color: inputMode === m.id ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)' }}>
               {inputMode === m.id && (
                 <motion.div layoutId="grahams-mode-pill" className="absolute inset-0 rounded-sm"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                     border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                   }}
                   transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
@@ -269,7 +269,7 @@ export default function GrahamsLawCalc() {
         <button onClick={handleCalc}
           className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
             color: 'var(--c-halogen)',
           }}>Calculate →</button>

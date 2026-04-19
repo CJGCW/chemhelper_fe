@@ -276,11 +276,11 @@ export default function ParaDiaMagnetic() {
               style={{
                 borderColor: charge === c
                   ? 'color-mix(in srgb, var(--c-halogen) 60%, transparent)'
-                  : '#1c1f2e',
+                  : 'rgb(var(--color-border))',
                 background: charge === c
-                  ? 'color-mix(in srgb, var(--c-halogen) 12%, #141620)'
-                  : '#0e1016',
-                color: charge === c ? 'var(--c-halogen)' : 'rgba(255,255,255,0.45)',
+                  ? 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))'
+                  : 'rgb(var(--color-surface))',
+                color: charge === c ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.45)',
               }}>
               {c === 0 ? '0' : c > 0 ? `+${c}` : c}
             </button>

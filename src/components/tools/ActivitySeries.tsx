@@ -168,14 +168,14 @@ const WATER_RXN_META: Record<WaterRxn, { label: string; color: string }> = {
 }
 
 function metalColor(metal: ActivityMetal, selected: ActivityMetal | null): string {
-  if (!selected) return 'rgba(255,255,255,0.72)'
+  if (!selected) return 'rgba(var(--overlay),0.72)'
   if (metal.symbol === selected.symbol) return 'var(--c-halogen)'
   if (metal.rank < selected.rank) return '#fbbf24'   // amber  — more active, can displace selected
   return '#4ade80'                                    // green  — less active, selected can displace this
 }
 
 function halogenColor(h: ActivityHalogen, selected: ActivityHalogen | null): string {
-  if (!selected) return 'rgba(255,255,255,0.72)'
+  if (!selected) return 'rgba(var(--overlay),0.72)'
   if (h.formula === selected.formula) return 'var(--c-halogen)'
   if (h.rank < selected.rank) return '#fbbf24'
   return '#4ade80'
@@ -197,7 +197,7 @@ function MetalRow({ metal, selected, onClick }: {
       onClick={onClick}
       className="w-full flex items-center gap-3 px-3 py-2 rounded-sm text-left transition-colors group"
       style={isSelected ? {
-        background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+        background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
         border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
       } : {
         border: '1px solid transparent',
@@ -239,7 +239,7 @@ function HalogenRow({ halogen, selected, onClick }: {
       onClick={onClick}
       className="w-full flex items-center gap-3 px-3 py-2 rounded-sm text-left transition-colors"
       style={isSelected ? {
-        background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+        background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
         border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
       } : {
         border: '1px solid transparent',

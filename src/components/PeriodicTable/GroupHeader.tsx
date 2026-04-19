@@ -32,7 +32,7 @@ export default function GroupHeader({ groupNumber }: Props) {
         className="font-sans font-medium leading-none select-none cursor-default transition-colors duration-100"
         style={{
           fontSize: 'clamp(9px, 0.85vw, 13px)',
-          color: tooltipVisible ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)',
+          color: tooltipVisible ? 'rgba(var(--overlay),0.9)' : 'rgba(var(--overlay),0.4)',
         }}
       >
         {groupNumber}
@@ -65,8 +65,8 @@ export default function GroupHeader({ groupNumber }: Props) {
             <div
               className="rounded-sm border p-3 shadow-xl"
               style={{
-                background: '#141620',
-                borderColor: 'rgba(255,255,255,0.12)',
+                background: 'rgb(var(--color-raised))',
+                borderColor: 'rgba(var(--overlay),0.12)',
                 boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
               }}
             >
@@ -88,7 +88,7 @@ export default function GroupHeader({ groupNumber }: Props) {
               {/* Description */}
               <p
                 className="font-sans text-[11px] leading-relaxed"
-                style={{ color: 'rgba(255,255,255,0.5)' }}
+                style={{ color: 'rgba(var(--overlay),0.5)' }}
               >
                 {info.description}
               </p>

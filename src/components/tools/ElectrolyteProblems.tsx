@@ -51,7 +51,7 @@ export default function ElectrolyteProblems() {
           className="rounded-sm border border-border bg-surface overflow-hidden"
         >
           <div className="px-4 py-3 border-b border-border"
-            style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, #141620)' }}>
+            style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, rgb(var(--color-raised)))' }}>
             <span className="font-mono text-xs text-secondary tracking-widest uppercase">Classify the electrolyte</span>
           </div>
           <div className="px-4 py-4 flex flex-col gap-1">
@@ -72,10 +72,10 @@ export default function ElectrolyteProblems() {
                 <button key={opt} onClick={() => choose(opt)} disabled={answered}
                   className="px-3 py-2.5 rounded-sm border font-sans text-sm text-left transition-all"
                   style={{
-                    color: showCorrect ? '#34d399' : showWrong ? '#f87171' : 'rgba(255,255,255,0.65)',
-                    borderColor: showCorrect ? '#34d39960' : showWrong ? '#f8717160' : '#1c1f2e',
-                    background: showCorrect ? 'color-mix(in srgb, #34d399 8%, #0e1016)'
-                      : showWrong ? 'color-mix(in srgb, #f87171 8%, #0e1016)' : '#141620',
+                    color: showCorrect ? '#34d399' : showWrong ? '#f87171' : 'rgba(var(--overlay),0.65)',
+                    borderColor: showCorrect ? '#34d39960' : showWrong ? '#f8717160' : 'rgb(var(--color-border))',
+                    background: showCorrect ? 'color-mix(in srgb, #34d399 8%, rgb(var(--color-surface)))'
+                      : showWrong ? 'color-mix(in srgb, #f87171 8%, rgb(var(--color-surface)))' : 'rgb(var(--color-raised))',
                   }}>
                   <span className="inline-block w-2 h-2 rounded-full mr-2.5 shrink-0"
                     style={{ background: color, opacity: answered ? (showCorrect || showWrong ? 1 : 0.3) : 1 }} />
@@ -104,7 +104,7 @@ export default function ElectrolyteProblems() {
                   <button onClick={next}
                     className="self-start mt-1 px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-all"
                     style={{
-                      background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+                      background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
                       border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                       color: 'var(--c-halogen)',
                     }}>

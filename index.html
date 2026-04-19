@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ChemHelper</title>
-    <meta name="color-scheme" content="dark" />
+    <meta name="color-scheme" content="dark light" />
     <meta name="theme-color" content="#0e1016" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -13,6 +13,14 @@
       rel="stylesheet"
     />
   </head>
+  <script>
+    (function () {
+      var t = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+      var tc = t === 'dark' ? '#0e1016' : '#f0f2f7';
+      document.querySelector('meta[name="theme-color"]') && document.querySelector('meta[name="theme-color"]').setAttribute('content', tc);
+    })();
+  </script>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>

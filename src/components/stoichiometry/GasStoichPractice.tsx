@@ -59,13 +59,13 @@ export default function GasStoichPractice() {
             <button key={f.value} onClick={() => handleFilter(f.value)}
               className="flex flex-col items-start px-3 py-1.5 rounded-sm font-sans text-xs font-medium transition-colors"
               style={filter === f.value ? {
-                background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                 border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               } : {
-                background: '#0e1016',
-                border: '1px solid #1c1f2e',
-                color: 'rgba(255,255,255,0.4)',
+                background: 'rgb(var(--color-surface))',
+                border: '1px solid rgb(var(--color-border))',
+                color: 'rgba(var(--overlay),0.4)',
               }}>
               <span>{f.label}</span>
               <span className="font-mono text-[9px] opacity-60 mt-0.5">{f.sub}</span>
@@ -97,7 +97,7 @@ export default function GasStoichPractice() {
           <div className="flex items-center gap-2">
             <span className="font-mono text-[9px] px-1.5 py-0.5 rounded-sm"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 12%, #0e1016)',
+                background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-surface)))',
                 color: 'var(--c-halogen)',
                 border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
               }}>
@@ -127,7 +127,7 @@ export default function GasStoichPractice() {
                 className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors
                            disabled:opacity-30 disabled:cursor-not-allowed"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                   border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                 }}>
@@ -182,7 +182,7 @@ export default function GasStoichPractice() {
                   <button onClick={() => newProblem()}
                     className="self-start px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
                     style={{
-                      background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+                      background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                       border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                       color: 'var(--c-halogen)',
                     }}>

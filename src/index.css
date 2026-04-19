@@ -5,8 +5,26 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Theme: dark (default) ───────────────────────────────────────────────────── */
+
 :root {
-  /* Group colors */
+  /* Color channels — used as rgb(var(--color-*)) or rgb(var(--color-*) / alpha) */
+  --color-base:        8 9 13;
+  --color-surface:     14 16 22;
+  --color-raised:      20 22 32;
+  --color-border:      28 31 46;
+  --color-muted:       42 45 61;
+  --color-dim:         74 79 106;
+  --color-secondary:   123 130 160;
+  --color-primary:     200 205 216;
+  --color-bright:      238 240 246;
+  --color-accent:      79 255 200;
+  --color-accent-dim:  26 107 85;
+
+  /* rgba overlay — use as rgba(var(--overlay), 0.07) etc. */
+  --overlay: 255, 255, 255;
+
+  /* Element group colors */
   --c-hydrogen:        #94a3b8;
   --c-alkali:          #f87171;
   --c-alkaline:        #fb923c;
@@ -23,6 +41,42 @@
   --c-unknown:         #475569;
 }
 
+/* ── Theme: light ────────────────────────────────────────────────────────────── */
+
+[data-theme="light"] {
+  --color-base:        240 242 247;
+  --color-surface:     255 255 255;
+  --color-raised:      248 249 252;
+  --color-border:      221 225 239;
+  --color-muted:       200 205 216;
+  --color-dim:         136 146 171;
+  --color-secondary:   94 102 129;
+  --color-primary:     30 34 53;
+  --color-bright:      10 13 24;
+  --color-accent:      13 148 136;
+  --color-accent-dim:  186 230 253;
+
+  --overlay: 0, 0, 0;
+
+  /* Darker element group colors for light backgrounds */
+  --c-hydrogen:        #64748b;
+  --c-alkali:          #dc2626;
+  --c-alkaline:        #ea580c;
+  --c-transition:      #ca8a04;
+  --c-post-transition: #65a30d;
+  --c-metalloid:       #0d9488;
+  --c-carbon:          #16a34a;
+  --c-pnictogen:       #059669;
+  --c-chalcogen:       #0284c7;
+  --c-halogen:         #2563eb;
+  --c-noble:           #7c3aed;
+  --c-lanthanide:      #be185d;
+  --c-actinide:        #be123c;
+  --c-unknown:         #475569;
+}
+
+/* ── Base styles ─────────────────────────────────────────────────────────────── */
+
 * {
   box-sizing: border-box;
 }
@@ -34,39 +88,40 @@ html, body, #root {
 }
 
 body {
-  background-color: #08090d;
-  color: #c8cdd8;
+  background-color: rgb(var(--color-base));
+  color: rgb(var(--color-primary));
   font-family: 'Outfit', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Scrollbar styling */
+/* ── Scrollbar ───────────────────────────────────────────────────────────────── */
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0e1016;
+  background: rgb(var(--color-base));
 }
 ::-webkit-scrollbar-thumb {
-  background: #1c1f2e;
+  background: rgb(var(--color-border));
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2a2d3d;
+  background: rgb(var(--color-muted));
 }
 
-/* ── Print: page margins ─────────────────────────────────────────────────── */
+/* ── Print: page margins ─────────────────────────────────────────────────────── */
 
 @page {
   margin: 0.75in;
 }
 
-/* ── Print: override dark theme ──────────────────────────────────────────── */
+/* ── Print: override dark theme ──────────────────────────────────────────────── */
 
 @media print {
-  /* ── CSS variable overrides (darken accents for white paper) ─────────── */
+  /* ── CSS variable overrides (darken accents for white paper) ──────────────── */
   :root {
     --c-halogen:      #1d4ed8;
     --c-alkali:       #b91c1c;
@@ -80,20 +135,18 @@ body {
     --c-actinide:     #be123c;
   }
 
-  /* ── Global reset: strip every dark background and shadow ────────────── */
-  /* Covers Tailwind classes AND inline style="background:..." on every element */
+  /* ── Global reset: strip every dark background and shadow ─────────────────── */
   *, *::before, *::after {
     background-color: transparent !important;
     background-image: none !important;
     box-shadow: none !important;
-    /* Lighten any inline border that used a dark hex */
     border-color: #d1d5db !important;
   }
 
-  /* ── Base layer ──────────────────────────────────────────────────────── */
+  /* ── Base layer ───────────────────────────────────────────────────────────── */
   body { background-color: white !important; color: #111 !important; }
 
-  /* ── Re-apply only the light surfaces we actually want ───────────────── */
+  /* ── Re-apply only the light surfaces we actually want ────────────────────── */
   .bg-raised { background-color: #f3f4f6 !important; }
 
   /* Tinted feedback backgrounds */
@@ -101,10 +154,10 @@ body {
   .bg-red-500\/10     { background-color: #fee2e2 !important; }
   .bg-amber-500\/5    { background-color: #fffbeb !important; }
 
-  /* ── Wide tables: let them reflow rather than clip ───────────────────── */
+  /* ── Wide tables: let them reflow rather than clip ────────────────────────── */
   .overflow-x-auto { overflow: visible !important; }
 
-  /* ── Text → dark ─────────────────────────────────────────────────────── */
+  /* ── Text → dark ──────────────────────────────────────────────────────────── */
   .text-bright    { color: #111 !important; }
   .text-primary   { color: #222 !important; }
   .text-secondary { color: #555 !important; }
@@ -124,7 +177,63 @@ body {
   .border-amber-500\/20   { border-color: #fcd34d !important; }
 }
 
-/* Scroll hint shadow for horizontal scroll containers */
+/* ── Light mode: override Tailwind utility classes ───────────────────────────── */
+/* Higher specificity than plain Tailwind classes — works even before recompile  */
+
+[data-theme="light"] .bg-base    { background-color: rgb(var(--color-base)); }
+[data-theme="light"] .bg-surface { background-color: rgb(var(--color-surface)); }
+[data-theme="light"] .bg-raised  { background-color: rgb(var(--color-raised)); }
+[data-theme="light"] .bg-border  { background-color: rgb(var(--color-border)); }
+[data-theme="light"] .bg-muted   { background-color: rgb(var(--color-muted)); }
+
+[data-theme="light"] .bg-surface\/40 { background-color: rgb(var(--color-surface) / 0.4); }
+[data-theme="light"] .bg-surface\/50 { background-color: rgb(var(--color-surface) / 0.5); }
+[data-theme="light"] .bg-raised\/40  { background-color: rgb(var(--color-raised) / 0.4); }
+[data-theme="light"] .bg-raised\/80  { background-color: rgb(var(--color-raised) / 0.8); }
+
+[data-theme="light"] .hover\:bg-surface:hover     { background-color: rgb(var(--color-surface)); }
+[data-theme="light"] .hover\:bg-surface\/40:hover { background-color: rgb(var(--color-surface) / 0.4); }
+[data-theme="light"] .hover\:bg-surface\/50:hover { background-color: rgb(var(--color-surface) / 0.5); }
+[data-theme="light"] .hover\:bg-raised\/80:hover  { background-color: rgb(var(--color-raised) / 0.8); }
+
+[data-theme="light"] .text-bright    { color: rgb(var(--color-bright)); }
+[data-theme="light"] .text-primary   { color: rgb(var(--color-primary)); }
+[data-theme="light"] .text-secondary { color: rgb(var(--color-secondary)); }
+[data-theme="light"] .text-dim       { color: rgb(var(--color-dim)); }
+
+[data-theme="light"] .text-dim\/25 { color: rgb(var(--color-dim) / 0.25); }
+[data-theme="light"] .text-dim\/40 { color: rgb(var(--color-dim) / 0.4); }
+[data-theme="light"] .text-dim\/50 { color: rgb(var(--color-dim) / 0.5); }
+
+[data-theme="light"] .hover\:text-primary:hover  { color: rgb(var(--color-primary)); }
+[data-theme="light"] .hover\:text-bright:hover   { color: rgb(var(--color-bright)); }
+
+[data-theme="light"] .placeholder\:text-dim\/50::placeholder { color: rgb(var(--color-dim) / 0.5); }
+[data-theme="light"] .placeholder\:text-dim\/40::placeholder { color: rgb(var(--color-dim) / 0.4); }
+[data-theme="light"] .placeholder-dim::placeholder           { color: rgb(var(--color-dim)); }
+
+[data-theme="light"] .border-border  { border-color: rgb(var(--color-border)); }
+[data-theme="light"] .border-muted   { border-color: rgb(var(--color-muted)); }
+[data-theme="light"] .border-primary { border-color: rgb(var(--color-primary)); }
+[data-theme="light"] .border-bright  { border-color: rgb(var(--color-bright)); }
+
+[data-theme="light"] .border-border\/30 { border-color: rgb(var(--color-border) / 0.3); }
+[data-theme="light"] .border-border\/40 { border-color: rgb(var(--color-border) / 0.4); }
+[data-theme="light"] .border-border\/50 { border-color: rgb(var(--color-border) / 0.5); }
+[data-theme="light"] .border-border\/60 { border-color: rgb(var(--color-border) / 0.6); }
+
+[data-theme="light"] .hover\:border-muted:hover   { border-color: rgb(var(--color-muted)); }
+[data-theme="light"] .hover\:border-border:hover  { border-color: rgb(var(--color-border)); }
+
+[data-theme="light"] .focus\:border-muted:focus      { border-color: rgb(var(--color-muted)); }
+[data-theme="light"] .focus\:border-accent\/40:focus { border-color: rgb(var(--color-accent) / 0.4); }
+
+[data-theme="light"] .divide-border > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgb(var(--color-border));
+}
+
+/* ── Scroll hint shadow for horizontal scroll containers ─────────────────────── */
+
 .scroll-hint {
   position: relative;
 }
@@ -135,7 +244,7 @@ body {
   right: 0;
   width: 40px;
   height: 100%;
-  background: linear-gradient(to right, transparent, #08090d);
+  background: linear-gradient(to right, transparent, rgb(var(--color-base)));
   pointer-events: none;
   z-index: 1;
 }

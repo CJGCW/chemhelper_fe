@@ -108,7 +108,7 @@ export default function KetcherGuide() {
             <div
               key={tool.name}
               className="flex items-start gap-3 px-4 py-3 rounded-sm border border-border"
-              style={{ background: '#0e1016' }}
+              style={{ background: 'rgb(var(--color-surface))' }}
             >
               <span
                 className="font-mono text-base shrink-0 w-6 text-center"
@@ -123,9 +123,9 @@ export default function KetcherGuide() {
                     <span
                       className="font-mono text-[10px] px-1.5 py-0.5 rounded"
                       style={{
-                        background: '#1c1f2e',
-                        color: 'var(--c-secondary, #7b82a0)',
-                        border: '1px solid #2a2d3d',
+                        background: 'rgb(var(--color-border))',
+                        color: 'var(--c-secondary, rgb(var(--color-secondary)))',
+                        border: '1px solid rgb(var(--color-muted))',
                       }}
                     >
                       {tool.shortcut}
@@ -147,7 +147,7 @@ export default function KetcherGuide() {
             <div
               key={faq.q}
               className="flex flex-col gap-1 px-4 py-3 rounded-sm border border-border"
-              style={{ background: '#0e1016' }}
+              style={{ background: 'rgb(var(--color-surface))' }}
             >
               <span className="font-sans text-xs font-medium text-primary">{faq.q}</span>
               <span className="font-sans text-xs text-secondary">{faq.a}</span>
@@ -172,7 +172,7 @@ export default function KetcherGuide() {
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-sm font-sans text-xs font-medium transition-colors"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 10%, #141620)',
+                background: 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))',
                 border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)',
                 color: 'var(--c-halogen)',
               }}

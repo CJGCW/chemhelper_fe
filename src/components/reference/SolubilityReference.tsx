@@ -22,12 +22,12 @@ function InteractiveLookup() {
         onClick={onClick}
         className="px-2.5 py-1.5 rounded-sm font-mono text-sm transition-colors"
         style={isActive ? {
-          background: 'color-mix(in srgb, var(--c-halogen) 15%, #141620)',
+          background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
           border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           color: 'var(--c-halogen)',
         } : {
-          border: '1px solid rgba(255,255,255,0.12)',
-          color: 'rgba(255,255,255,0.45)',
+          border: '1px solid rgba(var(--overlay),0.12)',
+          color: 'rgba(var(--overlay),0.45)',
         }}
       >{formula}</button>
     )
@@ -154,7 +154,7 @@ function SolubilityTable() {
                   className="px-2 py-2 font-mono text-xs border-b border-r border-border
                              print:border-gray-300 last:border-r-0 min-w-[52px] transition-opacity"
                   style={{
-                    color: selectedAni ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.6)',
+                    color: selectedAni ? 'rgba(var(--overlay),0.3)' : 'rgba(var(--overlay),0.6)',
                   }}>
                   {c.formula}
                 </th>
@@ -178,9 +178,9 @@ function SolubilityTable() {
                                 ${ri % 2 === 0 ? 'bg-surface' : 'bg-raised'} print:bg-white
                                 cursor-pointer select-none transition-colors`}
                     style={{
-                      color: isSelected ? 'var(--c-halogen)' : 'rgba(255,255,255,0.6)',
+                      color: isSelected ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.6)',
                       background: isSelected
-                        ? 'color-mix(in srgb, var(--c-halogen) 10%, #141620)'
+                        ? 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))'
                         : undefined,
                     }}
                     title={`Click to highlight ${a.name} (${a.formula}) solubility pairings`}
@@ -231,8 +231,8 @@ function SolubilityTable() {
             transition={{ duration: 0.18 }}
             className="rounded-sm border p-4 flex flex-col gap-3"
             style={{
-              borderColor: 'color-mix(in srgb, var(--c-halogen) 25%, rgba(255,255,255,0.08))',
-              background: '#0e1016',
+              borderColor: 'color-mix(in srgb, var(--c-halogen) 25%, rgba(var(--overlay),0.08))',
+              background: 'rgb(var(--color-surface))',
             }}
           >
             <div className="flex items-center gap-2">
@@ -287,7 +287,7 @@ function SolubilityTable() {
           className="fixed z-50 pointer-events-none px-3 py-1.5 rounded-sm
                      font-mono text-sm text-bright border border-border"
           style={{
-            background: '#1c1f2e',
+            background: 'rgb(var(--color-border))',
             left: tooltip.x,
             top: tooltip.y - 8,
             transform: 'translate(-50%, -100%)',
@@ -361,17 +361,17 @@ export default function SolubilityReference() {
       {/* View toggle */}
       <div className="flex items-center gap-2 print:hidden">
         <div className="flex items-center gap-1 p-1 rounded-sm"
-          style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+          style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
           {([['lookup','⊕ Lookup'],['table','⊞ Table']] as const).map(([v, label]) => {
           const isActive = view === v
           return (
             <button key={v} onClick={() => setView(v)}
               className="relative px-3.5 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
-              style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}>
+              style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)' }}>
               {isActive && (
                 <motion.div layoutId="sol-view-pill" className="absolute inset-0 rounded-sm"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                     border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                   }}
                   transition={{ type: 'spring', stiffness: 400, damping: 32 }} />

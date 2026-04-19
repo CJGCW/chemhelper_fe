@@ -18,7 +18,7 @@ function ExampleCard({ title, question, steps, answer }: {
   answer: string
 }) {
   return (
-    <div className="flex flex-col gap-3 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+    <div className="flex flex-col gap-3 p-4 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
       <p className="font-mono text-xs text-secondary tracking-widest uppercase">{title}</p>
       <p className="font-sans text-sm text-secondary">{question}</p>
       <div className="flex flex-col gap-1 pl-3 border-l-2 border-border">
@@ -47,7 +47,7 @@ export default function EmpiricalReference() {
             { label: 'Moles from mass',    formula: 'n = m / M',                           note: 'm in g, M in g/mol' },
             { label: 'Percent to mass',    formula: 'Assume 100 g  →  % = g',              note: 'Starting point for % comp. problems' },
           ].map(({ label, formula, note }) => (
-            <div key={label} className="flex flex-col gap-2 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
+            <div key={label} className="flex flex-col gap-2 p-3 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
               <p className="font-sans text-xs font-semibold text-secondary uppercase tracking-wide">{label}</p>
               <p className="font-mono text-sm text-bright">{formula}</p>
               <p className="font-sans text-xs text-secondary">{note}</p>

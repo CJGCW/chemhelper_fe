@@ -159,7 +159,7 @@ export default function ElectromagneticSpectrum() {
         className="flex flex-col gap-1 cursor-pointer"
         onClick={() => { setField(f); if (field !== f) setRaw('') }}>
         <span className="font-mono text-xs tracking-widest uppercase"
-          style={{ color: active ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)' }}>
+          style={{ color: active ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)' }}>
           {label}
         </span>
         <input
@@ -170,8 +170,8 @@ export default function ElectromagneticSpectrum() {
           onClick={e => { e.stopPropagation(); setField(f) }}
           className="w-full h-9 rounded-sm border px-3 font-mono text-sm bg-raised focus:outline-none transition-colors"
           style={{
-            borderColor: active ? 'color-mix(in srgb, var(--c-halogen) 60%, transparent)' : '#1c1f2e',
-            color: active ? 'var(--c-halogen)' : 'rgba(255,255,255,0.25)',
+            borderColor: active ? 'color-mix(in srgb, var(--c-halogen) 60%, transparent)' : 'rgb(var(--color-border))',
+            color: active ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.25)',
             cursor: active ? 'text' : 'pointer',
           }}
         />
@@ -291,7 +291,7 @@ export default function ElectromagneticSpectrum() {
             <div className="flex flex-wrap gap-2">
               {region.examples.map(ex => (
                 <span key={ex} className="font-mono text-[9px] px-2 py-0.5 rounded-sm text-dim"
-                  style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+                  style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
                   {ex}
                 </span>
               ))}

@@ -120,14 +120,14 @@ function WedgeBond({ x1, y1, x2, y2 }: { x1: number; y1: number; x2: number; y2:
   const px = -dy / len, py = dx / len
   const w = 5  // half-width at terminal end
   const d = `M ${x1} ${y1} L ${x2 + px * w} ${y2 + py * w} L ${x2 - px * w} ${y2 - py * w} Z`
-  return <path d={d} fill="rgba(255,255,255,0.85)" />
+  return <path d={d} fill="rgba(var(--overlay),0.85)" />
 }
 
 function DashBond({ x1, y1, x2, y2 }: { x1: number; y1: number; x2: number; y2: number }) {
   return (
     <line
       x1={x1} y1={y1} x2={x2} y2={y2}
-      stroke="rgba(255,255,255,0.82)"
+      stroke="rgba(var(--overlay),0.82)"
       strokeWidth={2.5}
       strokeDasharray="5,4"
     />
@@ -148,7 +148,7 @@ function LonePairCloud({ cx, cy, angle }: { cx: number; cy: number; angle: numbe
         rx={13} ry={8}
         transform={`rotate(${angle + 90}, ${ox}, ${oy})`}
         fill="none"
-        stroke="rgba(255,255,255,0.6)"
+        stroke="rgba(var(--overlay),0.6)"
         strokeWidth={1.5}
         strokeDasharray="3,2"
       />
@@ -170,7 +170,7 @@ function BondLines({
   const dx = x2 - x1, dy = y2 - y1
   const len = Math.sqrt(dx * dx + dy * dy) || 1
   const px = -dy / len, py = dx / len
-  const stroke = 'rgba(255,255,255,0.82)'
+  const stroke = 'rgba(var(--overlay),0.82)'
   const sw = 2
 
   if (order === 2) {
@@ -200,7 +200,7 @@ function BondLines({
 function AtomCircle({ x, y, element, r }: { x: number; y: number; element: string; r: number }) {
   return (
     <g>
-      <circle cx={x} cy={y} r={r} fill={elemColor(element)} stroke="#1c1f2e" strokeWidth={1.5} />
+      <circle cx={x} cy={y} r={r} fill={elemColor(element)} stroke="rgb(var(--color-border))" strokeWidth={1.5} />
       <text
         x={x} y={y}
         textAnchor="middle" dominantBaseline="central"
@@ -273,7 +273,7 @@ export default function VsepDiagram({ structure }: { structure: LewisStructure }
   // If only 1 atom total (monoatomic)
   if (terminals.length === 0) {
     return (
-      <div className="rounded-md border border-border overflow-hidden" style={{ background: '#0e1016' }}>
+      <div className="rounded-md border border-border overflow-hidden" style={{ background: 'rgb(var(--color-surface))' }}>
         <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} width="100%">
           <AtomCircle x={CX} y={CY} element={center.element} r={CENTER_R} />
         </svg>
@@ -282,7 +282,7 @@ export default function VsepDiagram({ structure }: { structure: LewisStructure }
   }
 
   return (
-    <div className="rounded-md border border-border overflow-hidden" style={{ background: '#0e1016' }}>
+    <div className="rounded-md border border-border overflow-hidden" style={{ background: 'rgb(var(--color-surface))' }}>
       <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} width="100%" aria-label={`VSEPR model of ${structure.name}`}>
 
         {/* Lone pair clouds drawn behind everything */}
@@ -326,7 +326,7 @@ export default function VsepDiagram({ structure }: { structure: LewisStructure }
         {slots.some(s => s.style !== 'solid') && (
           <g transform={`translate(${SVG_W - 8}, ${SVG_H - 8})`}>
             <text x={0} y={0} textAnchor="end"
-              fontSize={8} fill="rgba(255,255,255,0.25)" fontFamily="system-ui, sans-serif">
+              fontSize={8} fill="rgba(var(--overlay),0.25)" fontFamily="system-ui, sans-serif">
               ▶ toward · – – away
             </text>
           </g>

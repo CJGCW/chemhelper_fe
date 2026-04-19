@@ -71,7 +71,7 @@ export default function MassToMolesHelper({ onResolved, onClear }: Props) {
       <button
         onClick={() => setOpen(o => !o)}
         className="flex items-center gap-2 font-sans text-sm font-medium transition-colors group"
-        style={{ color: resolved ? 'var(--c-halogen)' : 'rgba(255,255,255,0.4)' }}
+        style={{ color: resolved ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)' }}
       >
         <motion.span
           animate={{ rotate: open ? 90 : 0 }}
@@ -103,8 +103,8 @@ export default function MassToMolesHelper({ onResolved, onClear }: Props) {
             <div
               className="flex flex-col gap-3 mt-2 p-3 rounded-sm border"
               style={{
-                borderColor: 'color-mix(in srgb, var(--c-halogen) 20%, #1c1f2e)',
-                background: 'color-mix(in srgb, var(--c-halogen) 4%, #0e1016)',
+                borderColor: 'color-mix(in srgb, var(--c-halogen) 20%, rgb(var(--color-border)))',
+                background: 'color-mix(in srgb, var(--c-halogen) 4%, rgb(var(--color-surface)))',
               }}
             >
               <p className="font-mono text-xs text-secondary">n = m / M</p>
@@ -143,7 +143,7 @@ export default function MassToMolesHelper({ onResolved, onClear }: Props) {
                 onClick={compute}
                 className="w-full py-2 rounded-sm font-sans font-medium text-sm transition-all"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 14%, #0e1016)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 14%, rgb(var(--color-surface)))',
                   border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
                   color: 'var(--c-halogen)',
                 }}

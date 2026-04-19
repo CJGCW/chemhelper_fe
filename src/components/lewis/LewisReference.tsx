@@ -241,7 +241,7 @@ export default function LewisReference() {
               <div className="flex items-center gap-2">
                 <span
                   className="font-mono text-xs font-bold w-6 h-6 rounded-sm flex items-center justify-center shrink-0"
-                  style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, #141620)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
+                  style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
                 >
                   {r.step}
                 </span>

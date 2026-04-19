@@ -150,13 +150,13 @@ function CurveChart({
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full" aria-label="Heating/cooling curve">
 
       {/* Plot area */}
-      <rect x={ML} y={MT} width={PW} height={PH} fill="rgba(255,255,255,0.015)" rx="2" />
+      <rect x={ML} y={MT} width={PW} height={PH} fill="rgba(var(--overlay),0.015)" rx="2" />
 
       {/* Vertical grid at heat ticks */}
       {xTicks.map((q, i) => (
         <line key={i}
           x1={xS(q)} y1={MT} x2={xS(q)} y2={MT + PH}
-          stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+          stroke="rgba(var(--overlay),0.05)" strokeWidth="1" />
       ))}
 
       {/* Horizontal dashes at mp and bp */}
@@ -164,9 +164,9 @@ function CurveChart({
         <g key={label}>
           <line
             x1={ML} y1={yS(t)} x2={ML + PW} y2={yS(t)}
-            stroke="rgba(255,255,255,0.15)" strokeWidth="1" strokeDasharray="4 3" />
+            stroke="rgba(var(--overlay),0.15)" strokeWidth="1" strokeDasharray="4 3" />
           <text x={ML - 4} y={yS(t)} textAnchor="end" dominantBaseline="middle"
-            fill="rgba(255,255,255,0.35)" fontSize="9" fontFamily="monospace">
+            fill="rgba(var(--overlay),0.35)" fontSize="9" fontFamily="monospace">
             {t}°
           </text>
         </g>
@@ -191,17 +191,17 @@ function CurveChart({
 
       {/* Axes */}
       <line x1={ML} y1={MT} x2={ML} y2={MT + PH + 6}
-        stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+        stroke="rgba(var(--overlay),0.3)" strokeWidth="1" />
       <line x1={ML - 4} y1={MT + PH} x2={ML + PW} y2={MT + PH}
-        stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+        stroke="rgba(var(--overlay),0.3)" strokeWidth="1" />
 
       {/* Y-axis ticks + labels */}
       {yTicks.map(t => (
         <g key={t}>
           <line x1={ML - 3} y1={yS(t)} x2={ML} y2={yS(t)}
-            stroke="rgba(255,255,255,0.4)" strokeWidth="1" />
+            stroke="rgba(var(--overlay),0.4)" strokeWidth="1" />
           <text x={ML - 6} y={yS(t)} textAnchor="end" dominantBaseline="middle"
-            fill="rgba(255,255,255,0.55)" fontSize="9" fontFamily="monospace">
+            fill="rgba(var(--overlay),0.55)" fontSize="9" fontFamily="monospace">
             {t.toFixed(t % 1 === 0 ? 0 : 1)}°
           </text>
         </g>
@@ -211,9 +211,9 @@ function CurveChart({
       {xTicks.filter(q => q > 0).map(q => (
         <g key={q}>
           <line x1={xS(q)} y1={MT + PH} x2={xS(q)} y2={MT + PH + 3}
-            stroke="rgba(255,255,255,0.4)" strokeWidth="1" />
+            stroke="rgba(var(--overlay),0.4)" strokeWidth="1" />
           <text x={xS(q)} y={MT + PH + 14} textAnchor="middle"
-            fill="rgba(255,255,255,0.45)" fontSize="8.5" fontFamily="monospace">
+            fill="rgba(var(--overlay),0.45)" fontSize="8.5" fontFamily="monospace">
             {kj(q)}
           </text>
         </g>
@@ -221,12 +221,12 @@ function CurveChart({
 
       {/* Axis labels */}
       <text x={ML - 38} y={MT + PH / 2} textAnchor="middle"
-        fill="rgba(255,255,255,0.35)" fontSize="9.5" fontFamily="system-ui"
+        fill="rgba(var(--overlay),0.35)" fontSize="9.5" fontFamily="system-ui"
         transform={`rotate(-90, ${ML - 38}, ${MT + PH / 2})`}>
         Temperature (°C)
       </text>
       <text x={ML + PW / 2} y={H - 4} textAnchor="middle"
-        fill="rgba(255,255,255,0.35)" fontSize="9.5" fontFamily="system-ui">
+        fill="rgba(var(--overlay),0.35)" fontSize="9.5" fontFamily="system-ui">
         {heating ? 'Heat Added (kJ)' : 'Heat Removed (kJ)'}
       </text>
     </svg>
@@ -311,16 +311,16 @@ export default function HeatingCurveCalc() {
 
       {/* Heating / Cooling toggle */}
       <div className="flex items-center gap-1 p-1 rounded-full self-start"
-        style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
+        style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
         {([true, false] as const).map(h => {
           const active = isHeating === h
           return (
             <button key={String(h)} onClick={() => toggleMode(h)}
               className="relative px-5 py-1.5 rounded-full font-sans text-sm font-medium transition-colors"
-              style={{ color: active ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)' }}>
+              style={{ color: active ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)' }}>
               {active && (
                 <span className="absolute inset-0 rounded-full" style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 12%, #141620)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                   border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
                 }} />
               )}
@@ -339,11 +339,11 @@ export default function HeatingCurveCalc() {
               className="flex flex-col items-start px-3 py-2 rounded-sm border transition-colors text-left"
               style={subIdx === i ? {
                 borderColor: 'color-mix(in srgb, var(--c-halogen) 50%, transparent)',
-                background:  'color-mix(in srgb, var(--c-halogen) 10%, #141620)',
+                background:  'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))',
                 color: 'var(--c-halogen)',
               } : {
-                borderColor: '#1c1f2e', background: '#0e1016',
-                color: 'rgba(255,255,255,0.45)',
+                borderColor: 'rgb(var(--color-border))', background: 'rgb(var(--color-surface))',
+                color: 'rgba(var(--overlay),0.45)',
               }}>
               <span className="font-sans text-sm font-medium">{s.name}</span>
               <span className="font-mono text-[9px] opacity-60">{s.formula}</span>
@@ -400,7 +400,7 @@ export default function HeatingCurveCalc() {
             </div>
           </div>
           <div className="rounded-sm border border-border overflow-hidden p-2"
-            style={{ background: '#0a0c10' }}>
+            style={{ background: 'rgb(var(--color-base))' }}>
             <CurveChart segments={segments} t0={t0} t1={t1} sub={sub} />
           </div>
         </div>

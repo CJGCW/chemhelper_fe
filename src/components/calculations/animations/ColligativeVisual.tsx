@@ -38,9 +38,9 @@ export function ColligativeVisual({ mode }: { mode: 'bpe' | 'fpd' }) {
 
   function pillStyle(active: boolean) {
     return {
-      background:   active ? 'color-mix(in srgb, var(--c-halogen) 14%, #141620)' : '#0e1016',
-      borderColor:  active ? 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '#1c1f2e',
-      color:        active ? 'var(--c-halogen)' : 'rgba(255,255,255,0.45)',
+      background:   active ? 'color-mix(in srgb, var(--c-halogen) 14%, rgb(var(--color-raised)))' : 'rgb(var(--color-surface))',
+      borderColor:  active ? 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' : 'rgb(var(--color-border))',
+      color:        active ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.45)',
     }
   }
 
@@ -76,7 +76,7 @@ export function ColligativeVisual({ mode }: { mode: 'bpe' | 'fpd' }) {
 
       {/* Result summary */}
       <div className="flex items-center gap-2 flex-wrap px-3 py-2 rounded-sm border border-border"
-        style={{ background: '#0a0c12' }}>
+        style={{ background: 'rgb(var(--color-base))' }}>
         <span className="font-mono text-xs text-secondary">
           {dSym} = {iVal} × {K} × {molality} =
         </span>

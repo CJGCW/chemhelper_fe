@@ -48,7 +48,7 @@ function MiniBeaker({ label, volumeLabel, concLabel, fillFrac, colorAlpha, parti
     <div className="flex flex-col items-center gap-1">
       <span className="font-mono text-[10px] text-secondary">{concLabel}</span>
       <svg viewBox={`0 0 ${W} ${H + 4}`} width={W} height={H + 4}>
-        <rect x={wall} y={0} width={innerW} height={H} fill="#0e1016" stroke="#1c1f2e" strokeWidth="1" />
+        <rect x={wall} y={0} width={innerW} height={H} fill="rgb(var(--color-surface))" stroke="rgb(var(--color-border))" strokeWidth="1" />
         <motion.rect
           x={wall}
           y={liquidY}
@@ -68,15 +68,15 @@ function MiniBeaker({ label, volumeLabel, concLabel, fillFrac, colorAlpha, parti
               cx={px}
               cy={py}
               r={2.5}
-              fill="rgba(255,255,255,0.65)"
+              fill="rgba(var(--overlay),0.65)"
               animate={{ cx: px, cy: py }}
               transition={{ type: 'spring', stiffness: 80, damping: 16 }}
             />
           )
         })}
-        <rect x={0} y={0} width={wall} height={H} fill="#141620" stroke="#1c1f2e" strokeWidth="0.5" />
-        <rect x={W - wall} y={0} width={wall} height={H} fill="#141620" stroke="#1c1f2e" strokeWidth="0.5" />
-        <rect x={0} y={H} width={W} height={wall} fill="#141620" stroke="#1c1f2e" strokeWidth="0.5" />
+        <rect x={0} y={0} width={wall} height={H} fill="rgb(var(--color-raised))" stroke="rgb(var(--color-border))" strokeWidth="0.5" />
+        <rect x={W - wall} y={0} width={wall} height={H} fill="rgb(var(--color-raised))" stroke="rgb(var(--color-border))" strokeWidth="0.5" />
+        <rect x={0} y={H} width={W} height={wall} fill="rgb(var(--color-raised))" stroke="rgb(var(--color-border))" strokeWidth="0.5" />
       </svg>
       <span className="font-mono text-xs text-secondary">{volumeLabel}</span>
       <span className="font-mono text-xs text-secondary uppercase tracking-widest">{label}</span>
@@ -306,7 +306,7 @@ export default function DilutionCalc() {
           onClick={calculate}
           className="w-full py-2.5 rounded-sm font-sans font-medium text-sm transition-all"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 18%, #0e1016)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           }}
@@ -318,7 +318,7 @@ export default function DilutionCalc() {
       {showVisual && (
         <div
           className="rounded-sm border border-border p-4"
-          style={{ background: '#0e1016' }}
+          style={{ background: 'rgb(var(--color-surface))' }}
         >
           <p className="font-mono text-xs text-secondary tracking-widest uppercase mb-3">Dilution visual</p>
           <div className="flex items-center justify-center gap-4">

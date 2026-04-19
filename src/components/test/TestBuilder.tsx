@@ -144,8 +144,8 @@ function CheckBtn({
 }) {
   const dim = size === 'xs' ? 'w-3.5 h-3.5' : 'w-4 h-4'
   const style = checked || indeterminate
-    ? { background: 'color-mix(in srgb, var(--c-halogen) 20%, #141620)', border: '1px solid color-mix(in srgb, var(--c-halogen) 50%, transparent)' }
-    : { border: '1px solid rgba(255,255,255,0.15)', background: 'transparent' }
+    ? { background: 'color-mix(in srgb, var(--c-halogen) 20%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 50%, transparent)' }
+    : { border: '1px solid rgba(var(--overlay),0.15)', background: 'transparent' }
   return (
     <button onClick={onClick} className={`${dim} rounded-sm border flex items-center justify-center transition-colors shrink-0`} style={style}>
       {checked     && <span className="font-mono text-[8px] leading-none" style={{ color: 'var(--c-halogen)' }}>✓</span>}
@@ -347,7 +347,7 @@ export default function TestBuilder({ onGenerate }: Props) {
                 <div
                   className="grid grid-cols-[auto_1fr_auto] gap-x-4 items-center
                              px-4 py-1.5 border-b border-border"
-                  style={{ background: 'color-mix(in srgb, #1c1f2e 60%, #0e1016)' }}
+                  style={{ background: 'color-mix(in srgb, rgb(var(--color-border)) 60%, rgb(var(--color-surface)))' }}
                 >
                   <CheckBtn
                     checked={allOn}
@@ -356,7 +356,7 @@ export default function TestBuilder({ onGenerate }: Props) {
                     size="xs"
                   />
                   <span className="font-mono text-xs tracking-widest uppercase"
-                    style={{ color: 'color-mix(in srgb, var(--c-halogen) 70%, rgba(255,255,255,0.4))' }}>
+                    style={{ color: 'color-mix(in srgb, var(--c-halogen) 70%, rgba(var(--overlay),0.4))' }}>
                     {GROUP_LABELS[group]}
                   </span>
                   <span className="font-mono text-xs text-secondary w-20 text-right">
@@ -432,7 +432,7 @@ export default function TestBuilder({ onGenerate }: Props) {
         className="self-start px-6 py-2.5 rounded-sm font-sans text-sm font-semibold
                    transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
         style={{
-          background: 'color-mix(in srgb, var(--c-halogen) 18%, #141620)',
+          background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
           border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           color: 'var(--c-halogen)',
         }}

@@ -91,21 +91,21 @@ function BeakerViz({ isExo, accent, n }: { isExo: boolean; accent: string; n: nu
         stroke={accent} strokeWidth="1.5" opacity="0.55" strokeLinecap="round" />
 
       {/* Beaker body */}
-      <path d={bodyPath} fill="none" stroke="rgba(255,255,255,0.65)"
+      <path d={bodyPath} fill="none" stroke="rgba(var(--overlay),0.65)"
         strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
 
       {/* Rim */}
       <line x1={lX - 9} y1={rimY} x2={rX + 9} y2={rimY}
-        stroke="rgba(255,255,255,0.65)" strokeWidth="3" strokeLinecap="round" />
+        stroke="rgba(var(--overlay),0.65)" strokeWidth="3" strokeLinecap="round" />
 
       {/* Spout */}
       <line x1={rX} y1={rimY} x2={rX + 10} y2={rimY - 11}
-        stroke="rgba(255,255,255,0.65)" strokeWidth="2.5" strokeLinecap="round" />
+        stroke="rgba(var(--overlay),0.65)" strokeWidth="2.5" strokeLinecap="round" />
 
       {/* Measurement ticks */}
       {ticks.map((ty, i) => (
         <line key={i} x1={rX - 2} y1={ty} x2={rX + 7} y2={ty}
-          stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" strokeLinecap="round" />
+          stroke="rgba(var(--overlay),0.2)" strokeWidth="1.5" strokeLinecap="round" />
       ))}
 
       {/* Fires */}
@@ -116,11 +116,11 @@ function BeakerViz({ isExo, accent, n }: { isExo: boolean; accent: string; n: nu
       ))}
 
       {isExo ? (
-        <text x={cx} y={12} textAnchor="middle" fontSize="13" fontWeight="bold" fill="rgba(255,255,255,0.85)">
+        <text x={cx} y={12} textAnchor="middle" fontSize="13" fontWeight="bold" fill="rgba(var(--overlay),0.85)">
           heat out
         </text>
       ) : (
-        <text x={cx} y={254} textAnchor="middle" fontSize="13" fontWeight="bold" fill="rgba(255,255,255,0.85)">
+        <text x={cx} y={254} textAnchor="middle" fontSize="13" fontWeight="bold" fill="rgba(var(--overlay),0.85)">
           heat in ↑
         </text>
       )}
@@ -209,32 +209,32 @@ export default function EnergyDiagram() {
             `}</style>
 
             {/* Energy axis label */}
-            <text x={14} y={H / 2} fill="rgba(255,255,255,0.3)" fontSize="11"
+            <text x={14} y={H / 2} fill="rgba(var(--overlay),0.3)" fontSize="11"
               textAnchor="middle" transform={`rotate(-90, 14, ${H / 2})`}>
               ENERGY (kJ/mol)
             </text>
 
             {/* Reactant level */}
             <line x1={rX1} y1={rY} x2={rX2} y2={rY}
-              stroke="rgba(255,255,255,0.75)" strokeWidth="2.5" strokeLinecap="round" />
+              stroke="rgba(var(--overlay),0.75)" strokeWidth="2.5" strokeLinecap="round" />
             <text x={(rX1 + rX2) / 2} y={rY + 17}
-              textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="13">
+              textAnchor="middle" fill="rgba(var(--overlay),0.6)" fontSize="13">
               Reactants
             </text>
 
             {/* Product level */}
             <line x1={pX1} y1={pY} x2={pX2} y2={pY}
-              stroke="rgba(255,255,255,0.75)" strokeWidth="2.5" strokeLinecap="round" />
+              stroke="rgba(var(--overlay),0.75)" strokeWidth="2.5" strokeLinecap="round" />
             <text x={(pX1 + pX2) / 2} y={pY + 17}
-              textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="13">
+              textAnchor="middle" fill="rgba(var(--overlay),0.6)" fontSize="13">
               Products
             </text>
 
             {/* Transition state */}
             <line x1={tsX - 20} y1={tsY} x2={tsX + 20} y2={tsY}
-              stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" strokeDasharray="4,3" />
+              stroke="rgba(var(--overlay),0.2)" strokeWidth="1.5" strokeDasharray="4,3" />
             <text x={tsX} y={tsY - 10}
-              textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="12">
+              textAnchor="middle" fill="rgba(var(--overlay),0.5)" fontSize="12">
               Transition State
             </text>
 
@@ -246,13 +246,13 @@ export default function EnergyDiagram() {
             {tsY < rY - 10 && (
               <>
                 <line x1={eaX} y1={rY - 2} x2={eaX} y2={tsY + 8}
-                  stroke="rgba(255,255,255,0.22)" strokeWidth="1.5" />
+                  stroke="rgba(var(--overlay),0.22)" strokeWidth="1.5" />
                 <polygon
                   points={`${eaX - 4},${tsY + 9} ${eaX + 4},${tsY + 9} ${eaX},${tsY}`}
-                  fill="rgba(255,255,255,0.22)"
+                  fill="rgba(var(--overlay),0.22)"
                 />
                 <text x={eaX + 10} y={(rY + tsY) / 2 + 3}
-                  textAnchor="start" fill="rgba(255,255,255,0.5)" fontSize="12">
+                  textAnchor="start" fill="rgba(var(--overlay),0.5)" fontSize="12">
                   Ea = {ea} kJ
                 </text>
               </>
@@ -262,9 +262,9 @@ export default function EnergyDiagram() {
             {dhShown && (
               <>
                 <line x1={pX2 + 2} y1={rY} x2={dhArrX} y2={rY}
-                  stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="3,3" />
+                  stroke="rgba(var(--overlay),0.1)" strokeWidth="1" strokeDasharray="3,3" />
                 <line x1={pX2 + 2} y1={pY} x2={dhArrX} y2={pY}
-                  stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="3,3" />
+                  stroke="rgba(var(--overlay),0.1)" strokeWidth="1" strokeDasharray="3,3" />
                 <line x1={dhArrX} y1={dhTopY + 9} x2={dhArrX} y2={dhBotY - 9}
                   stroke={accent} strokeWidth="2" />
                 <polygon
@@ -291,7 +291,7 @@ export default function EnergyDiagram() {
 
             {/* Heat direction hint */}
             <text x={heatLabelX} y={heatLabelY}
-              textAnchor="middle" fill="rgba(255,255,255,0.55)" fontSize="12">
+              textAnchor="middle" fill="rgba(var(--overlay),0.55)" fontSize="12">
               {isExo ? 'heat released →' : '← heat absorbed'}
             </text>
 
@@ -320,7 +320,7 @@ export default function EnergyDiagram() {
             onChange={e => setDh(Number(e.target.value))}
             className="w-full h-1.5 appearance-none rounded-full cursor-pointer"
             style={{
-              background: `linear-gradient(to right, ${accent} ${(dh + 400) / 8}%, rgba(255,255,255,0.1) ${(dh + 400) / 8}%)`,
+              background: `linear-gradient(to right, ${accent} ${(dh + 400) / 8}%, rgba(var(--overlay),0.1) ${(dh + 400) / 8}%)`,
               accentColor: accent,
             }}
           />
@@ -341,7 +341,7 @@ export default function EnergyDiagram() {
             onChange={e => setEa(Number(e.target.value))}
             className="w-full h-1.5 appearance-none rounded-full cursor-pointer"
             style={{
-              background: `linear-gradient(to right, rgba(255,255,255,0.4) ${ea / 4}%, rgba(255,255,255,0.1) ${ea / 4}%)`,
+              background: `linear-gradient(to right, rgba(var(--overlay),0.4) ${ea / 4}%, rgba(var(--overlay),0.1) ${ea / 4}%)`,
             }}
           />
           <div className="flex justify-between font-mono text-xs text-secondary">
@@ -355,7 +355,7 @@ export default function EnergyDiagram() {
       <div className="rounded-sm border p-4"
         style={{
           borderColor: `color-mix(in srgb, ${accent} 22%, transparent)`,
-          background: `color-mix(in srgb, ${accent} 6%, #0e1016)`,
+          background: `color-mix(in srgb, ${accent} 6%, rgb(var(--color-surface)))`,
         }}>
         <p className="font-sans text-sm text-secondary leading-relaxed">
           {isExo ? (
