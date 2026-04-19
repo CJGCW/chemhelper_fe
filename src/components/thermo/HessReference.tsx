@@ -1,6 +1,6 @@
 export default function HessReference() {
   return (
-    <div className="flex flex-col gap-8 max-w-3xl">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       {/* Main law box */}
       <div className="rounded-sm border border-border bg-raised px-6 py-5 flex flex-col gap-4">

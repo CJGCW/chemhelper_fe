@@ -72,12 +72,6 @@ export default function EnergyLevelsReference() {
   return (
     <div className="flex flex-col gap-8 max-w-3xl">
 
-      {/* Print-only title */}
-      <div className="hidden print:block print:mb-4">
-        <h2 className="font-sans font-bold text-2xl text-gray-900">Energy Levels — Reference Sheet</h2>
-        <p className="font-mono text-sm text-gray-500 mt-1">ChemHelper</p>
-        <hr className="border-gray-300 mt-3" />
-      </div>
 
       {/* Formula card */}
       <div className="flex flex-col gap-2">

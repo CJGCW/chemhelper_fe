@@ -57,10 +57,16 @@ body {
   background: #2a2d3d;
 }
 
+/* ── Print: page margins ─────────────────────────────────────────────────── */
+
+@page {
+  margin: 0.75in;
+}
+
 /* ── Print: override dark theme ──────────────────────────────────────────── */
 
 @media print {
-  /* Darken accent CSS variables so inline style={{ color: 'var(--c-halogen)' }} is legible */
+  /* ── CSS variable overrides (darken accents for white paper) ─────────── */
   :root {
     --c-halogen:      #1d4ed8;
     --c-alkali:       #b91c1c;
@@ -74,39 +80,48 @@ body {
     --c-actinide:     #be123c;
   }
 
+  /* ── Global reset: strip every dark background and shadow ────────────── */
+  /* Covers Tailwind classes AND inline style="background:..." on every element */
+  *, *::before, *::after {
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    /* Lighten any inline border that used a dark hex */
+    border-color: #d1d5db !important;
+  }
+
+  /* ── Base layer ──────────────────────────────────────────────────────── */
   body { background-color: white !important; color: #111 !important; }
 
-  /* Tailwind bg utilities → white / near-white */
-  .bg-base    { background-color: white    !important; }
-  .bg-surface { background-color: white    !important; }
-  .bg-raised  { background-color: #f3f4f6  !important; }
+  /* ── Re-apply only the light surfaces we actually want ───────────────── */
+  .bg-raised { background-color: #f3f4f6 !important; }
 
-  /* Borders → light gray */
-  .border-border { border-color: #d1d5db !important; }
-  .border-muted  { border-color: #9ca3af !important; }
+  /* Tinted feedback backgrounds */
+  .bg-emerald-500\/10 { background-color: #d1fae5 !important; }
+  .bg-red-500\/10     { background-color: #fee2e2 !important; }
+  .bg-amber-500\/5    { background-color: #fffbeb !important; }
 
-  /* Text → dark */
+  /* ── Wide tables: let them reflow rather than clip ───────────────────── */
+  .overflow-x-auto { overflow: visible !important; }
+
+  /* ── Text → dark ─────────────────────────────────────────────────────── */
   .text-bright    { color: #111 !important; }
   .text-primary   { color: #222 !important; }
   .text-secondary { color: #555 !important; }
   .text-dim       { color: #777 !important; }
 
-  /* Semantic colours → print-legible equivalents */
-  .text-emerald-400  { color: #065f46 !important; }
-  .text-red-400      { color: #991b1b !important; }
-  .text-amber-400    { color: #92400e !important; }
-  .text-sky-400      { color: #0369a1 !important; }
-  .text-rose-400     { color: #9f1239 !important; }
-  .text-amber-400\/80 { color: #92400e !important; }
+  /* Semantic text colours → print-legible equivalents */
+  .text-emerald-400      { color: #065f46 !important; }
+  .text-red-400          { color: #991b1b !important; }
+  .text-amber-400        { color: #92400e !important; }
+  .text-amber-400\/80    { color: #92400e !important; }
+  .text-sky-400          { color: #0369a1 !important; }
+  .text-rose-400         { color: #9f1239 !important; }
 
-  /* Tinted backgrounds → very light tints */
-  .bg-emerald-500\/10 { background-color: #d1fae5 !important; }
-  .bg-red-500\/10     { background-color: #fee2e2 !important; }
-  .bg-amber-500\/5    { background-color: #fffbeb !important; }
+  /* Feedback borders */
   .border-emerald-500\/30 { border-color: #6ee7b7 !important; }
   .border-red-500\/30     { border-color: #fca5a5 !important; }
   .border-amber-500\/20   { border-color: #fcd34d !important; }
-  .text-amber-400\/80     { color: #92400e !important; }
 }
 
 /* Scroll hint shadow for horizontal scroll containers */

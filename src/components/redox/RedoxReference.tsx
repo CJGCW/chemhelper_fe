@@ -92,7 +92,7 @@ function OxidationSection() {
       <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3 print:text-black">Oxidation State Rules</p>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 print:grid-cols-3 print:gap-2">
         {OXIDATION_RULES.map(r => (
-          <div key={r.rule} className="rounded-sm border border-border bg-surface p-3 flex flex-col gap-1 print:border-gray-300 print:bg-white print:p-2">
+          <div key={r.rule} className="rounded-sm border border-border bg-surface p-3 flex flex-col gap-1 print:border-gray-300 print:bg-white print:p-2 print:break-inside-avoid">
             <div className="flex items-start justify-between gap-2">
               <span className="font-sans text-sm font-semibold text-bright print:text-black">{r.rule}</span>
               <span
@@ -114,7 +114,7 @@ function ReactionTypesSection() {
       <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3 print:text-black">Reaction Types</p>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 print:grid-cols-2 print:gap-3">
         {REACTION_TYPES.map(rt => (
-          <div key={rt.type} className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2 print:border-gray-300 print:bg-white print:p-3">
+          <div key={rt.type} className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2 print:border-gray-300 print:bg-white print:p-3 print:break-inside-avoid print:break-inside-avoid">
             <div className="flex items-center gap-2">
               <span
                 className="font-mono text-sm font-bold w-7 h-7 rounded-sm flex items-center justify-center shrink-0"
@@ -255,7 +255,7 @@ function RedoxConceptsSection() {
     <section>
       <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3 print:text-black">Redox Concepts</p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 print:grid-cols-3 print:gap-3">
-        <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2 print:border-gray-300 print:bg-white print:p-3">
+        <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2 print:border-gray-300 print:bg-white print:p-3 print:break-inside-avoid">
           <h4 className="font-sans text-sm font-semibold text-bright print:text-black">Oxidation vs Reduction</h4>
           <p className="font-sans text-xs text-primary leading-relaxed print:text-gray-800">
             <span className="font-semibold text-bright print:text-black">Oxidation</span> — loss of electrons; oxidation state increases.<br />
@@ -266,7 +266,7 @@ function RedoxConceptsSection() {
             <p className="font-mono text-xs text-secondary print:text-gray-600">Oxidation Is Loss · Reduction Is Gain</p>
           </div>
         </div>
-        <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2 print:border-gray-300 print:bg-white print:p-3">
+        <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2 print:border-gray-300 print:bg-white print:p-3 print:break-inside-avoid">
           <h4 className="font-sans text-sm font-semibold text-bright print:text-black">Oxidizing & Reducing Agents</h4>
           <p className="font-sans text-xs text-primary leading-relaxed print:text-gray-800">
             The <span className="font-semibold text-bright print:text-black">oxidizing agent</span> causes oxidation and is itself reduced (gains e⁻).<br />
@@ -277,7 +277,7 @@ function RedoxConceptsSection() {
             Zn = reducing agent · Cu²⁺ = oxidizing agent
           </p>
         </div>
-        <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2 print:border-gray-300 print:bg-white print:p-3">
+        <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2 print:border-gray-300 print:bg-white print:p-3 print:break-inside-avoid">
           <h4 className="font-sans text-sm font-semibold text-bright print:text-black">Half-Reactions</h4>
           <p className="font-sans text-xs text-primary leading-relaxed print:text-gray-800">
             Split a redox equation into oxidation and reduction half-reactions. Balance atoms, then balance charge by adding electrons.

@@ -215,9 +215,6 @@ export default function ThermochemistryPage() {
             </button>
           )}
         </div>
-        <h2 className="hidden print:block font-sans font-semibold text-black text-xl">
-          {currentSection ? `${currentSection.heading} — Reference` : 'Thermochemistry Reference'}
-        </h2>
 
         <div className="flex flex-col gap-1.5 print:hidden">
           {GROUPS.map(group => {

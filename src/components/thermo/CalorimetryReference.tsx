@@ -16,7 +16,7 @@ const SPECIFIC_HEATS = [
 
 export default function CalorimetryReference() {
   return (
-    <div className="flex flex-col gap-8 max-w-3xl">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       {/* Formula boxes */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

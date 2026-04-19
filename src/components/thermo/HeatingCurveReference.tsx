@@ -124,10 +124,10 @@ const SUBSTANCES = [
 
 export default function HeatingCurveReference() {
   return (
-    <div className="flex flex-col gap-8 max-w-3xl">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       {/* Diagram */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 print:hidden">
         <SectionHead label="Heating Curve — Shape" />
         <div className="rounded-sm border border-border overflow-hidden p-3"
           style={{ background: '#0a0c10' }}>

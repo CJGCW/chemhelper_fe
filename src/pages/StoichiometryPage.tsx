@@ -433,7 +433,6 @@ export default function StoichiometryPage() {
           )}
         </div>
 
-        <h2 className="hidden print:block font-sans font-semibold text-black text-xl">Stoichiometry — Reference</h2>
 
         {/* Mode toggle switch */}
         <div className="flex items-center gap-1 p-1 rounded-full self-start print:hidden"

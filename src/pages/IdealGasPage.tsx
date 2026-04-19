@@ -168,8 +168,6 @@ export default function IdealGasPage() {
             </button>
           )}
         </div>
-        <h2 className="hidden print:block font-sans font-semibold text-black text-xl">Ideal Gas Law — Reference</h2>
-
         {/* Mode toggle */}
         <div className="flex items-center gap-1 p-1 rounded-full self-start print:hidden"
           style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>

@@ -445,7 +445,7 @@ export default function NamingReference() {
     <div className="flex flex-col gap-5 max-w-4xl">
 
       {/* Pill bar */}
-      <div className="flex items-center gap-1 p-1 rounded-sm self-start flex-wrap"
+      <div className="flex items-center gap-1 p-1 rounded-sm self-start flex-wrap print:hidden"
         style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
         {SECTIONS.map(s => {
           const isActive = active === s.id

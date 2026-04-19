@@ -159,12 +159,6 @@ export default function StoichReference({ section = 'guide', topic }: { section?
   return (
     <div className="flex flex-col gap-5 print:max-w-none print:gap-4">
 
-      {/* Print-only title */}
-      <div className="hidden print:block print:mb-4">
-        <h2 className="font-sans font-bold text-2xl text-gray-900">Stoichiometry — Reference Sheet</h2>
-        <p className="font-mono text-sm text-gray-500 mt-1">ChemHelper</p>
-        <hr className="border-gray-300 mt-3" />
-      </div>
 
       {/* Cards grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5 print:grid-cols-2 print:gap-4">

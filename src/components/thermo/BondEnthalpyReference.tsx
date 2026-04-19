@@ -107,7 +107,7 @@ export default function BondEnthalpyReference() {
             onChange={e => setSearchTerm(e.target.value)}
             placeholder="search bond…"
             className="bg-raised border border-border rounded-sm px-3 py-1 font-mono text-xs text-bright
-                       placeholder:text-dim/50 focus:outline-none focus:border-muted w-36"
+                       placeholder:text-dim/50 focus:outline-none focus:border-muted w-36 print:hidden"
           />
         </div>
 

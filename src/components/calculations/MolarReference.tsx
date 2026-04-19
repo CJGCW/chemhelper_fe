@@ -423,12 +423,6 @@ function FullGuide() {
   return (
     <div className="flex flex-col gap-5 print:max-w-none print:gap-4">
 
-      {/* Print-only title */}
-      <div className="hidden print:block print:mb-4">
-        <h2 className="font-sans font-bold text-2xl text-gray-900">Molar Calculations — Reference Sheet</h2>
-        <p className="font-mono text-sm text-gray-500 mt-1">ChemHelper</p>
-        <hr className="border-gray-300 mt-3" />
-      </div>
 
       {/* Concepts */}
       <div>
