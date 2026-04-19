@@ -270,7 +270,7 @@ export default function IdealGasSolver() {
 
             {/* Steps */}
             <div className="flex flex-col gap-2 rounded-sm border border-border bg-surface p-4">
-              <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Steps</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase">Steps</span>
               <div className="flex flex-col gap-0.5 pl-3 border-l-2 border-border">
                 {steps.map((s, i) => (
                   <p key={i} className="font-mono text-sm text-primary">{s}</p>
@@ -308,7 +308,7 @@ export default function IdealGasSolver() {
         )}
       </AnimatePresence>
 
-      <p className="font-mono text-[10px] text-dim">
+      <p className="font-mono text-xs text-secondary">
         R = {R} L·atm/(mol·K) · fill any three fields and leave one blank to solve · fill all four to verify
       </p>
     </div>

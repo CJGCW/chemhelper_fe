@@ -89,7 +89,7 @@ export default function SigFigPractice() {
 
       {/* Settings */}
       <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
-        <p className="font-mono text-[10px] tracking-[0.15em] text-dim uppercase">Settings</p>
+        <p className="font-mono text-xs tracking-widest text-secondary uppercase">Settings</p>
 
         <div className="flex flex-wrap gap-5">
           <div className="flex items-center gap-2">

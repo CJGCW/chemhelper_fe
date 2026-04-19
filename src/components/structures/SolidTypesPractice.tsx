@@ -194,7 +194,7 @@ export default function SolidTypesPractice() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Solid Types Practice</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Solid Types Practice</span>
           {attempts > 0 && (
             <span className="font-mono text-xs" style={{ color: 'var(--c-halogen)' }}>
               {score}/{attempts}
@@ -217,7 +217,7 @@ export default function SolidTypesPractice() {
           {/* Prompt */}
           <div className="px-4 py-3 border-b border-border"
             style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, #141620)' }}>
-            <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Identify the solid type</span>
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">Identify the solid type</span>
           </div>
           <div className="px-4 py-4">
             <p className="font-sans text-base text-bright leading-relaxed">{q.prompt}</p>

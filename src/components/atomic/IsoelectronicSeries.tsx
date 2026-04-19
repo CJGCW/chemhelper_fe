@@ -135,7 +135,7 @@ export default function IsoelectronicSeries() {
 
           {/* Shared config badge */}
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Shared config</span>
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">Shared config</span>
             <span className="font-mono text-xs text-secondary">{series.config}</span>
           </div>
 
@@ -167,7 +167,7 @@ export default function IsoelectronicSeries() {
                     <span className="font-mono text-xs font-semibold" style={{ color: colors.label }}>
                       {ion.symbol}{formatCharge(ion.charge)}
                     </span>
-                    <span className="font-mono text-[10px] text-dim">{ion.radius} pm</span>
+                    <span className="font-mono text-xs text-secondary">{ion.radius} pm</span>
                   </div>
                 </div>
               )
@@ -177,7 +177,7 @@ export default function IsoelectronicSeries() {
           {/* Arrow label */}
           <div className="flex items-center gap-3 px-2">
             <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right, #38bdf8, #fb923c)' }} />
-            <span className="font-mono text-[10px] text-dim whitespace-nowrap">
+            <span className="font-mono text-xs text-secondary whitespace-nowrap">
               increasing Z (protons) →
             </span>
           </div>
@@ -188,7 +188,7 @@ export default function IsoelectronicSeries() {
               <thead>
                 <tr className="border-b border-border bg-raised">
                   {['Ion', 'Name', 'Protons (Z)', 'Electrons', 'Ionic Radius'].map(h => (
-                    <th key={h} className="px-3 py-2 text-left text-[10px] text-dim tracking-widest uppercase font-normal">
+                    <th key={h} className="px-3 py-2 text-left text-xs text-secondary tracking-widest uppercase font-normal">
                       {h}
                     </th>
                   ))}
@@ -217,7 +217,7 @@ export default function IsoelectronicSeries() {
 
           {/* Explanation */}
           <div className="rounded-sm border border-border/60 bg-surface/50 p-4 flex flex-col gap-2">
-            <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Why the trend</span>
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">Why the trend</span>
             <p className="font-sans text-sm text-secondary leading-relaxed">
               All ions in this series have <span className="text-primary">{series.electrons} electrons</span> in
               identical orbitals. The only difference is nuclear charge Z.
@@ -231,7 +231,7 @@ export default function IsoelectronicSeries() {
         </motion.div>
       </AnimatePresence>
 
-      <p className="font-mono text-[10px] text-dim">
+      <p className="font-mono text-xs text-secondary">
         Radii: Shannon crystal radii, 6-coordinate (Acta Crystallographica A32, 1976).
       </p>
     </div>

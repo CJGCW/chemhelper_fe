@@ -48,7 +48,7 @@ export default function SigmaPiProblems() {
       {/* Score bar */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-[10px] text-dim tracking-widest uppercase">σ / π Bond Problems</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">σ / π Bond Problems</span>
           {attempts > 0 && (
             <span className="font-mono text-xs" style={{ color: 'var(--c-halogen)' }}>
               {score}/{attempts}
@@ -90,7 +90,7 @@ export default function SigmaPiProblems() {
 
               {/* Inputs */}
               <div className="px-4 py-3 flex flex-col gap-3">
-                <span className="font-mono text-[9px] text-dim tracking-widest uppercase">
+                <span className="font-mono text-xs text-secondary tracking-widest uppercase">
                   Count the bonds
                 </span>
                 <div className="flex gap-4 flex-wrap">

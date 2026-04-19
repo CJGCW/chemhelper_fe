@@ -52,7 +52,7 @@ export default function HessCalc() {
     ? parseFloat(parsed.reduce((s, p) => s + (p?.contribution ?? 0), 0).toFixed(2))
     : null
 
-  const labelCls = "font-mono text-[10px] text-dim tracking-widest uppercase"
+  const labelCls = "font-mono text-xs text-secondary tracking-widest uppercase"
 
   return (
     <div className="flex flex-col gap-6 max-w-3xl">
@@ -201,7 +201,7 @@ export default function HessCalc() {
         )}
       </AnimatePresence>
 
-      <p className="font-mono text-[10px] text-dim">
+      <p className="font-mono text-xs text-secondary">
         Enter each known reaction and its ΔH. Use the flip toggle to reverse a reaction (negates ΔH) and the multiplier to scale it. ΔHrxn updates live.
       </p>
     </div>

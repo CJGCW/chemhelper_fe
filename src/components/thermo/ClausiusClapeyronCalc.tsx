@@ -152,7 +152,7 @@ function FieldInput({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="font-mono text-[10px] text-dim tracking-widest uppercase">{label}</span>
+      <span className="font-mono text-xs text-secondary tracking-widest uppercase">{label}</span>
       <div className="flex">
         <input
           type="number"
@@ -199,11 +199,11 @@ function ResultCard({ sf, result }: { sf: SolveFor; result: number }) {
 
   return (
     <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-3">
-      <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Result</span>
+      <span className="font-mono text-xs text-secondary tracking-widest uppercase">Result</span>
       <div className="flex flex-wrap gap-4">
         {rows.map(r => (
           <div key={r.label} className="flex flex-col gap-0.5">
-            <span className="font-mono text-[10px] text-dim">{varLabel[sf]} ({r.label})</span>
+            <span className="font-mono text-xs text-secondary">{varLabel[sf]} ({r.label})</span>
             <span className="font-mono text-lg font-semibold" style={{ color: 'var(--c-halogen)' }}>
               {r.value}
             </span>
@@ -263,7 +263,7 @@ export default function ClausiusClapeyronCalc() {
 
       {/* Solve-for selector */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Solve for</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Solve for</span>
         <div className="flex flex-wrap gap-2">
           {SOLVE_OPTIONS.map(o => (
             <button key={o.id} onClick={() => setSf(o.id)}
@@ -303,7 +303,7 @@ export default function ClausiusClapeyronCalc() {
       </div>
 
       {/* Note about pressure units */}
-      <p className="font-sans text-[10px] text-dim -mt-4 px-0.5">
+      <p className="font-sans text-xs text-secondary -mt-4 px-0.5">
         P₁ and P₂ appear as a ratio — any consistent pressure unit works as long as both use the same unit.
       </p>
 
@@ -321,7 +321,7 @@ export default function ClausiusClapeyronCalc() {
         <div className="flex flex-col gap-2">
           <button
             onClick={() => setShowSteps(s => !s)}
-            className="flex items-center gap-2 font-mono text-[10px] text-dim tracking-widest uppercase
+            className="flex items-center gap-2 font-mono text-xs text-secondary tracking-widest uppercase
                        hover:text-secondary transition-colors self-start">
             <span>{showSteps ? '▾' : '▸'}</span>
             <span>Step-by-step working</span>

@@ -105,7 +105,7 @@ export default function LimitingReagentSolver() {
 
       {/* Reaction selector */}
       <div className="flex flex-col gap-2">
-        <label className="font-mono text-[10px] text-secondary tracking-widest uppercase">Reaction</label>
+        <label className="font-mono text-xs text-secondary tracking-widest uppercase">Reaction</label>
         <select value={rxnIdx} onChange={e => switchReaction(Number(e.target.value))}
           className="bg-raised border border-border rounded-sm px-3 py-2
                      font-sans text-sm text-bright focus:outline-none focus:border-muted">
@@ -133,7 +133,7 @@ export default function LimitingReagentSolver() {
               : (u: InputUnit) => setLrUnitB(u)
             return (
               <div key={sp.formula} className="flex flex-col gap-2">
-                <label className="font-mono text-[10px] text-secondary tracking-widest uppercase">
+                <label className="font-mono text-xs text-secondary tracking-widest uppercase">
                   {sp.display}
                   <span className="normal-case font-normal text-dim ml-2">
                     ({sp.name}, M = {sp.molarMass} g/mol)
@@ -168,12 +168,12 @@ export default function LimitingReagentSolver() {
                   {/* Summary cards */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="rounded-sm border border-rose-800/50 bg-rose-950/20 px-4 py-3">
-                      <span className="font-mono text-[10px] text-dim uppercase tracking-widest block mb-1">Limiting Reagent</span>
+                      <span className="font-mono text-xs text-secondary uppercase tracking-widest block mb-1">Limiting Reagent</span>
                       <span className="font-mono text-xl font-semibold text-rose-300">{lrResult.limitingReagent.display}</span>
                       <span className="font-mono text-xs text-dim block mt-0.5">{lrResult.limitingReagent.name}</span>
                     </div>
                     <div className="rounded-sm border border-border bg-surface px-4 py-3">
-                      <span className="font-mono text-[10px] text-dim uppercase tracking-widest block mb-1">
+                      <span className="font-mono text-xs text-secondary uppercase tracking-widest block mb-1">
                         {lrResult.excessReagent.display} Remaining
                       </span>
                       <span className="font-mono text-xl font-semibold text-bright">{lrResult.excessRemainingG} g</span>
@@ -183,7 +183,7 @@ export default function LimitingReagentSolver() {
 
                   {/* Theoretical yields */}
                   <div className="rounded-sm border border-border bg-surface px-4 py-1">
-                    <span className="font-mono text-[10px] text-secondary uppercase tracking-widest block py-2 border-b border-border">
+                    <span className="font-mono text-xs text-secondary uppercase tracking-widest block py-2 border-b border-border">
                       Theoretical Yields
                     </span>
                     {lrResult.products.map(p => (

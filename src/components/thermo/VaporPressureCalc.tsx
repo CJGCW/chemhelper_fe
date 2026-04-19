@@ -104,7 +104,7 @@ export default function VaporPressureCalc() {
 
       {/* Substance selector */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Substance</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Substance</span>
         <div className="flex flex-wrap gap-1.5">
           {SUBSTANCES.map(s => (
             <button key={s.name} onClick={() => setSubstanceId(s.name)}
@@ -139,25 +139,25 @@ export default function VaporPressureCalc() {
 
       {/* Reference point — locked for presets, editable for custom */}
       <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-4">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Reference Point (T₁, P₁)</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Reference Point (T₁, P₁)</span>
         {!isCustom && substance ? (
           <div className="flex flex-wrap gap-6">
             <div className="flex flex-col gap-0.5">
-              <span className="font-mono text-[10px] text-dim">T₁ — normal boiling point</span>
+              <span className="font-mono text-xs text-secondary">T₁ — normal boiling point</span>
               <span className="font-mono text-sm text-primary">
                 {substance.bp.toFixed(1)} °C
                 <span className="text-dim text-xs ml-2">= {(substance.bp + 273.15).toFixed(2)} K</span>
               </span>
             </div>
             <div className="flex flex-col gap-0.5">
-              <span className="font-mono text-[10px] text-dim">P₁</span>
+              <span className="font-mono text-xs text-secondary">P₁</span>
               <span className="font-mono text-sm text-primary">
                 1.000 atm
                 <span className="text-dim text-xs ml-2">= 101,325 Pa</span>
               </span>
             </div>
             <div className="flex flex-col gap-0.5">
-              <span className="font-mono text-[10px] text-dim">ΔH_vap</span>
+              <span className="font-mono text-xs text-secondary">ΔH_vap</span>
               <span className="font-mono text-sm" style={{ color: 'var(--c-halogen)' }}>
                 {substance.dHvap} kJ/mol
               </span>
@@ -167,14 +167,14 @@ export default function VaporPressureCalc() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {/* Custom T1 */}
             <div className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] text-dim">T₁ (°C)</span>
+              <span className="font-mono text-xs text-secondary">T₁ (°C)</span>
               <input type="number" value={customT1} onChange={e => setCustomT1(e.target.value)}
                 className="h-9 rounded-sm border border-border bg-raised px-3 font-mono text-sm
                            text-bright focus:outline-none focus:border-muted" />
             </div>
             {/* Custom P1 */}
             <div className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] text-dim">P₁</span>
+              <span className="font-mono text-xs text-secondary">P₁</span>
               <div className="flex">
                 <input type="number" value={customP1} onChange={e => setCustomP1(e.target.value)}
                   className="flex-1 min-w-0 h-9 rounded-l-sm border border-border bg-raised px-3 font-mono text-sm
@@ -188,7 +188,7 @@ export default function VaporPressureCalc() {
             </div>
             {/* Custom dHvap */}
             <div className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] text-dim">ΔH_vap (kJ/mol)</span>
+              <span className="font-mono text-xs text-secondary">ΔH_vap (kJ/mol)</span>
               <input type="number" value={customDh} onChange={e => setCustomDh(e.target.value)}
                 className="h-9 rounded-sm border border-border bg-raised px-3 font-mono text-sm
                            text-bright focus:outline-none focus:border-muted" />
@@ -199,7 +199,7 @@ export default function VaporPressureCalc() {
 
       {/* Target temperature */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Target Temperature (T₂)</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Target Temperature (T₂)</span>
         <div className="flex items-center gap-2 max-w-xs">
           <input type="number" value={t2} onChange={e => setT2(e.target.value)}
             className="flex-1 h-9 rounded-l-sm border border-border bg-raised px-3 font-mono text-sm
@@ -212,7 +212,7 @@ export default function VaporPressureCalc() {
           </select>
         </div>
         {isFinite(T2_K) && T2_K > 0 && (
-          <span className="font-mono text-[10px] text-dim px-0.5">
+          <span className="font-mono text-xs text-secondary px-0.5">
             = {T2_K.toFixed(2)} K
           </span>
         )}
@@ -221,13 +221,13 @@ export default function VaporPressureCalc() {
       {/* Result */}
       {P2_Pa !== null ? (
         <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-4">
-          <span className="font-mono text-[10px] text-dim tracking-widest uppercase">
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">
             Vapor Pressure at {t2} {tu2}
           </span>
           <div className="flex flex-wrap gap-6">
             {P_LABELS.map(u => (
               <div key={u} className="flex flex-col gap-0.5">
-                <span className="font-mono text-[10px] text-dim">P₂ ({u})</span>
+                <span className="font-mono text-xs text-secondary">P₂ ({u})</span>
                 <span className="font-mono text-lg font-semibold" style={{ color: 'var(--c-halogen)' }}>
                   {fmtP(P2_Pa, u)}
                 </span>
@@ -248,7 +248,7 @@ export default function VaporPressureCalc() {
       {P2_Pa !== null && (
         <div className="flex flex-col gap-2">
           <button onClick={() => setShowSteps(s => !s)}
-            className="flex items-center gap-2 font-mono text-[10px] text-dim tracking-widest uppercase
+            className="flex items-center gap-2 font-mono text-xs text-secondary tracking-widest uppercase
                        hover:text-secondary transition-colors self-start">
             <span>{showSteps ? '▾' : '▸'}</span>
             <span>Step-by-step working</span>
@@ -280,7 +280,7 @@ export default function VaporPressureCalc() {
         </div>
       )}
 
-      <p className="font-mono text-[10px] text-dim px-0.5">
+      <p className="font-mono text-xs text-secondary px-0.5">
         Uses the Clausius-Clapeyron equation with the substance's normal boiling point as the reference (T₁, P₁ = 1 atm).
         ΔH_vap is assumed constant over the temperature range.
       </p>

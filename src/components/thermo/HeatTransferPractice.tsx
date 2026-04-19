@@ -61,7 +61,7 @@ export default function HeatTransferPractice() {
         >
           {/* Badge */}
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[10px] text-dim border border-border px-2 py-0.5 rounded-sm">
+            <span className="font-mono text-xs text-secondary border border-border px-2 py-0.5 rounded-sm">
               q_gained = −q_lost
             </span>
           </div>

@@ -71,24 +71,24 @@ export default function PercentYieldSolver() {
 
       {/* Actual yield */}
       <div className="flex flex-col gap-2">
-        <label className="font-mono text-[10px] text-secondary tracking-widest uppercase">Actual Yield (g)</label>
+        <label className="font-mono text-xs text-secondary tracking-widest uppercase">Actual Yield (g)</label>
         <div className="flex items-center gap-2">
           <NumInput value={actualVal} onChange={v => { setActualVal(v); setResult(null) }}
             placeholder="e.g. 9.85" />
           <span className="font-mono text-xs text-secondary">g</span>
         </div>
-        <p className="font-mono text-[10px] text-dim">The mass of product actually obtained in the experiment.</p>
+        <p className="font-mono text-xs text-secondary">The mass of product actually obtained in the experiment.</p>
       </div>
 
       {/* Theoretical yield */}
       <div className="flex flex-col gap-2">
-        <label className="font-mono text-[10px] text-secondary tracking-widest uppercase">Theoretical Yield (g)</label>
+        <label className="font-mono text-xs text-secondary tracking-widest uppercase">Theoretical Yield (g)</label>
         <div className="flex items-center gap-2">
           <NumInput value={theoreticalVal} onChange={v => { setTheoreticalVal(v); setResult(null) }}
             placeholder="e.g. 34.06" />
           <span className="font-mono text-xs text-secondary">g</span>
         </div>
-        <p className="font-mono text-[10px] text-dim">The maximum possible yield calculated from stoichiometry.</p>
+        <p className="font-mono text-xs text-secondary">The maximum possible yield calculated from stoichiometry.</p>
       </div>
 
       {errorMsg && <p className="font-mono text-xs text-rose-400">{errorMsg}</p>}
@@ -115,7 +115,7 @@ export default function PercentYieldSolver() {
                   borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   background: 'color-mix(in srgb, var(--c-halogen) 8%, #0e1016)',
                 }}>
-                <span className="font-mono text-[10px] text-secondary tracking-widest uppercase block mb-1">
+                <span className="font-mono text-xs text-secondary tracking-widest uppercase block mb-1">
                   Percent Yield
                 </span>
                 <span className="font-mono text-2xl font-semibold" style={{ color: 'var(--c-halogen)' }}>
@@ -123,7 +123,7 @@ export default function PercentYieldSolver() {
                 </span>
               </div>
               <div className="rounded-sm border border-border bg-surface px-4 py-3 flex flex-col gap-2">
-                <span className="font-mono text-[10px] text-secondary tracking-widest uppercase">Solution Steps</span>
+                <span className="font-mono text-xs text-secondary tracking-widest uppercase">Solution Steps</span>
                 <div className="flex flex-col gap-1.5 pl-3 border-l border-border">
                   {result.steps.map((s, i) => (
                     <p key={i} className="font-mono text-sm text-primary">{s}</p>

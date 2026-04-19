@@ -309,7 +309,7 @@ function AnimatedFactorFraction({
         <span className="font-mono text-sm text-primary">{step.denValue}</span>
         <AnimatedUnitTag unit={step.denUnit} cancelled={step.denCancelled} cancelDelay={delays.den} />
       </div>
-      <span className="font-mono text-[9px] text-dim mt-1.5 text-center whitespace-nowrap">{step.note}</span>
+      <span className="font-mono text-xs text-secondary mt-1.5 text-center whitespace-nowrap">{step.note}</span>
     </div>
   )
 }
@@ -405,7 +405,7 @@ export default function ConversionExamples() {
       {/* Inputs */}
       <div className="flex flex-wrap gap-3">
         <div className="flex flex-col gap-1.5 flex-1 min-w-[130px]">
-          <label className="font-mono text-[10px] text-dim">{pw.valueLabel.toUpperCase()}</label>
+          <label className="font-mono text-xs text-secondary">{pw.valueLabel.toUpperCase()}</label>
           <input
             type="text" inputMode="decimal"
             value={value}
@@ -418,7 +418,7 @@ export default function ConversionExamples() {
 
         {pw.needsMolar && (
           <div className="flex flex-col gap-1.5 flex-1 min-w-[180px]">
-            <label className="font-mono text-[10px] text-dim">MOLAR MASS (g/mol)</label>
+            <label className="font-mono text-xs text-secondary">MOLAR MASS (g/mol)</label>
             <input
               type="text" inputMode="decimal"
               value={molarMass}
@@ -507,18 +507,18 @@ export default function ConversionExamples() {
               animate={{ opacity: 1 }}
               transition={{ delay: equationDoneDelay }}
             >
-              <span className="font-mono text-[9px] text-dim tracking-wider">KEY</span>
+              <span className="font-mono text-xs text-secondary tracking-wider">KEY</span>
               <div className="flex items-center gap-1">
                 <span className="font-mono text-xs" style={{ color: 'var(--c-halogen)' }}>unit</span>
-                <span className="font-sans text-[10px] text-dim">— carries forward</span>
+                <span className="font-sans text-xs text-secondary">— carries forward</span>
               </div>
               <div className="flex items-center gap-1">
                 <span className="font-mono text-xs" style={{ color: '#4a4f6a', textDecoration: 'line-through' }}>unit</span>
-                <span className="font-sans text-[10px] text-dim">— cancelled</span>
+                <span className="font-sans text-xs text-secondary">— cancelled</span>
               </div>
               <div className="flex items-center gap-1">
                 <span className="font-mono text-xs" style={{ color: '#4ade80' }}>unit</span>
-                <span className="font-sans text-[10px] text-dim">— result</span>
+                <span className="font-sans text-xs text-secondary">— result</span>
               </div>
             </motion.div>
 
@@ -531,7 +531,7 @@ export default function ConversionExamples() {
                   transition={{ delay: (i + 1) * BLOCK_STAGGER + 0.1, duration: 0.18 }}
                   className="flex items-start gap-2.5"
                 >
-                  <span className="font-mono text-[10px] text-dim shrink-0 mt-[2px] w-10">Step {i + 1}</span>
+                  <span className="font-mono text-xs text-secondary shrink-0 mt-[2px] w-10">Step {i + 1}</span>
                   <p className="font-sans text-xs text-secondary leading-relaxed">
                     Multiply by{' '}
                     <span className="font-mono text-primary">

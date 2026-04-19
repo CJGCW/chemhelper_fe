@@ -229,7 +229,7 @@ export default function VseprPractice() {
 
           {/* Molecule label + diagram */}
           <div className="flex flex-col gap-1">
-            <span className="font-mono text-[10px] text-dim tracking-wider uppercase">Molecule</span>
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">Molecule</span>
             <span className="font-sans font-semibold text-bright text-xl">{entry.label}</span>
           </div>
 
@@ -303,7 +303,7 @@ export default function VseprPractice() {
 
       {/* Structure builder — explore geometries while practicing */}
       <div className="border-t border-border pt-6 mt-2">
-        <p className="font-mono text-[10px] text-dim tracking-wider uppercase mb-4">Structure Builder</p>
+        <p className="font-mono text-xs text-secondary tracking-widest uppercase mb-4">Structure Builder</p>
         <VseprEditor />
       </div>
     </div>

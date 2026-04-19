@@ -122,7 +122,7 @@ function Legend({ id }: { id: StructureId }) {
       {items.map(it => (
         <div key={it.l} className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full shrink-0" style={{ background: it.c }} />
-          <span className="font-mono text-[10px] text-dim">{it.l}</span>
+          <span className="font-mono text-xs text-secondary">{it.l}</span>
         </div>
       ))}
     </div>
@@ -330,7 +330,7 @@ function CrystalCanvas({ structureId }: { structureId: StructureId }) {
           onPointerUp={onPointerUp}
           onPointerLeave={onPointerUp}
         />
-        <div className="absolute bottom-2 left-3 font-mono text-[9px] text-dim opacity-40 select-none">
+        <div className="absolute bottom-2 left-3 font-mono text-xs text-secondary opacity-40 select-none">
           drag to rotate
         </div>
         <button
@@ -344,7 +344,7 @@ function CrystalCanvas({ structureId }: { structureId: StructureId }) {
 
       {/* Supercell selector */}
       <div className="flex items-center gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Supercell</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Supercell</span>
         <div className="flex gap-1 p-1 rounded-sm" style={{ background:'#0e1016', border:'1px solid #1c1f2e' }}>
           {([1,2,3] as const).map(n => {
             const active = cells === n
@@ -419,7 +419,7 @@ export default function UnitCellCalc() {
 
       {/* Structure selector */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Crystal Structure</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Crystal Structure</span>
         <div className="flex gap-3 flex-wrap">
           {(Object.keys(STRUCTURES) as StructureId[]).map(id => {
             const active = structureId === id
@@ -445,7 +445,7 @@ export default function UnitCellCalc() {
 
       {/* Edge length */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Edge Length (a)</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Edge Length (a)</span>
         <div className="flex gap-2 items-center flex-wrap">
           <input type="number" value={edgeStr} onChange={e => setEdgeStr(e.target.value)}
             className="w-36 px-3 py-2 rounded-sm border border-border bg-surface font-mono text-sm text-primary
@@ -467,13 +467,13 @@ export default function UnitCellCalc() {
 
       {/* Presets */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Element Presets</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Element Presets</span>
         <div className="flex flex-wrap gap-1.5">
           {METALS.map(m => (
             <button key={m.symbol} onClick={() => loadPreset(m)}
               className="px-2.5 py-1 rounded-sm font-mono text-xs border border-border text-secondary
                          hover:text-primary hover:border-muted transition-colors">
-              {m.symbol}<span className="ml-1 text-[9px] text-dim">{m.structure.toUpperCase()}</span>
+              {m.symbol}<span className="ml-1 text-xs text-secondary">{m.structure.toUpperCase()}</span>
             </button>
           ))}
         </div>
@@ -481,7 +481,7 @@ export default function UnitCellCalc() {
 
       {/* Molar mass */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">
           Molar Mass <span className="normal-case tracking-normal opacity-60">(needed for density)</span>
         </span>
         <div className="flex items-center gap-2">
@@ -496,32 +496,32 @@ export default function UnitCellCalc() {
       {/* Results */}
       {radius !== null && edgePm !== null && (
         <div className="flex flex-col gap-3">
-          <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Results</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Results</span>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <div className="flex flex-col gap-1 px-4 py-3 rounded-sm bg-raised border border-border">
-              <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Atomic Radius</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase">Atomic Radius</span>
               <span className="font-mono text-base font-semibold" style={{ color:'var(--c-halogen)' }}>
                 {radius.toFixed(1)} pm
               </span>
               <span className="font-mono text-xs text-dim">{(radius/100).toFixed(3)} Å</span>
             </div>
             <div className="flex flex-col gap-1 px-4 py-3 rounded-sm bg-raised border border-border">
-              <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Atoms / Cell (Z)</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase">Atoms / Cell (Z)</span>
               <span className="font-mono text-base font-semibold text-primary">{s.Z}</span>
               <span className="font-mono text-xs text-dim">{s.label}</span>
             </div>
             <div className="flex flex-col gap-1 px-4 py-3 rounded-sm bg-raised border border-border">
-              <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Coord. Number</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase">Coord. Number</span>
               <span className="font-mono text-base font-semibold text-primary">{s.cn}</span>
               <span className="font-mono text-xs text-dim">nearest neighbours</span>
             </div>
             <div className="flex flex-col gap-1 px-4 py-3 rounded-sm bg-raised border border-border">
-              <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Packing Efficiency</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase">Packing Efficiency</span>
               <span className="font-mono text-base font-semibold text-primary">{(s.packing*100).toFixed(2)}%</span>
               <span className="font-mono text-xs text-dim">of cell volume occupied</span>
             </div>
             <div className="flex flex-col gap-1 px-4 py-3 rounded-sm bg-raised border border-border">
-              <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Unit Cell Volume</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase">Unit Cell Volume</span>
               <span className="font-mono text-base font-semibold text-primary">
                 {(Math.pow(edgePm,3)/1e6).toFixed(3)} Å³
               </span>
@@ -529,7 +529,7 @@ export default function UnitCellCalc() {
             </div>
             {density !== null && (
               <div className="flex flex-col gap-1 px-4 py-3 rounded-sm bg-raised border border-border">
-                <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Density</span>
+                <span className="font-mono text-xs text-secondary tracking-widest uppercase">Density</span>
                 <span className="font-mono text-base font-semibold" style={{ color:'var(--c-halogen)' }}>
                   {density.toFixed(3)} g/cm³
                 </span>

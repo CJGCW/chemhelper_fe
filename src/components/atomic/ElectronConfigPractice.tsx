@@ -103,7 +103,7 @@ function BoxDiagramInput({
       {coreLabel && (
         <div className="flex items-center gap-3 px-3 py-2 rounded-sm border border-border"
           style={{ background: '#0e1016' }}>
-          <span className="font-mono text-[10px] text-dim w-8 text-center shrink-0">core</span>
+          <span className="font-mono text-xs text-secondary w-8 text-center shrink-0">core</span>
           <span className="font-mono text-sm text-dim">{coreLabel} — pre-filled</span>
         </div>
       )}
@@ -111,7 +111,7 @@ function BoxDiagramInput({
         <div key={n} className="flex items-end gap-4 p-3 rounded-sm border border-border"
           style={{ background: '#0e1016' }}>
           <div className="w-8 shrink-0 flex items-center justify-center pb-0.5">
-            <span className="font-mono text-[10px] text-dim">n={n}</span>
+            <span className="font-mono text-xs text-secondary">n={n}</span>
           </div>
           <div className="flex items-end gap-4 flex-wrap">
             {subs.map(sub => {
@@ -269,7 +269,7 @@ export default function ElectronConfigPractice() {
     return (
       <div className="flex flex-col gap-6 max-w-lg">
         <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
-          <p className="font-mono text-[10px] tracking-[0.15em] text-dim uppercase">Element Range</p>
+          <p className="font-mono text-xs tracking-widest text-secondary uppercase">Element Range</p>
           <div className="flex flex-col gap-1.5">
             {PRESETS.map((p, i) => (
               <button key={i} onClick={() => setPresetIdx(i)}
@@ -290,7 +290,7 @@ export default function ElectronConfigPractice() {
 
         <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col gap-3 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
-            <p className="font-mono text-[10px] tracking-[0.15em] text-dim uppercase">Problems</p>
+            <p className="font-mono text-xs tracking-widest text-secondary uppercase">Problems</p>
             <div className="flex gap-2">
               {[5, 10, 15].map(n => (
                 <button key={n} onClick={() => setCount(n)}
@@ -307,7 +307,7 @@ export default function ElectronConfigPractice() {
           </div>
 
           <div className="flex flex-col gap-3 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
-            <p className="font-mono text-[10px] tracking-[0.15em] text-dim uppercase">Noble Gas Core</p>
+            <p className="font-mono text-xs tracking-widest text-secondary uppercase">Noble Gas Core</p>
             <button onClick={() => setNobleHint(h => !h)}
               className="py-1.5 rounded-sm border font-sans text-sm transition-colors"
               style={{
@@ -426,7 +426,7 @@ export default function ElectronConfigPractice() {
 
       {/* Written config input */}
       <div className="flex flex-col gap-2">
-        <p className="font-mono text-[10px] tracking-[0.15em] text-dim uppercase">
+        <p className="font-mono text-xs tracking-widest text-secondary uppercase">
           Written Configuration
         </p>
         <input
@@ -479,7 +479,7 @@ export default function ElectronConfigPractice() {
 
       {/* Orbital box diagram input */}
       <div className="flex flex-col gap-2">
-        <p className="font-mono text-[10px] tracking-[0.15em] text-dim uppercase">
+        <p className="font-mono text-xs tracking-widest text-secondary uppercase">
           Orbital Box Diagram
           <span className="ml-2 normal-case tracking-normal font-sans opacity-60">
             — click boxes to cycle: empty → ↑ → ↑↓

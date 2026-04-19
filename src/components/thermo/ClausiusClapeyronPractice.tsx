@@ -308,7 +308,7 @@ export default function ClausiusClapeyronPractice() {
       {/* Header row */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Problem</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Problem</span>
           <span className="font-mono text-xs px-2 py-0.5 rounded-sm border border-border text-secondary">
             #{count}
           </span>
@@ -340,7 +340,7 @@ export default function ClausiusClapeyronPractice() {
 
         {/* Given values */}
         <div className="px-4 py-3 border-b border-border">
-          <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Given</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Given</span>
           <ul className="mt-1.5 flex flex-col gap-0.5">
             {problem.given.map((g, i) => (
               <li key={i} className="font-mono text-xs text-secondary flex gap-1.5">
@@ -375,7 +375,7 @@ export default function ClausiusClapeyronPractice() {
         {/* Answer */}
         {showAnswer && (
           <div className="px-4 py-3 border-b border-border">
-            <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Answer</span>
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">Answer</span>
             <p className="mt-1.5 font-mono text-sm font-semibold"
               style={{ color: SF_COLOR[problem.solveFor] }}>
               {SF_LABEL[problem.solveFor]} = {problem.answer}
@@ -387,7 +387,7 @@ export default function ClausiusClapeyronPractice() {
         {showAnswer && showSteps && (
           <div>
             <div className="px-4 py-2 border-b border-border bg-raised">
-              <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Step-by-step</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase">Step-by-step</span>
             </div>
             <table className="w-full text-xs font-mono">
               <tbody>
@@ -407,7 +407,7 @@ export default function ClausiusClapeyronPractice() {
 
       {/* Hint */}
       {!showAnswer && (
-        <p className="font-mono text-[10px] text-dim px-0.5">
+        <p className="font-mono text-xs text-secondary px-0.5">
           Hint — identify which variable you need, rearrange ln(P₂/P₁) = −(ΔH_vap/R)×(1/T₂−1/T₁) for that variable, then substitute. R = 8.314 J/(mol·K). Temperatures must be in Kelvin.
         </p>
       )}

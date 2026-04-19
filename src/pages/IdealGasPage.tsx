@@ -1,7 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchParams } from 'react-router-dom'
-import { useState } from 'react'
-import IdealGasCalc from '../components/idealgas/IdealGasCalc'
+import { useState, useEffect } from 'react'
 import IdealGasReference from '../components/idealgas/IdealGasReference'
 import IdealGasSolver from '../components/idealgas/IdealGasSolver'
 import IdealGasPractice from '../components/idealgas/IdealGasPractice'
@@ -9,7 +8,11 @@ import GasStoichPractice from '../components/stoichiometry/GasStoichPractice'
 import DaltonsLawCalc from '../components/idealgas/DaltonsLawCalc'
 import GrahamsLawCalc from '../components/idealgas/GrahamsLawCalc'
 import GasDensityCalc from '../components/idealgas/GasDensityCalc'
+import DaltonsLawReference from '../components/idealgas/DaltonsLawReference'
+import GrahamsLawReference from '../components/idealgas/GrahamsLawReference'
+import GasDensityReference from '../components/idealgas/GasDensityReference'
 import VanDerWaalsCalc from '../components/idealgas/VanDerWaalsCalc'
+import VanDerWaalsReference from '../components/idealgas/VanDerWaalsReference'
 import VanDerWaalsPractice from '../components/idealgas/VanDerWaalsPractice'
 import DaltonsPractice from '../components/idealgas/DaltonsPractice'
 import GrahamsPractice from '../components/idealgas/GrahamsPractice'
@@ -18,7 +21,7 @@ import MaxwellBoltzmann from '../components/idealgas/MaxwellBoltzmann'
 
 type Tab =
   // reference
-  | 'ref-pvnrt' | 'ref-combined' | 'ref-daltons' | 'ref-grahams' | 'ref-density' | 'ref-vdw' | 'ref-maxwell'
+  | 'ref-combined' | 'ref-daltons' | 'ref-grahams' | 'ref-density' | 'ref-vdw' | 'ref-maxwell'
   // practice
   | 'solver' | 'daltons' | 'grahams' | 'gas-density' | 'vdw'
   // problems
@@ -31,27 +34,20 @@ type TabGroup = { id: string; label: string; pills: TabPill[] }
 
 const REFERENCE_GROUPS: TabGroup[] = [
   {
-    id: 'ref-ideal',
-    label: 'Ideal Gas',
-    pills: [
-      { id: 'ref-pvnrt',    label: 'PV = nRT',         formula: 'PV=nRT'      },
-      { id: 'ref-combined', label: 'Combined Gas Law',  formula: 'P₁V₁/T₁'    },
-    ],
-  },
-  {
     id: 'ref-laws',
     label: 'Gas Laws',
     pills: [
-      { id: 'ref-daltons', label: "Dalton's Law", formula: 'Ptot'    },
-      { id: 'ref-grahams', label: "Graham's Law", formula: '√M'      },
-      { id: 'ref-density', label: 'Gas Density',  formula: 'ρ=PM/RT' },
+      { id: 'ref-combined', label: 'Combined Gas Law', formula: 'P₁V₁/T₁' },
+      { id: 'ref-daltons',  label: "Dalton's Law",     formula: 'Ptot'     },
+      { id: 'ref-grahams',  label: "Graham's Law",     formula: '√M'       },
+      { id: 'ref-density',  label: 'Gas Density',      formula: 'ρ=PM/RT'  },
     ],
   },
   {
     id: 'ref-advanced',
     label: 'Real Gas & Distributions',
     pills: [
-      { id: 'ref-vdw',    label: 'Van der Waals',      formula: 'vdW'  },
+      { id: 'ref-vdw',     label: 'Van der Waals',     formula: 'vdW'  },
       { id: 'ref-maxwell', label: 'Maxwell-Boltzmann', formula: 'f(v)' },
     ],
   },
@@ -59,16 +55,10 @@ const REFERENCE_GROUPS: TabGroup[] = [
 
 const PRACTICE_GROUPS: TabGroup[] = [
   {
-    id: 'practice-ideal',
-    label: 'Ideal Gas',
-    pills: [
-      { id: 'solver', label: 'PV = nRT', formula: 'P,V,n,T' },
-    ],
-  },
-  {
     id: 'practice-laws',
     label: 'Gas Laws',
     pills: [
+      { id: 'solver',      label: 'PV = nRT',     formula: 'P,V,n,T' },
       { id: 'daltons',     label: "Dalton's Law", formula: 'Ptot'    },
       { id: 'grahams',     label: "Graham's Law", formula: '√M'      },
       { id: 'gas-density', label: 'Gas Density',  formula: 'ρ=PM/RT' },
@@ -85,20 +75,14 @@ const PRACTICE_GROUPS: TabGroup[] = [
 
 const PROBLEMS_GROUPS: TabGroup[] = [
   {
-    id: 'problems-ideal',
-    label: 'Ideal Gas',
-    pills: [
-      { id: 'pvnrt-problems', label: 'PV=nRT',    formula: 'P,V,n,T'  },
-      { id: 'gas-stoich',     label: 'Gas Stoich', formula: 'L→mol→g' },
-    ],
-  },
-  {
     id: 'problems-laws',
     label: 'Gas Laws',
     pills: [
-      { id: 'daltons-problems',  label: "Dalton's Law", formula: 'Ptot'    },
-      { id: 'grahams-problems',  label: "Graham's Law", formula: '√M'      },
-      { id: 'density-problems',  label: 'Gas Density',  formula: 'ρ=PM/RT' },
+      { id: 'pvnrt-problems',   label: 'PV=nRT',       formula: 'P,V,n,T'  },
+      { id: 'gas-stoich',       label: 'Gas Stoich',   formula: 'L→mol→g'  },
+      { id: 'daltons-problems', label: "Dalton's Law", formula: 'Ptot'     },
+      { id: 'grahams-problems', label: "Graham's Law", formula: '√M'       },
+      { id: 'density-problems', label: 'Gas Density',  formula: 'ρ=PM/RT'  },
     ],
   },
   {
@@ -115,7 +99,13 @@ const PROBLEMS_TAB_IDS = new Set<Tab>(PROBLEMS_GROUPS.flatMap(g => g.pills.map(p
 
 export default function IdealGasPage() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const [openGroups, setOpenGroups] = useState(() => new Set<string>())
+  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
+    const params = new URLSearchParams(window.location.search)
+    const tab = (params.get('tab') as Tab) ?? 'ref-combined'
+    const allGroups = [...REFERENCE_GROUPS, ...PRACTICE_GROUPS, ...PROBLEMS_GROUPS]
+    const group = allGroups.find(g => g.pills.some(p => p.id === tab))
+    return group ? new Set([group.id]) : new Set<string>()
+  })
 
   function toggleGroup(id: string) {
     setOpenGroups(prev => {
@@ -125,7 +115,7 @@ export default function IdealGasPage() {
     })
   }
 
-  const activeTab = (searchParams.get('tab') as Tab) ?? 'ref-pvnrt'
+  const activeTab = (searchParams.get('tab') as Tab) ?? 'ref-combined'
 
   const activeMode: Mode = PROBLEMS_TAB_IDS.has(activeTab) ? 'problems'
     : PRACTICE_TAB_IDS.has(activeTab) ? 'practice'
@@ -143,12 +133,19 @@ export default function IdealGasPage() {
     if (mode === activeMode) return
     if (mode === 'practice') setTab('solver')
     else if (mode === 'problems') setTab('pvnrt-problems')
-    else setTab('ref-pvnrt')
+    else setTab('ref-combined')
   }
 
   const activeGroups = activeMode === 'problems' ? PROBLEMS_GROUPS
     : activeMode === 'practice' ? PRACTICE_GROUPS
     : REFERENCE_GROUPS
+
+  useEffect(() => {
+    const group = activeGroups.find(g => g.pills.some(p => p.id === activeTab))
+    if (group) {
+      setOpenGroups(prev => prev.has(group.id) ? prev : new Set([...prev, group.id]))
+    }
+  }, [activeTab, activeGroups])
 
   return (
     <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
@@ -157,7 +154,7 @@ export default function IdealGasPage() {
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-3 print:hidden">
           <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Ideal Gas Law</h2>
-          {activeTab === 'ref-pvnrt' && (
+          {activeMode === 'reference' && (
             <button
               onClick={() => window.print()}
               className="flex items-center gap-2 px-3 py-1 rounded-sm font-sans text-sm border border-border
@@ -258,13 +255,6 @@ export default function IdealGasPage() {
       </div>
 
       <AnimatePresence mode="wait">
-        {activeTab === 'ref-pvnrt' && (
-          <motion.div key="ref-pvnrt"
-            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <IdealGasCalc />
-          </motion.div>
-        )}
         {activeTab === 'ref-combined' && (
           <motion.div key="ref-combined"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
@@ -276,28 +266,28 @@ export default function IdealGasPage() {
           <motion.div key="ref-daltons"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <DaltonsLawCalc />
+            <DaltonsLawReference />
           </motion.div>
         )}
         {activeTab === 'ref-grahams' && (
           <motion.div key="ref-grahams"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <GrahamsLawCalc />
+            <GrahamsLawReference />
           </motion.div>
         )}
         {activeTab === 'ref-density' && (
           <motion.div key="ref-density"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <GasDensityCalc />
+            <GasDensityReference />
           </motion.div>
         )}
         {activeTab === 'ref-vdw' && (
           <motion.div key="ref-vdw"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <VanDerWaalsCalc />
+            <VanDerWaalsReference />
           </motion.div>
         )}
         {activeTab === 'ref-maxwell' && (

@@ -246,7 +246,7 @@ export default function VsepReference() {
 
       {/* Concepts */}
       <div>
-        <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3">Concepts</p>
+        <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3">Concepts</p>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
             <h3 className="font-sans font-semibold text-bright">What is VSEPR?</h3>
@@ -294,7 +294,7 @@ export default function VsepReference() {
 
       {/* Geometry gallery */}
       <div>
-        <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3">Geometry Reference</p>
+        <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3">Geometry Reference</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {GEOMETRIES.map(g => (
             <div key={`${g.name}-${g.lonePairs}`}

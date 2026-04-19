@@ -69,7 +69,7 @@ export default function PlaceholderPage() {
           />
         </motion.div>
 
-        <motion.p variants={item} className="font-mono text-[10px] text-dim mt-3 tracking-widest">
+        <motion.p variants={item} className="font-mono text-xs text-secondary mt-3 tracking-widest">
           UNDER CONSTRUCTION
         </motion.p>
       </motion.div>

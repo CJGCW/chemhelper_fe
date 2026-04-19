@@ -35,7 +35,7 @@ export default function ReactionClassifierProblems() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Reaction Classification</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Reaction Classification</span>
           {attempts > 0 && (
             <span className="font-mono text-xs" style={{ color: 'var(--c-halogen)' }}>{score}/{attempts}</span>
           )}
@@ -52,7 +52,7 @@ export default function ReactionClassifierProblems() {
         >
           <div className="px-4 py-3 border-b border-border"
             style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, #141620)' }}>
-            <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Classify the reaction</span>
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">Classify the reaction</span>
           </div>
           <div className="px-4 py-4">
             <p className="font-mono text-base text-bright">{q.reactantA} + {q.reactantB} → ?</p>

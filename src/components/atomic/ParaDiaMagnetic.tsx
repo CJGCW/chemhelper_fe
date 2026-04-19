@@ -256,7 +256,7 @@ export default function ParaDiaMagnetic() {
 
       {/* Element selector */}
       <div className="flex flex-col gap-4">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Select Element</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Select Element</span>
         <ElementSelector z={z} onChange={newZ => {
           setZ(newZ)
           const valid = availableCharges(newZ)
@@ -266,7 +266,7 @@ export default function ParaDiaMagnetic() {
 
       {/* Ion charge selector */}
       <div className="flex flex-col gap-3">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Ion Charge (optional)</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Ion Charge (optional)</span>
         <div className="flex items-center gap-2 flex-wrap">
           {availableCharges(z).map(c => (
             <button
@@ -290,7 +290,7 @@ export default function ParaDiaMagnetic() {
 
       {/* Electron configuration notation */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">
           Electron Configuration — {el.symbol}{charge !== 0 ? (charge > 0 ? `${charge}+` : `${Math.abs(charge)}−`) : ''}
         </span>
         <div className="px-4 py-3 rounded-sm bg-surface border border-border font-mono text-sm text-primary leading-relaxed">
@@ -311,7 +311,7 @@ export default function ParaDiaMagnetic() {
 
       {/* Results */}
       <div className="flex flex-col gap-3">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Result</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Result</span>
         <ResultCard
           label={charge === 0 ? `${el.name} (${el.symbol})` : `${el.name} ion (${el.symbol}${charge > 0 ? `${charge}+` : `${Math.abs(charge)}−`})`}
           unpaired={charge === 0 ? neutralUnpaired : (ionUnpaired ?? 0)}
@@ -322,14 +322,14 @@ export default function ParaDiaMagnetic() {
       {/* Compare neutral vs ion when charge != 0 */}
       {charge !== 0 && validIon && (
         <div className="flex flex-col gap-3">
-          <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Compare — Neutral Atom</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Compare — Neutral Atom</span>
           <ResultCard label={`${el.name} (${el.symbol}) neutral`} unpaired={neutralUnpaired} charge={0} />
         </div>
       )}
 
       {/* Quick-reference table for common species */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Common Ions Quick Reference</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Common Ions Quick Reference</span>
         <div className="rounded-sm border border-border overflow-hidden">
           <table className="w-full text-xs font-mono">
             <thead>

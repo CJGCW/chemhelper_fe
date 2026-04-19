@@ -52,7 +52,7 @@ function BondPanel({
   onRemove: (id: string) => void
   onUpdate: (id: string, field: keyof BondRow, value: string) => void
 }) {
-  const labelCls = "font-mono text-[10px] text-dim tracking-widest uppercase"
+  const labelCls = "font-mono text-xs text-secondary tracking-widest uppercase"
 
   const total = rows.reduce((s, r) => {
     const c = parseFloat(r.count)
@@ -197,14 +197,14 @@ export default function BondEnthalpyCalc() {
                 {dh < 0 ? 'exothermic' : dh > 0 ? 'endothermic' : 'thermoneutral'}
               </span>
             </p>
-            <p className="font-mono text-[10px] text-dim mt-1">
+            <p className="font-mono text-xs text-secondary mt-1">
               Bond energies are average values — result is an approximation.
             </p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <p className="font-mono text-[10px] text-dim">
+      <p className="font-mono text-xs text-secondary">
         Select bond types for reactants (broken) and products (formed). Counts and energies are editable.
         Energy values are pre-filled from average bond enthalpies.
       </p>

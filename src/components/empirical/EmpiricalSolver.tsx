@@ -38,7 +38,7 @@ function StepTable({ result, mode }: { result: SolverResult; mode: 'percent' | '
             {['Element', 'M (g/mol)', colLabel, 'Moles', '÷ min', result.multiplier > 1 ? `× ${result.multiplier}` : null, 'Subscript']
               .filter(Boolean)
               .map(h => (
-                <th key={h} className="px-3 py-2 text-left text-[10px] tracking-[0.1em] text-dim uppercase border-b border-border whitespace-nowrap">
+                <th key={h} className="px-3 py-2 text-left text-xs tracking-widest text-secondary uppercase border-b border-border whitespace-nowrap">
                   {h}
                 </th>
               ))}
@@ -78,7 +78,7 @@ function FormulaDisplay({ label, formula, sub }: { label: string; formula: strin
       className="flex flex-col items-center gap-1 px-6 py-4 rounded-sm border"
       style={{ background: 'color-mix(in srgb, #4ade80 6%, #080a0f)', borderColor: 'color-mix(in srgb, #4ade80 25%, transparent)' }}
     >
-      <span className="font-mono text-[9px] text-dim tracking-widest uppercase">{label}</span>
+      <span className="font-mono text-xs text-secondary tracking-widest uppercase">{label}</span>
       <span className="font-mono text-2xl font-bold" style={{ color: '#4ade80' }}>{formula}</span>
       {sub && <span className="font-sans text-[10px] text-secondary">{sub}</span>}
     </motion.div>
@@ -165,8 +165,8 @@ export default function EmpiricalSolver() {
       {/* Element rows */}
       <div className="flex flex-col gap-2">
         <div className="grid gap-1" style={{ gridTemplateColumns: '80px 1fr 28px' }}>
-          <span className="font-mono text-[10px] text-dim uppercase px-1">Symbol</span>
-          <span className="font-mono text-[10px] text-dim uppercase px-1">
+          <span className="font-mono text-xs text-secondary uppercase px-1">Symbol</span>
+          <span className="font-mono text-xs text-secondary uppercase px-1">
             {mode === 'percent' ? '% by mass' : 'Mass (g)'}
           </span>
           <span />
@@ -220,7 +220,7 @@ export default function EmpiricalSolver() {
       {/* Molecular mass (optional) */}
       <div className="flex items-center gap-3">
         <div className="flex flex-col gap-1">
-          <label className="font-mono text-[10px] text-dim uppercase">Molar mass (g/mol) — optional, for molecular formula</label>
+          <label className="font-mono text-xs text-secondary uppercase">Molar mass (g/mol) — optional, for molecular formula</label>
           <input
             type="text" inputMode="decimal"
             value={molecularMass}
@@ -291,7 +291,7 @@ export default function EmpiricalSolver() {
 
             {/* Percent composition check */}
             <div className="flex flex-col gap-1 border-t border-border pt-3">
-              <p className="font-sans text-[10px] text-dim uppercase tracking-wider">Percent Composition Check</p>
+              <p className="font-sans text-xs text-secondary uppercase tracking-widest">Percent Composition Check</p>
               <div className="flex flex-wrap gap-x-4 gap-y-1">
                 {result.rows.map(r => (
                   <span key={r.symbol} className="font-mono text-xs text-secondary">

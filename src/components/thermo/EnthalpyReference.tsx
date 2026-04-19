@@ -94,7 +94,7 @@ export default function EnthalpyReference() {
               <span className="font-mono text-base font-bold pt-0.5" style={{ color: 'var(--c-halogen)' }}>{r.sym}</span>
               <div className="flex flex-col gap-0.5">
                 <span className="font-sans text-sm text-primary">{r.name}</span>
-                <span className="font-mono text-[10px] text-dim">{r.note}</span>
+                <span className="font-mono text-xs text-secondary">{r.note}</span>
               </div>
             </div>
           ))}
@@ -116,7 +116,7 @@ export default function EnthalpyReference() {
                   <span className="font-mono text-sm font-semibold" style={{ color: 'var(--c-halogen)' }}>{r.sign}</span>
                   <span className="font-sans text-sm text-primary">→ {r.label}</span>
                 </div>
-                <p className="font-mono text-[10px] text-dim mt-0.5">{r.note}</p>
+                <p className="font-mono text-xs text-secondary mt-0.5">{r.note}</p>
               </div>
             ))}
           </div>
@@ -134,7 +134,7 @@ export default function EnthalpyReference() {
               'Subtract: ΔHrxn = ΣΔHf°(prod) − ΣΔHf°(react)',
             ].map((s, i) => (
               <div key={i} className="flex gap-2.5 items-start">
-                <span className="font-mono text-[10px] text-dim shrink-0 w-4 pt-0.5">{i + 1}.</span>
+                <span className="font-mono text-xs text-secondary shrink-0 w-4 pt-0.5">{i + 1}.</span>
                 <span className="font-sans text-xs text-secondary">{s}</span>
               </div>
             ))}
@@ -160,10 +160,10 @@ export default function EnthalpyReference() {
           // Search results
           <div className="rounded-sm border border-border bg-surface overflow-hidden">
             <div className="grid grid-cols-[5rem_1fr_4rem_5rem] gap-x-3 px-4 py-2 bg-raised border-b border-border">
-              <span className="font-mono text-[10px] text-dim">Formula</span>
-              <span className="font-mono text-[10px] text-dim">Name</span>
-              <span className="font-mono text-[10px] text-dim">State</span>
-              <span className="font-mono text-[10px] text-dim text-right">ΔHf° (kJ/mol)</span>
+              <span className="font-mono text-xs text-secondary">Formula</span>
+              <span className="font-mono text-xs text-secondary">Name</span>
+              <span className="font-mono text-xs text-secondary">State</span>
+              <span className="font-mono text-xs text-secondary text-right">ΔHf° (kJ/mol)</span>
             </div>
             {searchResults.length === 0 ? (
               <p className="px-4 py-3 font-mono text-xs text-dim">No matches found.</p>
@@ -193,8 +193,8 @@ export default function EnthalpyReference() {
                     onClick={() => setActiveGroup(activeGroup === group.label ? null : group.label)}
                     className="w-full flex items-center justify-between px-4 py-2.5 bg-raised hover:bg-raised/80 transition-colors"
                   >
-                    <span className="font-mono text-[10px] text-secondary tracking-wider uppercase">{group.label}</span>
-                    <span className="font-mono text-[10px] text-dim">{isOpen ? '▲' : '▼'}</span>
+                    <span className="font-mono text-xs text-secondary tracking-widest uppercase">{group.label}</span>
+                    <span className="font-mono text-xs text-secondary">{isOpen ? '▲' : '▼'}</span>
                   </button>
                   {isOpen && (
                     <div>
@@ -218,7 +218,7 @@ export default function EnthalpyReference() {
           </div>
         )}
 
-        <p className="font-mono text-[10px] text-dim">
+        <p className="font-mono text-xs text-secondary">
           Values in kJ/mol at 298 K, 1 atm.{' '}
           <span style={{ color: '#34d399' }}>Green</span> = negative (stable),{' '}
           <span style={{ color: '#f87171' }}>Red</span> = positive (unstable relative to elements).

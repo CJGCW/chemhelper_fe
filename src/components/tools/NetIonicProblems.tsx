@@ -35,7 +35,7 @@ export default function NetIonicProblems() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Net Ionic Equations</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Net Ionic Equations</span>
           {attempts > 0 && (
             <span className="font-mono text-xs" style={{ color: 'var(--c-halogen)' }}>{score}/{attempts}</span>
           )}
@@ -52,7 +52,7 @@ export default function NetIonicProblems() {
         >
           <div className="px-4 py-3 border-b border-border flex items-center gap-2"
             style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, #141620)' }}>
-            <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Select the net ionic equation</span>
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">Select the net ionic equation</span>
             <span className="font-mono text-[9px] px-1.5 py-0.5 rounded-sm"
               style={{
                 background: `color-mix(in srgb, ${NET_IONIC_CAT_COLOR[q.category]} 12%, transparent)`,

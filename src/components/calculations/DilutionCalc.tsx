@@ -78,8 +78,8 @@ function MiniBeaker({ label, volumeLabel, concLabel, fillFrac, colorAlpha, parti
         <rect x={W - wall} y={0} width={wall} height={H} fill="#141620" stroke="#1c1f2e" strokeWidth="0.5" />
         <rect x={0} y={H} width={W} height={wall} fill="#141620" stroke="#1c1f2e" strokeWidth="0.5" />
       </svg>
-      <span className="font-mono text-[10px] text-dim">{volumeLabel}</span>
-      <span className="font-mono text-[9px] text-dim uppercase tracking-wider">{label}</span>
+      <span className="font-mono text-xs text-secondary">{volumeLabel}</span>
+      <span className="font-mono text-xs text-secondary uppercase tracking-widest">{label}</span>
     </div>
   )
 }
@@ -320,7 +320,7 @@ export default function DilutionCalc() {
           className="rounded-sm border border-border p-4"
           style={{ background: '#0e1016' }}
         >
-          <p className="font-mono text-[10px] text-dim tracking-widest uppercase mb-3">Dilution visual</p>
+          <p className="font-mono text-xs text-secondary tracking-widest uppercase mb-3">Dilution visual</p>
           <div className="flex items-center justify-center gap-4">
             <MiniBeaker
               label="Initial (C₁, V₁)"
@@ -332,7 +332,7 @@ export default function DilutionCalc() {
               seed={1}
             />
             <div className="flex flex-col items-center gap-1">
-              <span className="font-mono text-[10px] text-dim">add solvent</span>
+              <span className="font-mono text-xs text-secondary">add solvent</span>
               <span className="text-dim text-sm">→</span>
             </div>
             <MiniBeaker
@@ -345,7 +345,7 @@ export default function DilutionCalc() {
               seed={2}
             />
           </div>
-          <p className="font-mono text-[9px] text-dim text-center mt-2">
+          <p className="font-mono text-xs text-secondary text-center mt-2">
             Dots represent moles (conserved). Color intensity represents concentration.
           </p>
         </div>

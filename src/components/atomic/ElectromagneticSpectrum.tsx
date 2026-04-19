@@ -158,7 +158,7 @@ export default function ElectromagneticSpectrum() {
       <div
         className="flex flex-col gap-1 cursor-pointer"
         onClick={() => { setField(f); if (field !== f) setRaw('') }}>
-        <span className="font-mono text-[10px] tracking-widest uppercase"
+        <span className="font-mono text-xs tracking-widest uppercase"
           style={{ color: active ? 'var(--c-halogen)' : 'rgba(255,255,255,0.35)' }}>
           {label}
         </span>
@@ -184,7 +184,7 @@ export default function ElectromagneticSpectrum() {
 
       {/* Spectrum bar */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Electromagnetic Spectrum</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Electromagnetic Spectrum</span>
         <div className="relative w-full h-12 rounded-sm overflow-hidden flex">
           {REGIONS.map(r => {
             const logMin = Math.log10(r.lambdaMin)
@@ -223,7 +223,7 @@ export default function ElectromagneticSpectrum() {
         </div>
 
         {/* Axis labels */}
-        <div className="flex justify-between font-mono text-[9px] text-dim">
+        <div className="flex justify-between font-mono text-xs text-secondary">
           <span>γ-ray (10⁻¹⁴ m)</span>
           <span className="hidden sm:block">X-ray</span>
           <span>UV | Vis | IR</span>
@@ -234,7 +234,7 @@ export default function ElectromagneticSpectrum() {
 
       {/* Convertor */}
       <div className="flex flex-col gap-4">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Interconvert</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Interconvert</span>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {inputFor('lambda_nm', 'Wavelength (nm)',  '500')}
           {inputFor('lambda_m',  'Wavelength (m)',   '5.00e-7')}
@@ -280,7 +280,7 @@ export default function ElectromagneticSpectrum() {
               { label: 'eV',  val: isFinite(energyEV) ? `${+energyEV.toPrecision(4)} eV` : '—' },
             ].map(({ label, val }) => (
               <div key={label} className="flex flex-col gap-1 px-3 py-2 rounded-sm bg-raised border border-border">
-                <span className="font-mono text-[10px] text-dim uppercase">{label}</span>
+                <span className="font-mono text-xs text-secondary uppercase">{label}</span>
                 <span className="font-mono text-sm text-bright break-all">{val}</span>
               </div>
             ))}
@@ -312,7 +312,7 @@ export default function ElectromagneticSpectrum() {
             <div key={r.eq} className="flex flex-col gap-1.5 px-4 py-3 rounded-sm bg-raised border border-border">
               <span className="font-mono text-sm font-semibold text-bright">{r.eq}</span>
               <span className="font-sans text-xs text-secondary leading-relaxed">{r.desc}</span>
-              <span className="font-mono text-[10px] text-dim">{r.detail}</span>
+              <span className="font-mono text-xs text-secondary">{r.detail}</span>
             </div>
           ))}
         </div>
@@ -320,7 +320,7 @@ export default function ElectromagneticSpectrum() {
 
       {/* Visible band table */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Visible Spectrum</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Visible Spectrum</span>
         <div className="rounded-sm border border-border overflow-hidden">
           <table className="w-full text-xs font-mono">
             <thead>

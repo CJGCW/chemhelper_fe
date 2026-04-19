@@ -37,7 +37,7 @@ export default function ActivitySeriesProblems() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Activity Series</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Activity Series</span>
           {attempts > 0 && (
             <span className="font-mono text-xs" style={{ color: 'var(--c-halogen)' }}>{score}/{attempts}</span>
           )}
@@ -54,7 +54,7 @@ export default function ActivitySeriesProblems() {
         >
           <div className="px-4 py-3 border-b border-border flex items-center gap-2"
             style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, #141620)' }}>
-            <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Activity Series</span>
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">Activity Series</span>
             <span className="font-mono text-[9px] px-1.5 py-0.5 rounded-sm"
               style={{
                 background: `color-mix(in srgb, ${typeColor} 12%, transparent)`,

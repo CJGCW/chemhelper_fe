@@ -90,7 +90,7 @@ function ConverterCard({
     <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
       {/* Header */}
       <div className="flex items-center justify-between">
-        <p className="font-mono text-[10px] tracking-[0.15em] text-dim uppercase">{title}</p>
+        <p className="font-mono text-xs tracking-widest text-secondary uppercase">{title}</p>
       </div>
 
       {/* Input row */}
@@ -124,7 +124,7 @@ function ConverterCard({
               <div key={to} className="flex items-center justify-between py-2.5 gap-3">
                 <div className="flex flex-col gap-0.5">
                   <span className="font-mono text-sm font-semibold text-primary">{unitLabels[to]}</span>
-                  {hint && <span className="font-mono text-[10px] text-dim">{hint}</span>}
+                  {hint && <span className="font-mono text-xs text-secondary">{hint}</span>}
                 </div>
                 <span className="font-mono text-lg font-semibold" style={{ color: 'var(--c-halogen)' }}>
                   {display}
@@ -188,7 +188,7 @@ const METRIC_PREFIXES = [
 // ── Table sub-components ──────────────────────────────────────────────────────
 
 const TH = ({ children }: { children: React.ReactNode }) => (
-  <th className="px-3 py-2 text-left font-mono text-[10px] tracking-[0.12em] text-dim uppercase border-b border-border">
+  <th className="px-3 py-2 text-left font-mono text-xs tracking-widest text-secondary uppercase border-b border-border">
     {children}
   </th>
 )
@@ -209,7 +209,7 @@ export default function UnitConversions({ tab = 'converter' }: { tab?: ConvTab }
     <div className="flex flex-col gap-8">
 
       {/* Converter cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start print:hidden">
         <ConverterCard
           title="Mass"
           unitKeys={Object.keys(MASS)}
@@ -245,7 +245,7 @@ export default function UnitConversions({ tab = 'converter' }: { tab?: ConvTab }
 
       {/* Reference tables */}
       <div className="flex flex-col gap-4">
-        <p className="font-mono text-[10px] tracking-[0.15em] text-dim uppercase">Conversion Reference</p>
+        <p className="font-mono text-xs tracking-widest text-secondary uppercase">Conversion Reference</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
 
@@ -314,7 +314,7 @@ export default function UnitConversions({ tab = 'converter' }: { tab?: ConvTab }
 
       {/* Metric prefixes */}
       <div className="flex flex-col gap-4">
-        <p className="font-mono text-[10px] tracking-[0.15em] text-dim uppercase">Metric Prefixes</p>
+        <p className="font-mono text-xs tracking-widest text-secondary uppercase">Metric Prefixes</p>
 
         <div className="rounded-sm border border-border overflow-hidden" style={{ background: '#0e1016' }}>
           <table className="w-full border-collapse">

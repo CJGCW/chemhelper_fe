@@ -515,7 +515,7 @@ export default function ReactionClassifier() {
         )}
       </AnimatePresence>
 
-      <p className="font-mono text-[10px] text-dim">
+      <p className="font-mono text-xs text-secondary">
         Simplified classifier based on common reaction patterns. Activity series and full solubility rules apply.
       </p>
     </div>

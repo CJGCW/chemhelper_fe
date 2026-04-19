@@ -33,7 +33,7 @@ export default function BondEnthalpyPractice() {
     setShowSteps(false)
   }
 
-  const labelCls = "font-mono text-[10px] text-dim tracking-widest uppercase"
+  const labelCls = "font-mono text-xs text-secondary tracking-widest uppercase"
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
@@ -59,7 +59,7 @@ export default function BondEnthalpyPractice() {
           className="flex flex-col gap-4 rounded-sm border border-border bg-surface p-5"
         >
           {/* Badge */}
-          <span className="font-mono text-[10px] text-dim border border-border px-2 py-0.5 rounded-sm self-start capitalize">
+          <span className="font-mono text-xs text-secondary border border-border px-2 py-0.5 rounded-sm self-start capitalize">
             {problem.description}
           </span>
 
@@ -83,9 +83,9 @@ export default function BondEnthalpyPractice() {
               <span className={labelCls}>Bonds Broken (Reactants)</span>
               <div className="rounded-sm border border-border bg-raised overflow-hidden">
                 <div className="grid grid-cols-[1fr_2.5rem_4rem] gap-x-3 px-3 py-1.5 border-b border-border">
-                  <span className="font-mono text-[9px] text-dim uppercase">Bond</span>
-                  <span className="font-mono text-[9px] text-dim uppercase text-right">×</span>
-                  <span className="font-mono text-[9px] text-dim uppercase text-right">kJ/mol</span>
+                  <span className="font-mono text-xs text-secondary uppercase">Bond</span>
+                  <span className="font-mono text-xs text-secondary uppercase text-right">×</span>
+                  <span className="font-mono text-xs text-secondary uppercase text-right">kJ/mol</span>
                 </div>
                 {problem.broken.map((b, i) => (
                   <div key={i} className="grid grid-cols-[1fr_2.5rem_4rem] gap-x-3 px-3 py-2 border-b border-border last:border-b-0 items-baseline">
@@ -102,9 +102,9 @@ export default function BondEnthalpyPractice() {
               <span className={labelCls}>Bonds Formed (Products)</span>
               <div className="rounded-sm border border-border bg-raised overflow-hidden">
                 <div className="grid grid-cols-[1fr_2.5rem_4rem] gap-x-3 px-3 py-1.5 border-b border-border">
-                  <span className="font-mono text-[9px] text-dim uppercase">Bond</span>
-                  <span className="font-mono text-[9px] text-dim uppercase text-right">×</span>
-                  <span className="font-mono text-[9px] text-dim uppercase text-right">kJ/mol</span>
+                  <span className="font-mono text-xs text-secondary uppercase">Bond</span>
+                  <span className="font-mono text-xs text-secondary uppercase text-right">×</span>
+                  <span className="font-mono text-xs text-secondary uppercase text-right">kJ/mol</span>
                 </div>
                 {problem.formed.map((b, i) => (
                   <div key={i} className="grid grid-cols-[1fr_2.5rem_4rem] gap-x-3 px-3 py-2 border-b border-border last:border-b-0 items-baseline">
@@ -218,7 +218,7 @@ export default function BondEnthalpyPractice() {
         )}
       </div>
 
-      <p className="font-mono text-[10px] text-dim">
+      <p className="font-mono text-xs text-secondary">
         Answers accepted within ±2%. Bond enthalpy values are averages — slight variation from exact thermodynamic values is expected.
       </p>
     </div>

@@ -59,7 +59,7 @@ export default function HessPractice() {
           className="flex flex-col gap-4 rounded-sm border border-border bg-surface p-5"
         >
           {/* Badge */}
-          <span className="font-mono text-[10px] text-dim border border-border px-2 py-0.5 rounded-sm self-start capitalize">
+          <span className="font-mono text-xs text-secondary border border-border px-2 py-0.5 rounded-sm self-start capitalize">
             {problem.description}
           </span>
 
@@ -69,7 +69,7 @@ export default function HessPractice() {
 
           {/* Target */}
           <div className="flex flex-col gap-1">
-            <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Target</span>
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">Target</span>
             <p className="font-mono text-sm text-bright px-3 py-2 rounded-sm bg-raised border border-border">
               {problem.target}
             </p>
@@ -77,7 +77,7 @@ export default function HessPractice() {
 
           {/* Given reactions */}
           <div className="flex flex-col gap-1">
-            <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Given reactions</span>
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">Given reactions</span>
             <div className="rounded-sm border border-border bg-raised overflow-hidden">
               {problem.steps.map((step, i) => (
                 <div key={i}
@@ -196,7 +196,7 @@ export default function HessPractice() {
         )}
       </div>
 
-      <p className="font-mono text-[10px] text-dim">
+      <p className="font-mono text-xs text-secondary">
         Answers accepted within ±2%. Flip reactions and scale by integer or half-integer multipliers as needed.
       </p>
     </div>

@@ -89,7 +89,7 @@ export default function GasStoichPractice() {
 
           {/* Equation badge */}
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Reaction</span>
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">Reaction</span>
             <span className="font-mono text-xs text-secondary">{problem.equation}</span>
           </div>
 
@@ -103,7 +103,7 @@ export default function GasStoichPractice() {
               }}>
               {problem.standard}
             </span>
-            <span className="font-mono text-[10px] text-dim">Vₘ = {problem.Vm} L/mol</span>
+            <span className="font-mono text-xs text-secondary">Vₘ = {problem.Vm} L/mol</span>
           </div>
 
           <p className="font-sans text-sm text-primary leading-relaxed">{problem.question}</p>
@@ -168,7 +168,7 @@ export default function GasStoichPractice() {
                       <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.15 }} style={{ overflow: 'hidden' }}>
                         <div className="rounded-sm border border-border bg-surface px-4 py-3 flex flex-col gap-2">
-                          <span className="font-mono text-[10px] text-secondary tracking-widest uppercase">Solution</span>
+                          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Solution</span>
                           <div className="flex flex-col gap-1.5 pl-3 border-l border-border">
                             {problem.steps.map((s, i) => (
                               <p key={i} className="font-mono text-sm text-primary">{s}</p>

@@ -207,7 +207,7 @@ export default function UnitCellPractice() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Unit Cell Practice</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Unit Cell Practice</span>
           {attempts > 0 && (
             <span className="font-mono text-xs" style={{ color: 'var(--c-halogen)' }}>
               {score}/{attempts}
@@ -230,7 +230,7 @@ export default function UnitCellPractice() {
           {/* Prompt */}
           <div className="px-4 py-3 border-b border-border"
             style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, #141620)' }}>
-            <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Unit cell question</span>
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">Unit cell question</span>
           </div>
           <div className="px-4 py-4">
             <p className="font-sans text-base text-bright leading-relaxed">{highlightPrompt(q.prompt)}</p>

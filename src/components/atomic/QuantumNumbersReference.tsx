@@ -162,11 +162,11 @@ export default function QuantumNumbersReference() {
           <div className="rounded-sm border border-border overflow-hidden">
             <div className="grid grid-cols-[2rem_5rem_1fr_4rem_4rem] gap-x-4 items-center
                             px-4 py-2 bg-raised border-b border-border">
-              <span className="font-mono text-[10px] text-dim tracking-widest uppercase">l</span>
-              <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Subshell</span>
-              <span className="font-mono text-[10px] text-dim tracking-widest uppercase">mₗ values</span>
-              <span className="font-mono text-[10px] text-dim tracking-widest uppercase text-right">Orbitals</span>
-              <span className="font-mono text-[10px] text-dim tracking-widest uppercase text-right">Max e⁻</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase">l</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase">Subshell</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase">mₗ values</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase text-right">Orbitals</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase text-right">Max e⁻</span>
             </div>
 
             {shellRows.map(row => (
@@ -188,7 +188,7 @@ export default function QuantumNumbersReference() {
             <div className="grid grid-cols-[2rem_5rem_1fr_4rem_4rem] gap-x-4 items-center
                             px-4 py-2 bg-raised">
               <span />
-              <span className="font-mono text-[10px] text-dim uppercase tracking-widest col-span-2">
+              <span className="font-mono text-xs text-secondary uppercase tracking-widest col-span-2">
                 Total (n = {selectedN})
               </span>
               <span className="font-mono text-sm font-semibold text-bright text-right">{totalOrbitals}</span>
@@ -196,7 +196,7 @@ export default function QuantumNumbersReference() {
             </div>
           </div>
 
-          <p className="font-mono text-[10px] text-dim">
+          <p className="font-mono text-xs text-secondary">
             Pauli exclusion principle: no two electrons in an atom can have the same set of all four quantum numbers.
           </p>
         </div>

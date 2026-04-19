@@ -71,27 +71,109 @@ function PathSubItem({ path, formula, label, onNavigate }: {
 
 // ── Periodic Table sub-items ──────────────────────────────────────────────────
 
-const TABLE_ITEMS = [
-  { path: "/table",                                  label: "Periodic Table",  formula: "⬡"  },
-  { path: "/electron-config?topic=electron_config",  label: "Electron Config", formula: "e⁻" },
-  { path: "/electron-config?topic=quantum_numbers",  label: "Quantum Numbers", formula: "QN" },
-  { path: "/electron-config?topic=energy_levels",    label: "Energy Levels",   formula: "Eₙ" },
-  { path: "/electron-config?topic=isoelectronic",    label: "Isoelectronic",   formula: "≡"  },
+const TABLE_GROUPS: { label: string; items: { path: string; label: string; formula: string }[] }[] = [
+  {
+    label: 'Elements',
+    items: [
+      { path: '/table', label: 'Periodic Table', formula: '⬡' },
+    ],
+  },
+  {
+    label: 'Electron Config',
+    items: [
+      { path: '/electron-config?topic=electron_config', label: 'Electron Config',  formula: 'e⁻'  },
+      { path: '/electron-config?topic=quantum_numbers', label: 'Quantum Numbers',  formula: 'QN'  },
+      { path: '/electron-config?topic=energy_levels',   label: 'Energy Levels',    formula: 'Eₙ'  },
+      { path: '/electron-config?topic=multi_electron',  label: 'Multi-Electron',   formula: 'Zeff' },
+    ],
+  },
+  {
+    label: 'Properties',
+    items: [
+      { path: '/electron-config?topic=isoelectronic', label: 'Isoelectronic',    formula: '≡'   },
+      { path: '/electron-config?topic=para_dia',      label: 'Para/Diamagnetic', formula: 'para' },
+      { path: '/electron-config?topic=em_spectrum',   label: 'EM Spectrum',      formula: 'λf'  },
+    ],
+  },
 ]
 
-function TableSubItem({ item, onNavigate }: { item: typeof TABLE_ITEMS[0]; onNavigate: () => void }) {
+function TableGroupedItems({ onNavigate }: { onNavigate: () => void }) {
   const location = useLocation()
   const navigate = useNavigate()
-  const [itemPath, itemQuery] = item.path.split('?')
   const currentTopic = new URLSearchParams(location.search).get('topic') ?? 'electron_config'
-  const itemTopic    = itemQuery ? new URLSearchParams(itemQuery).get('topic') : null
-  const isActive = itemTopic
-    ? location.pathname === itemPath && currentTopic === itemTopic
-    : location.pathname === item.path
+
+  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
+    const active = TABLE_GROUPS.find(g => g.items.some(i => {
+      const [p, q] = i.path.split('?')
+      const t = q ? new URLSearchParams(q).get('topic') : null
+      return t ? location.pathname === p && currentTopic === t : location.pathname === p
+    }))
+    return new Set(active ? [active.label] : ['Elements'])
+  })
+
+  function toggleGroup(label: string) {
+    setOpenGroups(prev => {
+      const next = new Set(prev)
+      next.has(label) ? next.delete(label) : next.add(label)
+      return next
+    })
+  }
 
   return (
-    <SubItem formula={item.formula} label={item.label} isActive={isActive}
-      onClick={() => { navigate(item.path); onNavigate() }} />
+    <>
+      {TABLE_GROUPS.map(group => {
+        const isOpen = openGroups.has(group.label)
+        const groupActive = group.items.some(i => {
+          const [p, q] = i.path.split('?')
+          const t = q ? new URLSearchParams(q).get('topic') : null
+          return t
+            ? location.pathname === p && currentTopic === t
+            : location.pathname === p
+        })
+        return (
+          <div key={group.label}>
+            <button
+              onClick={() => toggleGroup(group.label)}
+              className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
+            >
+              <span className={`font-mono text-[11px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
+                {group.label}
+              </span>
+              <motion.span
+                animate={{ rotate: isOpen ? 90 : 0 }}
+                transition={{ duration: 0.15 }}
+                className="font-mono text-[7px] text-dim group-hover:text-secondary transition-colors"
+              >
+                ▶
+              </motion.span>
+            </button>
+            <AnimatePresence initial={false}>
+              {isOpen && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.18 }}
+                  style={{ overflow: 'hidden' }}
+                >
+                  {group.items.map(item => {
+                    const [p, q] = item.path.split('?')
+                    const t = q ? new URLSearchParams(q).get('topic') : null
+                    const isActive = t
+                      ? location.pathname === p && currentTopic === t
+                      : location.pathname === p
+                    return (
+                      <SubItem key={item.path} formula={item.formula} label={item.label} isActive={isActive}
+                        onClick={() => { navigate(item.path); onNavigate() }} />
+                    )
+                  })}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )
+      })}
+    </>
   )
 }
 
@@ -225,24 +307,18 @@ type IdealGasItem = { tab: string; label: string; formula: string }
 
 const IDEAL_GAS_GROUPS: { label: string; items: IdealGasItem[] }[] = [
   {
-    label: 'Ideal Gas',
-    items: [
-      { tab: 'ref-pvnrt',    label: 'PV = nRT',        formula: 'PV=nRT'   },
-      { tab: 'ref-combined', label: 'Combined Gas Law', formula: 'P₁V₁/T₁' },
-    ],
-  },
-  {
     label: 'Gas Laws',
     items: [
-      { tab: 'ref-daltons', label: "Dalton's Law", formula: 'Ptot'    },
-      { tab: 'ref-grahams', label: "Graham's Law", formula: '√M'      },
-      { tab: 'ref-density', label: 'Gas Density',  formula: 'ρ=MP/RT' },
+      { tab: 'ref-combined', label: 'Combined Gas Law', formula: 'P₁V₁/T₁' },
+      { tab: 'ref-daltons',  label: "Dalton's Law",     formula: 'Ptot'     },
+      { tab: 'ref-grahams',  label: "Graham's Law",     formula: '√M'       },
+      { tab: 'ref-density',  label: 'Gas Density',      formula: 'ρ=MP/RT'  },
     ],
   },
   {
     label: 'Real Gas & Distributions',
     items: [
-      { tab: 'ref-vdw',    label: 'Van der Waals',      formula: 'vdW'  },
+      { tab: 'ref-vdw',     label: 'Van der Waals',     formula: 'vdW'  },
       { tab: 'ref-maxwell', label: 'Maxwell-Boltzmann', formula: 'f(v)' },
     ],
   },
@@ -251,7 +327,7 @@ const IDEAL_GAS_GROUPS: { label: string; items: IdealGasItem[] }[] = [
 function IdealGasSubItem({ item, onNavigate }: { item: IdealGasItem; onNavigate: () => void }) {
   const location = useLocation()
   const navigate = useNavigate()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-pvnrt'
+  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-combined'
   const isActive = location.pathname === '/ideal-gas' && currentTab === item.tab
 
   return (
@@ -262,7 +338,7 @@ function IdealGasSubItem({ item, onNavigate }: { item: IdealGasItem; onNavigate:
 
 function IdealGasGroupedItems({ onNavigate }: { onNavigate: () => void }) {
   const location = useLocation()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-pvnrt'
+  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-combined'
 
   const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
     const active = IDEAL_GAS_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
@@ -802,7 +878,7 @@ export default function NavSidebar({ open, onClose }: Props) {
                 isActive={isTableActive} expanded={tableExpanded}
                 onToggle={() => setTableExpanded(e => !e)}
               >
-                {TABLE_ITEMS.map((item, i) => <TableSubItem key={i} item={item} onNavigate={onClose} />)}
+                <TableGroupedItems onNavigate={onClose} />
               </ExpandableSection>
 
               <ExpandableSection

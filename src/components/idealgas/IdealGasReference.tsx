@@ -23,7 +23,7 @@ function ReferenceContent() {
           ].map(r => (
             <div key={r.f} className="flex flex-col gap-0.5">
               <span className="font-mono text-sm text-bright">{r.f}</span>
-              <span className="font-mono text-[10px] text-dim">solve for {r.label}</span>
+              <span className="font-mono text-xs text-secondary">solve for {r.label}</span>
             </div>
           ))}
         </div>
@@ -57,9 +57,9 @@ function ReferenceContent() {
           <SectionHead label="Gas Constant R" />
           <div className="rounded-sm border border-border bg-surface overflow-hidden">
             <div className="grid grid-cols-[4.5rem_1fr_4rem] gap-x-3 px-4 py-2 bg-raised border-b border-border">
-              <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Value</span>
-              <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Units</span>
-              <span className="font-mono text-[10px] text-dim tracking-widest uppercase">P in</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase">Value</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase">Units</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase">P in</span>
             </div>
             {R_TABLE.map(r => (
               <div key={r.use}
@@ -70,7 +70,7 @@ function ReferenceContent() {
               </div>
             ))}
           </div>
-          <p className="font-mono text-[10px] text-dim">
+          <p className="font-mono text-xs text-secondary">
             1 atm = 101.325 kPa = 760 mmHg = 760 torr
           </p>
         </div>
@@ -97,7 +97,7 @@ function ReferenceContent() {
             ].map(r => (
               <div key={r.f} className="flex flex-col gap-0.5">
                 <span className="font-mono text-sm text-bright">{r.f}</span>
-                <span className="font-mono text-[10px] text-dim">solve for {r.label}</span>
+                <span className="font-mono text-xs text-secondary">solve for {r.label}</span>
               </div>
             ))}
           </div>
@@ -120,7 +120,7 @@ function ReferenceContent() {
               </div>
             ))}
           </div>
-          <p className="font-mono text-[10px] text-dim">
+          <p className="font-mono text-xs text-secondary">
             T must always be in Kelvin. Pressure units must match on both sides.
           </p>
         </div>
@@ -142,12 +142,12 @@ function ReferenceContent() {
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-border">
             <div>
-              <p className="font-mono text-xs text-dim uppercase tracking-widest mb-2">Solve for unknown molar mass</p>
+              <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-2">Solve for unknown molar mass</p>
               <p className="font-mono text-sm text-bright">M₁ = M₂ × (rate₂ / rate₁)²</p>
               <p className="font-mono text-sm text-secondary mt-1">M₁ = M₂ × (t₁ / t₂)²</p>
             </div>
             <div>
-              <p className="font-mono text-xs text-dim uppercase tracking-widest mb-2">Units note</p>
+              <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-2">Units note</p>
               <p className="font-sans text-xs text-secondary">
                 Rate units must be consistent (both mol/s, mL/s, etc.). Only the <em>ratio</em> matters,
                 so dimensionless comparisons work too. Molar masses in g/mol.
@@ -176,7 +176,7 @@ function ReferenceContent() {
             ].map(r => (
               <div key={r.f} className="flex flex-col gap-0.5">
                 <span className="font-mono text-sm text-bright">{r.f}</span>
-                <span className="font-mono text-[10px] text-dim">solve for {r.label}</span>
+                <span className="font-mono text-xs text-secondary">solve for {r.label}</span>
               </div>
             ))}
           </div>
@@ -189,7 +189,7 @@ function ReferenceContent() {
               <div key={r.sym} className="flex flex-col gap-0.5">
                 <span className="font-mono text-sm font-bold text-bright">{r.sym}</span>
                 <span className="font-sans text-xs text-secondary">{r.desc}</span>
-                <span className="font-mono text-[10px] text-dim">{r.unit}</span>
+                <span className="font-mono text-xs text-secondary">{r.unit}</span>
               </div>
             ))}
           </div>
@@ -218,7 +218,7 @@ function ReferenceContent() {
               <div key={r.sym} className="flex flex-col gap-0.5">
                 <span className="font-mono text-sm font-bold text-bright">{r.sym}</span>
                 <span className="font-sans text-xs text-secondary">{r.desc}</span>
-                <span className="font-mono text-[10px] text-dim">{r.unit}</span>
+                <span className="font-mono text-xs text-secondary">{r.unit}</span>
               </div>
             ))}
           </div>
@@ -264,7 +264,7 @@ function ExamplesContent() {
           {EXAMPLES.map((ex, i) => (
             <div key={i} className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
               <div className="flex items-baseline gap-2">
-                <span className="font-mono text-[10px] text-dim shrink-0">Ex {i + 1}</span>
+                <span className="font-mono text-xs text-secondary shrink-0">Ex {i + 1}</span>
                 <p className="font-sans text-sm text-secondary">{ex.q}</p>
               </div>
               <div className="font-mono text-sm text-bright bg-raised rounded-sm px-3 py-2">{ex.eq}</div>
@@ -330,7 +330,7 @@ function ExamplesContent() {
           ].map((ex, i) => (
             <div key={i} className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
               <div className="flex items-baseline gap-2">
-                <span className="font-mono text-[10px] text-dim shrink-0">Ex {i + 1}</span>
+                <span className="font-mono text-xs text-secondary shrink-0">Ex {i + 1}</span>
                 <p className="font-sans text-sm text-secondary">{ex.q}</p>
               </div>
               <div className="font-mono text-sm text-bright bg-raised rounded-sm px-3 py-2">{ex.eq}</div>
@@ -377,7 +377,7 @@ function ExamplesContent() {
           ].map((ex, i) => (
             <div key={i} className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
               <div className="flex items-baseline gap-2">
-                <span className="font-mono text-[10px] text-dim shrink-0">Ex {i + 1}</span>
+                <span className="font-mono text-xs text-secondary shrink-0">Ex {i + 1}</span>
                 <p className="font-sans text-sm text-secondary">{ex.q}</p>
               </div>
               <div className="font-mono text-sm text-bright bg-raised rounded-sm px-3 py-2">{ex.eq}</div>
@@ -439,7 +439,7 @@ function ExamplesContent() {
           ].map((ex, i) => (
             <div key={i} className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
               <div className="flex items-baseline gap-2">
-                <span className="font-mono text-[10px] text-dim shrink-0">Ex {i + 1}</span>
+                <span className="font-mono text-xs text-secondary shrink-0">Ex {i + 1}</span>
                 <p className="font-sans text-sm text-secondary">{ex.q}</p>
               </div>
               <div className="font-mono text-sm text-bright bg-raised rounded-sm px-3 py-2">{ex.eq}</div>

@@ -128,7 +128,7 @@ export default function PercentCompositionCalc() {
         ))}
       </div>
 
-      <p className="font-mono text-[10px] text-dim -mt-4">
+      <p className="font-mono text-xs text-secondary -mt-4">
         {mode === 'formula'
           ? 'Molecular formula — e.g. H2O, NaCl, C6H12O6, Ca(OH)2'
           : 'SMILES string — e.g. [Na+].[Cl-], CCO'}
@@ -176,7 +176,7 @@ export default function PercentCompositionCalc() {
 
               <div className="rounded-sm border border-border overflow-hidden">
                 {/* Header */}
-                <div className="grid grid-cols-5 px-3 py-2 font-mono text-[9px] text-dim tracking-wider uppercase"
+                <div className="grid grid-cols-5 px-3 py-2 font-mono text-xs text-secondary tracking-widest uppercase"
                   style={{ background: 'rgba(255,255,255,0.03)' }}>
                   <span className="col-span-2">Element</span>
                   <span className="text-right">Count</span>

@@ -299,8 +299,8 @@ export default function DaltonsLawCalc() {
           {/* Header */}
           <div className="grid gap-2 px-3 py-2 border-b border-border"
             style={{ background: '#0e1016', gridTemplateColumns: '1fr 1.4fr auto' }}>
-            <span className="font-mono text-[10px] uppercase tracking-widest text-dim">Label</span>
-            <span className="font-mono text-[10px] uppercase tracking-widest text-dim">
+            <span className="font-mono text-xs uppercase tracking-widest text-secondary">Label</span>
+            <span className="font-mono text-xs uppercase tracking-widest text-secondary">
               {mode === 'partial' ? `Partial pressure (${unit})` : fracInput === 'chi' ? 'Mole fraction (χ)' : 'Moles (n)'}
             </span>
             <span />

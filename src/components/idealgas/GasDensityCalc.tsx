@@ -210,7 +210,7 @@ export default function GasDensityCalc() {
         )}
       </AnimatePresence>
 
-      <p className="font-mono text-[10px] text-dim">
+      <p className="font-mono text-xs text-secondary">
         R = {R} L·atm/(mol·K). Density in g/L, molar mass in g/mol. T must be above 0 K.
       </p>
     </div>

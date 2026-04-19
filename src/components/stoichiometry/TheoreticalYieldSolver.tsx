@@ -84,7 +84,7 @@ export default function TheoreticalYieldSolver() {
 
       {/* Reaction selector */}
       <div className="flex flex-col gap-2">
-        <label className="font-mono text-[10px] text-secondary tracking-widest uppercase">Reaction</label>
+        <label className="font-mono text-xs text-secondary tracking-widest uppercase">Reaction</label>
         <select value={rxnIdx} onChange={e => switchReaction(Number(e.target.value))}
           className="bg-raised border border-border rounded-sm px-3 py-2
                      font-sans text-sm text-bright focus:outline-none focus:border-muted">
@@ -95,7 +95,7 @@ export default function TheoreticalYieldSolver() {
 
       {/* Limiting reagent row */}
       <div className="flex flex-col gap-2">
-        <label className="font-mono text-[10px] text-secondary tracking-widest uppercase">Limiting Reagent (given)</label>
+        <label className="font-mono text-xs text-secondary tracking-widest uppercase">Limiting Reagent (given)</label>
         <div className="flex flex-wrap items-center gap-2">
           <NumInput value={lrVal} onChange={v => { setLrVal(v); setResult(null) }} />
           <UnitToggle unit={lrUnit} onChange={u => { setLrUnit(u); setResult(null) }} />
@@ -107,7 +107,7 @@ export default function TheoreticalYieldSolver() {
 
       {/* Product row */}
       <div className="flex flex-col gap-2">
-        <label className="font-mono text-[10px] text-secondary tracking-widest uppercase">Product to find yield of</label>
+        <label className="font-mono text-xs text-secondary tracking-widest uppercase">Product to find yield of</label>
         <SpeciesSelect rxn={rxn} value={prodFormula} productsOnly
           onChange={f => { setProdFormula(f); setResult(null) }} />
       </div>
@@ -134,7 +134,7 @@ export default function TheoreticalYieldSolver() {
                   borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   background: 'color-mix(in srgb, var(--c-halogen) 8%, #0e1016)',
                 }}>
-                <span className="font-mono text-[10px] text-secondary tracking-widest uppercase block mb-1">
+                <span className="font-mono text-xs text-secondary tracking-widest uppercase block mb-1">
                   Theoretical Yield
                 </span>
                 <span className="font-mono text-2xl font-semibold" style={{ color: 'var(--c-halogen)' }}>

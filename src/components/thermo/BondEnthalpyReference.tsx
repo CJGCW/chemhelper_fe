@@ -30,7 +30,7 @@ export default function BondEnthalpyReference() {
 
       {/* Variable definitions */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Variables</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Variables</span>
         <div className="rounded-sm border border-border bg-surface overflow-hidden">
           {[
             { sym: 'ΔH',        def: 'Enthalpy change of reaction (kJ)' },
@@ -49,7 +49,7 @@ export default function BondEnthalpyReference() {
 
       {/* Sign / direction */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Sign Convention</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Sign Convention</span>
         <div className="rounded-sm border border-border bg-surface overflow-hidden">
           {[
             { cond: 'ΔH < 0', label: 'Exothermic', note: 'More energy released forming bonds than absorbed breaking them' },
@@ -68,7 +68,7 @@ export default function BondEnthalpyReference() {
 
       {/* Solving steps */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Steps to Solve</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Steps to Solve</span>
         <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
           {[
             'Identify all bonds broken in the reactants (with counts).',
@@ -89,7 +89,7 @@ export default function BondEnthalpyReference() {
 
       {/* Approximation note */}
       <div className="rounded-sm border border-amber-500/20 bg-amber-500/5 p-4 flex flex-col gap-1">
-        <span className="font-mono text-[10px] text-amber-400/80 tracking-widest uppercase">Approximation Note</span>
+        <span className="font-mono text-xs text-amber-400/80 tracking-widest uppercase">Approximation Note</span>
         <p className="font-sans text-sm text-secondary leading-relaxed">
           Bond enthalpies are <em>average</em> values across many molecules. The calculated ΔH will differ from
           the exact thermodynamic value (from ΔHf° data) because actual bond strengths vary by molecular environment.
@@ -100,7 +100,7 @@ export default function BondEnthalpyReference() {
       {/* Bond energy table */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-[10px] text-dim tracking-widest uppercase flex-1">Average Bond Enthalpies</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase flex-1">Average Bond Enthalpies</span>
           <input
             type="text"
             value={searchTerm}
@@ -114,8 +114,8 @@ export default function BondEnthalpyReference() {
         {filtered ? (
           <div className="rounded-sm border border-border bg-surface overflow-hidden">
             <div className="grid grid-cols-[1fr_6rem] px-4 py-1.5 bg-raised border-b border-border">
-              <span className="font-mono text-[9px] text-dim uppercase">Bond</span>
-              <span className="font-mono text-[9px] text-dim uppercase text-right">BE (kJ/mol)</span>
+              <span className="font-mono text-xs text-secondary uppercase">Bond</span>
+              <span className="font-mono text-xs text-secondary uppercase text-right">BE (kJ/mol)</span>
             </div>
             {filtered.length === 0 ? (
               <p className="px-4 py-3 font-mono text-xs text-dim">No matching bonds.</p>
@@ -131,11 +131,11 @@ export default function BondEnthalpyReference() {
         ) : (
           BOND_CATEGORIES.map(cat => (
             <div key={cat} className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] text-secondary tracking-wider uppercase">{cat}</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase">{cat}</span>
               <div className="rounded-sm border border-border bg-surface overflow-hidden">
                 <div className="grid grid-cols-[1fr_6rem] px-4 py-1.5 bg-raised border-b border-border">
-                  <span className="font-mono text-[9px] text-dim uppercase">Bond</span>
-                  <span className="font-mono text-[9px] text-dim uppercase text-right">BE (kJ/mol)</span>
+                  <span className="font-mono text-xs text-secondary uppercase">Bond</span>
+                  <span className="font-mono text-xs text-secondary uppercase text-right">BE (kJ/mol)</span>
                 </div>
                 {BOND_DATA.filter(b => b.category === cat).map(b => (
                   <div key={b.bond}

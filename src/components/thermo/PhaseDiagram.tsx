@@ -453,7 +453,7 @@ export default function PhaseDiagram() {
 
       {/* Substance selector */}
       <div className="flex flex-col gap-3">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Substance</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Substance</span>
         <div className="flex gap-2">
           {SUBSTANCES.map((s, i) => (
             <button key={i} onClick={() => setSubIdx(i)}
@@ -476,10 +476,10 @@ export default function PhaseDiagram() {
       {/* Diagram */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <span className="font-mono text-[10px] text-dim tracking-widest uppercase">
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">
             Phase Diagram — {data.name}
           </span>
-          <span className="font-mono text-[9px] text-dim">Hover to identify phase</span>
+          <span className="font-mono text-xs text-secondary">Hover to identify phase</span>
         </div>
 
         <div className="rounded-sm border border-border overflow-hidden p-2" style={{ background: '#0a0c10' }}>
@@ -503,14 +503,14 @@ export default function PhaseDiagram() {
               </span>
             </>
           ) : (
-            <span className="font-mono text-[10px] text-dim italic">Move cursor over diagram</span>
+            <span className="font-mono text-xs text-secondary italic">Move cursor over diagram</span>
           )}
         </div>
       </div>
 
       {/* Key points table */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Key Points</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Key Points</span>
         <div className="rounded-sm border border-border overflow-hidden">
           <table className="w-full text-xs font-mono">
             <thead>

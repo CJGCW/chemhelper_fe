@@ -132,8 +132,8 @@ function T({ headers, rows }: { headers: string[]; rows: React.ReactNode[][] }) 
         <thead>
           <tr className="border-b border-border">
             {headers.map(h => (
-              <th key={h} className="text-left pb-2 pr-5 last:pr-0 font-mono text-[10px]
-                                     text-dim tracking-widest uppercase">{h}</th>
+              <th key={h} className="text-left pb-2 pr-5 last:pr-0 font-mono text-xs
+                                     text-secondary tracking-widest uppercase">{h}</th>
             ))}
           </tr>
         </thead>
@@ -159,7 +159,7 @@ function Ions() {
     <div className="flex flex-col gap-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
-          <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3">Anions</p>
+          <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3">Anions</p>
           <T
             headers={['Formula','Name','Charge']}
             rows={POLYATOMIC_ANIONS.map(i => [
@@ -171,7 +171,7 @@ function Ions() {
         </div>
         <div className="flex flex-col gap-6">
           <div>
-            <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3">Cations</p>
+            <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3">Cations</p>
             <T
               headers={['Formula','Name','Charge']}
               rows={POLYATOMIC_CATIONS.map(i => [
@@ -182,7 +182,7 @@ function Ions() {
             />
           </div>
           <div>
-            <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3">-ate / -ite pattern</p>
+            <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3">-ate / -ite pattern</p>
             <div className="flex flex-col gap-2">
               {[
                 ['more O', '-ic acid  /  -ate ion',  'SO₄²⁻ sulfate, HNO₃ nitric acid'],
@@ -232,7 +232,7 @@ function Prefixes() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       <div>
-        <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3">
+        <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3">
           Standard  (molecular / covalent)
         </p>
         <div className="grid grid-cols-2 gap-x-8 gap-y-1.5">
@@ -245,7 +245,7 @@ function Prefixes() {
         </div>
       </div>
       <div>
-        <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3">
+        <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3">
           Complex ligand prefixes  (avoids ambiguity)
         </p>
         <div className="grid grid-cols-2 gap-x-8 gap-y-1.5">
@@ -270,7 +270,7 @@ function Acids() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       <div>
-        <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-1">
+        <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-1">
           Binary acids  (H + nonmetal, in aq. solution)
         </p>
         <p className="font-sans text-xs text-dim mb-3">
@@ -285,7 +285,7 @@ function Acids() {
         />
       </div>
       <div>
-        <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-1">
+        <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-1">
           Oxyacids  (H + polyatomic oxyanion)
         </p>
         <p className="font-sans text-xs text-dim mb-3">
@@ -324,7 +324,7 @@ function Coordination() {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3">Naming order</p>
+        <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3">Naming order</p>
         <ol className="flex flex-col gap-2 list-decimal list-inside font-sans text-sm text-secondary">
           <li>Cation before anion (same as ionic compounds).</li>
           <li>Within the complex: ligands alphabetically, then central metal.</li>
@@ -336,7 +336,7 @@ function Coordination() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
-          <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3">
+          <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3">
             Metal stems for anionic complexes
           </p>
           <div className="grid grid-cols-2 gap-x-8 gap-y-1.5">
@@ -349,7 +349,7 @@ function Coordination() {
           </div>
         </div>
         <div>
-          <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3">Examples</p>
+          <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3">Examples</p>
           <div className="flex flex-col gap-2.5">
             {COORD_EXAMPLES.map(({ formula, name }) => (
               <div key={formula} className="flex gap-3 items-baseline flex-wrap">
@@ -408,7 +408,7 @@ function QuickRules() {
       ].map(({ label, subtitle, color, items }) => (
         <div key={label} className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-3">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-widest mb-0.5" style={{ color }}>{label}</p>
+            <p className="font-mono text-xs uppercase tracking-widest mb-0.5" style={{ color }}>{label}</p>
             <p className="font-sans text-xs text-dim">{subtitle}</p>
           </div>
           <ul className="flex flex-col gap-1.5">

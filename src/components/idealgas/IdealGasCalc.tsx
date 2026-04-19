@@ -260,7 +260,7 @@ function CombinedGasCalc() {
         )}
       </AnimatePresence>
 
-      <p className="font-mono text-[10px] text-dim">
+      <p className="font-mono text-xs text-secondary">
         P₁V₁/T₁ = P₂V₂/T₂ — n is constant (same gas, two different states).
       </p>
     </div>
@@ -613,7 +613,7 @@ export default function IdealGasCalc() {
         )}
       </AnimatePresence>
 
-      <p className="font-mono text-[10px] text-dim">
+      <p className="font-mono text-xs text-secondary">
         Assumes ideal gas behaviour. Temperature must be above 0 K. R = {R} L·atm/(mol·K).
       </p>
             </div>

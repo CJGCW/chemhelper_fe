@@ -536,7 +536,7 @@ export default function ElectrolyteClassifier() {
         )}
       </AnimatePresence>
 
-      <p className="font-mono text-[10px] text-dim">
+      <p className="font-mono text-xs text-secondary">
         Ionization percentages are approximate at ~0.1 M. Strong electrolytes conduct electricity well; weak electrolytes conduct partially; non-electrolytes do not conduct.
       </p>
     </div>

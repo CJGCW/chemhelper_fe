@@ -107,7 +107,7 @@ export default function MassToMolesHelper({ onResolved, onClear }: Props) {
                 background: 'color-mix(in srgb, var(--c-halogen) 4%, #0e1016)',
               }}
             >
-              <p className="font-mono text-[10px] text-dim">n = m / M</p>
+              <p className="font-mono text-xs text-secondary">n = m / M</p>
 
               {/* Mass */}
               <NumberField

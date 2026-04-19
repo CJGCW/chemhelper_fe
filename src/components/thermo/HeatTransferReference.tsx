@@ -1,5 +1,5 @@
 export default function HeatTransferReference() {
-  const labelCls = 'font-mono text-[10px] text-dim tracking-widest uppercase'
+  const labelCls = 'font-mono text-xs text-secondary tracking-widest uppercase'
 
   const SPECIFIC_HEATS = [
     { substance: 'Water (l)',  formula: 'H₂O (l)', c: '4.184' },
@@ -131,9 +131,9 @@ export default function HeatTransferReference() {
         <span className={labelCls}>Common Specific Heats</span>
         <div className="rounded-sm border border-border bg-surface overflow-hidden">
           <div className="grid grid-cols-3 px-4 py-2 border-b border-border">
-            <span className="font-mono text-[10px] text-dim uppercase tracking-wider">Substance</span>
-            <span className="font-mono text-[10px] text-dim uppercase tracking-wider">Formula</span>
-            <span className="font-mono text-[10px] text-dim uppercase tracking-wider">c (J/g·°C)</span>
+            <span className="font-mono text-xs text-secondary uppercase tracking-widest">Substance</span>
+            <span className="font-mono text-xs text-secondary uppercase tracking-widest">Formula</span>
+            <span className="font-mono text-xs text-secondary uppercase tracking-widest">c (J/g·°C)</span>
           </div>
           {SPECIFIC_HEATS.map(row => (
             <div key={row.substance}

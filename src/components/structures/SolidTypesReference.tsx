@@ -154,7 +154,7 @@ export default function SolidTypesReference() {
                 { label: 'Solubility',    value: t.solubility   },
               ].map(p => (
                 <div key={p.label} className="flex gap-2">
-                  <span className="font-mono text-[9px] text-dim tracking-widest uppercase shrink-0 w-24 pt-0.5">
+                  <span className="font-mono text-xs text-secondary tracking-widest uppercase shrink-0 w-24 pt-0.5">
                     {p.label}
                   </span>
                   <span className="font-sans text-xs text-secondary leading-relaxed">{p.value}</span>
@@ -164,7 +164,7 @@ export default function SolidTypesReference() {
 
             {/* Examples */}
             <div className="px-4 py-3 border-b border-border">
-              <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Examples</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase">Examples</span>
               <div className="mt-1.5 flex flex-wrap gap-1.5">
                 {t.examples.map(e => (
                   <span key={e.formula}
@@ -191,7 +191,7 @@ export default function SolidTypesReference() {
 
       {/* Comparison table */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Side-by-Side Comparison</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Side-by-Side Comparison</span>
         <div className="rounded-sm border border-border overflow-x-auto">
           <table className="w-full text-xs font-mono min-w-[560px]">
             <thead>
@@ -221,7 +221,7 @@ export default function SolidTypesReference() {
 
       {/* Identification guide */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">How to Identify the Solid Type</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">How to Identify the Solid Type</span>
         <div className="rounded-sm border border-border overflow-hidden">
           {ID_STEPS.map((step, i) => (
             <div key={i} className="flex gap-3 px-4 py-3 border-b border-border last:border-b-0">
@@ -240,7 +240,7 @@ export default function SolidTypesReference() {
             </div>
           ))}
         </div>
-        <p className="font-sans text-[10px] text-dim px-0.5">
+        <p className="font-sans text-xs text-secondary px-0.5">
           Work through the questions in order — the first match wins.
         </p>
       </div>

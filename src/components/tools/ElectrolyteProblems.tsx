@@ -35,7 +35,7 @@ export default function ElectrolyteProblems() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Electrolyte Classification</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Electrolyte Classification</span>
           {attempts > 0 && (
             <span className="font-mono text-xs" style={{ color: 'var(--c-halogen)' }}>{score}/{attempts}</span>
           )}
@@ -52,7 +52,7 @@ export default function ElectrolyteProblems() {
         >
           <div className="px-4 py-3 border-b border-border"
             style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, #141620)' }}>
-            <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Classify the electrolyte</span>
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">Classify the electrolyte</span>
           </div>
           <div className="px-4 py-4 flex flex-col gap-1">
             <p className="font-mono text-xl text-bright">{q.formula}</p>

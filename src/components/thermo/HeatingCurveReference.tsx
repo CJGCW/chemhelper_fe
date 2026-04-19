@@ -200,7 +200,7 @@ export default function HeatingCurveReference() {
               <div key={r.sym} className="flex items-baseline gap-2">
                 <span className="font-mono text-sm w-6 shrink-0" style={{ color: 'var(--c-halogen)' }}>{r.sym}</span>
                 <span className="font-mono text-xs text-secondary">{r.desc}</span>
-                {r.note && <span className="font-mono text-[10px] text-dim">{r.note}</span>}
+                {r.note && <span className="font-mono text-xs text-secondary">{r.note}</span>}
               </div>
             ))}
           </div>
@@ -219,7 +219,7 @@ export default function HeatingCurveReference() {
               <div key={r.sym} className="flex items-baseline gap-2">
                 <span className="font-mono text-sm w-14 shrink-0" style={{ color: 'var(--c-halogen)' }}>{r.sym}</span>
                 <span className="font-mono text-xs text-secondary">{r.desc}</span>
-                {r.note && <span className="font-mono text-[10px] text-dim">— {r.note}</span>}
+                {r.note && <span className="font-mono text-xs text-secondary">— {r.note}</span>}
               </div>
             ))}
           </div>

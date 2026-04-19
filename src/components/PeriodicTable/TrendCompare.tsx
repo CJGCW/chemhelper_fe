@@ -55,7 +55,7 @@ function Slot({
         {element.symbol}
       </span>
       <span className="font-mono text-[11px] text-secondary">{element.name}</span>
-      <span className="font-mono text-[10px] text-dim">Z = {element.atomicNumber}</span>
+      <span className="font-mono text-xs text-secondary">Z = {element.atomicNumber}</span>
     </div>
   )
 }
@@ -77,11 +77,11 @@ export default function TrendCompare({ elementA, elementB, onClear }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-border">
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[10px] text-dim tracking-widest uppercase">
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">
             Compare Elements
           </span>
           {(!elementA || !elementB) && (
-            <span className="font-mono text-[10px] text-dim">
+            <span className="font-mono text-xs text-secondary">
               — click {!elementA ? 'two elements' : 'one more element'} on the table
             </span>
           )}
@@ -157,7 +157,7 @@ export default function TrendCompare({ elementA, elementB, onClear }: Props) {
 
       {/* Legend */}
       {elementA && elementB && (
-        <p className="font-mono text-[10px] text-dim px-4 py-2 border-t border-border">
+        <p className="font-mono text-xs text-secondary px-4 py-2 border-t border-border">
           Highlighted value = higher for properties where a larger value is notable (EN, IE₁, EA, radii).
         </p>
       )}

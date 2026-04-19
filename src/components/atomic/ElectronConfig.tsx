@@ -186,7 +186,7 @@ export default function ElectronConfig() {
       {/* ── Configuration display ── */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-3 flex-wrap">
-          <p className="font-mono text-[10px] tracking-[0.15em] text-dim uppercase">Electron Configuration</p>
+          <p className="font-mono text-xs tracking-widest text-secondary uppercase">Electron Configuration</p>
           <div className="flex gap-2 ml-auto">
             {(['full', 'step'] as const).map(mode => {
               const on = mode === 'full' ? showFull : stepMode
@@ -220,7 +220,7 @@ export default function ElectronConfig() {
                 <input type="range" min={1} max={z} value={step}
                   onChange={e => setStep(Number(e.target.value))}
                   className="w-full accent-[var(--c-halogen)]" />
-                <div className="flex justify-between font-mono text-[10px] text-dim">
+                <div className="flex justify-between font-mono text-xs text-secondary">
                   <span>1</span><span>{z}</span>
                 </div>
               </div>
@@ -246,12 +246,12 @@ export default function ElectronConfig() {
 
       {/* ── Orbital box diagram ── */}
       <div className="flex flex-col gap-3">
-        <p className="font-mono text-[10px] tracking-[0.15em] text-dim uppercase">Orbital Box Diagram</p>
+        <p className="font-mono text-xs tracking-widest text-secondary uppercase">Orbital Box Diagram</p>
         <div className="flex flex-col gap-1">
           {shellRows.map(([n, subs]) => (
             <div key={n} className="flex items-end gap-4 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
               <div className="w-8 shrink-0 flex items-center justify-center pb-0.5">
-                <span className="font-mono text-[10px] text-dim">n={n}</span>
+                <span className="font-mono text-xs text-secondary">n={n}</span>
               </div>
               <div className="flex items-end gap-4 flex-wrap">
                 {subs.map(sub => (
@@ -263,7 +263,7 @@ export default function ElectronConfig() {
         </div>
 
         <div className="flex flex-col gap-1 p-3 rounded-sm border border-border" style={{ background: '#0e1016' }}>
-          <p className="font-mono text-[10px] tracking-[0.15em] text-dim uppercase mb-2">Aufbau Filling Order</p>
+          <p className="font-mono text-xs tracking-widest text-secondary uppercase mb-2">Aufbau Filling Order</p>
           <div className="flex flex-wrap gap-1.5">
             {AUFBAU.map((s, i) => {
               const isFilled = fullSubshells.some(fs => fs.aufbauIdx === i)

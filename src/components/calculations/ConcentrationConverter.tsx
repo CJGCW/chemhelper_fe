@@ -65,7 +65,7 @@ function ResultRow({ label, value, unit, accentColor, note }: ResultRowProps) {
     >
       <div className="flex flex-col gap-0.5">
         <span className="font-sans text-sm font-medium text-primary">{label}</span>
-        {note && <span className="font-mono text-[10px] text-dim">{note}</span>}
+        {note && <span className="font-mono text-xs text-secondary">{note}</span>}
       </div>
       {value !== null ? (
         <div className="flex items-baseline gap-2">
@@ -81,7 +81,7 @@ function ResultRow({ label, value, unit, accentColor, note }: ResultRowProps) {
       ) : (
         <div className="flex items-center gap-2">
           <span className="font-mono text-lg text-muted">—</span>
-          <span className="font-mono text-[10px] text-dim">needs ρ</span>
+          <span className="font-mono text-xs text-secondary">needs ρ</span>
         </div>
       )}
     </div>
@@ -96,7 +96,7 @@ interface FormulaBoxProps {
 function FormulaBox({ title, formula }: FormulaBoxProps) {
   return (
     <div className="rounded-sm border border-border p-3">
-      <p className="font-mono text-[10px] text-dim uppercase tracking-wider mb-1">{title}</p>
+      <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-1">{title}</p>
       <p className="font-mono text-xs text-secondary">{formula}</p>
     </div>
   )
@@ -205,7 +205,7 @@ export default function ConcentrationConverter() {
             <label className="font-sans text-sm font-medium text-primary">
               Solution density (ρ)
             </label>
-            <span className="font-mono text-[9px] text-dim">required for % and mol/kg conversions</span>
+            <span className="font-mono text-xs text-secondary">required for % and mol/kg conversions</span>
           </div>
           <div className="flex items-stretch gap-1.5">
             <input
@@ -247,7 +247,7 @@ export default function ConcentrationConverter() {
 
       {result && (
         <div className="flex flex-col gap-3 border-t border-border pt-4">
-          <p className="font-mono text-[10px] text-dim tracking-widest uppercase">Equivalent concentrations</p>
+          <p className="font-mono text-xs text-secondary tracking-widest uppercase">Equivalent concentrations</p>
           <ResultRow
             label="Molarity"
             value={result.molarity}
@@ -283,7 +283,7 @@ export default function ConcentrationConverter() {
       )}
 
       <div className="flex flex-col gap-3 border-t border-border pt-4">
-        <p className="font-mono text-[10px] text-dim tracking-widest uppercase">Conversion formulas</p>
+        <p className="font-mono text-xs text-secondary tracking-widest uppercase">Conversion formulas</p>
         <div className="grid grid-cols-1 gap-2">
           <FormulaBox
             title="% → mol/L"

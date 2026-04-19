@@ -325,7 +325,7 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
             </button>
           ))}
         </div>
-        <p className="font-mono text-[10px] text-dim mt-0.5">
+        <p className="font-mono text-xs text-secondary mt-0.5">
           bp: {solvent.bp} °C · fp: {solvent.fp} °C · Kb: {solvent.kb} °C·kg/mol
           · Kf: {solvent.kf} °C·kg/mol
         </p>
@@ -371,7 +371,7 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
                     "color-mix(in srgb, var(--c-halogen) 4%, #0e1016)",
                 }}
               >
-                <p className="font-mono text-[10px] text-dim">
+                <p className="font-mono text-xs text-secondary">
                   b = n / m_solvent
                 </p>
 
@@ -451,7 +451,7 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
                   >
                     Suggested i = {vhfSuggestion.i}
                   </span>
-                  <span className="font-mono text-[10px] text-dim">
+                  <span className="font-mono text-xs text-secondary">
                     {vhfSuggestion.note}
                   </span>
                 </div>
@@ -617,7 +617,7 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
                     {resultNewPoint}
                   </span>
                 </div>
-                <p className="font-mono text-[10px] text-dim">
+                <p className="font-mono text-xs text-secondary">
                   Pure {baseTLabel}: {baseT} °C ·{" "}
                   {mode === "bpe" ? "elevated" : "depressed"} by {result} °C
                 </p>

@@ -53,9 +53,9 @@ function VarsTable({ rows }: { rows: VarRow[] }) {
     <table className="w-full text-sm mb-3 border-collapse">
       <thead>
         <tr className="border-b border-border print:border-gray-200">
-          <th className="font-mono text-[10px] text-dim print:text-gray-400 uppercase tracking-widest text-left pb-1.5 pr-4">Symbol</th>
-          <th className="font-mono text-[10px] text-dim print:text-gray-400 uppercase tracking-widest text-left pb-1.5 pr-4">Quantity</th>
-          <th className="font-mono text-[10px] text-dim print:text-gray-400 uppercase tracking-widest text-left pb-1.5">Unit</th>
+          <th className="font-mono text-xs text-secondary print:text-gray-400 uppercase tracking-widest text-left pb-1.5 pr-4">Symbol</th>
+          <th className="font-mono text-xs text-secondary print:text-gray-400 uppercase tracking-widest text-left pb-1.5 pr-4">Quantity</th>
+          <th className="font-mono text-xs text-secondary print:text-gray-400 uppercase tracking-widest text-left pb-1.5">Unit</th>
         </tr>
       </thead>
       <tbody>
@@ -74,7 +74,7 @@ function VarsTable({ rows }: { rows: VarRow[] }) {
 function Example({ scenario, steps, result }: { scenario: string; steps: string[]; result: string }) {
   return (
     <div className="border-t border-border print:border-gray-200 pt-3">
-      <p className="font-mono text-[10px] text-secondary print:text-gray-400 uppercase tracking-widest mb-2">
+      <p className="font-mono text-xs text-secondary print:text-gray-400 uppercase tracking-widest mb-2">
         Worked Example
       </p>
       <p className="font-sans text-sm text-secondary print:text-gray-700 mb-2">{scenario}</p>
@@ -132,7 +132,7 @@ function SolventTable() {
         <thead>
           <tr className="border-b border-border print:border-gray-200">
             {['Solvent', 'bp (°C)', 'fp (°C)', 'Kb (°C·kg/mol)', 'Kf (°C·kg/mol)'].map(h => (
-              <th key={h} className="font-mono text-[10px] text-dim print:text-gray-400 uppercase tracking-wide text-left pb-1.5 pr-3">{h}</th>
+              <th key={h} className="font-mono text-xs text-secondary print:text-gray-400 uppercase tracking-wide text-left pb-1.5 pr-3">{h}</th>
             ))}
           </tr>
         </thead>
@@ -148,7 +148,7 @@ function SolventTable() {
           ))}
         </tbody>
       </table>
-      <p className="font-mono text-[10px] text-dim print:text-gray-400 mt-3">
+      <p className="font-mono text-xs text-secondary print:text-gray-400 mt-3">
         Van't Hoff factor i: non-electrolytes i = 1; NaCl i ≈ 2; CaCl₂ i ≈ 3; MgSO₄ i ≈ 2
       </p>
     </div>
@@ -426,7 +426,7 @@ function FullGuide() {
 
       {/* Concepts */}
       <div>
-        <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3">Concepts</p>
+        <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3">Concepts</p>
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-5">
           <ConceptCard title="The Mole" formula="n"
             tagline="A mole is a counting unit — just like a dozen means 12, a mole means 6.022 × 10²³ particles (Avogadro's number)."

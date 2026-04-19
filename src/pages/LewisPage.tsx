@@ -219,7 +219,7 @@ export default function LewisPage({ embedded = false }: { embedded?: boolean }) 
       {mode === 'practice' && !embedded && (
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="font-mono text-[10px] text-dim">Molecule:</span>
+            <span className="font-mono text-xs text-secondary">Molecule:</span>
             {EXAMPLES.map(ex => (
               <button
                 key={`${ex.input}${ex.charge ?? 0}`}
@@ -240,7 +240,7 @@ export default function LewisPage({ embedded = false }: { embedded?: boolean }) 
                 {ex.label}
               </button>
             ))}
-            {loading && <span className="font-mono text-[10px] text-dim">Loading…</span>}
+            {loading && <span className="font-mono text-xs text-secondary">Loading…</span>}
             {error && <span className="font-mono text-[10px] text-red-400">{error}</span>}
           </div>
           <LewisEditor
@@ -322,7 +322,7 @@ export default function LewisPage({ embedded = false }: { embedded?: boolean }) 
 
         {/* Quick examples */}
         <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="font-mono text-[10px] text-dim">Try:</span>
+          <span className="font-mono text-xs text-secondary">Try:</span>
           {EXAMPLES.map(ex => (
             <button
               key={`${ex.input}${ex.charge ?? 0}`}
@@ -427,7 +427,7 @@ export default function LewisPage({ embedded = false }: { embedded?: boolean }) 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="font-mono text-[10px] text-dim tracking-wider uppercase">{label}</span>
+      <span className="font-mono text-xs text-secondary tracking-widest uppercase">{label}</span>
       <span className="font-sans text-sm text-primary">{value}</span>
     </div>
   )

@@ -777,7 +777,7 @@ const LewisEditor = forwardRef<LewisEditorHandle, Props>(function LewisEditor(
       </div>
 
       {/* Hint line */}
-      <p className="font-mono text-[10px] text-dim leading-relaxed">
+      <p className="font-mono text-xs text-secondary leading-relaxed">
         <span style={{ color: 'var(--c-halogen)' }}>Draw:</span> click canvas to place · drag atom→atom to bond · click bond to cycle order (×1→×2→×3→delete) ·{' '}
         <span style={{ color: 'var(--c-halogen)' }}>Move:</span> drag atom to reposition · hover atom for lone pair / delete controls
       </p>

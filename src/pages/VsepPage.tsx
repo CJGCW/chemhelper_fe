@@ -263,7 +263,7 @@ export default function VsepPage() {
 
         {/* Examples */}
         <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="font-mono text-[10px] text-dim">Try:</span>
+          <span className="font-mono text-xs text-secondary">Try:</span>
           {EXAMPLES.map(ex => (
             <button
               key={`${ex.input}${ex.charge ?? 0}`}
@@ -333,7 +333,7 @@ export default function VsepPage() {
 function InfoRow({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
     <div className="flex items-baseline gap-2">
-      <span className="font-mono text-[10px] text-dim tracking-wider uppercase shrink-0 w-44">{label}</span>
+      <span className="font-mono text-xs text-secondary tracking-widest uppercase shrink-0 w-44">{label}</span>
       <span
         className="font-sans text-sm"
         style={{ color: highlight ? 'var(--c-halogen)' : undefined }}

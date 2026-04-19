@@ -1207,7 +1207,7 @@ export default function TestSheet({ test, onBack }: Props) {
         {/* Header */}
         <div className="flex items-center gap-2">
           <span className="font-mono text-sm font-bold text-bright w-6 shrink-0">{q.id}.</span>
-          <span className="font-mono text-[10px] text-dim border border-border px-2 py-0.5 rounded-sm">
+          <span className="font-mono text-xs text-secondary border border-border px-2 py-0.5 rounded-sm">
             {q.topic}
           </span>
           {result === 'correct'  && <span className="ml-auto font-mono text-sm text-emerald-400">✓</span>}
@@ -1444,7 +1444,7 @@ export default function TestSheet({ test, onBack }: Props) {
                 <div className="pl-8 flex flex-col gap-4 pt-1">
                   {/* Student's submission */}
                   <div className="flex flex-col gap-1.5">
-                    <span className="font-mono text-xs text-dim tracking-wider uppercase">Your drawing</span>
+                    <span className="font-mono text-xs text-secondary tracking-widest uppercase">Your drawing</span>
                     {submissions[q.id] ? (
                       <button
                         onClick={() => setDrawModal({ q, review: true })}
@@ -1463,7 +1463,7 @@ export default function TestSheet({ test, onBack }: Props) {
                   </div>
                   {/* Expected answer */}
                   <div className="flex flex-col gap-1.5">
-                    <span className="font-mono text-xs text-dim tracking-wider uppercase">Expected</span>
+                    <span className="font-mono text-xs text-secondary tracking-widest uppercase">Expected</span>
                     {vseprDrawP && (
                       <div className="flex flex-col gap-1 pl-3 border-l border-border mb-1">
                         <span className="font-mono text-sm font-semibold text-bright">{vseprDrawP.geometry}</span>

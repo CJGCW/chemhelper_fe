@@ -182,7 +182,7 @@ export default function MultiElectronAtoms() {
 
       {/* Element selector */}
       <div className="flex flex-col gap-4">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Select Element</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Select Element</span>
         <ElementSelector z={z} onChange={setZ} />
       </div>
 
@@ -195,7 +195,7 @@ export default function MultiElectronAtoms() {
           { label: 'Outer subshell',       val: config.filter(s => s.electrons > 0).slice(-1)[0]?.label ?? '—', color: 'rgba(255,255,255,0.6)' },
         ].map(item => (
           <div key={item.label} className="flex flex-col gap-1 px-4 py-3 rounded-sm bg-surface border border-border">
-            <span className="font-mono text-[10px] text-dim">{item.label}</span>
+            <span className="font-mono text-xs text-secondary">{item.label}</span>
             <span className="font-mono text-xl font-bold" style={{ color: item.color }}>{item.val}</span>
           </div>
         ))}
@@ -204,7 +204,7 @@ export default function MultiElectronAtoms() {
       {/* Slater's rules breakdown */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Slater's Rules — per Subshell Group</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Slater's Rules — per Subshell Group</span>
         </div>
         <div className="rounded-sm border border-border overflow-hidden">
           <table className="w-full text-xs font-mono">
@@ -248,7 +248,7 @@ export default function MultiElectronAtoms() {
 
       {/* Periodic trend: Z_eff across periods */}
       <div className="flex flex-col gap-4">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Z_eff Trend Across Periods</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Z_eff Trend Across Periods</span>
         {[
           { label: 'Period 2 (Li → Ne)', zList: PERIOD2 },
           { label: 'Period 3 (Na → Ar)', zList: PERIOD3 },
@@ -338,7 +338,7 @@ export default function MultiElectronAtoms() {
 
       {/* Slater's rules quick reference */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Slater's Rules — Quick Reference</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Slater's Rules — Quick Reference</span>
         <div className="rounded-sm border border-border overflow-hidden">
           <table className="w-full text-xs font-mono">
             <thead>

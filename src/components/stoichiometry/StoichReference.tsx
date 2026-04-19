@@ -18,7 +18,7 @@ function FormulaBox({ lines }: { lines: string[] }) {
 function Example({ scenario, steps, result }: { scenario: string; steps: string[]; result: string }) {
   return (
     <div className="border-t border-border print:border-gray-200 pt-3">
-      <p className="font-mono text-[10px] text-secondary print:text-gray-400 uppercase tracking-widest mb-2">
+      <p className="font-mono text-xs text-secondary print:text-gray-400 uppercase tracking-widest mb-2">
         Worked Example
       </p>
       <p className="font-sans text-sm text-secondary print:text-gray-700 mb-2 italic">{scenario}</p>
@@ -87,13 +87,13 @@ function BalancingCard() {
       <ul className="flex flex-col gap-1.5 mb-3">
         {steps.map((s, i) => (
           <li key={i} className="font-sans text-sm text-secondary print:text-gray-600 flex gap-2">
-            <span className="font-mono text-[10px] text-dim print:text-gray-400 shrink-0 mt-0.5">{i + 1}.</span>
+            <span className="font-mono text-xs text-secondary print:text-gray-400 shrink-0 mt-0.5">{i + 1}.</span>
             <span>{s}</span>
           </li>
         ))}
       </ul>
       <div className="border-t border-border print:border-gray-200 pt-3">
-        <p className="font-mono text-[10px] text-secondary print:text-gray-400 uppercase tracking-widest mb-2">
+        <p className="font-mono text-xs text-secondary print:text-gray-400 uppercase tracking-widest mb-2">
           Worked Example
         </p>
         <p className="font-sans text-sm text-secondary print:text-gray-700 mb-2 italic">
@@ -137,7 +137,7 @@ function RoadmapCard() {
         ))}
       </div>
       <div className="border-t border-border print:border-gray-200 pt-3 mt-3">
-        <p className="font-mono text-[10px] text-secondary print:text-gray-400 uppercase tracking-widest mb-1">
+        <p className="font-mono text-xs text-secondary print:text-gray-400 uppercase tracking-widest mb-1">
           Key conversions
         </p>
         <p className="font-mono text-sm text-primary print:text-gray-800">mol = g ÷ M (g/mol)</p>

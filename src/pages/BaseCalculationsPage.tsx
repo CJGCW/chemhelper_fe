@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { countSigFigs, formatSigFigs, lowestSigFigs } from '../utils/sigfigs'
 import SigFigPractice from '../components/calculations/SigFigPractice'
 import UnitConversions from '../components/calculations/UnitConversions'
-import ScientificNotation from '../components/calculations/ScientificNotation'
+import { ScientificNotationReference, ScientificNotationPracticeConverter } from '../components/calculations/ScientificNotation'
+import ScientificNotationPractice from '../components/calculations/ScientificNotationPractice'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 
 // ── Digit annotation ──────────────────────────────────────────────────────────
@@ -252,9 +253,10 @@ export default function BaseCalculationsPage() {
 
   // Available modes per tab
   const availableModes =
-    pageTab === 'sig-figs'   ? ['reference', 'practice', 'problems'] :
-    pageTab === 'conversions' ? ['reference', 'practice'] :
-    [] // sci-notation: no mode toggle
+    pageTab === 'sig-figs'      ? ['reference', 'practice', 'problems'] :
+    pageTab === 'conversions'   ? ['reference', 'practice'] :
+    pageTab === 'sci-notation'  ? ['reference', 'practice', 'problems'] :
+    []
 
   function setMode(m: string) {
     setSearchParams(prev => {
@@ -309,10 +311,20 @@ export default function BaseCalculationsPage() {
 
       {/* Header */}
       <div className="flex flex-col gap-3">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 print:hidden">
           <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">
             {pageTab === 'conversions' ? 'Unit Conversions' : pageTab === 'sci-notation' ? 'Scientific Notation' : 'Sig Figs'}
           </h2>
+          {(pageTab === 'sig-figs' || pageTab === 'sci-notation' || pageTab === 'conversions') && mode === 'reference' && (
+            <button
+              onClick={() => window.print()}
+              className="flex items-center gap-2 px-3 py-1 rounded-sm font-sans text-sm border border-border
+                         text-secondary hover:text-primary hover:border-muted transition-colors"
+            >
+              <span>⎙</span>
+              <span>Print</span>
+            </button>
+          )}
           <button
             onClick={() => setShowExplanation(true)}
             className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm border border-border
@@ -325,7 +337,7 @@ export default function BaseCalculationsPage() {
 
         {/* Mode toggle — only for tabs with multiple modes */}
         {availableModes.length > 1 && (
-          <div className="flex items-center gap-1 p-1 rounded-full self-start"
+          <div className="flex items-center gap-1 p-1 rounded-full self-start print:hidden"
             style={{ background: '#0e1016', border: '1px solid #1c1f2e' }}>
             {availableModes.map(m => {
               const isActive = mode === m
@@ -351,23 +363,56 @@ export default function BaseCalculationsPage() {
 
       <AnimatePresence mode="wait">
 
-        {/* Conversions */}
-        {pageTab === 'conversions' && (
-          <motion.div key={`conversions-${mode}`}
+        {/* Conversions — Reference (converter cards + tables) */}
+        {pageTab === 'conversions' && (mode === 'reference' || !availableModes.includes(mode)) && (
+          <motion.div key="conversions-reference"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.18 }}
           >
-            <UnitConversions tab={mode === 'practice' ? 'converter' : 'dimensional'} />
+            <UnitConversions tab="converter" />
           </motion.div>
         )}
 
-        {/* Scientific Notation */}
-        {pageTab === 'sci-notation' && (
-          <motion.div key="sci-notation"
+        {/* Conversions — Practice (dimensional analysis examples) */}
+        {pageTab === 'conversions' && mode === 'practice' && (
+          <motion.div key="conversions-practice"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18 }}
+            className="print:hidden"
+          >
+            <UnitConversions tab="dimensional" />
+          </motion.div>
+        )}
+
+        {/* Scientific Notation — Reference */}
+        {pageTab === 'sci-notation' && (mode === 'reference' || !availableModes.includes(mode)) && (
+          <motion.div key="sci-reference"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.18 }}
           >
-            <ScientificNotation />
+            <ScientificNotationReference />
+          </motion.div>
+        )}
+
+        {/* Scientific Notation — Practice (converter) */}
+        {pageTab === 'sci-notation' && mode === 'practice' && (
+          <motion.div key="sci-practice"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18 }}
+            className="print:hidden"
+          >
+            <ScientificNotationPracticeConverter />
+          </motion.div>
+        )}
+
+        {/* Scientific Notation — Problems */}
+        {pageTab === 'sci-notation' && mode === 'problems' && (
+          <motion.div key="sci-problems"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18 }}
+            className="print:hidden"
+          >
+            <ScientificNotationPractice />
           </motion.div>
         )}
 
@@ -376,6 +421,7 @@ export default function BaseCalculationsPage() {
           <motion.div key="sf-problems"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.18 }}
+            className="print:hidden"
           >
             <SigFigPractice />
           </motion.div>
@@ -386,6 +432,7 @@ export default function BaseCalculationsPage() {
           <motion.div key="sf-practice"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.18 }}
+            className="print:hidden"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
 
@@ -693,7 +740,7 @@ export default function BaseCalculationsPage() {
                       {ex.items.map((item, j) => (
                         <div key={j} className="flex items-baseline justify-between gap-2">
                           <span className="font-mono text-xs text-primary">{item.value}</span>
-                          <span className="font-mono text-[10px] text-dim shrink-0">{item.label}</span>
+                          <span className="font-mono text-xs text-secondary shrink-0">{item.label}</span>
                         </div>
                       ))}
                     </div>

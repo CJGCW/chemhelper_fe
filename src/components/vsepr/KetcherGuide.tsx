@@ -93,7 +93,7 @@ export default function KetcherGuide() {
 
       {/* Header */}
       <div className="flex flex-col gap-1">
-        <span className="font-mono text-[10px] text-dim tracking-wider uppercase">Editor Reference</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Editor Reference</span>
         <h3 className="font-sans font-semibold text-bright text-lg">Ketcher Structure Editor</h3>
         <p className="font-sans text-sm text-secondary mt-0.5">
           Ketcher is an open-source 2D molecular structure editor. The toolbar runs along the left side of the canvas.
@@ -102,7 +102,7 @@ export default function KetcherGuide() {
 
       {/* Tool reference */}
       <div className="flex flex-col gap-3">
-        <span className="font-mono text-[10px] text-dim tracking-wider uppercase">Key Tools</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Key Tools</span>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {TOOLS.map(tool => (
             <div
@@ -141,7 +141,7 @@ export default function KetcherGuide() {
 
       {/* FAQ */}
       <div className="flex flex-col gap-3">
-        <span className="font-mono text-[10px] text-dim tracking-wider uppercase">FAQ</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">FAQ</span>
         <div className="flex flex-col gap-2">
           {FAQS.map(faq => (
             <div
@@ -158,7 +158,7 @@ export default function KetcherGuide() {
 
       {/* External links */}
       <div className="flex flex-col gap-3">
-        <span className="font-mono text-[10px] text-dim tracking-wider uppercase">Official Resources</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Official Resources</span>
         <div className="flex flex-wrap gap-2">
           {[
             { label: 'Ketcher Homepage', url: 'http://lifescience.opensource.epam.com/ketcher' },

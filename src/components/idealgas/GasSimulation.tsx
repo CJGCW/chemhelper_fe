@@ -218,7 +218,7 @@ export default function GasSimulation() {
             onChange={e => setVol(parseFloat(e.target.value))}
             className="w-full accent-violet-400 cursor-pointer"
           />
-          <p className="font-mono text-[10px] text-dim">Smaller box → higher pressure (Boyle's Law)</p>
+          <p className="font-mono text-xs text-secondary">Smaller box → higher pressure (Boyle's Law)</p>
         </div>
 
         <div className="flex flex-col gap-2">
@@ -231,7 +231,7 @@ export default function GasSimulation() {
             onChange={e => setTemp(parseFloat(e.target.value))}
             className="w-full accent-violet-400 cursor-pointer"
           />
-          <p className="font-mono text-[10px] text-dim">Higher temp → faster particles → higher pressure</p>
+          <p className="font-mono text-xs text-secondary">Higher temp → faster particles → higher pressure</p>
         </div>
       </div>
 
@@ -250,10 +250,10 @@ export default function GasSimulation() {
           />
         </div>
         <div className="flex items-center justify-between pt-0.5">
-          <p className="font-mono text-[10px] text-dim">
+          <p className="font-mono text-xs text-secondary">
             P₁V₁/T₁ = P₂V₂/T₂ &nbsp;·&nbsp; {cps} wall hits/s
           </p>
-          <p className="font-mono text-[10px] text-dim">
+          <p className="font-mono text-xs text-secondary">
             Walls glow on impact
           </p>
         </div>

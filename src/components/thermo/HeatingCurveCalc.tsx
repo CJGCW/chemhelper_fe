@@ -240,7 +240,7 @@ function NumInput({ label, value, onChange, unit, hint }: {
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="font-mono text-[10px] text-dim tracking-widest uppercase">{label}</span>
+      <span className="font-mono text-xs text-secondary tracking-widest uppercase">{label}</span>
       <div className="flex items-center">
         <input
           type="number"
@@ -256,7 +256,7 @@ function NumInput({ label, value, onChange, unit, hint }: {
           </span>
         )}
       </div>
-      {hint && <span className="font-sans text-[10px] text-dim">{hint}</span>}
+      {hint && <span className="font-sans text-xs text-secondary">{hint}</span>}
     </div>
   )
 }
@@ -332,7 +332,7 @@ export default function HeatingCurveCalc() {
 
       {/* Substance selector */}
       <div className="flex flex-col gap-3">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Substance</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Substance</span>
         <div className="flex flex-wrap gap-2">
           {SUBSTANCES.map((s, i) => (
             <button key={i} onClick={() => selectSubstance(i)}
@@ -363,7 +363,7 @@ export default function HeatingCurveCalc() {
             { k: '∆H_fus', v: `${sub.dHfus} kJ/mol`     },
             { k: '∆H_vap', v: `${sub.dHvap} kJ/mol`     },
           ].map(({ k, v }) => (
-            <span key={k} className="font-mono text-[10px] text-dim">
+            <span key={k} className="font-mono text-xs text-secondary">
               <span className="text-secondary">{k}</span> = {v}
             </span>
           ))}
@@ -382,7 +382,7 @@ export default function HeatingCurveCalc() {
       {valid && segments.length > 0 && (
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <span className="font-mono text-[10px] text-dim tracking-widest uppercase">
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">
               {heating ? 'Heating' : 'Cooling'} Curve — {sub.name}
             </span>
             {/* Legend */}
@@ -415,7 +415,7 @@ export default function HeatingCurveCalc() {
       {/* Segment breakdown */}
       {segments.length > 0 && (
         <div className="flex flex-col gap-2">
-          <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Segment Breakdown</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Segment Breakdown</span>
           <div className="rounded-sm border border-border overflow-hidden">
             <table className="w-full text-xs font-mono">
               <thead>
@@ -485,7 +485,7 @@ export default function HeatingCurveCalc() {
               </tfoot>
             </table>
           </div>
-          <p className="font-sans text-[10px] text-dim px-1">
+          <p className="font-sans text-xs text-secondary px-1">
             {totalQ > 0 ? 'Positive q = heat absorbed by substance (endothermic).' : 'Negative q = heat released by substance (exothermic).'}
           </p>
         </div>

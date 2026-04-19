@@ -57,7 +57,7 @@ export default function NumberField({
         {unit && <div className="shrink-0 flex items-center">{unit}</div>}
       </div>
       {hint && (
-        <p className="font-mono text-[10px] text-dim">{hint}</p>
+        <p className="font-mono text-xs text-secondary">{hint}</p>
       )}
     </div>
   )

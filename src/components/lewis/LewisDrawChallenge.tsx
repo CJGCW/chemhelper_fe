@@ -101,10 +101,10 @@ export default function LewisDrawChallenge() {
 
         {/* Prompt */}
         <div className="flex flex-col gap-1">
-          <span className="font-mono text-[10px] text-dim tracking-wider uppercase">Draw the Lewis structure of</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Draw the Lewis structure of</span>
           <div className="flex items-center gap-3">
             <span className="font-sans font-semibold text-bright text-xl">{compound.label}</span>
-            {fetching && <span className="font-mono text-[10px] text-dim animate-pulse">loading…</span>}
+            {fetching && <span className="font-mono text-xs text-secondary animate-pulse">loading…</span>}
           </div>
           {fetchError && <p className="font-mono text-xs text-red-400 mt-1">{fetchError}</p>}
         </div>

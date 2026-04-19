@@ -84,11 +84,11 @@ export default function TrendExplainer({ trendMode }: { trendMode: TrendMode }) 
       >
         <div className="w-2 h-2 rounded-full shrink-0" style={{ background: info.color }} />
         <span className="font-mono text-[11px]" style={{ color: info.color }}>{info.name}</span>
-        <span className="font-mono text-[10px] text-dim">— why does this trend occur?</span>
+        <span className="font-mono text-xs text-secondary">— why does this trend occur?</span>
         <motion.span
           animate={{ rotate: open ? 90 : 0 }}
           transition={{ duration: 0.15 }}
-          className="font-mono text-[9px] text-dim ml-auto"
+          className="font-mono text-xs text-secondary ml-auto"
         >▶</motion.span>
       </button>
 
@@ -106,7 +106,7 @@ export default function TrendExplainer({ trendMode }: { trendMode: TrendMode }) 
 
               {/* Key concept */}
               <div className="flex items-center gap-2">
-                <span className="font-mono text-[10px] text-dim tracking-widest uppercase shrink-0">
+                <span className="font-mono text-xs text-secondary tracking-widest uppercase shrink-0">
                   Key concept
                 </span>
                 <span className="font-mono text-xs font-semibold" style={{ color: info.color }}>
@@ -117,7 +117,7 @@ export default function TrendExplainer({ trendMode }: { trendMode: TrendMode }) 
               {/* Period / Group */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <span className="font-mono text-[10px] text-dim tracking-widest uppercase">
+                  <span className="font-mono text-xs text-secondary tracking-widest uppercase">
                     Across a period →
                   </span>
                   <p className="font-mono text-xs text-secondary leading-relaxed">
@@ -125,7 +125,7 @@ export default function TrendExplainer({ trendMode }: { trendMode: TrendMode }) 
                   </p>
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <span className="font-mono text-[10px] text-dim tracking-widest uppercase">
+                  <span className="font-mono text-xs text-secondary tracking-widest uppercase">
                     Down a group ↓
                   </span>
                   <p className="font-mono text-xs text-secondary leading-relaxed">

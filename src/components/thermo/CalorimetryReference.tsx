@@ -32,7 +32,7 @@ export default function CalorimetryReference() {
             ].map(r => (
               <div key={r.f} className="flex items-baseline gap-3">
                 <span className="font-mono text-sm text-bright w-36 shrink-0">{r.f}</span>
-                <span className="font-mono text-[10px] text-dim">→ {r.label}</span>
+                <span className="font-mono text-xs text-secondary">→ {r.label}</span>
               </div>
             ))}
           </div>
@@ -48,11 +48,11 @@ export default function CalorimetryReference() {
             ].map(r => (
               <div key={r.f} className="flex items-baseline gap-3">
                 <span className="font-mono text-sm text-bright w-36 shrink-0">{r.f}</span>
-                <span className="font-mono text-[10px] text-dim">→ {r.label}</span>
+                <span className="font-mono text-xs text-secondary">→ {r.label}</span>
               </div>
             ))}
           </div>
-          <p className="font-mono text-[10px] text-dim border-t border-border pt-2">
+          <p className="font-mono text-xs text-secondary border-t border-border pt-2">
             C = heat capacity of the entire calorimeter (J/°C or kJ/°C)
           </p>
         </div>
@@ -74,7 +74,7 @@ export default function CalorimetryReference() {
               <span className="font-mono text-base font-bold pt-0.5" style={{ color: 'var(--c-halogen)' }}>{r.sym}</span>
               <div className="flex flex-col gap-0.5">
                 <span className="font-sans text-sm text-primary">{r.name}</span>
-                <span className="font-mono text-[10px] text-dim">{r.note}</span>
+                <span className="font-mono text-xs text-secondary">{r.note}</span>
               </div>
               <span className="font-mono text-sm text-secondary text-right">{r.unit}</span>
             </div>
@@ -89,9 +89,9 @@ export default function CalorimetryReference() {
           <SectionHead label="Specific Heat Capacities" />
           <div className="rounded-sm border border-border bg-surface overflow-hidden">
             <div className="grid grid-cols-[1fr_5rem_4rem] gap-x-3 px-4 py-2 bg-raised border-b border-border">
-              <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Substance</span>
-              <span className="font-mono text-[10px] text-dim tracking-widest uppercase text-right">c (J/g·°C)</span>
-              <span className="font-mono text-[10px] text-dim tracking-widest uppercase text-right">Formula</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase">Substance</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase text-right">c (J/g·°C)</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase text-right">Formula</span>
             </div>
             {SPECIFIC_HEATS.map(r => (
               <div key={r.substance}
@@ -120,7 +120,7 @@ export default function CalorimetryReference() {
                   <span className="font-mono text-sm font-semibold" style={{ color: 'var(--c-halogen)' }}>{r.sign}</span>
                   <div className="flex flex-col gap-0.5">
                     <span className="font-sans text-sm text-primary">{r.meaning}</span>
-                    <span className="font-mono text-[10px] text-dim">{r.type}</span>
+                    <span className="font-mono text-xs text-secondary">{r.type}</span>
                   </div>
                 </div>
               ))}

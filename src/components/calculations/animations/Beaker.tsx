@@ -250,7 +250,7 @@ export default function Beaker({ liquidAmount, concentration, concMax, concUnit,
       </svg>
 
       {stage === 'idle' && (
-        <p className="font-mono text-[10px] text-dim text-center">
+        <p className="font-mono text-xs text-secondary text-center">
           Enter a volume — liquid will appear in the beaker
         </p>
       )}

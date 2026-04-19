@@ -64,7 +64,7 @@ function GasVolumePanel({ onUse }: { onUse: (moles: string, note: string) => voi
                     </button>
                   ))}
                 </div>
-                <span className="font-mono text-[10px] text-dim">{std.desc}</span>
+                <span className="font-mono text-xs text-secondary">{std.desc}</span>
               </div>
 
               {moles !== null && (
@@ -156,7 +156,7 @@ export function SpeciesSelect({
 export function StepsPanel({ steps }: { steps: string[] }) {
   return (
     <div className="rounded-sm border border-border bg-surface px-4 py-3 flex flex-col gap-2">
-      <span className="font-mono text-[10px] text-secondary tracking-widest uppercase">Solution Steps</span>
+      <span className="font-mono text-xs text-secondary tracking-widest uppercase">Solution Steps</span>
       <div className="flex flex-col gap-1.5 pl-3 border-l border-border">
         {steps.map((s, i) => <p key={i} className="font-mono text-sm text-primary">{s}</p>)}
       </div>
@@ -172,9 +172,9 @@ export function WorkedExample({ problem, steps, answer }: {
     <div className="rounded-sm border border-border">
       <button onClick={() => setOpen(o => !o)}
         className="w-full flex items-center justify-between px-4 py-2.5 text-left">
-        <span className="font-mono text-[10px] text-secondary tracking-widest uppercase">Worked Example</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Worked Example</span>
         <motion.span animate={{ rotate: open ? 90 : 0 }} transition={{ duration: 0.15 }}
-          className="font-mono text-[10px] text-dim">▶</motion.span>
+          className="font-mono text-xs text-secondary">▶</motion.span>
       </button>
       <AnimatePresence initial={false}>
         {open && (
@@ -274,7 +274,7 @@ export default function StoichiometrySolver() {
 
       {/* Reaction selector */}
       <div className="flex flex-col gap-2">
-        <label className="font-mono text-[10px] text-secondary tracking-widest uppercase">Reaction</label>
+        <label className="font-mono text-xs text-secondary tracking-widest uppercase">Reaction</label>
         <select value={rxnIdx} onChange={e => switchReaction(Number(e.target.value))}
           className="bg-raised border border-border rounded-sm px-3 py-2
                      font-sans text-sm text-bright focus:outline-none focus:border-muted">
@@ -294,7 +294,7 @@ export default function StoichiometrySolver() {
       {/* Given row */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2">
-          <label className="font-mono text-[10px] text-secondary tracking-widest uppercase">Given</label>
+          <label className="font-mono text-xs text-secondary tracking-widest uppercase">Given</label>
           {gasNote && (
             <span className="font-mono text-[9px] px-1.5 py-0.5 rounded-sm"
               style={{
@@ -314,13 +314,13 @@ export default function StoichiometrySolver() {
             onChange={f => { setFromFormula(f); setResult(null) }} exclude={toFormula} />
         </div>
         {gasNote && (
-          <p className="font-mono text-[10px] text-dim">{gasNote}</p>
+          <p className="font-mono text-xs text-secondary">{gasNote}</p>
         )}
       </div>
 
       {/* Find row */}
       <div className="flex flex-col gap-2">
-        <label className="font-mono text-[10px] text-secondary tracking-widest uppercase">Find</label>
+        <label className="font-mono text-xs text-secondary tracking-widest uppercase">Find</label>
         <div className="flex flex-wrap items-center gap-2">
           <UnitToggle unit={toUnit} onChange={u => { setToUnit(u); setResult(null) }} />
           <span className="font-mono text-xs text-dim">of</span>
@@ -351,7 +351,7 @@ export default function StoichiometrySolver() {
                   borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   background: 'color-mix(in srgb, var(--c-halogen) 8%, #0e1016)',
                 }}>
-                <span className="font-mono text-[10px] text-secondary tracking-widest uppercase block mb-1">Result</span>
+                <span className="font-mono text-xs text-secondary tracking-widest uppercase block mb-1">Result</span>
                 <span className="font-mono text-2xl font-semibold" style={{ color: 'var(--c-halogen)' }}>
                   {result.answerDisplay}
                 </span>

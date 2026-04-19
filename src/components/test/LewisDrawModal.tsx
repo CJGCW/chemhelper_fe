@@ -54,7 +54,7 @@ export default function LewisDrawModal({ compound, structure, reviewSnapshot, on
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-border shrink-0">
           <div className="flex flex-col gap-0.5">
-            <span className="font-mono text-xs text-dim tracking-wider uppercase">
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">
               {isReview ? 'Your submitted drawing' : 'Draw the Lewis structure'}
             </span>
             <span className="font-sans font-semibold text-bright">{compound}</span>

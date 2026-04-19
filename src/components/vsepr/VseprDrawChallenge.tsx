@@ -164,7 +164,7 @@ export default function VseprDrawChallenge() {
 
         {/* Prompt row: label + skip inline */}
         <div className="flex flex-col gap-1">
-          <span className="font-mono text-xs text-dim tracking-wider uppercase">
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">
             Draw the structure of
           </span>
           <div className="flex items-center gap-4 flex-wrap">

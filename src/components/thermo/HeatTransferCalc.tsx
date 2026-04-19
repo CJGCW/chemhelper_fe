@@ -35,7 +35,7 @@ function fmtNum(n: number): string {
   return parseFloat(n.toPrecision(6)).toString()
 }
 
-const labelCls = 'font-mono text-[10px] text-dim tracking-widest uppercase'
+const labelCls = 'font-mono text-xs text-secondary tracking-widest uppercase'
 
 function NumberInput({
   label, value, onChange, unit = '', placeholder = '',

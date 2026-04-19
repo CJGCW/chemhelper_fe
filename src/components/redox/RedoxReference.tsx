@@ -89,7 +89,7 @@ export type RefTopic = 'oxidation' | 'reaction-types' | 'activity' | 'acids-base
 function OxidationSection() {
   return (
     <section>
-      <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3 print:text-black">Oxidation State Rules</p>
+      <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3 print:text-black">Oxidation State Rules</p>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 print:grid-cols-3 print:gap-2">
         {OXIDATION_RULES.map(r => (
           <div key={r.rule} className="rounded-sm border border-border bg-surface p-3 flex flex-col gap-1 print:border-gray-300 print:bg-white print:p-2 print:break-inside-avoid">
@@ -111,7 +111,7 @@ function OxidationSection() {
 function ReactionTypesSection() {
   return (
     <section>
-      <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3 print:text-black">Reaction Types</p>
+      <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3 print:text-black">Reaction Types</p>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 print:grid-cols-2 print:gap-3">
         {REACTION_TYPES.map(rt => (
           <div key={rt.type} className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2 print:border-gray-300 print:bg-white print:p-3 print:break-inside-avoid print:break-inside-avoid">
@@ -144,16 +144,16 @@ function ReactionTypesSection() {
 function ActivitySection() {
   return (
     <section>
-      <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3 print:text-black">Activity Series — Metals</p>
+      <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3 print:text-black">Activity Series — Metals</p>
       <div className="overflow-x-auto">
         <table className="w-full text-sm border-collapse print:text-xs">
           <thead>
             <tr className="border-b border-border print:border-gray-300">
-              <th className="font-mono text-[10px] uppercase tracking-widest text-dim text-left py-2 pr-3 print:text-gray-500">#</th>
-              <th className="font-mono text-[10px] uppercase tracking-widest text-dim text-left py-2 pr-4 print:text-gray-500">Metal</th>
-              <th className="font-mono text-[10px] uppercase tracking-widest text-dim text-left py-2 pr-4 print:text-gray-500">Ion</th>
-              <th className="font-mono text-[10px] uppercase tracking-widest text-dim text-left py-2 pr-4 print:text-gray-500">Water Reaction</th>
-              <th className="font-mono text-[10px] uppercase tracking-widest text-dim text-left py-2 print:text-gray-500">Reacts w/ Dilute Acid</th>
+              <th className="font-mono text-xs uppercase tracking-widest text-secondary text-left py-2 pr-3 print:text-gray-500">#</th>
+              <th className="font-mono text-xs uppercase tracking-widest text-secondary text-left py-2 pr-4 print:text-gray-500">Metal</th>
+              <th className="font-mono text-xs uppercase tracking-widest text-secondary text-left py-2 pr-4 print:text-gray-500">Ion</th>
+              <th className="font-mono text-xs uppercase tracking-widest text-secondary text-left py-2 pr-4 print:text-gray-500">Water Reaction</th>
+              <th className="font-mono text-xs uppercase tracking-widest text-secondary text-left py-2 print:text-gray-500">Reacts w/ Dilute Acid</th>
             </tr>
           </thead>
           <tbody>
@@ -193,7 +193,7 @@ function ActivitySection() {
         </table>
       </div>
       <div className="mt-6 print:mt-4">
-        <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3 print:text-black">Activity Series — Halogens</p>
+        <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3 print:text-black">Activity Series — Halogens</p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 print:grid-cols-4 print:gap-2">
           {HALOGENS_REF.map((h, i) => (
             <div key={h.formula} className="rounded-sm border border-border bg-surface p-3 flex flex-col gap-1 print:border-gray-300 print:bg-white print:p-2">
@@ -223,7 +223,7 @@ function AcidsBasesSection() {
   return (
     <section className="grid grid-cols-1 md:grid-cols-2 gap-6 print:grid-cols-2 print:gap-4">
       <div>
-        <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3 print:text-black">Strong Acids</p>
+        <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3 print:text-black">Strong Acids</p>
         <div className="rounded-sm border border-border bg-surface overflow-hidden print:border-gray-300 print:bg-white">
           {STRONG_ACIDS.map((a, i) => (
             <div key={a} className={`px-4 py-2 flex items-center gap-3 ${i < STRONG_ACIDS.length - 1 ? 'border-b border-border print:border-gray-200' : ''}`}>
@@ -235,7 +235,7 @@ function AcidsBasesSection() {
         <p className="font-sans text-xs text-secondary mt-2 print:text-gray-600">Dissociate completely in water: HA → H⁺ + A⁻</p>
       </div>
       <div>
-        <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3 print:text-black">Strong Bases</p>
+        <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3 print:text-black">Strong Bases</p>
         <div className="rounded-sm border border-border bg-surface overflow-hidden print:border-gray-300 print:bg-white">
           {STRONG_BASES.map((b, i) => (
             <div key={b} className={`px-4 py-2 flex items-center gap-3 ${i < STRONG_BASES.length - 1 ? 'border-b border-border print:border-gray-200' : ''}`}>
@@ -253,7 +253,7 @@ function AcidsBasesSection() {
 function RedoxConceptsSection() {
   return (
     <section>
-      <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3 print:text-black">Redox Concepts</p>
+      <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3 print:text-black">Redox Concepts</p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 print:grid-cols-3 print:gap-3">
         <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2 print:border-gray-300 print:bg-white print:p-3 print:break-inside-avoid">
           <h4 className="font-sans text-sm font-semibold text-bright print:text-black">Oxidation vs Reduction</h4>

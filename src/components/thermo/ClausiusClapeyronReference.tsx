@@ -70,7 +70,7 @@ export default function ClausiusClapeyronReference() {
 
       {/* Master equation */}
       <div className="rounded-sm border border-border bg-surface p-5 flex flex-col gap-4">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Clausius-Clapeyron Equation</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Clausius-Clapeyron Equation</span>
         <div className="flex flex-col gap-1">
           <p className="font-mono text-base lg:text-lg text-bright" style={{ color: 'var(--c-halogen)' }}>
             ln(P₂/P₁) = −(ΔH_vap / R) × (1/T₂ − 1/T₁)
@@ -93,7 +93,7 @@ export default function ClausiusClapeyronReference() {
             <div key={v.sym} className="flex flex-col gap-0.5">
               <span className="font-mono text-xs font-semibold" style={{ color: 'var(--c-halogen)' }}>{v.sym}</span>
               <span className="font-sans text-[11px] text-secondary">{v.desc}</span>
-              <span className="font-mono text-[9px] text-dim">{v.unit}</span>
+              <span className="font-mono text-xs text-secondary">{v.unit}</span>
             </div>
           ))}
         </div>
@@ -101,7 +101,7 @@ export default function ClausiusClapeyronReference() {
 
       {/* Rearranged forms */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Solving for Each Variable</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Solving for Each Variable</span>
         <div className="rounded-sm border border-border overflow-hidden">
           <table className="w-full text-xs font-mono">
             <thead>
@@ -126,7 +126,7 @@ export default function ClausiusClapeyronReference() {
 
       {/* ΔHvap table */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">
           Common ΔH_vap Values at Normal Boiling Point
         </span>
         <div className="rounded-sm border border-border overflow-hidden">
@@ -151,14 +151,14 @@ export default function ClausiusClapeyronReference() {
             </tbody>
           </table>
         </div>
-        <p className="font-sans text-[10px] text-dim px-0.5">
+        <p className="font-sans text-xs text-secondary px-0.5">
           Values at 1 atm. ΔH_vap decreases slightly with temperature and reaches zero at the critical point.
         </p>
       </div>
 
       {/* Notes */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Key Notes</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Key Notes</span>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {NOTES.map(n => (
             <div key={n.title}

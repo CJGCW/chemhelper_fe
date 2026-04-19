@@ -204,7 +204,7 @@ function MetalRow({ metal, selected, onClick }: {
       }}
     >
       {/* Rank */}
-      <span className="font-mono text-[10px] text-dim w-4 text-right shrink-0">{metal.rank}</span>
+      <span className="font-mono text-xs text-secondary w-4 text-right shrink-0">{metal.rank}</span>
 
       {/* Symbol */}
       <span className="font-mono text-sm font-semibold w-6 shrink-0 transition-colors" style={{ color }}>
@@ -215,7 +215,7 @@ function MetalRow({ metal, selected, onClick }: {
       <span className="font-sans text-xs text-secondary flex-1 text-left">{metal.name}</span>
 
       {/* Ion */}
-      <span className="font-mono text-[10px] text-dim w-10 text-right shrink-0">{metal.ion}</span>
+      <span className="font-mono text-xs text-secondary w-10 text-right shrink-0">{metal.ion}</span>
 
       {/* Water reactivity dot */}
       <span
@@ -249,7 +249,7 @@ function HalogenRow({ halogen, selected, onClick }: {
         {halogen.formula}
       </span>
       <span className="font-sans text-xs text-secondary flex-1">{halogen.name}</span>
-      <span className="font-mono text-[10px] text-dim">{halogen.ion}</span>
+      <span className="font-mono text-xs text-secondary">{halogen.ion}</span>
     </button>
   )
 }
@@ -262,7 +262,7 @@ function H2Divider() {
       <div className="w-4 shrink-0" />
       <span className="font-mono text-xs font-semibold text-dim">H₂</span>
       <div className="flex-1 border-t border-dashed border-border" />
-      <span className="font-mono text-[10px] text-dim shrink-0">reference</span>
+      <span className="font-mono text-xs text-secondary shrink-0">reference</span>
     </div>
   )
 }
@@ -272,7 +272,7 @@ function H2Divider() {
 function Legend({ show }: { show: boolean }) {
   if (!show) return (
     <div className="flex items-center gap-4 px-3 py-1">
-      <span className="font-mono text-[10px] text-dim">Click any element to explore displacement</span>
+      <span className="font-mono text-xs text-secondary">Click any element to explore displacement</span>
     </div>
   )
   return (
@@ -284,7 +284,7 @@ function Legend({ show }: { show: boolean }) {
       ].map(e => (
         <div key={e.label} className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full shrink-0" style={{ background: e.color }} />
-          <span className="font-mono text-[10px] text-dim">{e.label}</span>
+          <span className="font-mono text-xs text-secondary">{e.label}</span>
         </div>
       ))}
     </div>
@@ -309,7 +309,7 @@ function MetalDetail({ metal, all }: { metal: ActivityMetal; all: ActivityMetal[
 
       {/* Displacement */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Displacement</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Displacement</span>
         <div className="flex flex-col gap-1.5 rounded-sm border border-border bg-raised px-4 py-3">
           {canDisplace.length > 0 ? (
             <div className="flex items-start gap-2">
@@ -363,7 +363,7 @@ function MetalDetail({ metal, all }: { metal: ActivityMetal; all: ActivityMetal[
       {/* Example equations */}
       {(metal.waterEq || metal.acidEq || metal.displaceEq) && (
         <div className="flex flex-col gap-1.5">
-          <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Example Reactions</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Example Reactions</span>
           <div className="flex flex-col rounded-sm border border-border overflow-hidden">
             {[
               metal.waterEq    && { label: 'Water',       eq: metal.waterEq },
@@ -372,7 +372,7 @@ function MetalDetail({ metal, all }: { metal: ActivityMetal; all: ActivityMetal[
             ].filter(Boolean).map((row: any) => (
               <div key={row.label}
                 className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 px-4 py-2.5 border-b border-border last:border-b-0 bg-surface">
-                <span className="font-mono text-[10px] text-dim uppercase tracking-widest sm:w-24 shrink-0">{row.label}</span>
+                <span className="font-mono text-xs text-secondary uppercase tracking-widest sm:w-24 shrink-0">{row.label}</span>
                 <span className="font-mono text-xs text-bright">{row.eq}</span>
               </div>
             ))}
@@ -403,7 +403,7 @@ function HalogenDetail({ halogen, all }: { halogen: ActivityHalogen; all: Activi
       </div>
 
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Displacement</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Displacement</span>
         <div className="flex flex-col gap-1.5 rounded-sm border border-border bg-raised px-4 py-3">
           {canDisplace.length > 0 ? (
             <div className="flex items-start gap-2">
@@ -438,7 +438,7 @@ function HalogenDetail({ halogen, all }: { halogen: ActivityHalogen; all: Activi
 
       {examples.length > 0 && (
         <div className="flex flex-col gap-1.5">
-          <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Example Reactions</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Example Reactions</span>
           <div className="flex flex-col rounded-sm border border-border overflow-hidden">
             {examples.map(eq => (
               <div key={eq} className="px-4 py-2.5 border-b border-border last:border-b-0 bg-surface">
@@ -574,7 +574,7 @@ export default function ActivitySeries() {
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
           <h3 className="font-mono text-xs text-secondary tracking-widest uppercase">Metal Activity Series</h3>
-          <span className="font-mono text-[10px] text-dim">— most active at top</span>
+          <span className="font-mono text-xs text-secondary">— most active at top</span>
         </div>
 
         <Legend show={!!selectedMetal} />
@@ -584,11 +584,11 @@ export default function ActivitySeries() {
           <div className="flex flex-col rounded-sm border border-border bg-surface overflow-hidden lg:w-72 shrink-0">
             {/* Header */}
             <div className="flex items-center gap-3 px-3 py-2 bg-raised border-b border-border">
-              <span className="font-mono text-[10px] text-dim w-4 text-right shrink-0">#</span>
-              <span className="font-mono text-[10px] text-dim tracking-widest uppercase w-6 shrink-0">El.</span>
-              <span className="font-mono text-[10px] text-dim tracking-widest uppercase flex-1">Name</span>
-              <span className="font-mono text-[10px] text-dim w-10 text-right shrink-0">Ion</span>
-              <span className="font-mono text-[10px] text-dim w-2 shrink-0" title="Water reactivity">H₂O</span>
+              <span className="font-mono text-xs text-secondary w-4 text-right shrink-0">#</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase w-6 shrink-0">El.</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase flex-1">Name</span>
+              <span className="font-mono text-xs text-secondary w-10 text-right shrink-0">Ion</span>
+              <span className="font-mono text-xs text-secondary w-2 shrink-0" title="Water reactivity">H₂O</span>
             </div>
 
             {METALS.map(m => (
@@ -628,7 +628,7 @@ export default function ActivitySeries() {
           {(Object.entries(WATER_RXN_META) as [WaterRxn, typeof WATER_RXN_META[WaterRxn]][]).map(([, meta]) => (
             <div key={meta.label} className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full shrink-0" style={{ background: meta.color, opacity: 0.7 }} />
-              <span className="font-mono text-[10px] text-dim">{meta.label}</span>
+              <span className="font-mono text-xs text-secondary">{meta.label}</span>
             </div>
           ))}
         </div>
@@ -638,7 +638,7 @@ export default function ActivitySeries() {
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
           <h3 className="font-mono text-xs text-secondary tracking-widest uppercase">Halogen Activity Series</h3>
-          <span className="font-mono text-[10px] text-dim">— most active at top</span>
+          <span className="font-mono text-xs text-secondary">— most active at top</span>
         </div>
 
         <Legend show={!!selectedHalogen} />
@@ -646,9 +646,9 @@ export default function ActivitySeries() {
         <div className="flex flex-col lg:flex-row gap-4">
           <div className="flex flex-col rounded-sm border border-border bg-surface overflow-hidden lg:w-72 shrink-0">
             <div className="flex items-center gap-3 px-3 py-2 bg-raised border-b border-border">
-              <span className="font-mono text-[10px] text-dim tracking-widest uppercase w-6 shrink-0">El.</span>
-              <span className="font-mono text-[10px] text-dim tracking-widest uppercase flex-1">Name</span>
-              <span className="font-mono text-[10px] text-dim">Ion form</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase w-6 shrink-0">El.</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase flex-1">Name</span>
+              <span className="font-mono text-xs text-secondary">Ion form</span>
             </div>
             {HALOGENS.map(h => (
               <HalogenRow key={h.formula} halogen={h} selected={selectedHalogen} onClick={() => toggleHalogen(h)} />
@@ -682,7 +682,7 @@ export default function ActivitySeries() {
       {/* Displacement checker */}
       <DisplacementChecker />
 
-      <p className="font-mono text-[10px] text-dim">
+      <p className="font-mono text-xs text-secondary">
         Rule: A more active metal (higher on the series) displaces a less active metal ion from aqueous solution.
         Metals above H₂ also displace hydrogen gas from dilute acids.
       </p>

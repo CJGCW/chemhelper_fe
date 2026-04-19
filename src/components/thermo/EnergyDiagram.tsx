@@ -171,7 +171,7 @@ export default function EnergyDiagram() {
     ? Math.min(dhMidY - 10 + fireRows * 22 + 20, H - 12)
     : Math.min(rY + 40 + fireRows * 22 + 20, H - 12)
 
-  const labelCls = 'font-mono text-[10px] text-dim tracking-widest uppercase'
+  const labelCls = 'font-mono text-xs text-secondary tracking-widest uppercase'
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
@@ -344,7 +344,7 @@ export default function EnergyDiagram() {
               background: `linear-gradient(to right, rgba(255,255,255,0.4) ${ea / 4}%, rgba(255,255,255,0.1) ${ea / 4}%)`,
             }}
           />
-          <div className="flex justify-between font-mono text-[9px] text-dim">
+          <div className="flex justify-between font-mono text-xs text-secondary">
             <span>0 — no barrier</span>
             <span>400 kJ/mol</span>
           </div>

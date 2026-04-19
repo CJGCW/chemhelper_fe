@@ -158,7 +158,7 @@ export default function CompoundInput({ onResolved }: Props) {
               </div>
 
               {/* Hint */}
-              <p className="font-mono text-[10px] text-dim -mt-1">
+              <p className="font-mono text-xs text-secondary -mt-1">
                 {mode === 'formula'
                   ? 'Molecular formula e.g. H2O, NaCl, C6H12O6, Ca(OH)2'
                   : 'SMILES string e.g. [Na+].[Cl-], O, CCO'}
@@ -204,7 +204,7 @@ export default function CompoundInput({ onResolved }: Props) {
             className="mt-2">
             <div className="rounded-sm border overflow-hidden"
               style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 20%, #1c1f2e)' }}>
-              <div className="grid grid-cols-4 px-3 py-1.5 font-mono text-[9px] text-dim tracking-wider"
+              <div className="grid grid-cols-4 px-3 py-1.5 font-mono text-xs text-secondary tracking-wider"
                 style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, #0e1016)' }}>
                 <span>ELEMENT</span><span className="text-right">COUNT</span>
                 <span className="text-right">At. Wt.</span><span className="text-right">CONTRIB.</span>

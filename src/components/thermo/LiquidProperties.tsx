@@ -303,7 +303,7 @@ export default function LiquidProperties() {
               to bring a molecule to the surface and break those extra bonds.
             </p>
             <div className="flex flex-col gap-1.5 px-3 py-2.5 rounded-sm bg-raised border border-border">
-              <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Trend (same size)</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase">Trend (same size)</span>
               <span className="font-sans text-xs text-secondary">
                 Metallic &gt; H-bonding &gt; Dipole–dipole &gt; London dispersion
               </span>
@@ -420,7 +420,7 @@ export default function LiquidProperties() {
             </tbody>
           </table>
         </div>
-        <p className="font-sans text-[10px] text-dim px-0.5">
+        <p className="font-sans text-xs text-secondary px-0.5">
           Note the 6000× difference between glycerol (1412) and diethyl ether (0.224) — entirely explained by IMF type and number of interaction sites.
         </p>
       </section>
@@ -469,7 +469,7 @@ export default function LiquidProperties() {
         </div>
 
         <div className="flex flex-col gap-2 px-4 py-3 rounded-sm bg-raised border border-border">
-          <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Why water rises in glass</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Why water rises in glass</span>
           <p className="font-sans text-xs text-secondary leading-relaxed">
             Glass contains Si–OH groups on its surface. Water molecules form H-bonds with these groups
             (adhesion). This adhesive force is stronger than water's cohesive H-bonds, pulling the meniscus
@@ -478,7 +478,7 @@ export default function LiquidProperties() {
         </div>
 
         <div className="flex flex-col gap-2 px-4 py-3 rounded-sm bg-raised border border-border">
-          <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Why mercury is depressed in glass</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Why mercury is depressed in glass</span>
           <p className="font-sans text-xs text-secondary leading-relaxed">
             Mercury–mercury metallic bonds (cohesion) are far stronger than mercury–glass attractions
             (adhesion). Mercury therefore pulls away from the glass walls rather than spreading up them,
@@ -500,7 +500,7 @@ export default function LiquidProperties() {
 
           {/* IMF selector */}
           <div className="flex flex-col gap-2">
-            <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Dominant IMF</span>
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">Dominant IMF</span>
             <div className="flex flex-wrap gap-2">
               {([
                 { id: 'hbond_multi', label: 'H-bonding (multiple sites)', sub: 'e.g. glycerol, sugars'   },
@@ -527,7 +527,7 @@ export default function LiquidProperties() {
 
           {/* Size selector */}
           <div className="flex flex-col gap-2">
-            <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Molecular Size</span>
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">Molecular Size</span>
             <div className="flex gap-2">
               {([
                 { id: 'small',  label: 'Small',  sub: '< 100 g/mol'    },
@@ -555,12 +555,12 @@ export default function LiquidProperties() {
           <div className="flex flex-col gap-4 border-t border-border pt-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
-                <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Surface Tension</span>
+                <span className="font-mono text-xs text-secondary tracking-widest uppercase">Surface Tension</span>
                 <LevelBar label={pred.st} color={pred.stColor} />
                 <p className="font-sans text-xs text-secondary leading-relaxed">{pred.stReason}</p>
               </div>
               <div className="flex flex-col gap-2">
-                <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Viscosity</span>
+                <span className="font-mono text-xs text-secondary tracking-widest uppercase">Viscosity</span>
                 <LevelBar label={pred.η} color={pred.ηColor} />
                 <p className="font-sans text-xs text-secondary leading-relaxed">{pred.ηReason}</p>
               </div>

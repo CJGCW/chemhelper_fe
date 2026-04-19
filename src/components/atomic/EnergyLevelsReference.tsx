@@ -99,10 +99,10 @@ export default function EnergyLevelsReference() {
         <div className="rounded-sm border border-border overflow-hidden">
           <div className="grid grid-cols-[3rem_6rem_6rem_1fr] gap-x-4
                           px-4 py-2 bg-raised border-b border-border">
-            <span className="font-mono text-[10px] text-dim tracking-widest uppercase">n</span>
-            <span className="font-mono text-[10px] text-dim tracking-widest uppercase">E (eV)</span>
-            <span className="font-mono text-[10px] text-dim tracking-widest uppercase">|E| / E₁</span>
-            <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Level name</span>
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">n</span>
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">E (eV)</span>
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">|E| / E₁</span>
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">Level name</span>
           </div>
           {LEVELS.map(n => (
             <div key={n}
@@ -150,7 +150,7 @@ export default function EnergyLevelsReference() {
             <span className="w-5" />
             <div className="flex-1 flex items-center gap-1">
               <div className="w-4 h-px bg-border" />
-              <span className="font-mono text-[9px] text-dim">large gap</span>
+              <span className="font-mono text-xs text-secondary">large gap</span>
               <div className="flex-1 h-px border-t border-dashed border-border opacity-30" />
             </div>
           </div>
@@ -159,7 +159,7 @@ export default function EnergyLevelsReference() {
 
           {/* Transition arrow annotation */}
           {ni !== nf && (
-            <p className="font-mono text-[10px] text-dim mt-1">
+            <p className="font-mono text-xs text-secondary mt-1">
               {isEmission ? '↓' : '↑'} n={ni} → n={nf} highlighted · {isEmission ? 'emission' : 'absorption'}
             </p>
           )}
@@ -177,7 +177,7 @@ export default function EnergyLevelsReference() {
             { label: 'Final level (n_f)',  val: nf, set: setNf },
           ].map(({ label, val, set }) => (
             <div key={label} className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] text-dim">{label}</span>
+              <span className="font-mono text-xs text-secondary">{label}</span>
               <div className="flex gap-1">
                 {LEVELS.map(n => (
                   <button
@@ -232,7 +232,7 @@ export default function EnergyLevelsReference() {
           </div>
         )}
 
-        <p className="font-mono text-[10px] text-dim">
+        <p className="font-mono text-xs text-secondary">
           Rydberg formula for hydrogen. Use E = −13.6 / n² eV and λ = 1240 eV·nm / |ΔE|.
         </p>
       </div>

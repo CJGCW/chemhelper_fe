@@ -81,7 +81,7 @@ export default function PercentCompositionPractice() {
           className="rounded-sm border border-border p-4 flex flex-col gap-4 bg-surface/40">
 
           <div className="flex items-start justify-between gap-2">
-            <span className="font-mono text-[9px] text-dim tracking-widest uppercase">
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">
               {problem.type === 'percent_of_element' ? '% of element' : 'mass from %'}
             </span>
           </div>
@@ -148,7 +148,7 @@ export default function PercentCompositionPractice() {
                       <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.15 }} style={{ overflow: 'hidden' }}>
                         <div className="rounded-sm border border-border bg-surface px-4 py-3 flex flex-col gap-2">
-                          <span className="font-mono text-[10px] text-secondary tracking-widest uppercase">Solution</span>
+                          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Solution</span>
                           <div className="flex flex-col gap-1.5 pl-3 border-l border-border">
                             {problem.steps.map((s, i) => (
                               <p key={i} className="font-mono text-sm text-primary">{s}</p>

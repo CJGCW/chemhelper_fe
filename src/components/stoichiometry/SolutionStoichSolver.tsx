@@ -114,7 +114,7 @@ export default function SolutionStoichSolver() {
 
       {/* Reaction selector */}
       <div className="flex flex-col gap-2">
-        <label className="font-mono text-[10px] text-secondary tracking-widest uppercase">Reaction</label>
+        <label className="font-mono text-xs text-secondary tracking-widest uppercase">Reaction</label>
         <select value={rxnIdx} onChange={e => switchRxn(Number(e.target.value))}
           className="bg-raised border border-border rounded-sm px-3 py-2
                      font-sans text-sm text-bright focus:outline-none focus:border-muted">
@@ -133,7 +133,7 @@ export default function SolutionStoichSolver() {
           {mode === 'vol_to_mass' && (
             <>
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-[10px] text-secondary tracking-widest uppercase">Given</label>
+                <label className="font-mono text-xs text-secondary tracking-widest uppercase">Given</label>
                 <div className="flex flex-wrap items-center gap-2">
                   <NumInput value={vmVol}  onChange={v => { setVmVol(v);  setResult(null) }} placeholder="volume" />
                   <span className="font-mono text-xs text-dim">mL of</span>
@@ -142,7 +142,7 @@ export default function SolutionStoichSolver() {
                 </div>
               </div>
               <div className="flex flex-col gap-1">
-                <label className="font-mono text-[10px] text-secondary tracking-widest uppercase">Find</label>
+                <label className="font-mono text-xs text-secondary tracking-widest uppercase">Find</label>
                 <p className="font-mono text-sm text-primary">mass (g) of {solidRxn.solidDisplay}</p>
               </div>
             </>
@@ -151,14 +151,14 @@ export default function SolutionStoichSolver() {
           {mode === 'mass_to_vol' && (
             <>
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-[10px] text-secondary tracking-widest uppercase">Given</label>
+                <label className="font-mono text-xs text-secondary tracking-widest uppercase">Given</label>
                 <div className="flex flex-wrap items-center gap-2">
                   <NumInput value={mvMass} onChange={v => { setMvMass(v); setResult(null) }} placeholder="mass" />
                   <span className="font-mono text-xs text-dim">g of {solidRxn.solidDisplay}</span>
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-[10px] text-secondary tracking-widest uppercase">Find</label>
+                <label className="font-mono text-xs text-secondary tracking-widest uppercase">Find</label>
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-mono text-xs text-dim">volume (mL) of</span>
                   <NumInput value={mvConc} onChange={v => { setMvConc(v); setResult(null) }} placeholder="conc." />
@@ -171,7 +171,7 @@ export default function SolutionStoichSolver() {
           {mode === 'vol_to_vol' && (
             <>
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-[10px] text-secondary tracking-widest uppercase">Given (acid)</label>
+                <label className="font-mono text-xs text-secondary tracking-widest uppercase">Given (acid)</label>
                 <div className="flex flex-wrap items-center gap-2">
                   <NumInput value={ttVol}   onChange={v => { setTtVol(v);   setResult(null) }} placeholder="volume" />
                   <span className="font-mono text-xs text-dim">mL of</span>
@@ -180,7 +180,7 @@ export default function SolutionStoichSolver() {
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-[10px] text-secondary tracking-widest uppercase">Find (base)</label>
+                <label className="font-mono text-xs text-secondary tracking-widest uppercase">Find (base)</label>
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-mono text-xs text-dim">volume (mL) of</span>
                   <NumInput value={ttConcB} onChange={v => { setTtConcB(v); setResult(null) }} placeholder="conc." />
@@ -214,7 +214,7 @@ export default function SolutionStoichSolver() {
                   borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   background: 'color-mix(in srgb, var(--c-halogen) 8%, #0e1016)',
                 }}>
-                <span className="font-mono text-[10px] text-secondary tracking-widest uppercase block mb-1">Result</span>
+                <span className="font-mono text-xs text-secondary tracking-widest uppercase block mb-1">Result</span>
                 <span className="font-mono text-2xl font-semibold" style={{ color: 'var(--c-halogen)' }}>
                   {result.display}
                 </span>

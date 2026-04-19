@@ -193,7 +193,7 @@ export default function IdealGasPractice() {
         )}
       </div>
 
-      <p className="font-mono text-[10px] text-dim">
+      <p className="font-mono text-xs text-secondary">
         Answers accepted within ±2%. All temperatures in K; pressures in stated units.
       </p>
     </div>

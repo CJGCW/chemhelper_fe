@@ -37,7 +37,7 @@ export default function SigmaPiPractice() {
     return (
       <div className="flex flex-col gap-5 max-w-xl">
         <div className="flex items-center justify-between">
-          <span className="font-mono text-[10px] text-dim tracking-widest uppercase">σ / π Bond Practice</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">σ / π Bond Practice</span>
         </div>
         <div className="rounded-sm border border-border bg-surface px-4 py-8 flex items-center justify-center">
           <span className="font-mono text-xs text-dim animate-pulse">Loading structure…</span>
@@ -51,7 +51,7 @@ export default function SigmaPiPractice() {
 
       {/* Header row */}
       <div className="flex items-center justify-between">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">
           σ / π Bond Practice
         </span>
         <button onClick={loadNext}
@@ -77,7 +77,7 @@ export default function SigmaPiPractice() {
 
         {/* Inputs */}
         <div className="px-4 py-3 flex flex-col gap-3">
-          <span className="font-mono text-[9px] text-dim tracking-widest uppercase">
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">
             Count the bonds
           </span>
           <div className="flex gap-4 flex-wrap">
@@ -188,13 +188,13 @@ export default function SigmaPiPractice() {
 
       {/* Reference rule */}
       <div className="rounded-sm border border-border bg-raised px-4 py-3 flex flex-col gap-2">
-        <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Quick rule</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Quick rule</span>
         <div className="flex flex-col gap-1 font-mono text-xs text-secondary">
           <span>Single bond  A–B  → <span className="text-primary">1σ, 0π</span></span>
           <span>Double bond  A=B  → <span className="text-primary">1σ, 1π</span></span>
           <span>Triple bond  A≡B  → <span className="text-primary">1σ, 2π</span></span>
         </div>
-        <p className="font-sans text-[10px] text-dim leading-relaxed mt-1">
+        <p className="font-sans text-xs text-secondary leading-relaxed mt-1">
           Every bond contains exactly one σ bond. π bonds are the additional bonds in double and triple bonds.
           Count the total number of bonds for σ, then add (order − 1) per bond for π.
         </p>

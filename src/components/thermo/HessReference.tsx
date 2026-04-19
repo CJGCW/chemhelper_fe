@@ -73,7 +73,7 @@ export default function HessReference() {
               'Sum all ΔH contributions',
             ].map((s, i) => (
               <div key={i} className="flex gap-2.5 items-start">
-                <span className="font-mono text-[10px] text-dim shrink-0 w-4 pt-0.5">{i + 1}.</span>
+                <span className="font-mono text-xs text-secondary shrink-0 w-4 pt-0.5">{i + 1}.</span>
                 <span className="font-sans text-xs text-secondary">{s}</span>
               </div>
             ))}

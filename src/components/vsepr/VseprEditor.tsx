@@ -133,7 +133,7 @@ function Stepper({
 }: { label: string; value: number; min: number; max: number; onChange: (n: number) => void }) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="font-mono text-[10px] text-dim tracking-wider uppercase">{label}</span>
+      <span className="font-mono text-xs text-secondary tracking-widest uppercase">{label}</span>
       <div className="flex items-center gap-2">
         <button
           onClick={() => onChange(Math.max(min, value - 1))}
@@ -222,7 +222,7 @@ export default function VseprEditor({ correctStructure, onValidated }: VseprEdit
 
         {/* Central atom */}
         <div className="flex flex-col gap-1">
-          <span className="font-mono text-[10px] text-dim tracking-wider uppercase">Central atom</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Central atom</span>
           <input
             type="text"
             value={state.centralElement}
@@ -256,11 +256,11 @@ export default function VseprEditor({ correctStructure, onValidated }: VseprEdit
       {/* Terminal atom labels */}
       {state.bondingPairs > 0 && (
         <div className="flex flex-col gap-1.5">
-          <span className="font-mono text-[10px] text-dim tracking-wider uppercase">Terminal atoms</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Terminal atoms</span>
           <div className="flex flex-wrap gap-2">
             {Array.from({ length: state.bondingPairs }, (_, i) => (
               <div key={i} className="flex flex-col gap-0.5 items-center">
-                <span className="font-mono text-[9px] text-dim">{i + 1}</span>
+                <span className="font-mono text-xs text-secondary">{i + 1}</span>
                 <input
                   type="text"
                   value={state.terminalElements[i] ?? ''}
@@ -289,7 +289,7 @@ export default function VseprEditor({ correctStructure, onValidated }: VseprEdit
           { label: 'Total Groups',       value: String(totalGroups) },
         ].map(({ label, value }) => (
           <div key={label} className="flex flex-col gap-0.5 px-3 py-1.5 rounded-sm border border-border bg-raised">
-            <span className="font-mono text-[9px] text-dim tracking-wider uppercase">{label}</span>
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">{label}</span>
             <span className="font-sans text-sm text-bright">{value}</span>
           </div>
         ))}

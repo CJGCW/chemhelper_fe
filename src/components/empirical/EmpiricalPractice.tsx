@@ -41,7 +41,7 @@ function SolutionSteps({
       <p className="font-sans text-xs font-medium text-secondary">Step-by-step solution</p>
 
       <div className="flex flex-col gap-1">
-        <p className="font-mono text-[10px] text-dim uppercase tracking-wider">Step 1 — % → moles (assume 100 g sample)</p>
+        <p className="font-mono text-xs text-secondary uppercase tracking-widest">Step 1 — % → moles (assume 100 g sample)</p>
         <div className="flex flex-wrap gap-x-4 gap-y-0.5">
           {result.rows.map(r => (
             <span key={r.symbol} className="font-mono text-xs text-secondary">
@@ -53,7 +53,7 @@ function SolutionSteps({
       </div>
 
       <div className="flex flex-col gap-1">
-        <p className="font-mono text-[10px] text-dim uppercase tracking-wider">
+        <p className="font-mono text-xs text-secondary uppercase tracking-widest">
           Step 2 — divide by smallest ({fmt(minMoles, 4)} mol)
         </p>
         <div className="flex flex-wrap gap-x-4 gap-y-0.5">
@@ -68,7 +68,7 @@ function SolutionSteps({
 
       {result.multiplier > 1 && (
         <div className="flex flex-col gap-1">
-          <p className="font-mono text-[10px] text-dim uppercase tracking-wider">
+          <p className="font-mono text-xs text-secondary uppercase tracking-widest">
             Step 3 — ratios not whole numbers, multiply by {result.multiplier}
           </p>
           <div className="flex flex-wrap gap-x-4 gap-y-0.5">
@@ -86,21 +86,21 @@ function SolutionSteps({
       <div className="flex flex-wrap gap-3 items-center pt-1">
         <div className="flex flex-col items-center px-4 py-2 rounded-sm border"
           style={{ background: 'color-mix(in srgb, #4ade80 6%, #080a0f)', borderColor: 'color-mix(in srgb, #4ade80 25%, transparent)' }}>
-          <span className="font-mono text-[9px] text-dim uppercase tracking-wider">Empirical</span>
+          <span className="font-mono text-xs text-secondary uppercase tracking-widest">Empirical</span>
           <span className="font-mono text-xl font-bold" style={{ color: '#4ade80' }}>{result.empiricalFormula}</span>
         </div>
 
         {result.molecularFormula && result.molecularMultiplier && (
           <>
             <div className="flex flex-col gap-0.5 text-right">
-              <span className="font-sans text-[10px] text-dim">M(emp) = {fmt(result.empiricalMolarMass, 5)} g/mol</span>
-              <span className="font-sans text-[10px] text-dim">
+              <span className="font-sans text-xs text-secondary">M(emp) = {fmt(result.empiricalMolarMass, 5)} g/mol</span>
+              <span className="font-sans text-xs text-secondary">
                 n = {fmt(problem.molecularMass!, 5)} ÷ {fmt(result.empiricalMolarMass, 5)} = {result.molecularMultiplier}
               </span>
             </div>
             <div className="flex flex-col items-center px-4 py-2 rounded-sm border"
               style={{ background: 'color-mix(in srgb, #818cf8 6%, #080a0f)', borderColor: 'color-mix(in srgb, #818cf8 25%, transparent)' }}>
-              <span className="font-mono text-[9px] text-dim uppercase tracking-wider">Molecular</span>
+              <span className="font-mono text-xs text-secondary uppercase tracking-widest">Molecular</span>
               <span className="font-mono text-xl font-bold" style={{ color: '#818cf8' }}>{result.molecularFormula}</span>
             </div>
           </>
@@ -208,7 +208,7 @@ export default function EmpiricalPractice() {
             </button>
           ))}
         </div>
-        <span className="font-mono text-[10px] text-dim">
+        <span className="font-mono text-xs text-secondary">
           {COMPOUND_POOL.filter(c => difficulty === 'all' || c.difficulty === difficulty).length} compounds
         </span>
       </div>
@@ -224,7 +224,7 @@ export default function EmpiricalPractice() {
           >
             {/* Header row */}
             <div className="flex items-center justify-between">
-              <span className="font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-sm border"
+              <span className="font-mono text-xs uppercase tracking-widest px-2 py-0.5 rounded-sm border"
                 style={{
                   color: problem.difficulty === 'easy' ? '#4ade80' : problem.difficulty === 'medium' ? '#fb923c' : '#f87171',
                   borderColor: problem.difficulty === 'easy' ? 'rgba(74,222,128,0.3)' : problem.difficulty === 'medium' ? 'rgba(251,146,60,0.3)' : 'rgba(248,113,113,0.3)',
@@ -245,8 +245,8 @@ export default function EmpiricalPractice() {
                 <table className="border-collapse text-xs font-mono">
                   <thead>
                     <tr>
-                      <th className="px-4 py-2 text-left text-[10px] tracking-[0.1em] text-dim uppercase border-b border-border">Element</th>
-                      <th className="px-4 py-2 text-left text-[10px] tracking-[0.1em] text-dim uppercase border-b border-border">% by Mass</th>
+                      <th className="px-4 py-2 text-left text-xs tracking-widest text-secondary uppercase border-b border-border">Element</th>
+                      <th className="px-4 py-2 text-left text-xs tracking-widest text-secondary uppercase border-b border-border">% by Mass</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -270,7 +270,7 @@ export default function EmpiricalPractice() {
             {/* Answer inputs */}
             <div className="flex flex-col gap-3">
               <div className="flex flex-col gap-1">
-                <label className="font-mono text-[10px] text-dim uppercase">Empirical formula</label>
+                <label className="font-mono text-xs text-secondary uppercase">Empirical formula</label>
                 <input
                   type="text"
                   value={empiricalAnswer}
@@ -283,7 +283,7 @@ export default function EmpiricalPractice() {
               </div>
               {problem.molecularASCII && (
                 <div className="flex flex-col gap-1">
-                  <label className="font-mono text-[10px] text-dim uppercase">Molecular formula</label>
+                  <label className="font-mono text-xs text-secondary uppercase">Molecular formula</label>
                   <input
                     type="text"
                     value={molecularAnswer}
@@ -295,7 +295,7 @@ export default function EmpiricalPractice() {
                   />
                 </div>
               )}
-              <p className="font-sans text-[10px] text-dim">
+              <p className="font-sans text-xs text-secondary">
                 Use standard element symbols, e.g. "Fe2O3". Element symbols are case-sensitive.
               </p>
             </div>
@@ -343,7 +343,7 @@ export default function EmpiricalPractice() {
                   transition={{ duration: 0.2 }} style={{ overflow: 'hidden' }}
                 >
                   <div className="border-t border-border pt-4">
-                    <p className="font-sans text-[10px] text-dim uppercase tracking-wider mb-3">
+                    <p className="font-sans text-xs text-secondary uppercase tracking-widest mb-3">
                       Compound: <span className="font-mono text-primary font-medium normal-case">{problem.compoundName}</span>
                     </p>
                     <SolutionSteps problem={problem} molarMasses={molarMasses} />

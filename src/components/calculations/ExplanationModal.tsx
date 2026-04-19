@@ -62,7 +62,7 @@ export default function ExplanationModal({ content, open, onClose }: Props) {
 
               {/* Variables */}
               <div>
-                <p className="font-mono text-[10px] text-dim tracking-wider mb-3">VARIABLES</p>
+                <p className="font-mono text-xs text-secondary tracking-wider mb-3">VARIABLES</p>
                 <div className="flex flex-col divide-y divide-border">
                   {content.formulaVars.map(v => (
                     <div key={v.symbol} className="flex items-baseline gap-3 py-2">
@@ -81,7 +81,7 @@ export default function ExplanationModal({ content, open, onClose }: Props) {
 
               {/* Description */}
               <div>
-                <p className="font-mono text-[10px] text-dim tracking-wider mb-2">CONCEPT</p>
+                <p className="font-mono text-xs text-secondary tracking-wider mb-2">CONCEPT</p>
                 <p className="font-sans text-sm text-secondary leading-relaxed">
                   {content.description}
                 </p>
@@ -89,14 +89,14 @@ export default function ExplanationModal({ content, open, onClose }: Props) {
 
               {/* Worked example */}
               <div>
-                <p className="font-mono text-[10px] text-dim tracking-wider mb-3">WORKED EXAMPLE</p>
+                <p className="font-mono text-xs text-secondary tracking-wider mb-3">WORKED EXAMPLE</p>
                 <div className="p-4 rounded-sm border border-border bg-raised flex flex-col gap-3">
                   <p className="font-sans text-sm text-primary">{content.example.scenario}</p>
                   <div className="flex flex-col gap-1.5 pl-3 border-l-2"
                     style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 35%, transparent)' }}>
                     {content.example.steps.map((step, i) => (
                       <div key={i} className="flex gap-2">
-                        <span className="font-mono text-[10px] text-dim shrink-0 mt-0.5">{i + 1}.</span>
+                        <span className="font-mono text-xs text-secondary shrink-0 mt-0.5">{i + 1}.</span>
                         <span className="font-sans text-xs text-secondary leading-relaxed">{step}</span>
                       </div>
                     ))}

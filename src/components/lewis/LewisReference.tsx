@@ -184,7 +184,7 @@ export default function LewisReference() {
 
       {/* Concepts */}
       <div>
-        <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3">Concepts</p>
+        <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3">Concepts</p>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
             <h3 className="font-sans font-semibold text-bright">What is a Lewis Structure?</h3>
@@ -234,7 +234,7 @@ export default function LewisReference() {
 
       {/* Drawing rules */}
       <div>
-        <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3">How to Draw a Lewis Structure</p>
+        <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3">How to Draw a Lewis Structure</p>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
           {RULES.map(r => (
             <div key={r.step} className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
@@ -256,7 +256,7 @@ export default function LewisReference() {
 
       {/* Sigma and Pi bonds */}
       <div>
-        <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3">σ and π Bonds</p>
+        <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3">σ and π Bonds</p>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-2">
             <h3 className="font-sans font-semibold text-bright">The Rule</h3>
@@ -320,7 +320,7 @@ export default function LewisReference() {
 
       {/* Example gallery */}
       <div>
-        <p className="font-mono text-[10px] text-dim uppercase tracking-widest mb-3">Examples</p>
+        <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3">Examples</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {EXAMPLES.map(ex => (
             <div key={ex.formula} className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-3">

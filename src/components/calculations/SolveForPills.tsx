@@ -7,7 +7,7 @@ interface Props<T extends string> {
 export default function SolveForPills<T extends string>({ options, value, onChange }: Props<T>) {
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="font-mono text-[10px] text-dim tracking-wider">SOLVE FOR</span>
+      <span className="font-mono text-xs text-secondary tracking-wider">SOLVE FOR</span>
       <div className="flex flex-wrap gap-1.5">
         {options.map(opt => {
           const active = opt.value === value

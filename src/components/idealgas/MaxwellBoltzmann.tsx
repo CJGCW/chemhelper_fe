@@ -234,13 +234,13 @@ export default function MaxwellBoltzmann() {
               <span className="font-mono text-xs" style={{ color }}>{label}</span>
             </div>
             <span className="font-mono text-sm text-bright">{Math.round(v)} m/s</span>
-            <span className="font-mono text-[10px] text-dim">{desc}</span>
+            <span className="font-mono text-xs text-secondary">{desc}</span>
           </div>
         ))}
         <div className="flex flex-col gap-0.5 border-l border-border pl-5 ml-1">
           <span className="font-mono text-xs text-secondary">KE_avg / mol</span>
           <span className="font-mono text-sm text-bright">{(1.5 * R_J * T / 1000).toFixed(3)} kJ/mol</span>
-          <span className="font-mono text-[10px] text-dim">= ³⁄₂RT</span>
+          <span className="font-mono text-xs text-secondary">= ³⁄₂RT</span>
         </div>
       </div>
 
@@ -295,7 +295,7 @@ export default function MaxwellBoltzmann() {
                       <div key={label} className="flex flex-col gap-0.5">
                         <span className="font-mono text-xs" style={{ color }}>{label}</span>
                         <span className="font-mono text-sm" style={{ color: C2 }}>{Math.round(v)} m/s</span>
-                        <span className="font-mono text-[10px] text-dim">{PRESETS[idx2].label}</span>
+                        <span className="font-mono text-xs text-secondary">{PRESETS[idx2].label}</span>
                       </div>
                     ))}
                   </div>
@@ -306,7 +306,7 @@ export default function MaxwellBoltzmann() {
         </AnimatePresence>
       </div>
 
-      <p className="font-mono text-[10px] text-dim">
+      <p className="font-mono text-xs text-secondary">
         f(v) is the probability density — area under the curve between two speeds equals the fraction of molecules in that range. All curves integrate to 1.
       </p>
     </div>

@@ -227,9 +227,9 @@ function IsotopesTab({ el, color }: { el: NonNullable<Element>; color: string })
     <motion.div variants={contentVariants} initial="hidden" animate="show" className="flex flex-col">
       {/* Header row */}
       <div className="flex items-center pb-1.5 mb-1 border-b border-border">
-        <span className="font-mono text-[9px] text-dim tracking-wider w-16">ISOTOPE</span>
-        <span className="font-mono text-[9px] text-dim tracking-wider flex-1 text-center">ABUNDANCE</span>
-        <span className="font-mono text-[9px] text-dim tracking-wider text-right w-20">NOTES</span>
+        <span className="font-mono text-xs text-secondary tracking-wider w-16">ISOTOPE</span>
+        <span className="font-mono text-xs text-secondary tracking-wider flex-1 text-center">ABUNDANCE</span>
+        <span className="font-mono text-xs text-secondary tracking-wider text-right w-20">NOTES</span>
       </div>
 
       {isotopes.map((iso, i) => {
@@ -242,14 +242,14 @@ function IsotopesTab({ el, color }: { el: NonNullable<Element>; color: string })
 
             {/* Isotope label */}
             <div className="w-16 shrink-0 flex items-baseline gap-0.5">
-              <span className="font-mono text-[10px] text-dim leading-none" style={{ verticalAlign: 'super', fontSize: '8px' }}>
+              <span className="font-mono text-xs text-secondary leading-none" style={{ verticalAlign: 'super', fontSize: '8px' }}>
                 {iso.A}
               </span>
               <span className="font-mono text-sm font-medium" style={{ color: iso.name ? color : 'rgba(255,255,255,0.8)' }}>
                 {el.symbol}
               </span>
               {iso.name && (
-                <span className="font-sans text-[9px] text-dim italic ml-0.5 hidden sm:inline truncate max-w-[52px]">
+                <span className="font-sans text-xs text-secondary italic ml-0.5 hidden sm:inline truncate max-w-[52px]">
                   {iso.name}
                 </span>
               )}
@@ -285,11 +285,11 @@ function IsotopesTab({ el, color }: { el: NonNullable<Element>; color: string })
                 <div className="flex flex-col items-end gap-0.5">
                   <span className="font-mono text-[9px]" style={{ color: '#f87171' }}>☢ radioactive</span>
                   {iso.halfLife && (
-                    <span className="font-mono text-[9px] text-dim">t½ {iso.halfLife}</span>
+                    <span className="font-mono text-xs text-secondary">t½ {iso.halfLife}</span>
                   )}
                 </div>
               ) : (
-                <span className="font-mono text-[9px] text-dim">stable</span>
+                <span className="font-mono text-xs text-secondary">stable</span>
               )}
             </div>
           </motion.div>
@@ -408,11 +408,11 @@ function ElectronConfigTab({ el, color }: { el: Element; color: string }) {
 
       {/* Orbital box diagram */}
       <motion.div variants={rowVariants} className="flex flex-col gap-1">
-        <p className="font-mono text-[9px] tracking-[0.15em] text-dim uppercase mb-1">Orbital Box Diagram</p>
+        <p className="font-mono text-xs tracking-widest text-secondary uppercase mb-1">Orbital Box Diagram</p>
         {shellRows.map(([n, subs]) => (
           <div key={n} className="flex items-end gap-3 p-2.5 rounded-sm border border-border"
             style={{ background: '#0e1016' }}>
-            <span className="font-mono text-[9px] text-dim w-7 shrink-0 pb-0.5">n={n}</span>
+            <span className="font-mono text-xs text-secondary w-7 shrink-0 pb-0.5">n={n}</span>
             <div className="flex items-end gap-3 flex-wrap">
               {subs.map(sub => <ConfigSubshell key={sub.label} sub={sub} />)}
             </div>
@@ -532,7 +532,7 @@ export default function ElementModal() {
                   <button
                     key={t}
                     onClick={() => setTab(t)}
-                    className="flex-1 py-2.5 font-mono text-[11px] tracking-wider uppercase transition-colors"
+                    className="flex-1 py-2.5 font-mono text-[11px] tracking-widest uppercase transition-colors"
                     style={{ color: tab === t ? color : 'rgba(255,255,255,0.3)' }}
                   >
                     {t === 'config' ? 'e⁻ config' : t}

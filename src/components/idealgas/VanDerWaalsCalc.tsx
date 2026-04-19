@@ -195,7 +195,7 @@ export default function VanDerWaalsCalc() {
             {/* Ideal vs Real comparison */}
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-1">
-                <span className="font-mono text-xs text-dim uppercase tracking-widest">Ideal Gas</span>
+                <span className="font-mono text-xs text-secondary uppercase tracking-widest">Ideal Gas</span>
                 <span className="font-mono text-2xl font-bold text-secondary">
                   {sig(result.idealP, 4)} atm
                 </span>
@@ -244,7 +244,7 @@ export default function VanDerWaalsCalc() {
         )}
       </AnimatePresence>
 
-      <p className="font-mono text-[10px] text-dim">
+      <p className="font-mono text-xs text-secondary">
         Van der Waals constants from Atkins' Physical Chemistry.
         Valid for pure gases — not mixtures. Significant deviations expected at high pressure or near the critical point.
       </p>

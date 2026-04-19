@@ -145,7 +145,7 @@ function SolubilityTable() {
           <thead>
             <tr className="bg-raised print:bg-gray-100">
               <th className="sticky left-0 z-10 bg-raised print:bg-gray-100 px-3 py-2 text-left
-                             font-mono text-[10px] text-dim tracking-widest uppercase
+                             font-mono text-xs text-secondary tracking-widest uppercase
                              border-b border-r border-border print:border-gray-300 min-w-[90px]">
                 ↓ Anion / Cation →
               </th>
@@ -244,7 +244,7 @@ function SolubilityTable() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {summary.map(({ sol, cations }) => (
                 <div key={sol} className="flex flex-col gap-1.5">
-                  <span className="font-mono text-[10px] tracking-widest uppercase"
+                  <span className="font-mono text-xs tracking-widest uppercase"
                     style={{ color: SOL_COLOR[sol] }}>
                     {SOL_LABEL[sol]}
                   </span>
@@ -267,7 +267,7 @@ function SolubilityTable() {
                 </div>
               ))}
             </div>
-            <p className="font-mono text-[10px] text-dim">
+            <p className="font-mono text-xs text-secondary">
               Rule: {solLookup(CATIONS.find(c => solLookup(c.id, ani.id).sol !== 'S')?.id ?? 'Na', ani.id).rule}
             </p>
           </motion.div>
@@ -276,7 +276,7 @@ function SolubilityTable() {
 
       {/* Click hint */}
       {!selectedAni && (
-        <p className="font-mono text-[10px] text-dim print:hidden">
+        <p className="font-mono text-xs text-secondary print:hidden">
           Click any anion row label to highlight its solubility pairings.
         </p>
       )}
@@ -306,7 +306,7 @@ function RulesSummary() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 print:grid-cols-2">
       <div className="rounded-sm border border-border bg-surface p-4 print:bg-white print:border-gray-300">
-        <p className="font-mono text-[10px] tracking-widest uppercase mb-2"
+        <p className="font-mono text-xs tracking-widest uppercase mb-2"
           style={{ color: SOL_COLOR.S }}>Generally Soluble (exceptions noted)</p>
         <ul className="flex flex-col gap-1.5">
           {[
@@ -327,7 +327,7 @@ function RulesSummary() {
       </div>
 
       <div className="rounded-sm border border-border bg-surface p-4 print:bg-white print:border-gray-300">
-        <p className="font-mono text-[10px] tracking-widest uppercase mb-2"
+        <p className="font-mono text-xs tracking-widest uppercase mb-2"
           style={{ color: SOL_COLOR.I }}>Generally Insoluble (exceptions noted)</p>
         <ul className="flex flex-col gap-1.5">
           {[

@@ -121,7 +121,7 @@ function SpeciesRow({ row, canDelete, onChange, onDelete, onPickSuggestion }: Ro
                      placeholder:text-dim/50 focus:outline-none focus:border-muted [appearance:textfield]
                      [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         />
-        <span className="absolute right-2 font-mono text-[10px] text-dim pointer-events-none">kJ/mol</span>
+        <span className="absolute right-2 font-mono text-xs text-secondary pointer-events-none">kJ/mol</span>
       </div>
 
       {/* Delete */}
@@ -279,7 +279,7 @@ export default function EnthalpyCalc() {
     setError(null)
   }
 
-  const labelStyle = "font-mono text-[10px] text-dim tracking-widest uppercase"
+  const labelStyle = "font-mono text-xs text-secondary tracking-widest uppercase"
 
   return (
     <div className="flex flex-col gap-6 max-w-3xl">
@@ -381,7 +381,7 @@ export default function EnthalpyCalc() {
       </AnimatePresence>
 
       {/* Hint */}
-      <p className="font-mono text-[10px] text-dim">
+      <p className="font-mono text-xs text-secondary">
         Tip: type a formula or name in the compound field to look up ΔHf° values. Elements in standard state have ΔHf° = 0.
       </p>
     </div>

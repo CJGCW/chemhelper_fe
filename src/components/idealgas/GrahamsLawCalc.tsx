@@ -317,7 +317,7 @@ export default function GrahamsLawCalc() {
         )}
       </AnimatePresence>
 
-      <p className="font-mono text-[10px] text-dim">
+      <p className="font-mono text-xs text-secondary">
         {inputMode === 'rate'
           ? 'Units for rate must be consistent (e.g. both in mol/s). Molar masses in g/mol.'
           : 'Units for time must be consistent (e.g. both in seconds). Molar masses in g/mol.'}

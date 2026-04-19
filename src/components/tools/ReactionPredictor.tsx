@@ -192,7 +192,7 @@ function ProductCard({ p }: { p: ProductInfo }) {
         </span>
       </div>
       <span className="font-sans text-xs text-secondary">{p.name}</span>
-      <span className="font-mono text-[10px] text-dim leading-snug">{p.rule}</span>
+      <span className="font-mono text-xs text-secondary leading-snug">{p.rule}</span>
     </div>
   )
 }
@@ -314,7 +314,7 @@ export default function ReactionPredictor() {
 
         {/* Examples */}
         <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="font-mono text-[10px] text-dim">Try:</span>
+          <span className="font-mono text-xs text-secondary">Try:</span>
           {EXAMPLES.map(([a, b]) => (
             <button
               key={`${a}+${b}`}
@@ -343,7 +343,7 @@ export default function ReactionPredictor() {
           >
             {/* Reaction type badge */}
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[10px] tracking-wider uppercase text-dim">Type</span>
+              <span className="font-mono text-xs tracking-widest uppercase text-secondary">Type</span>
               <span className="font-mono text-xs px-2 py-0.5 rounded-sm border border-border text-secondary">
                 Double Displacement
               </span>
@@ -388,7 +388,7 @@ export default function ReactionPredictor() {
             {/* Net ionic */}
             {result.netIonic && (
               <div className="flex flex-col gap-1">
-                <span className="font-mono text-[10px] tracking-wider uppercase text-dim">Net Ionic Equation</span>
+                <span className="font-mono text-xs tracking-widest uppercase text-secondary">Net Ionic Equation</span>
                 <div
                   className="rounded-sm border px-4 py-3 font-mono text-sm text-primary overflow-x-auto"
                   style={{
@@ -413,7 +413,7 @@ export default function ReactionPredictor() {
 
       {/* Supported compounds hint */}
       {!result && !error && (
-        <p className="font-mono text-[10px] text-dim leading-relaxed">
+        <p className="font-mono text-xs text-secondary leading-relaxed">
           Precipitation reactions only (double displacement between two soluble ionic compounds).
           Supports common cations (Na⁺, K⁺, Ca²⁺, Cu²⁺, Fe²⁺/³⁺, Ag⁺, Pb²⁺…) and anions (Cl⁻, SO₄²⁻, OH⁻, CO₃²⁻, NO₃⁻, PO₄³⁻…).
           For acid-base neutralization or gas-forming reactions, use the Reaction Classifier tab.

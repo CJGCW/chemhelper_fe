@@ -157,7 +157,7 @@ export default function CompoundPage() {
 
         {/* Quick examples */}
         <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="font-mono text-[10px] text-dim">Try:</span>
+          <span className="font-mono text-xs text-secondary">Try:</span>
           {EXAMPLES.map(ex => (
             <button
               key={ex.input}
@@ -236,7 +236,7 @@ function Row({
   return (
     <div className="flex items-start gap-3 px-4 py-2.5 group">
       <span
-        className="font-mono text-[10px] text-dim tracking-wider uppercase shrink-0 pt-0.5"
+        className="font-mono text-xs text-secondary tracking-widest uppercase shrink-0 pt-0.5"
         style={{ minWidth: 140 }}
       >
         {label}

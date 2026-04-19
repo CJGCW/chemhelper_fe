@@ -332,8 +332,8 @@ export default function TestBuilder({ onGenerate }: Props) {
               indeterminate={!allChecked && someChecked}
               onClick={toggleAll}
             />
-            <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Topic</span>
-            <span className="font-mono text-[10px] text-dim tracking-widest uppercase w-20 text-right">Questions</span>
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase">Topic</span>
+            <span className="font-mono text-xs text-secondary tracking-widest uppercase w-20 text-right">Questions</span>
           </div>
 
           {/* Grouped rows */}
@@ -355,11 +355,11 @@ export default function TestBuilder({ onGenerate }: Props) {
                     onClick={() => toggleGroup(group)}
                     size="xs"
                   />
-                  <span className="font-mono text-[10px] tracking-widest uppercase"
+                  <span className="font-mono text-xs tracking-widest uppercase"
                     style={{ color: 'color-mix(in srgb, var(--c-halogen) 70%, rgba(255,255,255,0.4))' }}>
                     {GROUP_LABELS[group]}
                   </span>
-                  <span className="font-mono text-[10px] text-dim w-20 text-right">
+                  <span className="font-mono text-xs text-secondary w-20 text-right">
                     {groupRows.filter(r => r.enabled).reduce((s, r) => s + r.count, 0)} / {groupRows.reduce((s, r) => s + r.count, 0)}
                   </span>
                 </div>
@@ -387,7 +387,7 @@ export default function TestBuilder({ onGenerate }: Props) {
                           {/* Label */}
                           <div className="flex flex-col gap-0.5 min-w-0 pl-1">
                             <span className="font-sans text-sm text-primary">{row.def.label}</span>
-                            <span className="font-mono text-[10px] text-dim">{row.def.formula}</span>
+                            <span className="font-mono text-xs text-secondary">{row.def.formula}</span>
                           </div>
 
                           {/* Count stepper */}
@@ -418,7 +418,7 @@ export default function TestBuilder({ onGenerate }: Props) {
           })}
         </div>
 
-        <p className="font-mono text-[10px] text-dim">
+        <p className="font-mono text-xs text-secondary">
           Word problems and arithmetic are mixed automatically.
           {hasApiTopics && ' Lewis / VSEPR questions are fetched from the server.'}
         </p>

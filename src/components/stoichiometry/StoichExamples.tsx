@@ -453,7 +453,7 @@ function TheoreticalYieldCookies() {
                       >F</motion.div>
                     ))}
                   </div>
-                  <span className="font-mono text-[9px] text-dim">batch {batch}</span>
+                  <span className="font-mono text-xs text-secondary">batch {batch}</span>
                 </div>
               )
             })}
@@ -603,15 +603,15 @@ function PercentYieldCookies() {
               className="flex flex-wrap gap-6"
             >
               <div>
-                <p className="font-mono text-[10px] text-dim uppercase tracking-widest">Theoretical</p>
+                <p className="font-mono text-xs text-secondary uppercase tracking-widest">Theoretical</p>
                 <p className="font-mono text-sm text-primary">2 cookies</p>
               </div>
               <div>
-                <p className="font-mono text-[10px] text-dim uppercase tracking-widest">Actual</p>
+                <p className="font-mono text-xs text-secondary uppercase tracking-widest">Actual</p>
                 <p className="font-mono text-sm text-primary">1 cookie</p>
               </div>
               <div>
-                <p className="font-mono text-[10px] text-dim uppercase tracking-widest">% Yield</p>
+                <p className="font-mono text-xs text-secondary uppercase tracking-widest">% Yield</p>
                 <p className="font-mono text-sm font-semibold" style={{ color: 'var(--c-halogen)' }}>
                   (1 ÷ 2) × 100 = 50%
                 </p>

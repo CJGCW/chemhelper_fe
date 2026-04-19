@@ -60,7 +60,7 @@ export default function EnthalpyPractice() {
           className="flex flex-col gap-4 rounded-sm border border-border bg-surface p-5"
         >
           {/* Description badge */}
-          <span className="font-mono text-[10px] text-dim border border-border px-2 py-0.5 rounded-sm self-start capitalize">
+          <span className="font-mono text-xs text-secondary border border-border px-2 py-0.5 rounded-sm self-start capitalize">
             {problem.description}
           </span>
 
@@ -75,13 +75,13 @@ export default function EnthalpyPractice() {
 
           {/* ΔHf° table */}
           <div className="flex flex-col gap-1">
-            <p className="font-mono text-[10px] text-dim tracking-widest uppercase">
+            <p className="font-mono text-xs text-secondary tracking-widest uppercase">
               Standard enthalpies of formation
             </p>
             <div className="rounded-sm border border-border bg-raised overflow-hidden">
               <div className="grid grid-cols-[1fr_auto] gap-x-6 px-3 py-1.5 border-b border-border">
-                <span className="font-mono text-[10px] text-dim">Compound</span>
-                <span className="font-mono text-[10px] text-dim text-right">ΔHf° (kJ/mol)</span>
+                <span className="font-mono text-xs text-secondary">Compound</span>
+                <span className="font-mono text-xs text-secondary text-right">ΔHf° (kJ/mol)</span>
               </div>
               {[...problem.reactants, ...problem.products].map((s, i) => (
                 <div key={i} className="grid grid-cols-[1fr_auto] gap-x-6 px-3 py-1.5 border-b border-border last:border-b-0">
@@ -199,7 +199,7 @@ export default function EnthalpyPractice() {
         )}
       </div>
 
-      <p className="font-mono text-[10px] text-dim">
+      <p className="font-mono text-xs text-secondary">
         Answers accepted within ±2%. Include sign (negative for exothermic).
       </p>
     </div>

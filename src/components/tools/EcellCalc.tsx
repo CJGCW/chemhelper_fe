@@ -49,7 +49,7 @@ function HalfRxnSelect({
 
   return (
     <div className="flex flex-col gap-1.5 flex-1">
-      <span className="font-mono text-[10px] tracking-wider uppercase" style={{ color }}>
+      <span className="font-mono text-xs tracking-widest uppercase" style={{ color }}>
         {label}
       </span>
 
@@ -138,9 +138,9 @@ function ReferenceTable() {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr style={{ borderBottom: '1px solid #1c1f2e' }}>
-              <th className="font-mono text-[10px] tracking-wider uppercase text-dim px-3 py-2">Half-Reaction (reduction)</th>
-              <th className="font-mono text-[10px] tracking-wider uppercase text-dim px-3 py-2 text-right whitespace-nowrap">E° (V)</th>
-              <th className="font-mono text-[10px] tracking-wider uppercase text-dim px-3 py-2 text-right">n</th>
+              <th className="font-mono text-xs tracking-widest uppercase text-secondary px-3 py-2">Half-Reaction (reduction)</th>
+              <th className="font-mono text-xs tracking-widest uppercase text-secondary px-3 py-2 text-right whitespace-nowrap">E° (V)</th>
+              <th className="font-mono text-xs tracking-widest uppercase text-secondary px-3 py-2 text-right">n</th>
             </tr>
           </thead>
           <tbody>
@@ -248,7 +248,7 @@ export default function EcellCalc() {
           >
             {/* Examples */}
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="font-mono text-[10px] text-dim">Examples:</span>
+              <span className="font-mono text-xs text-secondary">Examples:</span>
               {EXAMPLES.map(ex => (
                 <button
                   key={ex.label}
@@ -289,7 +289,7 @@ export default function EcellCalc() {
                     }}
                   >
                     <div className="flex items-center justify-between flex-wrap gap-2">
-                      <span className="font-mono text-[10px] tracking-wider uppercase text-dim">
+                      <span className="font-mono text-xs tracking-widest uppercase text-secondary">
                         E°cell = E°cathode − E°anode
                       </span>
                       <span
@@ -318,7 +318,7 @@ export default function EcellCalc() {
                       </span>
                     </div>
 
-                    <div className="font-mono text-[10px] text-dim leading-snug">
+                    <div className="font-mono text-xs text-secondary leading-snug">
                       ΔG° = −nFE°cell
                       {nEff !== null && (
                         <> = −{nEff} × (96 485) × {fmt(e0cell)} = {fmt(-nEff * 96485 * e0cell / 1000, 1)} kJ/mol</>
@@ -328,13 +328,13 @@ export default function EcellCalc() {
 
                   {/* Nernst equation */}
                   <div className="flex flex-col gap-3">
-                    <span className="font-mono text-[10px] tracking-wider uppercase text-dim">
+                    <span className="font-mono text-xs tracking-widest uppercase text-secondary">
                       Nernst Equation &nbsp;·&nbsp; E = E° − (0.05916/n) log Q &nbsp; (298 K)
                     </span>
 
                     <div className="flex items-center gap-2 flex-wrap">
                       <div className="flex flex-col gap-1">
-                        <label className="font-mono text-[10px] text-dim">Q (reaction quotient)</label>
+                        <label className="font-mono text-xs text-secondary">Q (reaction quotient)</label>
                         <input
                           type="text"
                           value={qRaw}
@@ -346,7 +346,7 @@ export default function EcellCalc() {
                       </div>
 
                       <div className="flex flex-col gap-1">
-                        <label className="font-mono text-[10px] text-dim">n override (optional)</label>
+                        <label className="font-mono text-xs text-secondary">n override (optional)</label>
                         <input
                           type="text"
                           value={nOvr}
@@ -359,7 +359,7 @@ export default function EcellCalc() {
 
                       {ecell !== null && !isNaN(ecell) && (
                         <div className="flex flex-col gap-1 self-end">
-                          <span className="font-mono text-[10px] text-dim">E (non-standard)</span>
+                          <span className="font-mono text-xs text-secondary">E (non-standard)</span>
                           <span
                             className="font-mono text-lg font-semibold"
                             style={{ color: ecell > 0 ? '#4ade80' : '#f87171' }}
@@ -382,7 +382,7 @@ export default function EcellCalc() {
             </AnimatePresence>
 
             {!cathode && !anode && (
-              <p className="font-mono text-[10px] text-dim">
+              <p className="font-mono text-xs text-secondary">
                 Select a cathode (reduction) half-reaction and an anode (oxidation) half-reaction
                 to calculate E°cell. The Nernst equation panel unlocks once both are selected.
               </p>

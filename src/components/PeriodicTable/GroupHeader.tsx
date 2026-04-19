@@ -72,10 +72,10 @@ export default function GroupHeader({ groupNumber }: Props) {
             >
               {/* Header line */}
               <div className="flex items-baseline gap-2 mb-2">
-                <span className="font-mono text-[10px] text-dim">
+                <span className="font-mono text-xs text-secondary">
                   Group {groupNumber}
                 </span>
-                <span className="font-mono text-[9px] text-dim opacity-50 tracking-wide">
+                <span className="font-mono text-xs text-secondary opacity-50 tracking-wide">
                   {info.iupacName}
                 </span>
               </div>

@@ -13,13 +13,13 @@ export default function ExampleBox({ children }: { children: React.ReactNode }) 
         onClick={() => setOpen(o => !o)}
         className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-surface/50 transition-colors"
       >
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">
           Example Calculation
         </span>
         <motion.span
           animate={{ rotate: open ? 90 : 0 }}
           transition={{ duration: 0.15 }}
-          className="font-mono text-[9px] text-dim"
+          className="font-mono text-xs text-secondary"
         >
           ▶
         </motion.span>

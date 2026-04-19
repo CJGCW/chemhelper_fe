@@ -91,7 +91,7 @@ export default function LewisStructurePractice() {
 
       {/* Problem picker */}
       <div className="flex items-center gap-1 flex-wrap">
-        <span className="font-mono text-[10px] text-dim mr-1">Molecule:</span>
+        <span className="font-mono text-xs text-secondary mr-1">Molecule:</span>
         {PROBLEMS.map((p, i) => (
           <button
             key={p.formula + p.charge}
@@ -144,7 +144,7 @@ export default function LewisStructurePractice() {
             {otherError && <span className="font-mono text-[10px] text-red-400">{otherError}</span>}
           </>
         )}
-        {fetching && <span className="font-mono text-[10px] text-dim animate-pulse">loading…</span>}
+        {fetching && <span className="font-mono text-xs text-secondary animate-pulse">loading…</span>}
         {fetchError && <span className="font-mono text-[10px] text-red-400">{fetchError}</span>}
       </div>
 

@@ -68,7 +68,7 @@ export default function CalorimetryPractice() {
         >
           {/* Mode badge */}
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[10px] text-dim border border-border px-2 py-0.5 rounded-sm">
+            <span className="font-mono text-xs text-secondary border border-border px-2 py-0.5 rounded-sm">
               {MODE_LABELS[problem.mode] ?? problem.mode}
             </span>
           </div>
@@ -200,7 +200,7 @@ export default function CalorimetryPractice() {
         )}
       </div>
 
-      <p className="font-mono text-[10px] text-dim">
+      <p className="font-mono text-xs text-secondary">
         Answers accepted within ±2%.
       </p>
     </div>

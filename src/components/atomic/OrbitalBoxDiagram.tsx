@@ -212,7 +212,7 @@ export default function OrbitalBoxDiagram() {
             <div key={r.name} className="flex flex-col gap-1.5 px-4 py-3 rounded-sm bg-raised border border-border">
               <span className="font-sans text-sm font-semibold text-bright">{r.name}</span>
               <span className="font-sans text-xs text-secondary leading-relaxed">{r.rule}</span>
-              <span className="font-mono text-[10px] text-dim mt-0.5">{r.order}</span>
+              <span className="font-mono text-xs text-secondary mt-0.5">{r.order}</span>
             </div>
           ))}
         </div>
@@ -220,7 +220,7 @@ export default function OrbitalBoxDiagram() {
 
       {/* Element selector */}
       <div className="flex flex-col gap-3">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Select Element</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Select Element</span>
         <div className="flex items-center gap-4 flex-wrap p-4 rounded-sm border border-border" style={{ background: '#0e1016' }}>
           <ElementSelector z={z} onChange={handleElementChange} />
           <div className="flex items-baseline gap-2 ml-auto">
@@ -243,7 +243,7 @@ export default function OrbitalBoxDiagram() {
       {/* Written notation */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Electron Configuration</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Electron Configuration</span>
           <div className="flex gap-2 ml-auto">
             {(['full', 'step'] as const).map(mode => {
               const on = mode === 'full' ? showFull : stepMode
@@ -280,7 +280,7 @@ export default function OrbitalBoxDiagram() {
                 <input type="range" min={1} max={z} value={step}
                   onChange={e => setStep(Number(e.target.value))}
                   className="w-full accent-[var(--c-halogen)]" />
-                <div className="flex justify-between font-mono text-[10px] text-dim">
+                <div className="flex justify-between font-mono text-xs text-secondary">
                   <span>1</span><span>{z}</span>
                 </div>
               </div>
@@ -307,7 +307,7 @@ export default function OrbitalBoxDiagram() {
       {/* Orbital box diagram */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Orbital Box Diagram</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Orbital Box Diagram</span>
           <div className="flex items-center gap-1.5">
             <div className="w-3 h-3 rounded-sm border border-amber-500/50 bg-amber-500/5" />
             <span className="font-mono text-[9px] text-amber-400/80">Hund's rule active</span>
@@ -318,7 +318,7 @@ export default function OrbitalBoxDiagram() {
           {shells.map(([n, subs]) => (
             <div key={n} className="border-b border-border last:border-b-0">
               <div className="px-4 py-1 bg-raised border-b border-border/50">
-                <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Shell n = {n}</span>
+                <span className="font-mono text-xs text-secondary tracking-widest uppercase">Shell n = {n}</span>
               </div>
               <div className="flex flex-col gap-2 px-4 py-3">
                 {subs.map(sub => (
@@ -342,7 +342,7 @@ export default function OrbitalBoxDiagram() {
 
       {/* Notation key */}
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Notation Key</span>
+        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Notation Key</span>
         <div className="flex flex-wrap gap-3">
           {[
             { label: '↑',  desc: 'Spin-up electron (ms = +½)',      color: 'var(--c-halogen)' },

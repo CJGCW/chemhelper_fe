@@ -238,7 +238,7 @@ export default function HeatingCurveProblems() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-[10px] text-dim tracking-widest uppercase">Heating Curves</span>
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Heating Curves</span>
           {score.total > 0 && (
             <span className="font-mono text-xs" style={{ color: 'var(--c-halogen)' }}>
               {score.correct}/{score.total}
@@ -262,7 +262,7 @@ export default function HeatingCurveProblems() {
           <div className="px-4 py-3 border-b border-border flex items-center justify-between flex-wrap gap-3"
             style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, #141620)' }}>
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[9px] text-dim tracking-widest uppercase">Identify the region</span>
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase">Identify the region</span>
               <span className="font-mono text-xs text-secondary">
                 {sub.name} ({sub.formula}) · {mass} g
               </span>

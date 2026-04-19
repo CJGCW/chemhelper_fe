@@ -262,7 +262,7 @@ export default function PeriodicTable() {
         )}
         <div className="h-5 w-px bg-border hidden sm:block" />
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[10px] text-dim tracking-wider hidden sm:block">
+          <span className="font-mono text-xs text-secondary tracking-wider hidden sm:block">
             TRENDS
           </span>
           <TrendButton
