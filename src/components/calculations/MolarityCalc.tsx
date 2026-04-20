@@ -1,12 +1,12 @@
 import { useState } from "react";
-import WorkedExample, { pick, randBetween, roundTo, sig } from './WorkedExample'
+import { pick, randBetween, roundTo, sig } from './WorkedExample'
 import NumberField from "./NumberField";
 import UnitSelect, { VOLUME_UNITS } from "./UnitSelect";
 import type { UnitOption } from "./UnitSelect";
 import MassToMolesHelper from "./MassToMolesHelper";
 import ResultDisplay from "./ResultDisplay";
-import StepsPanel from "./StepsPanel";
-import SigFigPanel from "./SigFigPanel";
+import { useStepsPanelState, StepsTrigger, StepsContent } from "./StepsPanel";
+import { SigFigTrigger, SigFigContent } from "./SigFigPanel";
 import {
   sanitize,
   hasValue,
@@ -72,6 +72,8 @@ export default function MolarityCalc() {
   const [breakdown, setBreakdown] = useState<SigFigBreakdown | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [verified, setVerified] = useState<VerifyState>(null);
+  const stepsState = useStepsPanelState(steps, generateMolarityExample);
+  const [sfOpen, setSfOpen] = useState(false);
 
   function handleMassToMolesResolved(moles: string, mSteps: string[]) {
     setMolesValue(moles);
@@ -235,7 +237,6 @@ export default function MolarityCalc() {
 
   return (
     <div className="flex flex-col gap-5 max-w-lg">
-      <WorkedExample generate={generateMolarityExample} />
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-1.5">
           <label className="font-sans text-sm font-medium text-primary">
@@ -306,23 +307,26 @@ export default function MolarityCalc() {
           }
         />
         {error && <p className="font-mono text-xs text-red-400">{error}</p>}
-        <button
-          onClick={calculate}
-          className="w-full py-2.5 rounded-sm font-sans font-medium text-sm transition-all"
-          style={{
-            background: "color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))",
-            border:
-              "1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)",
-            color: "var(--c-halogen)",
-          }}
-        >
-          {filledCount === 3 ? "Verify" : "Calculate"}
-        </button>
+        <div className="flex items-stretch gap-2">
+          <button
+            onClick={calculate}
+            className="shrink-0 py-2 px-5 rounded-sm font-sans font-medium text-sm transition-all"
+            style={{
+              background: "color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))",
+              border: "1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)",
+              color: "var(--c-halogen)",
+            }}
+          >
+            {filledCount === 3 ? "Verify" : "Calculate"}
+          </button>
+          <StepsTrigger {...stepsState} />
+          <SigFigTrigger breakdown={breakdown} open={sfOpen} onToggle={() => setSfOpen(o => !o)} />
+        </div>
       </div>
+      <StepsContent {...stepsState} />
+      <SigFigContent breakdown={breakdown} open={sfOpen} />
       {(steps.length > 0 || result) && (
         <div className="flex flex-col gap-4 border-t border-border pt-4">
-          <StepsPanel steps={steps} />
-          <SigFigPanel breakdown={breakdown} />
           <ResultDisplay
             label={resultLabel}
             value={result}

@@ -1,6 +1,76 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import ExampleBox from '../calculations/ExampleBox'
+import { pick, randBetween, roundTo } from '../calculations/WorkedExample'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../calculations/StepsPanel'
+
+// ── Example generators ────────────────────────────────────────────────────────
+
+const HT_METALS = [
+  { name: 'copper', c: 0.385 }, { name: 'iron', c: 0.449 },
+  { name: 'aluminum', c: 0.897 }, { name: 'silver', c: 0.235 }, { name: 'gold', c: 0.129 },
+]
+
+function generateFindTfExample() {
+  const metal = pick(HT_METALS)
+  const m1 = roundTo(randBetween(50, 200), 0)
+  const T1 = roundTo(randBetween(80, 160), 0)
+  const m2 = roundTo(randBetween(100, 400), 0)
+  const T2 = roundTo(randBetween(15, 30), 0)
+  const mc1 = m1 * metal.c, mc2 = m2 * 4.184
+  const Tf = (mc1 * T1 + mc2 * T2) / (mc1 + mc2)
+  return {
+    scenario: `${m1} g of ${metal.name} (c = ${metal.c} J/g·°C) at ${T1} °C is dropped into ${m2} g of water (c = 4.184 J/g·°C) at ${T2} °C. Find T_final.`,
+    steps: [
+      `q₁ + q₂ = 0  →  m₁c₁(Tf − T₁) + m₂c₂(Tf − T₂) = 0`,
+      `${fmtNum(mc1)}(Tf − ${T1}) + ${fmtNum(mc2)}(Tf − ${T2}) = 0`,
+      `${fmtNum(mc1 + mc2)}·Tf = ${fmtNum(mc1 * T1 + mc2 * T2)}`,
+      `Tf = ${fmtNum(Tf)} °C`,
+    ],
+    result: `Tf = ${fmtNum(Tf)} °C`,
+  }
+}
+
+function generateFindTiExample() {
+  const metal = pick(HT_METALS)
+  const m1 = roundTo(randBetween(50, 200), 0)
+  const m2 = roundTo(randBetween(100, 400), 0)
+  const T2 = roundTo(randBetween(15, 25), 0)
+  const Tf = roundTo(randBetween(T2 + 3, T2 + 25), 1)
+  const mc1 = m1 * metal.c, mc2 = m2 * 4.184
+  const q2 = mc2 * (Tf - T2)
+  const T1 = Tf + q2 / mc1
+  return {
+    scenario: `${m1} g of ${metal.name} (c = ${metal.c}) is dropped into ${m2} g of water (c = 4.184) at ${T2} °C. Equilibrium reached at ${Tf} °C. Find T_initial of the metal.`,
+    steps: [
+      `m₁c₁(Tf − T₁) = −m₂c₂(Tf − T₂)`,
+      `${fmtNum(mc1)}(${Tf} − T₁) = −${fmtNum(mc2)}(${Tf} − ${T2})`,
+      `${fmtNum(mc1)}(${Tf} − T₁) = ${fmtNum(-q2)}`,
+      `T₁ = ${Tf} + ${fmtNum(q2 / mc1)} = ${fmtNum(T1)} °C`,
+    ],
+    result: `T₁ = ${fmtNum(T1)} °C`,
+  }
+}
+
+function generateFindMassExample() {
+  const metal = pick(HT_METALS)
+  const m1 = roundTo(randBetween(100, 300), 0)
+  const T1 = roundTo(randBetween(80, 160), 0)
+  const T2 = roundTo(randBetween(15, 25), 0)
+  const Tf = roundTo(randBetween(T2 + 2, T2 + 15), 1)
+  const mc1 = m1 * metal.c
+  const q1  = mc1 * (Tf - T1)
+  const m2  = -q1 / (4.184 * (Tf - T2))
+  return {
+    scenario: `${m1} g of ${metal.name} (c = ${metal.c}) at ${T1} °C is mixed with water (c = 4.184) at ${T2} °C. Final temperature is ${Tf} °C. Find the mass of water.`,
+    steps: [
+      `m₁c₁(Tf − T₁) + m₂c₂(Tf − T₂) = 0`,
+      `m₂ = −m₁c₁(Tf − T₁) / [c₂(Tf − T₂)]`,
+      `m₂ = −(${m1})(${metal.c})(${Tf} − ${T1}) / [(4.184)(${Tf} − ${T2})]`,
+      `m₂ = ${fmtNum(m2)} g`,
+    ],
+    result: `m₂ = ${fmtNum(m2)} g`,
+  }
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -95,7 +165,7 @@ function SpecificHeatField({
 function SolveBtn({ onClick }: { onClick: () => void }) {
   return (
     <button onClick={onClick}
-      className="w-full py-2.5 rounded-sm font-sans font-medium text-sm transition-all"
+      className="shrink-0 py-2 px-5 rounded-sm font-sans font-medium text-sm transition-all"
       style={{
         background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
         border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
@@ -150,6 +220,14 @@ function FindTf() {
   const [m2, setM2] = useState(''); const [c2, setC2] = useState(''); const [p2, setP2] = useState('Custom'); const [T2, setT2] = useState('')
   const [result, setResult] = useState<{ value: string; steps: string[] } | null>(null)
   const [error, setError]   = useState<string | null>(null)
+  const [noSteps] = useState<string[]>([])
+  const stepsState = useStepsPanelState(noSteps, generateFindTfExample)
+
+  function handleClear() {
+    setM1(''); setC1(''); setP1('Custom'); setT1('')
+    setM2(''); setC2(''); setP2('Custom'); setT2('')
+    setResult(null); setError(null)
+  }
 
   function calculate() {
     setResult(null); setError(null)
@@ -189,7 +267,17 @@ function FindTf() {
           <NumberInput label="Initial Temp (T₂)" value={T2} onChange={setT2} unit="°C" />
         </ObjectCard>
       </div>
-      <SolveBtn onClick={calculate} />
+      <div className="flex items-stretch gap-2">
+        <SolveBtn onClick={calculate} />
+        <StepsTrigger {...stepsState} />
+        {(m1 || c1 || T1 || m2 || c2 || T2 || result) && (
+          <button onClick={handleClear}
+            className="px-4 py-2 rounded-sm font-sans text-sm border border-border text-secondary hover:text-primary transition-colors">
+            Clear
+          </button>
+        )}
+      </div>
+      <StepsContent {...stepsState} />
       {error  && <ErrorMsg msg={error} />}
       {result && <ResultPanel label="Final Temperature" value={result.value} unit="°C" steps={result.steps} />}
     </div>
@@ -204,6 +292,14 @@ function FindTi() {
   const [Tf, setTf] = useState('')
   const [result, setResult] = useState<{ value: string; steps: string[] } | null>(null)
   const [error, setError]   = useState<string | null>(null)
+  const [noSteps] = useState<string[]>([])
+  const stepsState = useStepsPanelState(noSteps, generateFindTiExample)
+
+  function handleClear() {
+    setM1(''); setC1(''); setP1('Custom')
+    setM2(''); setC2(''); setP2('Custom'); setT2('')
+    setTf(''); setResult(null); setError(null)
+  }
 
   function calculate() {
     setResult(null); setError(null)
@@ -244,7 +340,17 @@ function FindTi() {
         </ObjectCard>
       </div>
       <NumberInput label="Final (Equilibrium) Temperature" value={Tf} onChange={setTf} unit="°C" />
-      <SolveBtn onClick={calculate} />
+      <div className="flex items-stretch gap-2">
+        <SolveBtn onClick={calculate} />
+        <StepsTrigger {...stepsState} />
+        {(m1 || c1 || m2 || c2 || T2 || Tf || result) && (
+          <button onClick={handleClear}
+            className="px-4 py-2 rounded-sm font-sans text-sm border border-border text-secondary hover:text-primary transition-colors">
+            Clear
+          </button>
+        )}
+      </div>
+      <StepsContent {...stepsState} />
       {error  && <ErrorMsg msg={error} />}
       {result && <ResultPanel label="Initial Temp of Object 1" value={result.value} unit="°C" steps={result.steps} />}
     </div>
@@ -259,6 +365,14 @@ function FindMass() {
   const [Tf, setTf] = useState('')
   const [result, setResult] = useState<{ value: string; steps: string[] } | null>(null)
   const [error, setError]   = useState<string | null>(null)
+  const [noSteps] = useState<string[]>([])
+  const stepsState = useStepsPanelState(noSteps, generateFindMassExample)
+
+  function handleClear() {
+    setM1(''); setC1(''); setP1('Custom'); setT1('')
+    setC2(''); setP2('Custom'); setT2('')
+    setTf(''); setResult(null); setError(null)
+  }
 
   function calculate() {
     setResult(null); setError(null)
@@ -300,7 +414,17 @@ function FindMass() {
         </ObjectCard>
       </div>
       <NumberInput label="Final (Equilibrium) Temperature" value={Tf} onChange={setTf} unit="°C" />
-      <SolveBtn onClick={calculate} />
+      <div className="flex items-stretch gap-2">
+        <SolveBtn onClick={calculate} />
+        <StepsTrigger {...stepsState} />
+        {(m1 || c1 || T1 || c2 || T2 || Tf || result) && (
+          <button onClick={handleClear}
+            className="px-4 py-2 rounded-sm font-sans text-sm border border-border text-secondary hover:text-primary transition-colors">
+            Clear
+          </button>
+        )}
+      </div>
+      <StepsContent {...stepsState} />
       {error  && <ErrorMsg msg={error} />}
       {result && <ResultPanel label="Mass of Object 2" value={result.value} unit="g" steps={result.steps} />}
     </div>
@@ -322,18 +446,6 @@ export default function HeatTransferCalc() {
           m₁c₁(T_f − T₁) + m₂c₂(T_f − T₂) = 0
         </p>
       </div>
-
-      <ExampleBox>{mode === 'find_tf'
-          ? `100 g Cu (c = 0.385) at 95°C dropped into 250 g H₂O (c = 4.184) at 22°C
-  Tf = (100×0.385×95 + 250×4.184×22) / (100×0.385 + 250×4.184)
-     = 26,670 / 1084.5 = 24.6 °C`
-          : mode === 'find_ti'
-          ? `80 g Fe (c = 0.449) dropped into 200 g H₂O at 20°C → Tf = 29°C.
-  T_hot = 29 + [200×4.184×(29−20)] / (80×0.449)
-        = 29 + 7531 / 35.9 = 238.6 °C`
-          : `250 g Au (c = 0.129) at 100°C + water (c = 4.184) at 22°C → Tf = 23.5°C.
-  m_water = −(250×0.129×(23.5−100)) / (4.184×(23.5−22))
-           = 2467 / 6.28 = 393 g`}</ExampleBox>
 
       {/* Mode tabs */}
       <div className="flex items-center gap-1 p-1 rounded-full self-start"

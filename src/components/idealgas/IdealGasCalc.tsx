@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { pick, randBetween, roundTo } from '../calculations/WorkedExample'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../calculations/StepsPanel'
 import { R, P_UNITS, type PUnit, type TUnit, type GasVar, toK, fromK, toAtm, fromAtm } from '../../utils/idealGas'
 import ExplanationModal, { type ExplanationContent } from '../calculations/ExplanationModal'
 import DaltonsLawCalc from './DaltonsLawCalc'
@@ -9,6 +11,45 @@ import VanDerWaalsCalc from './VanDerWaalsCalc'
 import MaxwellBoltzmann from './MaxwellBoltzmann'
 
 const sf = (v: number, n = 4) => parseFloat(v.toPrecision(n)).toString()
+
+// ── Example generators ────────────────────────────────────────────────────────
+
+const IDEAL_GAS_NAMES = ['N₂', 'O₂', 'CO₂', 'H₂', 'CH₄', 'Ar', 'He', 'NH₃', 'Cl₂']
+
+function generateIdealGasExample() {
+  const gas = pick(IDEAL_GAS_NAMES)
+  const n   = roundTo(randBetween(0.5, 4.0), 2)
+  const T   = roundTo(randBetween(250, 500), 0)
+  const P   = roundTo(randBetween(0.5, 3.0), 2)
+  const V   = (n * R * T) / P
+  return {
+    scenario: `${n} mol of ${gas} at ${P} atm and ${T} K. Find the volume.`,
+    steps: [
+      `V = nRT / P`,
+      `V = (${n} mol × ${R} L·atm/(mol·K) × ${T} K) / ${P} atm`,
+      `V = ${sf(V, 4)} L`,
+    ],
+    result: `V = ${sf(V, 4)} L`,
+  }
+}
+
+function generateCombinedGasExample() {
+  const P1 = roundTo(randBetween(1.0, 3.0), 2)
+  const V1 = roundTo(randBetween(1.0, 5.0), 1)
+  const T1 = roundTo(randBetween(250, 350), 0)
+  const T2 = roundTo(randBetween(350, 500), 0)
+  const P2 = roundTo(randBetween(0.5, 2.5), 2)
+  const V2 = (P1 * V1 * T2) / (T1 * P2)
+  return {
+    scenario: `Gas at ${P1} atm, ${V1} L, ${T1} K is changed to ${P2} atm and ${T2} K. Find V₂.`,
+    steps: [
+      `V₂ = P₁V₁T₂ / (T₁P₂)`,
+      `V₂ = (${P1} × ${V1} × ${T2}) / (${T1} × ${P2})`,
+      `V₂ = ${sf(V2, 4)} L`,
+    ],
+    result: `V₂ = ${sf(V2, 4)} L`,
+  }
+}
 
 function FieldBox({
   label, value, onChange, unit, unitNode, placeholder = '',
@@ -74,6 +115,8 @@ function CombinedGasCalc() {
   })
   const [result, setResult] = useState<{ variable: CombinedVar; value: string; unit: string; steps: string[] } | null>(null)
   const [error, setError] = useState('')
+  const [noSteps]         = useState<string[]>([])
+  const stepsState        = useStepsPanelState(noSteps, generateCombinedGasExample)
 
   function set(k: CombinedVar) { return (v: string) => { setFields(f => ({ ...f, [k]: v })); setResult(null) } }
 
@@ -217,14 +260,15 @@ function CombinedGasCalc() {
           unit={tUnit === 'C' ? '°C' : 'K'} />
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex items-stretch gap-2">
         <button onClick={handleCalc}
-          className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
+          className="shrink-0 px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
             color: 'var(--c-halogen)',
           }}>Calculate →</button>
+        <StepsTrigger {...stepsState} />
         {(hasAny || result) && (
           <button onClick={handleClear}
             className="px-4 py-2 rounded-sm font-sans text-sm border border-border text-secondary hover:text-primary transition-colors">
@@ -232,6 +276,7 @@ function CombinedGasCalc() {
           </button>
         )}
       </div>
+      <StepsContent {...stepsState} />
 
       {error && <p className="font-sans text-sm text-red-400">{error}</p>}
 
@@ -398,6 +443,8 @@ export default function IdealGasCalc() {
   const [showExplanation, setShowExplanation] = useState(false)
   const [result, setResult] = useState<{ variable: GasVar; value: string; unit: string; steps: string[] } | null>(null)
   const [error, setError]   = useState('')
+  const [noSteps]           = useState<string[]>([])
+  const stepsState          = useStepsPanelState(noSteps, generateIdealGasExample)
 
   function handleCalc() {
     setError(''); setResult(null)
@@ -564,16 +611,17 @@ export default function IdealGasCalc() {
       </div>
 
       {/* Buttons */}
-      <div className="flex gap-2">
+      <div className="flex items-stretch gap-2">
         <button
           onClick={handleCalc}
-          className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
+          className="shrink-0 px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
             color: 'var(--c-halogen)',
           }}
         >Calculate →</button>
+        <StepsTrigger {...stepsState} />
         {(P || V || N || T || result) && (
           <button onClick={handleClear}
             className="px-4 py-2 rounded-sm font-sans text-sm border border-border text-secondary hover:text-primary transition-colors">
@@ -581,6 +629,7 @@ export default function IdealGasCalc() {
           </button>
         )}
       </div>
+      <StepsContent {...stepsState} />
 
       {/* Error */}
       {error && <p className="font-sans text-sm text-red-400">{error}</p>}

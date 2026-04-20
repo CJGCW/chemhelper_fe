@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { countSigFigs } from '../../utils/sigfigs'
+import WorkedExample from './WorkedExample'
+import { generateSciNotationExample } from './ScientificNotationPractice'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -243,6 +245,8 @@ export function ScientificNotationPracticeConverter() {
   const stdForm = parts ? fmtStandard(parts, sf) : null
 
   return (
+    <div className="flex flex-col gap-6">
+      <WorkedExample generate={generateSciNotationExample} />
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
       <div className="flex flex-col gap-4 p-4 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
         <p className="font-mono text-xs tracking-widest text-secondary uppercase">Notation Converter</p>
@@ -313,6 +317,7 @@ export function ScientificNotationPracticeConverter() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   )
 }

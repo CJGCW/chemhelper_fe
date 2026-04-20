@@ -1,6 +1,32 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { pick, randBetween, roundTo } from '../calculations/WorkedExample'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../calculations/StepsPanel'
 import { R, P_UNITS, type PUnit, type TUnit, toK, fromK, toAtm, fromAtm } from '../../utils/idealGas'
+
+// ── Example generator ─────────────────────────────────────────────────────────
+
+const DENSITY_GAS_DATA = [
+  { name: 'CO₂', M: 44.01 }, { name: 'O₂', M: 32.00 }, { name: 'N₂', M: 28.02 },
+  { name: 'CH₄', M: 16.04 }, { name: 'Cl₂', M: 70.90 }, { name: 'SO₂', M: 64.07 },
+]
+
+function generateGasDensityExample() {
+  const gas = pick(DENSITY_GAS_DATA)
+  const T   = roundTo(randBetween(250, 400), 0)
+  const P   = roundTo(randBetween(0.5, 2.0), 2)
+  const sf4 = (v: number) => parseFloat(v.toPrecision(4)).toString()
+  const rho = (gas.M * P) / (R * T)
+  return {
+    scenario: `Find the density of ${gas.name} (M = ${gas.M} g/mol) at ${T} K and ${P} atm.`,
+    steps: [
+      `ρ = MP / RT`,
+      `ρ = (${gas.M} g/mol × ${P} atm) / (${R} L·atm/(mol·K) × ${T} K)`,
+      `ρ = ${sf4(rho)} g/L`,
+    ],
+    result: `ρ = ${sf4(rho)} g/L`,
+  }
+}
 
 // ── Field component (matches IdealGasCalc style) ──────────────────────────────
 
@@ -68,6 +94,8 @@ export default function GasDensityCalc() {
 
   const [result, setResult] = useState<{ solveFor: SolveFor; value: string; unit: string; steps: string[] } | null>(null)
   const [error, setError]   = useState('')
+  const [noSteps]           = useState<string[]>([])
+  const stepsState          = useStepsPanelState(noSteps, generateGasDensityExample)
 
   function handleClear() {
     setRho(''); setM(''); setT(''); setP('')
@@ -166,14 +194,15 @@ export default function GasDensityCalc() {
         />
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex items-stretch gap-2">
         <button onClick={handleCalc}
-          className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
+          className="shrink-0 px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
             color: 'var(--c-halogen)',
           }}>Calculate →</button>
+        <StepsTrigger {...stepsState} />
         {(hasAny || result) && (
           <button onClick={handleClear}
             className="px-4 py-2 rounded-sm font-sans text-sm border border-border text-secondary hover:text-primary transition-colors">
@@ -181,6 +210,7 @@ export default function GasDensityCalc() {
           </button>
         )}
       </div>
+      <StepsContent {...stepsState} />
 
       {error && <p className="font-sans text-sm text-red-400">{error}</p>}
 

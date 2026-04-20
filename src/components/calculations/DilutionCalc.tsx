@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import WorkedExample, { pick, sig } from './WorkedExample'
+import { pick, sig } from './WorkedExample'
 import NumberField from './NumberField'
 import UnitSelect, { VOLUME_UNITS } from './UnitSelect'
 import type { UnitOption } from './UnitSelect'
 import ResultDisplay from './ResultDisplay'
-import StepsPanel from './StepsPanel'
+import { useStepsPanelState, StepsTrigger, StepsContent } from './StepsPanel'
 import { sanitize, hasValue, toStandard, conversionStep } from '../../utils/calcHelpers'
 import type { VerifyState } from '../../utils/calcHelpers'
 import { lowestSigFigs, formatSigFigs, countSigFigs } from '../../utils/sigfigs'
@@ -126,6 +126,7 @@ export default function DilutionCalc() {
   const [steps, setSteps] = useState<string[]>([])
   const [error, setError] = useState<string | null>(null)
   const [verified, setVerified] = useState<VerifyState>(null)
+  const stepsState = useStepsPanelState(steps, generateDilutionExample)
 
   const hasC1 = hasValue(c1Value)
   const hasV1 = hasValue(v1Value)
@@ -283,8 +284,6 @@ export default function DilutionCalc() {
 
   return (
     <div className="flex flex-col gap-5 max-w-lg">
-      <WorkedExample generate={generateDilutionExample} />
-
       <div className="flex flex-col gap-5">
         <div className="grid grid-cols-2 gap-4">
           <NumberField
@@ -327,18 +326,22 @@ export default function DilutionCalc() {
 
         {error && <p className="font-mono text-xs text-red-400">{error}</p>}
 
-        <button
-          onClick={calculate}
-          className="w-full py-2.5 rounded-sm font-sans font-medium text-sm transition-all"
-          style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
-            color: 'var(--c-halogen)',
-          }}
-        >
-          {isVerify ? 'Verify' : 'Calculate'}
-        </button>
+        <div className="flex items-stretch gap-2">
+          <button
+            onClick={calculate}
+            className="shrink-0 py-2 px-5 rounded-sm font-sans font-medium text-sm transition-all"
+            style={{
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
+              border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
+              color: 'var(--c-halogen)',
+            }}
+          >
+            {isVerify ? 'Verify' : 'Calculate'}
+          </button>
+          <StepsTrigger {...stepsState} />
+        </div>
       </div>
+      <StepsContent {...stepsState} />
 
       {showVisual && (
         <div
@@ -378,7 +381,6 @@ export default function DilutionCalc() {
 
       {(steps.length > 0 || result) && (
         <div className="flex flex-col gap-4 border-t border-border pt-4">
-          <StepsPanel steps={steps} />
           <ResultDisplay
             label={resultLabel}
             value={result}

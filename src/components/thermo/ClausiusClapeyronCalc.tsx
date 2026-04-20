@@ -1,4 +1,6 @@
 import { useState, useMemo } from 'react'
+import WorkedExample from '../calculations/WorkedExample'
+import { generateClausiusClapeyronExample } from './ClausiusClapeyronPractice'
 
 const R = 8.314  // J/(mol·K)
 
@@ -260,6 +262,8 @@ export default function ClausiusClapeyronCalc() {
 
   return (
     <div className="flex flex-col gap-8 max-w-2xl">
+
+      <WorkedExample generate={generateClausiusClapeyronExample} />
 
       {/* Solve-for selector */}
       <div className="flex flex-col gap-2">

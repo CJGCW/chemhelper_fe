@@ -1,6 +1,16 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { BOND_DATA, BOND_CATEGORIES, lookupBond } from '../../utils/bondEnthalpyData'
+import { genBondEnthalpyProblem } from '../../utils/bondEnthalpyPractice'
+import StepsPanel from '../calculations/StepsPanel'
+
+const BOND_CALC_EMPTY: string[] = []
+
+function generateExample() {
+  const p = genBondEnthalpyProblem()
+  const last = p.solutionSteps.length - 1
+  return { scenario: `${p.description}: ${p.reaction}`, steps: p.solutionSteps.slice(0, last), result: p.solutionSteps[last] }
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -159,6 +169,8 @@ export default function BondEnthalpyCalc() {
   return (
     <div className="flex flex-col gap-8 max-w-3xl">
 
+      <StepsPanel steps={BOND_CALC_EMPTY} generate={generateExample} />
+
       {/* Bond panels */}
       <div className="flex gap-8 flex-wrap">
         <BondPanel
@@ -176,6 +188,19 @@ export default function BondEnthalpyCalc() {
           onUpdate={updateRow(setFormedRows)}
         />
       </div>
+
+      {/* Reset */}
+      {(brokenTotal > 0 || formedTotal > 0) && (
+        <button
+          onClick={() => {
+            setBrokenRows([newRow('H-H'), newRow('Cl-Cl')])
+            setFormedRows([newRow('H-Cl')])
+          }}
+          className="self-start font-mono text-xs text-dim hover:text-red-400 transition-colors"
+        >
+          Reset
+        </button>
+      )}
 
       {/* Result */}
       <AnimatePresence>

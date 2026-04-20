@@ -5,8 +5,6 @@ import {
   checkSciAnswer,
   type SciNotationProblem,
 } from '../../utils/sciNotationPractice'
-import WorkedExample from './WorkedExample'
-
 type Result = 'correct' | 'wrong' | 'format_error' | null
 
 interface ProblemState {
@@ -70,7 +68,7 @@ const SCI_EXAMPLES = [
   },
 ]
 
-function generateExample() {
+export function generateSciNotationExample() {
   return SCI_EXAMPLES[Math.floor(Math.random() * SCI_EXAMPLES.length)]
 }
 
@@ -105,8 +103,6 @@ export default function ScientificNotationPractice() {
 
   return (
     <div className="flex flex-col gap-6">
-
-      <WorkedExample generate={generateExample} />
 
       {/* Controls */}
       <div className="flex items-center gap-3">

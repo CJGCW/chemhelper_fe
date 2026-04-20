@@ -11,7 +11,6 @@ import {
   type Difficulty,
 } from '../../utils/empiricalFormula'
 import { generateEmpiricalProblem } from '../../utils/empiricalPractice'
-import WorkedExample from '../calculations/WorkedExample'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -122,7 +121,7 @@ function SolutionSteps({
 
 type CheckState = 'idle' | 'correct' | 'wrong'
 
-function generateExample() {
+export function generateEmpiricalExample() {
   const p = generateEmpiricalProblem()
   const scenario = `Find the empirical formula of ${p.compoundName} given: ${p.elements.map(e => `${e.symbol} ${e.percent}%`).join(', ')}.`
   const last = p.steps.length - 1
@@ -140,6 +139,7 @@ export default function EmpiricalPractice() {
   const [molecularAnswer, setMolecularAnswer] = useState('')
   const [checkState, setCheckState] = useState<CheckState>('idle')
   const [showSolution, setShowSolution] = useState(false)
+  const [score, setScore] = useState({ correct: 0, total: 0 })
 
   const prevNameRef = useRef<string | undefined>(undefined)
 
@@ -181,11 +181,12 @@ export default function EmpiricalPractice() {
   }
 
   function checkAnswer() {
-    if (!problem) return
+    if (!problem || checkState !== 'idle') return
     const empOk = exactFormulaMatch(empiricalAnswer, problem.empiricalASCII)
     const molOk = !problem.molecularASCII || exactFormulaMatch(molecularAnswer, problem.molecularASCII)
     const correct = empOk && molOk
     setCheckState(correct ? 'correct' : 'wrong')
+    setScore(s => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }))
     if (correct) setShowSolution(true)
   }
 
@@ -194,7 +195,19 @@ export default function EmpiricalPractice() {
   return (
     <div className="flex flex-col gap-5">
 
-      <WorkedExample generate={generateExample} />
+      {/* Score */}
+      {score.total > 0 && (
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-1.5 rounded-full bg-raised overflow-hidden">
+            <motion.div className="h-full rounded-full bg-emerald-500"
+              animate={{ width: `${(score.correct / score.total) * 100}%` }}
+              transition={{ duration: 0.4 }} />
+          </div>
+          <span className="font-mono text-xs text-secondary shrink-0">
+            {score.correct} / {score.total}
+          </span>
+        </div>
+      )}
 
       {/* Difficulty filter */}
       <div className="flex items-center gap-2 flex-wrap">

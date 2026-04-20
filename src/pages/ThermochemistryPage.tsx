@@ -148,12 +148,17 @@ const GROUPS: Group[] = [
         ],
       },
       {
+        heading: 'Vapor Pressure',
+        tabs: [
+          { id: 'vapor-pressure' as Tab, label: 'Calculator' },
+        ],
+      },
+      {
         heading: 'Clausius-Clapeyron',
         tabs: [
-          { id: 'cc-reference'   as Tab, label: 'Reference'      },
-          { id: 'cc'             as Tab, label: 'Practice'       },
-          { id: 'vapor-pressure' as Tab, label: 'Vapor Pressure' },
-          { id: 'cc-practice'    as Tab, label: 'Problems'       },
+          { id: 'cc-reference' as Tab, label: 'Reference' },
+          { id: 'cc'           as Tab, label: 'Practice'  },
+          { id: 'cc-practice'  as Tab, label: 'Problems'  },
         ],
       },
     ],
@@ -344,6 +349,7 @@ export default function ThermochemistryPage() {
   }
 
   const currentSection = ALL_SECTIONS.find(s => s.tabs.some(t => t.id === tab))
+  const currentModeIdx = currentSection ? Math.max(0, currentSection.tabs.findIndex(t => t.id === tab)) : 0
 
   return (
     <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
@@ -409,11 +415,11 @@ export default function ThermochemistryPage() {
                   const sectionActive = s.tabs.some(t => t.id === tab)
                   return (
                     <button key={s.heading}
-                      onClick={() => setTab(s.tabs[0].id)}
+                      onClick={() => setTab((s.tabs[currentModeIdx] ?? s.tabs[0]).id)}
                       className="relative px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
                       style={{ color: sectionActive ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)' }}>
                       {sectionActive && (
-                        <motion.div layoutId="thermo-section-pill" className="absolute inset-0 rounded-sm"
+                        <motion.div layoutId={`thermo-pill-${group.id}`} className="absolute inset-0 rounded-sm"
                           style={{
                             background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
                             border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',

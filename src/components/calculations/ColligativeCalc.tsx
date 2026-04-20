@@ -1,13 +1,13 @@
 import { useState } from "react";
-import WorkedExample, { pick, randBetween, roundTo, sig } from './WorkedExample'
+import { pick, randBetween, roundTo, sig } from './WorkedExample'
 import { motion, AnimatePresence } from "framer-motion";
 import NumberField from "./NumberField";
 import UnitSelect, { MASS_UNITS } from "./UnitSelect";
 import type { UnitOption } from "./UnitSelect";
 import MassToMolesHelper from "./MassToMolesHelper";
 import ResultDisplay from "./ResultDisplay";
-import StepsPanel from "./StepsPanel";
-import SigFigPanel from "./SigFigPanel";
+import { useStepsPanelState, StepsTrigger, StepsContent } from "./StepsPanel";
+import { SigFigTrigger, SigFigContent } from "./SigFigPanel";
 import { sanitize, hasValue } from "../../utils/calcHelpers";
 
 /** Format a raw number cleanly — no scientific notation, no trailing zeros */
@@ -108,7 +108,8 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
   const [breakdown, setBreakdown] = useState<SigFigBreakdown | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [verified, setVerified] = useState<VerifyState>(null);
-
+  const stepsState = useStepsPanelState(steps, () => generateColligativeExample(mode, solvent));
+  const [sfOpen, setSfOpen] = useState(false);
 
   const K = mode === "bpe" ? solvent.kb : solvent.kf;
   const baseT = mode === "bpe" ? solvent.bp : solvent.fp;
@@ -299,8 +300,6 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
           </button>
         ))}
       </div>
-
-      <WorkedExample generate={() => generateColligativeExample(mode, solvent)} />
 
       {/* Solvent selector */}
       <div className="flex flex-col gap-1.5">
@@ -538,18 +537,21 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
 
       {error && <p className="font-mono text-xs text-red-400">{error}</p>}
 
-      <button
-        onClick={calculate}
-        className="w-full py-2.5 rounded-sm font-sans font-medium text-sm transition-all mt-auto"
-        style={{
-          background: "color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))",
-          border:
-            "1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)",
-          color: "var(--c-halogen)",
-        }}
-      >
-        {isVerify ? "Verify" : "Calculate"}
-      </button>
+      <div className="flex items-stretch gap-2">
+        <button
+          onClick={calculate}
+          className="shrink-0 py-2 px-5 rounded-sm font-sans font-medium text-sm transition-all"
+          style={{
+            background: "color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))",
+            border: "1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)",
+            color: "var(--c-halogen)",
+          }}
+        >
+          {isVerify ? "Verify" : "Calculate"}
+        </button>
+        <StepsTrigger {...stepsState} />
+        <SigFigTrigger breakdown={breakdown} open={sfOpen} onToggle={() => setSfOpen(o => !o)} />
+      </div>
     </div>
   );
 
@@ -557,11 +559,12 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
     <div className="flex flex-col gap-6">
       {form}
 
+      <StepsContent {...stepsState} />
+      <SigFigContent breakdown={breakdown} open={sfOpen} />
+
       {/* Results — full width */}
       {(steps.length > 0 || result) && (
         <div className="flex flex-col gap-4 border-t border-border pt-4">
-          <StepsPanel steps={steps} />
-          <SigFigPanel breakdown={breakdown} />
           <ResultDisplay
             label={resultLabel}
             value={result}

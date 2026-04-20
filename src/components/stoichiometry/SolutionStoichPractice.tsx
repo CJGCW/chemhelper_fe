@@ -4,8 +4,6 @@ import {
   generateSolStoichProblem, checkSolStoichAnswer,
   type SolStoichType, type SolStoichProblem,
 } from '../../utils/solutionStoichPractice'
-import WorkedExample from '../calculations/WorkedExample'
-
 const FILTERS: { id: SolStoichType | 'all'; label: string; subtitle: string }[] = [
   { id: 'all',          label: 'All',         subtitle: 'mixed types'    },
   { id: 'vol_to_mass',  label: 'Vol → Mass',  subtitle: 'V, C → g'      },
@@ -13,11 +11,6 @@ const FILTERS: { id: SolStoichType | 'all'; label: string; subtitle: string }[] 
   { id: 'vol_to_vol',   label: 'Titration',   subtitle: 'V₁C₁ → V₂'   },
 ]
 
-function generateExample() {
-  const p = generateSolStoichProblem()
-  const last = p.steps.length - 1
-  return { scenario: p.question, steps: p.steps.slice(0, last), result: p.steps[last] }
-}
 
 export default function SolutionStoichPractice() {
   const [filter,   setFilter]   = useState<SolStoichType | 'all'>('all')
@@ -57,8 +50,6 @@ export default function SolutionStoichPractice() {
 
   return (
     <div className="flex flex-col gap-5 max-w-2xl">
-
-      <WorkedExample generate={generateExample} />
 
       {/* Filter pills */}
       <div className="flex flex-wrap gap-1.5">

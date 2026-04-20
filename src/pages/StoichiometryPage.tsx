@@ -7,6 +7,7 @@ import TheoreticalYieldSolver from '../components/stoichiometry/TheoreticalYield
 import PercentYieldSolver from '../components/stoichiometry/PercentYieldSolver'
 import StoichiometryPractice from '../components/stoichiometry/StoichiometryPractice'
 import GasStoichPractice from '../components/stoichiometry/GasStoichPractice'
+import GasStoichCalc from '../components/stoichiometry/GasStoichCalc'
 import BalancingPractice from '../components/stoichiometry/BalancingPractice'
 import StoichReference, { type RefTopic } from '../components/stoichiometry/StoichReference'
 import SolutionStoichSolver from '../components/stoichiometry/SolutionStoichSolver'
@@ -477,8 +478,15 @@ export default function StoichiometryPage() {
             <BalancingPractice />
           </motion.div>
         )}
-        {(activeTab === 'gas-stoich' || activeTab === 'gas-stoich-practice') && (
-          <motion.div key={activeTab}
+        {activeTab === 'gas-stoich-practice' && (
+          <motion.div key="gas-stoich-practice"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <GasStoichCalc />
+          </motion.div>
+        )}
+        {activeTab === 'gas-stoich' && (
+          <motion.div key="gas-stoich"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <GasStoichPractice />

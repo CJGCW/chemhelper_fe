@@ -2,6 +2,17 @@ import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { HALF_REACTIONS } from '../../data/reductionPotentials'
 import type { HalfReaction } from '../../data/reductionPotentials'
+import { genEcellProblem } from '../../utils/ecellPractice'
+import StepsPanel from '../calculations/StepsPanel'
+
+const ECELL_EMPTY: string[] = []
+
+function generateExample() {
+  const subtypes = ['calc_e0cell', 'spontaneity', 'nernst', 'delta_g'] as const
+  const p = genEcellProblem(subtypes[Math.floor(Math.random() * subtypes.length)])
+  const last = p.steps.length - 1
+  return { scenario: p.question, steps: p.steps.slice(0, last), result: p.steps[last] }
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -246,6 +257,8 @@ export default function EcellCalc() {
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.15 }}
             className="flex flex-col gap-5"
           >
+            <StepsPanel steps={ECELL_EMPTY} generate={generateExample} />
+
             {/* Examples */}
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className="font-mono text-xs text-secondary">Examples:</span>

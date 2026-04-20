@@ -1,10 +1,38 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { pick, randBetween, roundTo } from '../calculations/WorkedExample'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../calculations/StepsPanel'
 import { VDW_GASES, type VdWGas } from '../../utils/vanDerWaalsPractice'
 
 const R = 0.082057
 
 function sig(v: number, n = 4) { return parseFloat(v.toPrecision(n)).toString() }
+
+// ── Example generator ─────────────────────────────────────────────────────────
+
+function generateVanDerWaalsExample() {
+  const gas = pick(VDW_GASES)
+  const n   = roundTo(randBetween(0.5, 3.0), 1)
+  const V   = roundTo(randBetween(n * gas.b * 2 + 0.5, 5.0), 1)
+  const T   = roundTo(randBetween(250, 500), 0)
+  const volumeCorr = V - n * gas.b
+  const pressCorr  = gas.a * (n / V) ** 2
+  const idealTerm  = (n * R * T) / volumeCorr
+  const realP      = idealTerm - pressCorr
+  const idealP     = (n * R * T) / V
+  return {
+    scenario: `Calculate the pressure of ${n} mol ${gas.name} in ${V} L at ${T} K using the van der Waals equation. (a = ${gas.a}, b = ${gas.b})`,
+    steps: [
+      `P = nRT / (V − nb) − a(n/V)²`,
+      `V − nb = ${sig(V, 3)} − (${sig(n, 2)} × ${gas.b}) = ${sig(volumeCorr, 4)} L`,
+      `nRT/(V−nb) = ${sig(n, 2)} × ${R} × ${sig(T, 4)} / ${sig(volumeCorr, 4)} = ${sig(idealTerm, 4)} atm`,
+      `a(n/V)² = ${gas.a} × (${sig(n, 2)}/${sig(V, 3)})² = ${sig(pressCorr, 4)} atm`,
+      `P(real) = ${sig(idealTerm, 4)} − ${sig(pressCorr, 4)} = ${sig(realP, 4)} atm`,
+      `P(ideal) = nRT/V = ${sig(idealP, 4)} atm`,
+    ],
+    result: `P(real) = ${sig(realP, 4)} atm`,
+  }
+}
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
@@ -52,6 +80,8 @@ export default function VanDerWaalsCalc() {
   const [tUnit,  setTUnit]  = useState<'K' | 'C'>('K')
   const [result, setResult] = useState<CalcResult | null>(null)
   const [error,  setError]  = useState('')
+  const [noSteps]           = useState<string[]>([])
+  const stepsState          = useStepsPanelState(noSteps, generateVanDerWaalsExample)
 
   function handleCalc() {
     setError(''); setResult(null)
@@ -163,10 +193,10 @@ export default function VanDerWaalsCalc() {
       </div>
 
       {/* Buttons */}
-      <div className="flex gap-2">
+      <div className="flex items-stretch gap-2">
         <button onClick={handleCalc}
           disabled={!nVal.trim() || !vVal.trim() || !tVal.trim()}
-          className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-40"
+          className="shrink-0 px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-40"
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
@@ -174,6 +204,7 @@ export default function VanDerWaalsCalc() {
           }}>
           Calculate →
         </button>
+        <StepsTrigger {...stepsState} />
         {(nVal || vVal || tVal || result) && (
           <button onClick={handleClear}
             className="px-4 py-2 rounded-sm font-sans text-sm border border-border text-secondary hover:text-primary transition-colors">
@@ -181,6 +212,7 @@ export default function VanDerWaalsCalc() {
           </button>
         )}
       </div>
+      <StepsContent {...stepsState} />
 
       {error && <p className="font-sans text-sm text-red-400">{error}</p>}
 

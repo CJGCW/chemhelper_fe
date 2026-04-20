@@ -1,26 +1,21 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generateGrahamsProblem, checkGrahamsAnswer, type GrahamsProblem } from '../../utils/grahamsPractice'
-import WorkedExample from '../calculations/WorkedExample'
+import StepsPanel from '../calculations/StepsPanel'
 
 type CheckState = 'idle' | 'correct' | 'wrong'
 
-function generateExample() {
-  const p = generateGrahamsProblem()
-  const last = p.steps.length - 1
-  return { scenario: p.question, steps: p.steps.slice(0, last), result: p.steps[last] }
-}
 
 export default function GrahamsPractice() {
   const [problem,    setProblem]    = useState<GrahamsProblem>(generateGrahamsProblem)
   const [answer,     setAnswer]     = useState('')
   const [checkState, setCheckState] = useState<CheckState>('idle')
-  const [showSteps,  setShowSteps]  = useState(false)
+  const [steps,      setSteps]      = useState<string[]>([])
   const [score,      setScore]      = useState({ correct: 0, total: 0 })
 
   function nextProblem() {
     setProblem(generateGrahamsProblem())
-    setAnswer(''); setCheckState('idle'); setShowSteps(false)
+    setAnswer(''); setCheckState('idle'); setSteps([])
   }
 
   function handleCheck() {
@@ -28,6 +23,7 @@ export default function GrahamsPractice() {
     const correct = checkGrahamsAnswer(answer, problem)
     setCheckState(correct ? 'correct' : 'wrong')
     setScore(s => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }))
+    setSteps(problem.steps)
   }
 
   const borderClass = checkState === 'correct'
@@ -40,8 +36,6 @@ export default function GrahamsPractice() {
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
-
-      <WorkedExample generate={generateExample} />
 
       <p className="font-sans text-sm text-secondary leading-relaxed">
         Apply Graham's Law of Effusion.
@@ -107,52 +101,22 @@ export default function GrahamsPractice() {
                 Check
               </button>
             ) : (
-              <>
-                <span className={`font-sans text-sm font-medium ${
-                  checkState === 'correct' ? 'text-emerald-400' : 'text-rose-400'
-                }`}>
-                  {checkState === 'correct' ? '✓ Correct' : '✗ Incorrect'}
-                </span>
-                <button onClick={() => setShowSteps(s => !s)}
-                  className="font-mono text-xs text-dim hover:text-secondary transition-colors">
-                  {showSteps ? '▲ hide' : '▼ solution'}
-                </button>
-              </>
+              <span className={`font-sans text-sm font-medium ${
+                checkState === 'correct' ? 'text-emerald-400' : 'text-rose-400'
+              }`}>
+                {checkState === 'correct' ? '✓ Correct' : '✗ Incorrect'}
+              </span>
             )}
           </div>
-
-          <AnimatePresence>
-            {showSteps && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.15 }}
-                style={{ overflow: 'hidden' }}
-              >
-                <div className="flex flex-col gap-2 pt-2 border-t border-border">
-                  {checkState === 'wrong' && (
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs text-dim">Answer:</span>
-                      <span className="font-mono text-sm text-bright">
-                        {parseFloat(problem.answer.toPrecision(4))}{problem.unit ? ` ${problem.unit}` : ''}
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex flex-col gap-1 pl-3 border-l border-border">
-                    {problem.steps.map((step, i) => (
-                      <p key={i} className="font-mono text-sm text-primary">{step}</p>
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </motion.div>
       </AnimatePresence>
+
+      <StepsPanel steps={steps} />
 
       {checkState !== 'idle' && (
         <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="flex gap-2">
           {checkState === 'wrong' && (
-            <button onClick={() => { setAnswer(''); setCheckState('idle'); setShowSteps(false) }}
+            <button onClick={() => { setAnswer(''); setCheckState('idle'); setSteps([]) }}
               className="px-4 py-2 rounded-sm font-sans text-sm border border-border text-dim hover:text-secondary transition-colors">
               Try Again
             </button>

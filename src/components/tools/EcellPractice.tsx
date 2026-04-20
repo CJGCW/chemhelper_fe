@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import type { EcellSubtype } from '../../utils/ecellPractice'
 import { genEcellProblem, checkEcellAnswer } from '../../utils/ecellPractice'
-import WorkedExample from '../calculations/WorkedExample'
+import StepsPanel from '../calculations/StepsPanel'
 
 type Selection = EcellSubtype | 'random'
 
@@ -21,31 +21,25 @@ function freshProblem(sel: Selection) {
   return genEcellProblem(sub)
 }
 
-function generateExample() {
-  const p = freshProblem('random')
-  const last = p.steps.length - 1
-  return { scenario: p.question, steps: p.steps.slice(0, last), result: p.steps[last] }
-}
-
 export default function EcellPractice() {
   const [selected,  setSelected]  = useState<Selection>('random')
   const [problem,   setProblem]   = useState(() => freshProblem('random'))
   const [answer,    setAnswer]    = useState('')
   const [checked,   setChecked]   = useState(false)
   const [correct,   setCorrect]   = useState(false)
-  const [showSteps, setShowSteps] = useState(false)
-  const [score,     setScore]     = useState({ right: 0, total: 0 })
+  const [steps,     setSteps]     = useState<string[]>([])
+  const [score,     setScore]     = useState({ correct: 0, total: 0 })
 
   function nextProblem(sel: Selection = selected) {
     setProblem(freshProblem(sel))
-    setAnswer(''); setChecked(false); setShowSteps(false)
+    setAnswer(''); setChecked(false); setSteps([])
   }
 
   function handleTypeChange(sel: Selection) {
     setSelected(sel)
     setProblem(freshProblem(sel))
-    setAnswer(''); setChecked(false); setShowSteps(false)
-    setScore({ right: 0, total: 0 })
+    setAnswer(''); setChecked(false); setSteps([])
+    setScore({ correct: 0, total: 0 })
   }
 
   function handleCheck() {
@@ -53,7 +47,8 @@ export default function EcellPractice() {
     const c = checkEcellAnswer(answer, problem)
     setCorrect(c)
     setChecked(true)
-    setScore(s => ({ right: s.right + (c ? 1 : 0), total: s.total + 1 }))
+    setScore(s => ({ correct: s.correct + (c ? 1 : 0), total: s.total + 1 }))
+    setSteps(problem.steps)
   }
 
   const borderClass = checked
@@ -69,8 +64,6 @@ export default function EcellPractice() {
 
   return (
     <div className="flex flex-col gap-5 max-w-2xl">
-
-      <WorkedExample generate={generateExample} />
 
       {/* Type selector */}
       <div className="flex flex-wrap gap-1.5">
@@ -98,12 +91,12 @@ export default function EcellPractice() {
       {score.total > 0 && (
         <div className="flex items-center gap-3">
           <span className="font-mono text-sm text-secondary">
-            Score: <span className="text-bright">{score.right}</span>
+            Score: <span className="text-bright">{score.correct}</span>
             <span className="text-dim"> / {score.total}</span>
           </span>
           <div className="flex-1 h-1 rounded-full overflow-hidden bg-raised">
             <motion.div className="h-full rounded-full" style={{ background: 'var(--c-halogen)' }}
-              animate={{ width: `${(score.right / score.total) * 100}%` }}
+              animate={{ width: `${(score.correct / score.total) * 100}%` }}
               transition={{ duration: 0.3 }} />
           </div>
         </div>
@@ -175,53 +168,21 @@ export default function EcellPractice() {
               Check
             </button>
           ) : (
-            <>
-              <span className={`font-sans text-sm font-medium ${correct ? 'text-emerald-400' : 'text-rose-400'}`}>
+            <span className={`font-sans text-sm font-medium ${correct ? 'text-emerald-400' : 'text-rose-400'}`}>
                 {correct ? '✓ Correct' : '✗ Incorrect'}
               </span>
-              <button onClick={() => setShowSteps(s => !s)}
-                className="font-mono text-xs text-dim hover:text-secondary transition-colors">
-                {showSteps ? '▲ hide' : '▼ solution'}
-              </button>
-            </>
           )}
         </div>
 
-        {/* Solution steps */}
-        <AnimatePresence>
-          {showSteps && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.15 }}
-              style={{ overflow: 'hidden' }}
-            >
-              <div className="flex flex-col gap-2 pt-2 border-t border-border">
-                {!correct && (
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs text-dim">Answer:</span>
-                    <span className="font-mono text-sm text-bright">
-                      {problem.answer}{problem.answerUnit ? ` ${problem.answerUnit}` : ''}
-                    </span>
-                  </div>
-                )}
-                <div className="flex flex-col gap-1.5 pl-3 border-l border-border">
-                  {problem.steps.map((step, i) => (
-                    <p key={i} className="font-mono text-sm text-primary">{step}</p>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </motion.div>
+
+      <StepsPanel steps={steps} />
 
       {/* Next / Try Again */}
       {checked && (
         <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="flex gap-2">
           {!correct && (
-            <button onClick={() => { setAnswer(''); setChecked(false); setShowSteps(false) }}
+            <button onClick={() => { setAnswer(''); setChecked(false); setSteps([]) }}
               className="px-4 py-2 rounded-sm font-sans text-sm border border-border text-dim hover:text-secondary transition-colors">
               Try Again
             </button>

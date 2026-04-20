@@ -1,20 +1,15 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genEnthalpyProblem, checkEnthalpyAnswer, type EnthalpyProblem } from '../../utils/enthalpyPractice'
-import WorkedExample from '../calculations/WorkedExample'
+import StepsPanel from '../calculations/StepsPanel'
 
-function generateExample() {
-  const p = genEnthalpyProblem()
-  const last = p.steps.length - 1
-  return { scenario: `Calculate ΔH for ${p.description}: ${p.equation}`, steps: p.steps.slice(0, last), result: p.steps[last] }
-}
 
 export default function EnthalpyPractice() {
   const [problem, setProblem]     = useState<EnthalpyProblem>(() => genEnthalpyProblem())
   const [input, setInput]         = useState('')
   const [checked, setChecked]     = useState(false)
   const [correct, setCorrect]     = useState(false)
-  const [showSteps, setShowSteps] = useState(false)
+  const [steps, setSteps]         = useState<string[]>([])
   const [score, setScore]         = useState({ correct: 0, total: 0 })
 
   function handleCheck() {
@@ -23,6 +18,7 @@ export default function EnthalpyPractice() {
     setCorrect(c)
     setChecked(true)
     setScore(s => ({ correct: s.correct + (c ? 1 : 0), total: s.total + 1 }))
+    setSteps(problem.steps)
   }
 
   function handleNext() {
@@ -30,20 +26,18 @@ export default function EnthalpyPractice() {
     setInput('')
     setChecked(false)
     setCorrect(false)
-    setShowSteps(false)
+    setSteps([])
   }
 
   function handleTryAgain() {
     setInput('')
     setChecked(false)
     setCorrect(false)
-    setShowSteps(false)
+    setSteps([])
   }
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
-
-      <WorkedExample generate={generateExample} />
 
       {/* Score */}
       {score.total > 0 && (
@@ -138,40 +132,10 @@ export default function EnthalpyPractice() {
             </motion.div>
           )}
 
-          {/* Solution steps */}
-          {checked && (
-            <div className="flex flex-col gap-2">
-              <button
-                onClick={() => setShowSteps(v => !v)}
-                className="flex items-center gap-1.5 font-mono text-xs text-secondary hover:text-primary transition-colors self-start"
-              >
-                <motion.span animate={{ rotate: showSteps ? 90 : 0 }} transition={{ duration: 0.15 }}
-                  className="text-[10px]">▶</motion.span>
-                Solution steps
-              </button>
-              <AnimatePresence initial={false}>
-                {showSteps && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.18 }}
-                    style={{ overflow: 'hidden' }}
-                  >
-                    <div className="flex flex-col gap-0.5 pl-3 border-l-2 border-border mt-1">
-                      {problem.steps.map((s, i) => (
-                        <p key={i} className={`font-mono text-sm ${
-                          i === problem.steps.length - 1 ? 'font-semibold text-emerald-400' : 'text-primary'
-                        }`}>
-                          {i === problem.steps.length - 1 ? '∴ ' : ''}{s}
-                        </p>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          )}
         </motion.div>
       </AnimatePresence>
+
+      <StepsPanel steps={steps} />
 
       {/* Action buttons */}
       <div className="flex gap-2">

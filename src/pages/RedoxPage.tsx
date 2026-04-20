@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 import RedoxPractice from '../components/redox/RedoxPractice'
+import RedoxCalc from '../components/redox/RedoxCalc'
 import RedoxReference, { type RefTopic } from '../components/redox/RedoxReference'
 import ReactionClassifier from '../components/tools/ReactionClassifier'
 import ElectrolyteClassifier from '../components/tools/ElectrolyteClassifier'
@@ -416,8 +417,15 @@ export default function RedoxPage() {
       {/* Content */}
       {printingAll && <RedoxReference />}
       <AnimatePresence mode="wait">
-        {(activeTab === 'practice' || activeTab === 'redox-practice') && !printingAll && (
-          <motion.div key={activeTab}
+        {activeTab === 'redox-practice' && !printingAll && (
+          <motion.div key="redox-practice"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <RedoxCalc />
+          </motion.div>
+        )}
+        {activeTab === 'practice' && !printingAll && (
+          <motion.div key="practice"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <RedoxPractice />

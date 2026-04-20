@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import ExampleBox from '../calculations/ExampleBox'
+import { pick } from '../calculations/WorkedExample'
+import StepsPanel from '../calculations/StepsPanel'
 import { motion, AnimatePresence } from 'framer-motion'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -15,6 +16,45 @@ interface StepRow {
 let _id = 0
 function newRow(): StepRow {
   return { id: String(++_id), equation: '', dh: '', multiplier: '1', flipped: false }
+}
+
+// ── Example generator ─────────────────────────────────────────────────────────
+
+const HESS_EXAMPLES = [
+  {
+    scenario: 'Find ΔH for C(s) + O₂(g) → CO₂(g) using two steps.',
+    steps: [
+      'Step 1: C(s) + ½O₂(g) → CO(g)   ΔH₁ = −110.5 kJ',
+      'Step 2: CO(g) + ½O₂(g) → CO₂(g)  ΔH₂ = −283.0 kJ  (×1, not flipped)',
+      'ΔHrxn = −110.5 + (−283.0)',
+    ],
+    result: 'ΔHrxn = −393.5 kJ',
+  },
+  {
+    scenario: 'Find ΔH for N₂(g) + 2O₂(g) → 2NO₂(g) using two steps.',
+    steps: [
+      'Step 1: N₂(g) + O₂(g) → 2NO(g)   ΔH₁ = +180.5 kJ',
+      'Step 2: 2NO(g) + O₂(g) → 2NO₂(g)  ΔH₂ = −113.0 kJ',
+      'ΔHrxn = +180.5 + (−113.0)',
+    ],
+    result: 'ΔHrxn = +67.5 kJ (endothermic)',
+  },
+  {
+    scenario: 'Find ΔH for 2C(s) + H₂(g) → C₂H₂(g) using three steps.',
+    steps: [
+      'Step 1: C₂H₂(g) + 5/2 O₂(g) → 2CO₂(g) + H₂O(l)  ΔH₁ = −1299.5 kJ  (flip → +1299.5)',
+      'Step 2: C(s) + O₂(g) → CO₂(g)  ΔH₂ = −393.5 kJ  (×2 → −787.0)',
+      'Step 3: H₂(g) + ½O₂(g) → H₂O(l)  ΔH₃ = −285.8 kJ',
+      'ΔHrxn = +1299.5 + (−787.0) + (−285.8)',
+    ],
+    result: 'ΔHrxn = +226.7 kJ',
+  },
+]
+
+const HESS_EMPTY: string[] = []
+
+function generateHessExample() {
+  return pick(HESS_EXAMPLES)
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -57,10 +97,7 @@ export default function HessCalc() {
   return (
     <div className="flex flex-col gap-6 max-w-3xl">
 
-      <ExampleBox>{`Find ΔH for C + O₂ → CO₂ using two known steps:
-  Step 1: C + ½O₂ → CO          ΔH₁ = −110.5 kJ  (×1, not flipped)
-  Step 2: CO + ½O₂ → CO₂        ΔH₂ = −283.0 kJ  (×1, not flipped)
-  ΔHrxn = −110.5 + (−283.0) = −393.5 kJ`}</ExampleBox>
+      <StepsPanel steps={HESS_EMPTY} generate={generateHessExample} />
 
       {/* Target reaction (optional) */}
       <div className="flex flex-col gap-2">
@@ -77,7 +114,7 @@ export default function HessCalc() {
 
       {/* Column headers */}
       <div className="grid grid-cols-[1.5rem_1fr_6.5rem_5.5rem_1.5rem] gap-2 items-center">
-        <span className={labelCls}>flip</span>
+        <span />
         <span className={labelCls}>equation</span>
         <span className={labelCls}>ΔH (kJ)</span>
         <span className={labelCls}>× mult.</span>
@@ -157,12 +194,22 @@ export default function HessCalc() {
           )
         })}
 
-        <button
-          onClick={() => setRows(p => [...p, newRow()])}
-          className="self-start font-mono text-xs text-dim hover:text-primary transition-colors"
-        >
-          + add step
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setRows(p => [...p, newRow()])}
+            className="font-mono text-xs text-dim hover:text-primary transition-colors"
+          >
+            + add step
+          </button>
+          {(rows.some(r => r.equation || r.dh) || target) && (
+            <button
+              onClick={() => { setRows([newRow(), newRow(), newRow()]); setTarget('') }}
+              className="font-mono text-xs text-dim hover:text-red-400 transition-colors"
+            >
+              Reset
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Divider + total */}

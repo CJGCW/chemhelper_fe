@@ -2,7 +2,6 @@ import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genDilutionProblem, checkDilutionAnswer } from '../../utils/dilutionPractice'
 import { genConcProblem, checkConcAnswer } from '../../utils/concentrationPractice'
-import WorkedExample from './WorkedExample'
 import type { DilutionSubtype, DilutionProblem } from '../../utils/dilutionPractice'
 import type { ConcSubtype, ConcProblem } from '../../utils/concentrationPractice'
 
@@ -66,11 +65,6 @@ const SUBTYPE_LABELS: Record<DilutionSubtype | ConcSubtype, string> = {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-function generateExample() {
-  const p = pickAndGenerate('all')
-  const last = p.steps.length - 1
-  return { scenario: p.question, steps: p.steps.slice(0, last), result: p.steps[last] }
-}
 
 export default function DilutionConcPractice() {
   const [filter, setFilter] = useState<FilterType>('all')
@@ -114,8 +108,6 @@ export default function DilutionConcPractice() {
 
   return (
     <div className="flex flex-col gap-6">
-
-      <WorkedExample generate={generateExample} />
 
       {/* Controls row */}
       <div className="flex flex-wrap items-center gap-4">

@@ -1,20 +1,15 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genHeatTransferProblem, checkHeatTransferAnswer, type HeatTransferProblem } from '../../utils/heatTransferPractice'
-import WorkedExample from '../calculations/WorkedExample'
+import StepsPanel from '../calculations/StepsPanel'
 
-function generateExample() {
-  const p = genHeatTransferProblem()
-  const last = p.solutionSteps.length - 1
-  return { scenario: p.question, steps: p.solutionSteps.slice(0, last), result: p.solutionSteps[last] }
-}
 
 export default function HeatTransferPractice() {
   const [problem, setProblem]     = useState<HeatTransferProblem>(() => genHeatTransferProblem())
   const [input, setInput]         = useState('')
   const [checked, setChecked]     = useState(false)
   const [correct, setCorrect]     = useState(false)
-  const [showSteps, setShowSteps] = useState(false)
+  const [steps, setSteps]         = useState<string[]>([])
   const [score, setScore]         = useState({ correct: 0, total: 0 })
 
   function handleCheck() {
@@ -23,6 +18,7 @@ export default function HeatTransferPractice() {
     setCorrect(c)
     setChecked(true)
     setScore(s => ({ correct: s.correct + (c ? 1 : 0), total: s.total + 1 }))
+    setSteps(problem.solutionSteps)
   }
 
   function handleNext() {
@@ -30,20 +26,18 @@ export default function HeatTransferPractice() {
     setInput('')
     setChecked(false)
     setCorrect(false)
-    setShowSteps(false)
+    setSteps([])
   }
 
   function handleTryAgain() {
     setInput('')
     setChecked(false)
     setCorrect(false)
-    setShowSteps(false)
+    setSteps([])
   }
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
-
-      <WorkedExample generate={generateExample} />
 
       {/* Score bar */}
       {score.total > 0 && (
@@ -164,31 +158,10 @@ export default function HeatTransferPractice() {
             </motion.p>
           )}
 
-          {/* Solution steps toggle */}
-          {checked && (
-            <button
-              onClick={() => setShowSteps(s => !s)}
-              className="self-start font-mono text-xs text-secondary hover:text-primary transition-colors">
-              {showSteps ? '▾ Hide steps' : '▸ Show steps'}
-            </button>
-          )}
-
-          <AnimatePresence>
-            {showSteps && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.2 }}
-                className="overflow-hidden">
-                <div className="rounded-sm border border-border bg-raised p-4">
-                  <pre className="font-mono text-xs text-secondary whitespace-pre-wrap leading-relaxed">
-                    {problem.solutionSteps.join('\n')}
-                  </pre>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </motion.div>
       </AnimatePresence>
+
+      <StepsPanel steps={steps} />
     </div>
   )
 }

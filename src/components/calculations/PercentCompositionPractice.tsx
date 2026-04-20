@@ -6,8 +6,6 @@ import {
   type PercCompType,
   type PercCompProblem,
 } from '../../utils/percentCompositionPractice'
-import WorkedExample from './WorkedExample'
-
 type CheckState = 'idle' | 'correct' | 'wrong'
 type Filter = 'all' | PercCompType
 
@@ -17,11 +15,6 @@ const FILTERS: { value: Filter; label: string }[] = [
   { value: 'mass_from_percent',   label: 'Mass from %'     },
 ]
 
-function generateExample() {
-  const p = generatePercCompProblem()
-  const last = p.steps.length - 1
-  return { scenario: p.question, steps: p.steps.slice(0, last), result: p.steps[last] }
-}
 
 export default function PercentCompositionPractice() {
   const [filter,     setFilter]     = useState<Filter>('all')
@@ -52,8 +45,6 @@ export default function PercentCompositionPractice() {
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
-
-      <WorkedExample generate={generateExample} />
 
       {/* Score + filters */}
       <div className="flex flex-wrap items-center justify-between gap-3">

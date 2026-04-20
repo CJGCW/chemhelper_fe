@@ -1,12 +1,83 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import ExampleBox from '../calculations/ExampleBox'
+import { pick, randBetween, roundTo, sig } from '../calculations/WorkedExample'
 import NumberField from '../calculations/NumberField'
-import StepsPanel from '../calculations/StepsPanel'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../calculations/StepsPanel'
+import { SigFigTrigger, SigFigContent } from '../calculations/SigFigPanel'
 import ResultDisplay from '../calculations/ResultDisplay'
 import { sanitize, hasValue } from '../../utils/calcHelpers'
 import { buildSigFigBreakdown, formatSigFigs, lowestSigFigs } from '../../utils/sigfigs'
 import type { SigFigBreakdown } from '../../utils/sigfigs'
+
+// ── Example generators ────────────────────────────────────────────────────────
+
+const MC_SUBSTANCES = [
+  { name: 'water', c: 4.184 }, { name: 'aluminum', c: 0.897 },
+  { name: 'copper', c: 0.385 }, { name: 'iron', c: 0.449 }, { name: 'gold', c: 0.129 },
+]
+
+function generateMcDTExample() {
+  const sub = pick(MC_SUBSTANCES)
+  const m  = roundTo(randBetween(50, 300), 0)
+  const ti = roundTo(randBetween(15, 40), 1)
+  const tf = roundTo(randBetween(ti + 20, 90), 1)
+  const dt = roundTo(tf - ti, 1)
+  const q  = m * sub.c * dt
+  return {
+    scenario: `${m} g of ${sub.name} (c = ${sub.c} J/g·°C) is heated from ${ti} °C to ${tf} °C. Find q.`,
+    steps: [
+      `q = m × c × ΔT`,
+      `ΔT = ${tf} − ${ti} = ${dt} °C`,
+      `q = ${m} g × ${sub.c} J/(g·°C) × ${dt} °C`,
+      `q = ${sig(q, 4)} J`,
+    ],
+    result: `q = ${sig(q, 3)} J`,
+  }
+}
+
+function generateCDTExample() {
+  const C  = roundTo(randBetween(400, 2500), 0)
+  const dt = roundTo(randBetween(1.0, 12.0), 2)
+  const q  = C * dt
+  return {
+    scenario: `A calorimeter with C = ${C} J/°C warms by ΔT = ${dt} °C. Find q.`,
+    steps: [`q = C × ΔT`, `q = ${C} J/°C × ${dt} °C`, `q = ${sig(q, 4)} J`],
+    result: `q = ${sig(q, 3)} J`,
+  }
+}
+
+function generateCoffeeCupExample() {
+  const m  = roundTo(randBetween(50, 200), 0)
+  const ti = roundTo(randBetween(18, 28), 1)
+  const tf = roundTo(randBetween(ti + 3, ti + 15), 1)
+  const dt = roundTo(tf - ti, 1)
+  const qsol = m * 4.184 * dt
+  const qrxn = -qsol
+  return {
+    scenario: `${m} g solution (c = 4.184 J/g·°C) warms from ${ti} °C to ${tf} °C. Find q_rxn.`,
+    steps: [
+      `q_solution = m × c × ΔT = ${m} × 4.184 × (${tf} − ${ti}) = ${sig(qsol, 4)} J`,
+      `q_rxn = −q_solution = ${sig(qrxn, 4)} J`,
+      qrxn < 0 ? `Negative sign → exothermic reaction` : `Positive sign → endothermic reaction`,
+    ],
+    result: `q_rxn = ${sig(qrxn, 3)} J`,
+  }
+}
+
+function generateBombCalExample() {
+  const Ccal = roundTo(randBetween(2.0, 8.0), 2)
+  const dt   = roundTo(randBetween(1.0, 6.0), 2)
+  const qcal = Ccal * dt
+  const qrxn = -qcal
+  return {
+    scenario: `Bomb calorimeter (C_cal = ${Ccal} kJ/°C) records ΔT = +${dt} °C. Find q_rxn.`,
+    steps: [
+      `q_cal = C_cal × ΔT = ${Ccal} kJ/°C × ${dt} °C = ${sig(qcal, 4)} kJ`,
+      `q_rxn = −q_cal = ${sig(qrxn, 4)} kJ`,
+    ],
+    result: `q_rxn = ${sig(qrxn, 3)} kJ`,
+  }
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -75,7 +146,7 @@ function EnergyUnitSelect({ value, onChange }: { value: string; onChange: (v: st
 function CalcButton({ onClick, label = 'Calculate' }: { onClick: () => void; label?: string }) {
   return (
     <button onClick={onClick}
-      className="w-full py-2.5 rounded-sm font-sans font-medium text-sm transition-all"
+      className="shrink-0 py-2 px-5 rounded-sm font-sans font-medium text-sm transition-all"
       style={{
         background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
         border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
@@ -120,6 +191,12 @@ function McDeltaT() {
   const [error, setError]       = useState<string | null>(null)
 
   function reset() { setResult(null); setSteps([]); setBreakdown(null); setError(null) }
+
+  function handleClear() {
+    setQVal(''); setMVal(''); setCVal(''); setCPreset('Custom')
+    setDtVal(''); setTiVal(''); setTfVal('')
+    reset()
+  }
 
   function handlePreset(label: string) {
     setCPreset(label)
@@ -237,14 +314,14 @@ function McDeltaT() {
   }
 
   const sfResult = breakdown ? formatSigFigs(breakdown.rawResult, lowestSigFigs(breakdown.inputs.map(i => i.value))) : null
+  const stepsState = useStepsPanelState(steps, generateMcDTExample)
+  const [sfOpen, setSfOpen] = useState(false)
 
   return (
     <div className="flex flex-col gap-5 max-w-lg">
       <InfoBox>
         q = m × c × ΔT — leave one field empty to solve for it
       </InfoBox>
-      <ExampleBox>{`200 g water cools from 75.0 °C to 25.0 °C (c = 4.184 J/g·°C)
-q = 200 × 4.184 × (25.0 − 75.0) = −41,840 J`}</ExampleBox>
 
       {/* q */}
       <NumberField label="Heat (q)" value={qVal}
@@ -316,11 +393,21 @@ q = 200 × 4.184 × (25.0 − 75.0) = −41,840 J`}</ExampleBox>
       </div>
 
       {error && <p className="font-mono text-xs text-red-400">{error}</p>}
-      <CalcButton onClick={calculate} />
-
+      <div className="flex items-stretch gap-2">
+        <CalcButton onClick={calculate} />
+        <StepsTrigger {...stepsState} />
+        <SigFigTrigger breakdown={breakdown} open={sfOpen} onToggle={() => setSfOpen(o => !o)} />
+        {(qVal || mVal || cVal || dtVal || tiVal || tfVal || result) && (
+          <button onClick={handleClear}
+            className="px-4 py-2 rounded-sm font-sans text-sm border border-border text-secondary hover:text-primary transition-colors">
+            Clear
+          </button>
+        )}
+      </div>
+      <StepsContent {...stepsState} />
+      <SigFigContent breakdown={breakdown} open={sfOpen} />
       {(steps.length > 0 || result) && (
         <div className="flex flex-col gap-4">
-          <StepsPanel steps={steps} />
           <ResultDisplay label={resultLabel} value={result} unit={resultUnit} sigFigsValue={sfResult} />
         </div>
       )}
@@ -348,6 +435,11 @@ function CDeltaT() {
   const [error, setError]           = useState<string | null>(null)
 
   function reset() { setResult(null); setSteps([]); setBreakdown(null); setError(null) }
+
+  function handleClear() {
+    setQVal(''); setCVal(''); setDtVal(''); setTiVal(''); setTfVal('')
+    reset()
+  }
 
   function computeDT(): { dt: number; dtStr: string } | null {
     if (useTiTf) {
@@ -433,14 +525,14 @@ function CDeltaT() {
   }
 
   const sfResult = breakdown ? formatSigFigs(breakdown.rawResult, lowestSigFigs(breakdown.inputs.map(i => i.value))) : null
+  const stepsState = useStepsPanelState(steps, generateCDTExample)
+  const [sfOpen, setSfOpen] = useState(false)
 
   return (
     <div className="flex flex-col gap-5 max-w-lg">
       <InfoBox>
         q = C × ΔT — where C is the total heat capacity of the system (not per gram)
       </InfoBox>
-      <ExampleBox>{`Calorimeter (C = 1850 J/°C) warms by ΔT = 3.48 °C.
-q = C × ΔT = 1850 × 3.48 = 6,438 J`}</ExampleBox>
 
       <NumberField label="Heat (q)" value={qVal}
         onChange={v => { setQVal(sanitize(v)); reset() }}
@@ -502,11 +594,21 @@ q = C × ΔT = 1850 × 3.48 = 6,438 J`}</ExampleBox>
       </div>
 
       {error && <p className="font-mono text-xs text-red-400">{error}</p>}
-      <CalcButton onClick={calculate} />
-
+      <div className="flex items-stretch gap-2">
+        <CalcButton onClick={calculate} />
+        <StepsTrigger {...stepsState} />
+        <SigFigTrigger breakdown={breakdown} open={sfOpen} onToggle={() => setSfOpen(o => !o)} />
+        {(qVal || cVal || dtVal || tiVal || tfVal || result) && (
+          <button onClick={handleClear}
+            className="px-4 py-2 rounded-sm font-sans text-sm border border-border text-secondary hover:text-primary transition-colors">
+            Clear
+          </button>
+        )}
+      </div>
+      <StepsContent {...stepsState} />
+      <SigFigContent breakdown={breakdown} open={sfOpen} />
       {(steps.length > 0 || result) && (
         <div className="flex flex-col gap-4">
-          <StepsPanel steps={steps} />
           <ResultDisplay label={resultLabel} value={result} unit={resultUnit} sigFigsValue={sfResult} />
         </div>
       )}
@@ -530,8 +632,15 @@ function CoffeeCup() {
   const [dhResult, setDhResult]       = useState<string | null>(null)
   const [steps, setSteps]             = useState<string[]>([])
   const [error, setError]             = useState<string | null>(null)
+  const stepsState = useStepsPanelState(steps, generateCoffeeCupExample)
 
   function reset() { setResult(null); setDhResult(null); setSteps([]); setError(null) }
+
+  function handleClear() {
+    setMVal(''); setCVal('4.184'); setCPreset('Water (l)')
+    setTiVal(''); setTfVal(''); setNVal('')
+    reset()
+  }
 
   function handlePreset(label: string) {
     setCPreset(label)
@@ -586,9 +695,6 @@ function CoffeeCup() {
         Coffee-cup calorimeter (constant pressure): q_rxn = −q_solution = −mcΔT
         <br />Sign: negative q_rxn = exothermic; positive = endothermic
       </InfoBox>
-      <ExampleBox>{`100 g solution (c = 4.18 J/g·°C) warms from 22.5 °C to 28.3 °C.
-q_soln = 100 × 4.18 × 5.8 = 2,424 J
-q_rxn = −q_soln = −2,424 J (exothermic)`}</ExampleBox>
 
       <NumberField label="Mass of solution (m)" value={mVal}
         onChange={v => { setMVal(sanitize(v)); reset() }}
@@ -652,11 +758,19 @@ q_rxn = −q_soln = −2,424 J (exothermic)`}</ExampleBox>
       </div>
 
       {error && <p className="font-mono text-xs text-red-400">{error}</p>}
-      <CalcButton onClick={calculate} />
-
+      <div className="flex items-stretch gap-2">
+        <CalcButton onClick={calculate} />
+        <StepsTrigger {...stepsState} />
+        {(mVal || tiVal || tfVal || nVal || result) && (
+          <button onClick={handleClear}
+            className="px-4 py-2 rounded-sm font-sans text-sm border border-border text-secondary hover:text-primary transition-colors">
+            Clear
+          </button>
+        )}
+      </div>
+      <StepsContent {...stepsState} />
       {(steps.length > 0 || result) && (
         <div className="flex flex-col gap-4">
-          <StepsPanel steps={steps} />
           <ResultDisplay label={resultLabel} value={result} unit={qUnit} />
           {dhResult && (
             <ResultDisplay label="Molar enthalpy change (ΔH)" value={dhResult} unit="kJ/mol" />
@@ -682,8 +796,14 @@ function BombCalorimeter() {
   const [deResult, setDeResult]       = useState<string | null>(null)
   const [steps, setSteps]             = useState<string[]>([])
   const [error, setError]             = useState<string | null>(null)
+  const stepsState = useStepsPanelState(steps, generateBombCalExample)
 
   function reset() { setResult(null); setDeResult(null); setSteps([]); setError(null) }
+
+  function handleClear() {
+    setCcalVal(''); setTiVal(''); setTfVal(''); setNVal('')
+    reset()
+  }
 
   function toCcalJ(val: string, unit: string): number {
     const n = parse(val)
@@ -733,8 +853,6 @@ function BombCalorimeter() {
         Bomb calorimeter (constant volume): q_rxn = −q_cal = −C_cal × ΔT
         <br />Sign: negative q_rxn = exothermic; positive = endothermic
       </InfoBox>
-      <ExampleBox>{`Calorimeter C_cal = 4.25 kJ/°C records ΔT = +3.22 °C.
-q_rxn = −C_cal × ΔT = −4.25 × 3.22 = −13.7 kJ (exothermic)`}</ExampleBox>
 
       <div className="flex flex-col gap-1.5">
         <label className="font-sans text-sm font-medium text-primary">
@@ -792,11 +910,19 @@ q_rxn = −C_cal × ΔT = −4.25 × 3.22 = −13.7 kJ (exothermic)`}</ExampleBo
       </div>
 
       {error && <p className="font-mono text-xs text-red-400">{error}</p>}
-      <CalcButton onClick={calculate} />
-
+      <div className="flex items-stretch gap-2">
+        <CalcButton onClick={calculate} />
+        <StepsTrigger {...stepsState} />
+        {(ccalVal || tiVal || tfVal || nVal || result) && (
+          <button onClick={handleClear}
+            className="px-4 py-2 rounded-sm font-sans text-sm border border-border text-secondary hover:text-primary transition-colors">
+            Clear
+          </button>
+        )}
+      </div>
+      <StepsContent {...stepsState} />
       {(steps.length > 0 || result) && (
         <div className="flex flex-col gap-4">
-          <StepsPanel steps={steps} />
           <ResultDisplay label={resultLabel} value={result} unit={qUnit} />
           {deResult && (
             <ResultDisplay label="Internal energy change (ΔE_rxn)" value={deResult} unit="kJ/mol" />

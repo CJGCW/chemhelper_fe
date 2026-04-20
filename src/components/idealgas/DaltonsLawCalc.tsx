@@ -1,5 +1,6 @@
 import { useState, useId } from 'react'
-import StepsPanel from '../calculations/StepsPanel'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../calculations/StepsPanel'
+import { pick, randBetween, roundTo, sig } from '../calculations/WorkedExample'
 import { P_UNITS, TO_ATM, type PUnit } from '../../utils/idealGas'
 import { formatSigFigs, lowestSigFigs, countSigFigs } from '../../utils/sigfigs'
 import { sanitize, hasValue } from '../../utils/calcHelpers'
@@ -19,6 +20,29 @@ interface PartialResult {
   label: string
   chi: string      // mole fraction (formatted)
   pressure: string // partial pressure (formatted)
+}
+
+// ── Example generator ─────────────────────────────────────────────────────────
+
+const DALTON_GAS_SETS = [
+  ['N₂', 'O₂', 'Ar'], ['He', 'Ne', 'Ar'], ['H₂', 'N₂', 'CO₂'], ['CH₄', 'CO₂', 'N₂'],
+]
+
+function generateDaltonsLawExample() {
+  const gases = pick(DALTON_GAS_SETS)
+  const p1 = roundTo(randBetween(0.20, 0.55), 2)
+  const p2 = roundTo(randBetween(0.10, 0.40), 2)
+  const p3 = roundTo(randBetween(0.05, 0.30), 2)
+  const total = p1 + p2 + p3
+  return {
+    scenario: `A flask contains ${gases[0]} (${p1} atm), ${gases[1]} (${p2} atm), and ${gases[2]} (${p3} atm). Find P_total.`,
+    steps: [
+      `P_total = P(${gases[0]}) + P(${gases[1]}) + P(${gases[2]})`,
+      `P_total = ${p1} + ${p2} + ${p3}`,
+      `P_total = ${sig(total, 4)} atm`,
+    ],
+    result: `P_total = ${sig(total, 3)} atm`,
+  }
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -87,6 +111,7 @@ export default function DaltonsLawCalc() {
 
   // Results state
   const [steps, setSteps]           = useState<string[]>([])
+  const stepsState = useStepsPanelState(steps, generateDaltonsLawExample)
   const [totalResult, setTotalResult] = useState<string | null>(null)
   const [partialResults, setPartialResults] = useState<PartialResult[]>([])
   const [error, setError]           = useState<string | null>(null)
@@ -378,23 +403,26 @@ export default function DaltonsLawCalc() {
 
       {error && <p className="font-mono text-xs text-red-400">{error}</p>}
 
-      <button
-        onClick={calculate}
-        disabled={!canCalculate}
-        className="w-full py-2.5 rounded-sm font-sans font-medium text-sm transition-all disabled:opacity-40"
-        style={{
-          background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
-          border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
-          color: 'var(--c-halogen)',
-        }}
-      >
-        {isVerifyMode ? 'Verify' : 'Calculate'}
-      </button>
+      <div className="flex items-stretch gap-2">
+        <button
+          onClick={calculate}
+          disabled={!canCalculate}
+          className="shrink-0 py-2 px-5 rounded-sm font-sans font-medium text-sm transition-all disabled:opacity-40"
+          style={{
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
+            color: 'var(--c-halogen)',
+          }}
+        >
+          {isVerifyMode ? 'Verify' : 'Calculate'}
+        </button>
+        <StepsTrigger {...stepsState} />
+      </div>
+      <StepsContent {...stepsState} />
 
       {/* Results */}
       {steps.length > 0 && (
         <div className="flex flex-col gap-4">
-          <StepsPanel steps={steps} />
 
           {/* Mode 1: single total result */}
           {mode === 'partial' && totalResult !== null && (

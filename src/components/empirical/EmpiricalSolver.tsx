@@ -6,6 +6,8 @@ import {
   solveEmpiricalFormula,
   type SolverResult,
 } from '../../utils/empiricalFormula'
+import WorkedExample from '../calculations/WorkedExample'
+import { generateEmpiricalExample } from './EmpiricalPractice'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -135,6 +137,8 @@ export default function EmpiricalSolver() {
 
   return (
     <div className="flex flex-col gap-5">
+
+      <WorkedExample generate={generateEmpiricalExample} />
 
       {/* Mode toggle */}
       <div className="flex items-center gap-3">

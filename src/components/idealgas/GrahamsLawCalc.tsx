@@ -1,5 +1,35 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { pick, randBetween, roundTo } from '../calculations/WorkedExample'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../calculations/StepsPanel'
+
+// ── Example generator ─────────────────────────────────────────────────────────
+
+const GRAHAM_GAS_PAIRS = [
+  { g1: 'H₂', M1: 2.016, g2: 'O₂', M2: 32.00 },
+  { g1: 'He', M1: 4.003, g2: 'N₂', M2: 28.02 },
+  { g1: 'CH₄', M1: 16.04, g2: 'CO₂', M2: 44.01 },
+  { g1: 'NH₃', M1: 17.03, g2: 'HCl', M2: 36.46 },
+  { g1: 'N₂', M1: 28.02, g2: 'Cl₂', M2: 70.90 },
+]
+
+function generateGrahamsLawExample() {
+  const pair = pick(GRAHAM_GAS_PAIRS)
+  const rate2 = roundTo(randBetween(1.0, 5.0), 2)
+  const ratio = Math.sqrt(pair.M2 / pair.M1)
+  const rate1 = rate2 * ratio
+  const sf4 = (v: number) => parseFloat(v.toPrecision(4)).toString()
+  return {
+    scenario: `${pair.g1} (M = ${pair.M1} g/mol) and ${pair.g2} (M = ${pair.M2} g/mol). If ${pair.g2} effuses at ${rate2} mL/s, find the rate for ${pair.g1}.`,
+    steps: [
+      `rate(${pair.g1}) / rate(${pair.g2}) = √(M(${pair.g2}) / M(${pair.g1}))`,
+      `rate(${pair.g1}) = ${rate2} × √(${pair.M2} / ${pair.M1})`,
+      `rate(${pair.g1}) = ${rate2} × ${sf4(ratio)}`,
+      `rate(${pair.g1}) = ${sf4(rate1)} mL/s`,
+    ],
+    result: `rate(${pair.g1}) = ${sf4(rate1)} mL/s`,
+  }
+}
 
 // ── Field component (matches IdealGasCalc style) ──────────────────────────────
 
@@ -50,6 +80,8 @@ export default function GrahamsLawCalc() {
 
   const [result, setResult] = useState<{ solveFor: SolveFor; value: string; steps: string[] } | null>(null)
   const [error, setError]   = useState('')
+  const [noSteps]           = useState<string[]>([])
+  const stepsState          = useStepsPanelState(noSteps, generateGrahamsLawExample)
 
   const label1 = gas1.trim() || 'Gas 1'
   const label2 = gas2.trim() || 'Gas 2'
@@ -265,14 +297,15 @@ export default function GrahamsLawCalc() {
       </div>
 
       {/* Buttons */}
-      <div className="flex gap-2">
+      <div className="flex items-stretch gap-2">
         <button onClick={handleCalc}
-          className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
+          className="shrink-0 px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
             color: 'var(--c-halogen)',
           }}>Calculate →</button>
+        <StepsTrigger {...stepsState} />
         {(hasAny || result) && (
           <button onClick={handleClear}
             className="px-4 py-2 rounded-sm font-sans text-sm border border-border text-secondary hover:text-primary transition-colors">
@@ -280,6 +313,7 @@ export default function GrahamsLawCalc() {
           </button>
         )}
       </div>
+      <StepsContent {...stepsState} />
 
       {error && <p className="font-sans text-sm text-red-400">{error}</p>}
 

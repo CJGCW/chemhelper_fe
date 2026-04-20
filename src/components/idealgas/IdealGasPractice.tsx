@@ -1,20 +1,15 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genGasProblem, checkGasAnswer, gasSolutionSteps, type GasProblem } from '../../utils/idealGasPractice'
-import WorkedExample from '../calculations/WorkedExample'
+import StepsPanel from '../calculations/StepsPanel'
 
-function generateExample() {
-  const p = genGasProblem()
-  const allSteps = gasSolutionSteps(p)
-  return { scenario: p.question, steps: allSteps.slice(0, -1), result: allSteps[allSteps.length - 1] }
-}
 
 export default function IdealGasPractice() {
   const [problem, setProblem]     = useState<GasProblem>(() => genGasProblem())
   const [input, setInput]         = useState('')
   const [checked, setChecked]     = useState(false)
   const [correct, setCorrect]     = useState(false)
-  const [showSteps, setShowSteps] = useState(false)
+  const [steps, setSteps]         = useState<string[]>([])
   const [score, setScore]         = useState({ correct: 0, total: 0 })
 
   function handleCheck() {
@@ -23,6 +18,7 @@ export default function IdealGasPractice() {
     setCorrect(c)
     setChecked(true)
     setScore(s => ({ correct: s.correct + (c ? 1 : 0), total: s.total + 1 }))
+    setSteps(gasSolutionSteps(problem))
   }
 
   function handleNext() {
@@ -30,14 +26,14 @@ export default function IdealGasPractice() {
     setInput('')
     setChecked(false)
     setCorrect(false)
-    setShowSteps(false)
+    setSteps([])
   }
 
   function handleTryAgain() {
     setInput('')
     setChecked(false)
     setCorrect(false)
-    setShowSteps(false)
+    setSteps([])
   }
 
   const sf3str = (v: number) => v.toPrecision(3)
@@ -48,12 +44,8 @@ export default function IdealGasPractice() {
     ...(problem.givenT !== undefined ? [{ label: 'T', value: `${sf3str(problem.givenT)} K` }] : []),
   ]
 
-  const steps = checked ? gasSolutionSteps(problem) : []
-
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
-
-      <WorkedExample generate={generateExample} />
 
       {/* Score */}
       {score.total > 0 && (
@@ -132,40 +124,10 @@ export default function IdealGasPractice() {
             </motion.div>
           )}
 
-          {/* Solution steps */}
-          {checked && (
-            <div className="flex flex-col gap-2">
-              <button
-                onClick={() => setShowSteps(v => !v)}
-                className="flex items-center gap-1.5 font-mono text-xs text-secondary hover:text-primary transition-colors self-start"
-              >
-                <motion.span animate={{ rotate: showSteps ? 90 : 0 }} transition={{ duration: 0.15 }}
-                  className="text-[10px]">▶</motion.span>
-                Solution steps
-              </button>
-              <AnimatePresence initial={false}>
-                {showSteps && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.18 }}
-                    style={{ overflow: 'hidden' }}
-                  >
-                    <div className="flex flex-col gap-0.5 pl-3 border-l-2 border-border mt-1">
-                      {steps.map((s, i) => (
-                        <p key={i} className={`font-mono text-sm ${
-                          i === steps.length - 1 ? 'font-semibold text-emerald-400' : 'text-primary'
-                        }`}>
-                          {i === steps.length - 1 ? '∴ ' : ''}{s}
-                        </p>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          )}
         </motion.div>
       </AnimatePresence>
+
+      <StepsPanel steps={steps} />
 
       {/* Action buttons */}
       <div className="flex gap-2">

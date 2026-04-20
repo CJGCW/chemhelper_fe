@@ -2,8 +2,6 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { RedoxSubtype } from '../../utils/redoxPractice'
 import { generateRedoxProblem, checkRedoxAnswer } from '../../utils/redoxPractice'
-import WorkedExample from '../calculations/WorkedExample'
-
 type Selection = RedoxSubtype | 'random'
 
 const TYPES: { id: Selection; label: string; formula: string }[] = [
@@ -21,7 +19,7 @@ function freshProblem(sel: Selection) {
   return generateRedoxProblem(t)
 }
 
-function generateExample() {
+export function generateRedoxExample() {
   const p = freshProblem('random')
   const last = p.steps.length - 1
   return { scenario: p.question, steps: p.steps.slice(0, last), result: p.steps[last] }
@@ -34,7 +32,7 @@ export default function RedoxPractice() {
   const [checked,   setChecked]   = useState(false)
   const [correct,   setCorrect]   = useState(false)
   const [showSteps, setShowSteps] = useState(false)
-  const [score,     setScore]     = useState({ right: 0, total: 0 })
+  const [score,     setScore]     = useState({ correct: 0, total: 0 })
 
   function nextProblem(sel: Selection = selected) {
     setProblem(freshProblem(sel))
@@ -56,7 +54,7 @@ export default function RedoxPractice() {
     setAnswer('')
     setChecked(false)
     setShowSteps(false)
-    setScore({ right: 0, total: 0 })
+    setScore({ correct: 0, total: 0 })
   }
 
   function handleCheck() {
@@ -64,7 +62,7 @@ export default function RedoxPractice() {
     const c = checkRedoxAnswer(answer, problem)
     setCorrect(c)
     setChecked(true)
-    setScore(s => ({ right: s.right + (c ? 1 : 0), total: s.total + 1 }))
+    setScore(s => ({ correct: s.correct + (c ? 1 : 0), total: s.total + 1 }))
   }
 
   const borderClass = checked
@@ -81,8 +79,6 @@ export default function RedoxPractice() {
 
   return (
     <div className="flex flex-col gap-5 max-w-2xl">
-
-      <WorkedExample generate={generateExample} />
 
       {/* Type selector */}
       <div className="flex flex-wrap gap-1.5">
@@ -115,14 +111,14 @@ export default function RedoxPractice() {
       {score.total > 0 && (
         <div className="flex items-center gap-3">
           <span className="font-mono text-sm text-secondary">
-            Score: <span className="text-bright">{score.right}</span>
+            Score: <span className="text-bright">{score.correct}</span>
             <span className="text-dim"> / {score.total}</span>
           </span>
           <div className="flex-1 h-1 rounded-full overflow-hidden bg-raised">
             <motion.div
               className="h-full rounded-full"
               style={{ background: 'var(--c-halogen)' }}
-              animate={{ width: `${(score.right / score.total) * 100}%` }}
+              animate={{ width: `${(score.correct / score.total) * 100}%` }}
               transition={{ duration: 0.3 }}
             />
           </div>

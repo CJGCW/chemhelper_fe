@@ -1,8 +1,45 @@
 import { useState, useRef, useCallback } from 'react'
-import ExampleBox from '../calculations/ExampleBox'
+import { pick } from '../calculations/WorkedExample'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../calculations/StepsPanel'
 import { motion, AnimatePresence } from 'framer-motion'
 import { searchCompounds, type CompoundEntry } from '../../utils/enthalpyData'
 import { computeDHrxn } from '../../utils/enthalpyPractice'
+
+// ── Example generator ─────────────────────────────────────────────────────────
+
+const ENTHALPY_EXAMPLES = [
+  {
+    scenario: 'CH₄(g) + 2O₂(g) → CO₂(g) + 2H₂O(l). ΔHf°: CH₄ = −74.8, O₂ = 0, CO₂ = −393.5, H₂O(l) = −285.8 kJ/mol.',
+    steps: [
+      'ΔHrxn = ΣΔHf°(products) − ΣΔHf°(reactants)',
+      'ΔHrxn = [1(−393.5) + 2(−285.8)] − [1(−74.8) + 2(0)]',
+      'ΔHrxn = (−965.1) − (−74.8)',
+    ],
+    result: 'ΔHrxn = −890.3 kJ (exothermic)',
+  },
+  {
+    scenario: 'N₂(g) + 3H₂(g) → 2NH₃(g). ΔHf°: NH₃(g) = −46.1, N₂ = 0, H₂ = 0 kJ/mol.',
+    steps: [
+      'ΔHrxn = ΣΔHf°(products) − ΣΔHf°(reactants)',
+      'ΔHrxn = [2(−46.1)] − [1(0) + 3(0)]',
+      'ΔHrxn = (−92.2) − 0',
+    ],
+    result: 'ΔHrxn = −92.2 kJ (exothermic)',
+  },
+  {
+    scenario: '2H₂O₂(l) → 2H₂O(l) + O₂(g). ΔHf°: H₂O₂(l) = −187.8, H₂O(l) = −285.8, O₂ = 0 kJ/mol.',
+    steps: [
+      'ΔHrxn = ΣΔHf°(products) − ΣΔHf°(reactants)',
+      'ΔHrxn = [2(−285.8) + 1(0)] − [2(−187.8)]',
+      'ΔHrxn = (−571.6) − (−375.6)',
+    ],
+    result: 'ΔHrxn = −196.0 kJ (exothermic)',
+  },
+]
+
+function generateEnthalpyExample() {
+  return pick(ENTHALPY_EXAMPLES)
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -202,6 +239,8 @@ export default function EnthalpyCalc() {
   const [products,  setProducts]  = useState<Row[]>([newRow(), newRow()])
   const [result,    setResult]    = useState<Result | null>(null)
   const [error,     setError]     = useState<string | null>(null)
+  const [noSteps]                 = useState<string[]>([])
+  const stepsState                = useStepsPanelState(noSteps, generateEnthalpyExample)
 
   const updateRow = useCallback((
     setter: React.Dispatch<React.SetStateAction<Row[]>>,
@@ -284,10 +323,6 @@ export default function EnthalpyCalc() {
   return (
     <div className="flex flex-col gap-6 max-w-3xl">
 
-      <ExampleBox>{`CH₄(g) + 2O₂(g) → CO₂(g) + 2H₂O(l)
-  ΔHf°: CH₄ = −74.8,  O₂ = 0,  CO₂ = −393.5,  H₂O(l) = −285.8  kJ/mol
-  ΔHrxn = [1(−393.5) + 2(−285.8)] − [1(−74.8) + 2(0)]
-         = −965.1 − (−74.8) = −890.3 kJ  (exothermic)`}</ExampleBox>
 
       {/* Column headers */}
       <div className="hidden sm:grid grid-cols-[3.5rem_1fr_4rem_7rem_1.5rem] gap-2 px-0">
@@ -354,10 +389,10 @@ export default function EnthalpyCalc() {
       )}
 
       {/* Buttons */}
-      <div className="flex gap-2">
+      <div className="flex items-stretch gap-2">
         <button
           onClick={calculate}
-          className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-all"
+          className="shrink-0 px-5 py-2 rounded-sm font-sans text-sm font-medium transition-all"
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
             border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
@@ -366,6 +401,7 @@ export default function EnthalpyCalc() {
         >
           Calculate ΔHrxn
         </button>
+        <StepsTrigger {...stepsState} />
         <button
           onClick={reset}
           className="px-4 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
@@ -374,6 +410,8 @@ export default function EnthalpyCalc() {
           Reset
         </button>
       </div>
+
+      <StepsContent {...stepsState} />
 
       {/* Result */}
       <AnimatePresence>

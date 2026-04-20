@@ -1,20 +1,12 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genBondEnthalpyProblem, checkBondEnthalpyAnswer, type BondEnthalpyProblem } from '../../utils/bondEnthalpyPractice'
-import WorkedExample from '../calculations/WorkedExample'
-
-function generateExample() {
-  const p = genBondEnthalpyProblem()
-  const last = p.solutionSteps.length - 1
-  return { scenario: `${p.description}: ${p.reaction}`, steps: p.solutionSteps.slice(0, last), result: p.solutionSteps[last] }
-}
 
 export default function BondEnthalpyPractice() {
   const [problem, setProblem]     = useState<BondEnthalpyProblem>(() => genBondEnthalpyProblem())
   const [input, setInput]         = useState('')
   const [checked, setChecked]     = useState(false)
   const [correct, setCorrect]     = useState(false)
-  const [showSteps, setShowSteps] = useState(false)
   const [score, setScore]         = useState({ correct: 0, total: 0 })
 
   function handleCheck() {
@@ -30,22 +22,18 @@ export default function BondEnthalpyPractice() {
     setInput('')
     setChecked(false)
     setCorrect(false)
-    setShowSteps(false)
   }
 
   function handleTryAgain() {
     setInput('')
     setChecked(false)
     setCorrect(false)
-    setShowSteps(false)
   }
 
   const labelCls = "font-mono text-xs text-secondary tracking-widest uppercase"
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
-
-      <WorkedExample generate={generateExample} />
 
       {/* Score */}
       {score.total > 0 && (
@@ -159,38 +147,6 @@ export default function BondEnthalpyPractice() {
             </motion.div>
           )}
 
-          {/* Solution steps */}
-          {checked && (
-            <div className="flex flex-col gap-2">
-              <button
-                onClick={() => setShowSteps(v => !v)}
-                className="flex items-center gap-1.5 font-mono text-xs text-secondary hover:text-primary transition-colors self-start"
-              >
-                <motion.span animate={{ rotate: showSteps ? 90 : 0 }} transition={{ duration: 0.15 }}
-                  className="text-[10px]">▶</motion.span>
-                Solution steps
-              </button>
-              <AnimatePresence initial={false}>
-                {showSteps && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.18 }}
-                    style={{ overflow: 'hidden' }}
-                  >
-                    <div className="flex flex-col gap-0.5 pl-3 border-l-2 border-border mt-1">
-                      {problem.solutionSteps.map((s, i) => (
-                        <p key={i} className={`font-mono text-sm ${
-                          i === problem.solutionSteps.length - 1 ? 'font-semibold text-emerald-400' : 'text-primary'
-                        }`}>
-                          {i === problem.solutionSteps.length - 1 ? '∴ ' : ''}{s}
-                        </p>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          )}
         </motion.div>
       </AnimatePresence>
 

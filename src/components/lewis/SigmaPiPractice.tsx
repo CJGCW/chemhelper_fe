@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { generateSigmaPiProblem, checkSigmaPiAnswer } from '../../utils/sigmaPiPractice'
 import type { SigmaPiProblem, SigmaPiResult } from '../../utils/sigmaPiPractice'
 import LewisStructureDiagram from './LewisStructureDiagram'
@@ -13,6 +14,7 @@ export default function SigmaPiPractice() {
   const [sigmaStr, setSigmaStr] = useState('')
   const [piStr,    setPiStr]    = useState('')
   const [status,   setStatus]   = useState<Status>('idle')
+  const [score,    setScore]    = useState({ correct: 0, total: 0 })
 
   const loadNext = useCallback(async () => {
     setLoading(true)
@@ -27,8 +29,10 @@ export default function SigmaPiPractice() {
   useEffect(() => { loadNext() }, [loadNext])
 
   function check() {
-    if (!problem || sigmaStr === '' || piStr === '') return
-    setStatus(checkSigmaPiAnswer(sigmaStr, piStr, problem))
+    if (!problem || sigmaStr === '' || piStr === '' || status !== 'idle') return
+    const result = checkSigmaPiAnswer(sigmaStr, piStr, problem)
+    setStatus(result)
+    setScore(s => ({ correct: s.correct + (result === 'correct' ? 1 : 0), total: s.total + 1 }))
   }
 
   const answered = status !== 'idle'
@@ -48,6 +52,20 @@ export default function SigmaPiPractice() {
 
   return (
     <div className="flex flex-col gap-5 max-w-xl">
+
+      {/* Score */}
+      {score.total > 0 && (
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-1.5 rounded-full bg-raised overflow-hidden">
+            <motion.div className="h-full rounded-full bg-emerald-500"
+              animate={{ width: `${(score.correct / score.total) * 100}%` }}
+              transition={{ duration: 0.4 }} />
+          </div>
+          <span className="font-mono text-xs text-secondary shrink-0">
+            {score.correct} / {score.total}
+          </span>
+        </div>
+      )}
 
       {/* Header row */}
       <div className="flex items-center justify-between">
