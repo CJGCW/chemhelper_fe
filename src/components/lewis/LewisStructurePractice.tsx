@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import LewisEditor from './LewisEditor'
 import type { LewisStructure } from '../../pages/LewisPage'
+import { countSigmaPi, buildExplanation, type SigmaPiResult } from '../../utils/sigmaPiPractice'
 
 // ── Practice problem pool ─────────────────────────────────────────────────────
 
@@ -35,6 +36,33 @@ export default function LewisStructurePractice() {
   const [otherCharge, setOtherCharge]   = useState('0')
   const [otherError, setOtherError]     = useState<string | null>(null)
 
+  // σ/π bond counting
+  const [sigmaStr, setSigmaStr] = useState('')
+  const [piStr,    setPiStr]    = useState('')
+  const [bondResult, setBondResult] = useState<SigmaPiResult | null>(null)
+  const [bondExplanation, setBondExplanation] = useState<string | null>(null)
+
+  function checkBonds() {
+    if (!correctStructure) return
+    const { sigma, pi } = countSigmaPi(correctStructure)
+    const s = parseInt(sigmaStr, 10)
+    const p = parseInt(piStr, 10)
+    if (isNaN(s) || isNaN(p)) { setBondResult('wrong-both'); return }
+    const sigmaOk = s === sigma
+    const piOk    = p === pi
+    const result: SigmaPiResult = sigmaOk && piOk ? 'correct'
+      : !sigmaOk && !piOk ? 'wrong-both'
+      : !sigmaOk ? 'wrong-sigma'
+      : 'wrong-pi'
+    setBondResult(result)
+    if (result !== 'correct') setBondExplanation(buildExplanation(correctStructure, sigma, pi))
+    else setBondExplanation(null)
+  }
+
+  function resetBonds() {
+    setSigmaStr(''); setPiStr(''); setBondResult(null); setBondExplanation(null)
+  }
+
   async function loadOther() {
     const f = otherFormula.trim(); if (!f) return
     const c = Number(otherCharge) || 0
@@ -64,6 +92,7 @@ export default function LewisStructurePractice() {
     setCorrectStructure(null)
     setFetchError(null)
     setFetching(true)
+    resetBonds()
 
 
     const body: Record<string, unknown> = { input: problem.formula }
@@ -153,6 +182,78 @@ export default function LewisStructurePractice() {
         correctStructure={correctStructure}
         onRequestStructure={requestStructure}
       />
+
+      {/* σ / π bond counting */}
+      <div className="flex flex-col gap-3 p-4 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
+        <p className="font-mono text-xs tracking-widest text-secondary uppercase">Bond Count Validation</p>
+        <div className="flex items-end gap-3 flex-wrap">
+          <div className="flex flex-col gap-1">
+            <span className="font-mono text-[10px] text-dim">σ bonds</span>
+            <input
+              type="text" inputMode="numeric" value={sigmaStr}
+              onChange={e => { setSigmaStr(e.target.value); setBondResult(null) }}
+              onKeyDown={e => e.key === 'Enter' && checkBonds()}
+              placeholder="0"
+              className="w-16 font-mono text-sm bg-raised border border-border rounded-sm px-3 py-1.5 text-primary placeholder-dim focus:outline-none transition-colors"
+              style={{
+                border: `1px solid ${
+                  bondResult === 'correct' ? 'color-mix(in srgb, #22c55e 45%, transparent)'
+                  : bondResult === 'wrong-sigma' || bondResult === 'wrong-both' ? 'color-mix(in srgb, #ef4444 45%, transparent)'
+                  : 'rgba(var(--overlay),0.12)'
+                }`
+              }}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="font-mono text-[10px] text-dim">π bonds</span>
+            <input
+              type="text" inputMode="numeric" value={piStr}
+              onChange={e => { setPiStr(e.target.value); setBondResult(null) }}
+              onKeyDown={e => e.key === 'Enter' && checkBonds()}
+              placeholder="0"
+              className="w-16 font-mono text-sm bg-raised border border-border rounded-sm px-3 py-1.5 text-primary placeholder-dim focus:outline-none transition-colors"
+              style={{
+                border: `1px solid ${
+                  bondResult === 'correct' ? 'color-mix(in srgb, #22c55e 45%, transparent)'
+                  : bondResult === 'wrong-pi' || bondResult === 'wrong-both' ? 'color-mix(in srgb, #ef4444 45%, transparent)'
+                  : 'rgba(var(--overlay),0.12)'
+                }`
+              }}
+            />
+          </div>
+          <button
+            onClick={checkBonds}
+            disabled={!correctStructure || (!sigmaStr && !piStr)}
+            className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-all disabled:opacity-40"
+            style={{
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
+              border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
+              color: 'var(--c-halogen)',
+            }}
+          >
+            Check
+          </button>
+          {bondResult === 'correct' && (
+            <span className="font-mono text-sm" style={{ color: '#22c55e' }}>✓ Correct</span>
+          )}
+          {bondResult && bondResult !== 'correct' && (() => {
+            const { sigma, pi } = correctStructure ? countSigmaPi(correctStructure) : { sigma: 0, pi: 0 }
+            return (
+              <span className="font-sans text-xs" style={{ color: '#ef4444' }}>
+                {bondResult === 'wrong-sigma' ? `σ should be ${sigma}` :
+                 bondResult === 'wrong-pi'    ? `π should be ${pi}` :
+                 `σ should be ${sigma}, π should be ${pi}`}
+              </span>
+            )
+          })()}
+        </div>
+        {bondExplanation && (
+          <p className="font-mono text-xs text-secondary leading-relaxed">{bondExplanation}</p>
+        )}
+        <p className="font-mono text-[10px] text-dim">single bond = 1σ · double = 1σ+1π · triple = 1σ+2π</p>
+      </div>
+
+      <p className="font-mono text-xs text-secondary">total valence e⁻ = sum of group numbers · fill octets outward from bonds · minimize formal charge</p>
     </div>
   )
 }

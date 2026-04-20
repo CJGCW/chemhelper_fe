@@ -127,6 +127,7 @@ export default function GrahamsPractice() {
           </button>
         </motion.div>
       )}
+      <p className="font-mono text-xs text-secondary">rate₁/rate₂ = √(M₂/M₁) · lighter gas effuses faster · answers accepted within ±1%</p>
     </div>
   )
 }

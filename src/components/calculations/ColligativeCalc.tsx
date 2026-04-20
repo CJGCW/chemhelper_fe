@@ -606,6 +606,7 @@ export default function ColligativeCalc({ initialMode = 'bpe' }: Props) {
           </AnimatePresence>
         </div>
       )}
+      <p className="font-mono text-xs text-secondary">ΔTb = i·Kb·b · ΔTf = i·Kf·b · b = n_solute / kg_solvent · i = van't Hoff factor</p>
     </div>
   );
 }

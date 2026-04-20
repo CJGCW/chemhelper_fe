@@ -421,6 +421,7 @@ export default function ClausiusClapeyronPractice() {
         </p>
       )}
 
+      <p className="font-mono text-xs text-secondary">ln(P₂/P₁) = −(ΔHvap/R)(1/T₂ − 1/T₁) · R = 8.314 J/(mol·K) · temperatures in K · answers accepted within ±2%</p>
     </div>
   )
 }

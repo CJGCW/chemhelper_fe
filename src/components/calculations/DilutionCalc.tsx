@@ -389,6 +389,7 @@ export default function DilutionCalc() {
           />
         </div>
       )}
+      <p className="font-mono text-xs text-secondary">C₁V₁ = C₂V₂ · fill any three fields and leave one blank to solve · fill all four to verify</p>
     </div>
   )
 }

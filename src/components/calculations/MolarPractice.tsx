@@ -340,6 +340,7 @@ export default function MolarPractice() {
           </AnimatePresence>
         </motion.div>
       </AnimatePresence>
+      <p className="font-mono text-xs text-secondary">n = m / M · N_A = 6.022 × 10²³ · answers accepted within ±1%</p>
     </div>
   )
 }

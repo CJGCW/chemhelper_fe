@@ -234,6 +234,7 @@ export default function SolutionStoichSolver() {
         ]}
         answer="199.8 mL HCl"
       />
+      <p className="font-mono text-xs text-secondary">n = C × V · use mole ratio from balanced equation · result as mass (× M) or volume (÷ C)</p>
     </div>
   )
 }

@@ -414,6 +414,7 @@ export default function BalancingPractice() {
           Next →
         </motion.button>
       )}
+      <p className="font-mono text-xs text-secondary">adjust coefficients only — never subscripts · atoms balanced element by element</p>
     </div>
   )
 }

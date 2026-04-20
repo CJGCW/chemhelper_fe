@@ -144,6 +144,7 @@ export default function PercentYieldSolver() {
         ]}
         answer="28.92%"
       />
+      <p className="font-mono text-xs text-secondary">% yield = (actual / theoretical) × 100 · theoretical assumes limiting reagent fully consumed</p>
     </div>
   )
 }

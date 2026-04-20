@@ -306,6 +306,7 @@ export default function VseprPractice() {
         <p className="font-mono text-xs text-secondary tracking-widest uppercase mb-4">Structure Builder</p>
         <VseprEditor />
       </div>
+      <p className="font-mono text-xs text-secondary">electron geometry includes lone pairs · molecular geometry describes atom positions only · lone pairs compress bond angles</p>
     </div>
   )
 }

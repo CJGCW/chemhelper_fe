@@ -383,6 +383,7 @@ export default function EmpiricalPractice() {
           </motion.p>
         )}
       </AnimatePresence>
+      <p className="font-mono text-xs text-secondary">% → g (assume 100 g) → mol (÷ M) → divide by smallest → multiply to whole numbers</p>
     </div>
   )
 }

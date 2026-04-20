@@ -29,6 +29,8 @@ import ClausiusClapeyronCalc from '../components/thermo/ClausiusClapeyronCalc'
 import ClausiusClapeyronPractice from '../components/thermo/ClausiusClapeyronPractice'
 import ClausiusClapeyronReference from '../components/thermo/ClausiusClapeyronReference'
 import VaporPressureCalc from '../components/thermo/VaporPressureCalc'
+import ReactionProfilePractice from '../components/thermo/ReactionProfilePractice'
+import ReactionProfileCalc from '../components/thermo/ReactionProfileCalc'
 
 type Tab =
   | 'calorimetry'
@@ -55,6 +57,8 @@ type Tab =
   | 'bond-practice'
   | 'bond-reference'
   | 'profile'
+  | 'profile-practice'
+  | 'profile-problems'
   | 'heattransfer'
   | 'heattransfer-practice'
   | 'heattransfer-reference'
@@ -108,7 +112,9 @@ const GROUPS: Group[] = [
       {
         heading: 'Reaction Profiles',
         tabs: [
-          { id: 'profile' as Tab, label: 'Visualizer' },
+          { id: 'profile'          as Tab, label: 'Visualizer' },
+          { id: 'profile-practice' as Tab, label: 'Practice'   },
+          { id: 'profile-problems' as Tab, label: 'Problems'   },
         ],
       },
       {
@@ -453,6 +459,8 @@ export default function ThermochemistryPage() {
           {tab === 'bond-practice'         && <BondEnthalpyPractice />}
           {tab === 'bond-reference'        && <BondEnthalpyReference />}
           {tab === 'profile'               && <EnergyDiagram />}
+          {tab === 'profile-practice'      && <ReactionProfileCalc />}
+          {tab === 'profile-problems'      && <ReactionProfilePractice />}
           {tab === 'heattransfer'           && <HeatTransferCalc />}
           {tab === 'heattransfer-practice'  && <HeatTransferPractice />}
           {tab === 'heattransfer-reference' && <HeatTransferReference />}

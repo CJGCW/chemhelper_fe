@@ -162,6 +162,7 @@ export default function HeatTransferPractice() {
       </AnimatePresence>
 
       <StepsPanel steps={steps} />
+      <p className="font-mono text-xs text-secondary">heat lost = heat gained · q = mcΔT · ΔT = T_final − T_initial · answers accepted within ±1%</p>
     </div>
   )
 }

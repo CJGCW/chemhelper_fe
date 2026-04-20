@@ -143,6 +143,7 @@ export default function VanDerWaalsPractice() {
           </button>
         </motion.div>
       )}
+      <p className="font-mono text-xs text-secondary">(P + an²/V²)(V − nb) = nRT · a = attractions · b = molecular volume · answers accepted within ±1%</p>
     </div>
   )
 }

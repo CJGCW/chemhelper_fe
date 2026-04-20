@@ -216,6 +216,7 @@ export default function LimitingReagentSolver() {
         ]}
         answer="Limiting reagent: N₂ — Theoretical yield of NH₃: 34.05 g"
       />
+      <p className="font-mono text-xs text-secondary">divide available moles by stoichiometric coefficient · smallest quotient = limiting reagent</p>
     </div>
   )
 }

@@ -412,6 +412,7 @@ export default function EcellCalc() {
           </motion.div>
         )}
       </AnimatePresence>
+      <p className="font-mono text-xs text-secondary">E°cell = E°cathode − E°anode · ΔG° = −nFE° · F = 96,485 C/mol e⁻</p>
     </div>
   )
 }

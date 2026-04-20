@@ -179,6 +179,7 @@ export default function SolutionStoichPractice() {
           Next →
         </motion.button>
       )}
+      <p className="font-mono text-xs text-secondary">n = C × V · use mole ratio from balanced equation · answers accepted within ±1%</p>
     </div>
   )
 }

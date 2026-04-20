@@ -3,10 +3,10 @@ export type SciNotationProblemType = 'to_sci' | 'from_sci' | 'multiply' | 'divid
 export interface SciNotationProblem {
   type: SciNotationProblemType
   prompt: string
-  // For to_sci / from_sci
   inputDisplay: string
   correctAnswer: string
   hint: string
+  sigfigs: number
 }
 
 function randInt(min: number, max: number) {
@@ -109,6 +109,7 @@ function makeToSci(): SciNotationProblem {
     inputDisplay: std,
     correctAnswer: sci,
     hint: `Move the decimal point so the coefficient is between 1 and 10. The exponent is ${expDisplay}.`,
+    sigfigs: sf,
   }
 }
 
@@ -126,6 +127,7 @@ function makeFromSci(): SciNotationProblem {
     inputDisplay: formatSci(coeff, exp),
     correctAnswer: std,
     hint: `Shift the decimal ${Math.abs(exp)} place${Math.abs(exp) !== 1 ? 's' : ''} to the ${exp > 0 ? 'right' : 'left'}.`,
+    sigfigs: sf,
   }
 }
 
@@ -143,6 +145,7 @@ function makeMultiply(): SciNotationProblem {
     inputDisplay: `(${formatSci(a, expA)}) × (${formatSci(b, expB)})`,
     correctAnswer: ans,
     hint: `Multiply coefficients (${a} × ${b} = ${parseFloat((a * b).toPrecision(2))}), add exponents (${expA} + ${expB} = ${expA + expB}).`,
+    sigfigs: 2,
   }
 }
 
@@ -161,6 +164,7 @@ function makeDivide(): SciNotationProblem {
     inputDisplay: `(${formatSci(a, expA)}) ÷ (${formatSci(b, expB)})`,
     correctAnswer: ans,
     hint: `Divide coefficients (${a} ÷ ${b} ≈ ${parseFloat((a / b).toPrecision(2))}), subtract exponents (${expA} − ${expB} = ${expA - expB}).`,
+    sigfigs: 2,
   }
 }
 

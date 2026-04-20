@@ -253,6 +253,7 @@ export default function RedoxPractice() {
           </button>
         </motion.div>
       )}
+      <p className="font-mono text-xs text-secondary">OIL RIG: oxidation is loss, reduction is gain · balance atoms then balance charge with e⁻</p>
     </div>
   )
 }

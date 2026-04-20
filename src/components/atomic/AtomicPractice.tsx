@@ -164,6 +164,7 @@ export default function AtomicPractice({ subtopic }: Props) {
           Next →
         </motion.button>
       )}
+      <p className="font-mono text-xs text-secondary">atomic number = protons · mass number = protons + neutrons · neutral atom: electrons = protons · answers accepted within ±1%</p>
     </div>
   )
 }

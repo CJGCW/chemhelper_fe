@@ -254,6 +254,7 @@ export default function ParaDiaMagneticPractice() {
           Next →
         </motion.button>
       )}
+      <p className="font-mono text-xs text-secondary">paramagnetic = has unpaired electrons · diamagnetic = all electrons paired</p>
     </div>
   )
 }

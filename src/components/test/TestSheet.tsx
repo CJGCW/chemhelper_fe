@@ -31,6 +31,8 @@ import { checkSigmaPiCombined } from '../../utils/sigmaPiPractice'
 import type { HCProblem, Phase } from '../../utils/heatingCurveProblems'
 import type { PDProblem } from '../../utils/phaseDiagramProblems'
 import { identifyPhase } from '../../utils/phaseDiagramProblems'
+import { checkProfileAnswer } from '../../utils/reactionProfilePractice'
+import type { ProfileProblem } from '../../utils/reactionProfilePractice'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
 // ── Answer checking ───────────────────────────────────────────────────────────
@@ -100,6 +102,8 @@ function checkQuestion(q: TestQuestion, answer: string): Result {
   }
   if (q.problem.kind === 'phase_diagram')
     return answer === q.problem.data.target ? 'correct' : 'wrong'
+  if (q.problem.kind === 'reaction_profile')
+    return checkProfileAnswer(q.problem.data, answer) ? 'correct' : 'wrong'
   if (q.problem.kind === 'balancing') {
     // answer: "2,1,2" — comma/space separated coefficients (reactants then products)
     const eq = q.problem.data
@@ -430,6 +434,16 @@ function buildQuestionHtml(q: TestQuestion): string {
     </div>`
   }
 
+  if (q.problem.kind === 'reaction_profile') {
+    const p = q.problem.data
+    const hintHtml = p.hint ? `<p class="q-text" style="font-size:10pt;color:#555;font-style:italic">Hint: ${p.hint}</p>` : ''
+    return `<div class="question">${header}
+      ${reactionProfileSvg(p)}
+      <p class="q-text">${p.question}</p>${hintHtml}
+      <div class="answer-row"><span class="solve-for">Answer:</span><span class="answer-line"></span></div>
+    </div>`
+  }
+
   if (q.problem.kind === 'phase_diagram') {
     const p = q.problem.data
     return `<div class="question">${header}
@@ -569,6 +583,69 @@ function phaseDiagramSvg(p: PDProblem): string {
   </svg>`
 }
 
+function reactionProfileSvg(p: ProfileProblem): string {
+  const W = 380, H = 190
+  const ML = 62, MR = 18, MT = 22, MB = 28
+  const PW = W - ML - MR, PH = H - MT - MB
+
+  const productE = p.reactantE + p.dh
+  const tsE      = p.reactantE + p.ea
+
+  const eMin = Math.min(p.reactantE, productE) - 25
+  const eMax = tsE + 35
+  const eRange = eMax - eMin || 1
+  const yS = (e: number) => MT + PH - (e - eMin) / eRange * PH
+
+  const yR  = yS(p.reactantE)
+  const yP  = yS(productE)
+  const yTS = yS(tsE)
+
+  // Level line x-spans
+  const rxLx1 = ML + PW * 0.03, rxLx2 = ML + PW * 0.27
+  const prLx1 = ML + PW * 0.73, prLx2 = ML + PW * 0.97
+  const xTS   = ML + PW * 0.50
+
+  // Smooth bezier: flat → peak → flat
+  const off = PW * 0.13
+  const curvePath =
+    `M ${rxLx2.toFixed(1)} ${yR.toFixed(1)} ` +
+    `C ${(rxLx2 + off).toFixed(1)} ${yR.toFixed(1)}, ${(xTS - off).toFixed(1)} ${yTS.toFixed(1)}, ${xTS.toFixed(1)} ${yTS.toFixed(1)} ` +
+    `C ${(xTS + off).toFixed(1)} ${yTS.toFixed(1)}, ${(prLx1 - off).toFixed(1)} ${yP.toFixed(1)}, ${prLx1.toFixed(1)} ${yP.toFixed(1)}`
+
+  // TS dashed vertical tick
+  const tsDash = `<line x1="${xTS.toFixed(1)}" y1="${(yTS - 4).toFixed(1)}" x2="${xTS.toFixed(1)}" y2="${MT}" stroke="#888" stroke-width="0.8" stroke-dasharray="3,2"/>`
+
+  // Y ticks for reactant, product, TS
+  const levels = [
+    { e: p.reactantE, label: p.showValues ? `${p.reactantE}` : 'R' },
+    { e: productE,    label: p.showValues ? `${productE}`    : 'P' },
+    { e: tsE,         label: p.showValues ? `${tsE}`         : '‡' },
+  ]
+  const yTicksHtml = levels.map(({ e, label }) =>
+    `<line x1="${ML - 3}" y1="${yS(e).toFixed(1)}" x2="${ML}" y2="${yS(e).toFixed(1)}" stroke="#444" stroke-width="0.8"/>` +
+    `<text x="${ML - 5}" y="${yS(e).toFixed(1)}" text-anchor="end" dominant-baseline="middle" font-size="7.5" font-family="monospace" fill="#444">${label}</text>`
+  ).join('')
+
+  // Labels on level lines
+  const reactantLabel = `<text x="${((rxLx1 + rxLx2) / 2).toFixed(1)}" y="${(yR - 5).toFixed(1)}" text-anchor="middle" font-size="8" font-family="sans-serif" fill="#555">Reactants</text>`
+  const productLabel  = `<text x="${((prLx1 + prLx2) / 2).toFixed(1)}" y="${(yP - 5).toFixed(1)}" text-anchor="middle" font-size="8" font-family="sans-serif" fill="#555">Products</text>`
+  const tsLabel       = `<text x="${xTS.toFixed(1)}" y="${(yTS - 7).toFixed(1)}" text-anchor="middle" font-size="9" font-family="sans-serif" fill="#555">‡</text>`
+
+  const yAxisLabel = `<text x="11" y="${(MT + PH / 2).toFixed(1)}" text-anchor="middle" font-size="9" font-family="sans-serif" fill="#555" transform="rotate(-90,11,${(MT + PH / 2).toFixed(1)})">Energy (kJ/mol)</text>`
+
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:6px 0 2px 22px;">
+    <rect width="${W}" height="${H}" fill="white"/>
+    ${tsDash}
+    <line x1="${rxLx1.toFixed(1)}" y1="${yR.toFixed(1)}"  x2="${rxLx2.toFixed(1)}" y2="${yR.toFixed(1)}"  stroke="#111" stroke-width="2" stroke-linecap="round"/>
+    <line x1="${prLx1.toFixed(1)}" y1="${yP.toFixed(1)}"  x2="${prLx2.toFixed(1)}" y2="${yP.toFixed(1)}"  stroke="#111" stroke-width="2" stroke-linecap="round"/>
+    <path d="${curvePath}" fill="none" stroke="#111" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    <line x1="${ML}" y1="${MT}" x2="${ML}" y2="${MT + PH + 5}" stroke="#333" stroke-width="1"/>
+    ${yTicksHtml}
+    ${reactantLabel}${productLabel}${tsLabel}
+    ${yAxisLabel}
+  </svg>`
+}
+
 function buildAnswerKeyHtml(q: TestQuestion): string {
   let answer: string
   if (q.problem.kind === 'sigfig')
@@ -643,6 +720,8 @@ function buildAnswerKeyHtml(q: TestQuestion): string {
     answer = phaseNames
   } else if (q.problem.kind === 'phase_diagram')
     answer = q.problem.data.target.replace('_', ' ')
+  else if (q.problem.kind === 'reaction_profile')
+    answer = q.problem.data.answer
   else
     answer = `${q.problem.data.answer} ${q.problem.data.answerUnit}`
   return `<div class="key-row"><span class="key-num">${q.id}.</span><span class="key-ans">${answer}</span></div>`
@@ -983,8 +1062,9 @@ export default function TestSheet({ test, onBack }: Props) {
     const vseprDrawP  = q.problem.kind === 'vsepr-draw' ? q.problem.data : null
     const lewisDrawP  = q.problem.kind === 'lewis-draw' ? q.problem.data : null
     const sigmaPiP      = q.problem.kind === 'sigma_pi'      ? q.problem.data : null
-    const heatingCurveP  = q.problem.kind === 'heating_curve'      ? q.problem.data : null
-    const phaseDiagramP  = q.problem.kind === 'phase_diagram'      ? q.problem.data : null
+    const heatingCurveP     = q.problem.kind === 'heating_curve'      ? q.problem.data : null
+    const phaseDiagramP     = q.problem.kind === 'phase_diagram'      ? q.problem.data : null
+    const reactionProfileP  = q.problem.kind === 'reaction_profile'   ? q.problem.data : null
     const calorimetryP   = q.problem.kind === 'calorimetry'        ? q.problem.data : null
     const enthalpyP      = q.problem.kind === 'enthalpy'           ? q.problem.data : null
     const hessP          = q.problem.kind === 'hess'               ? q.problem.data : null
@@ -1066,6 +1146,13 @@ export default function TestSheet({ test, onBack }: Props) {
           {phaseDiagramP.question.replace(/\*\*/g, '')}
           <span className="font-sans text-xs text-dim ml-2">({phaseDiagramP.data.name})</span>
         </p>
+      : reactionProfileP
+      ? <div className="pl-8 flex flex-col gap-1">
+          <p className="font-sans text-base text-bright leading-relaxed">{reactionProfileP.question}</p>
+          {reactionProfileP.hint && (
+            <p className="font-sans text-xs text-dim italic">Note: {reactionProfileP.hint}</p>
+          )}
+        </div>
       : drawP
       ? <p className="font-sans text-base text-bright leading-relaxed pl-8">{drawP.question}</p>
       : <p className="font-sans text-base text-bright leading-relaxed pl-8">
@@ -1110,6 +1197,8 @@ export default function TestSheet({ test, onBack }: Props) {
       ? heatingCurveP.validIdxs.map(i => heatingCurveP.segments[i].phase).join(' or ')
       : phaseDiagramP
       ? phaseDiagramP.target.replace('_', ' ')
+      : reactionProfileP
+      ? reactionProfileP.answer
       : calorimetryP
       ? `${calorimetryP.answer.toPrecision(3)} ${calorimetryP.answerUnit}`
       : enthalpyP
@@ -1170,6 +1259,8 @@ export default function TestSheet({ test, onBack }: Props) {
       ? [heatingCurveP.explanation]
       : phaseDiagramP
       ? [phaseDiagramP.explanation]
+      : reactionProfileP
+      ? reactionProfileP.steps
       : calorimetryP
       ? calorimetryP.steps
       : enthalpyP
@@ -1239,6 +1330,11 @@ export default function TestSheet({ test, onBack }: Props) {
               result={result} checked={checked} />
             {!checked && <p className="font-sans text-xs text-dim mt-1">Click a region or point to place your mark.</p>}
           </div>
+        )}
+
+        {/* Reaction profile: static SVG diagram */}
+        {reactionProfileP && (
+          <div className="pl-8" dangerouslySetInnerHTML={{ __html: reactionProfileSvg(reactionProfileP) }} />
         )}
 
         {/* Draw problems: open Ketcher editor in modal */}
@@ -1318,7 +1414,7 @@ export default function TestSheet({ test, onBack }: Props) {
             <span className="font-mono text-base text-secondary whitespace-nowrap">EF =</span>
           )}
           <input
-            type={(sfProblem || empiricalP || atomicP?.isTextAnswer || lewisP?.isTextAnswer || vseprP?.isTextAnswer || stoichP?.isTextAnswer || redoxP?.isTextAnswer || balancingP) ? 'text' : 'number'}
+            type={(sfProblem || empiricalP || atomicP?.isTextAnswer || lewisP?.isTextAnswer || vseprP?.isTextAnswer || stoichP?.isTextAnswer || redoxP?.isTextAnswer || balancingP || reactionProfileP) ? 'text' : 'number'}
             inputMode={sfProblem?.kind === 'count' ? 'numeric' : 'decimal'}
             value={answers[q.id] ?? ''}
             onChange={e => setAnswer(q.id, e.target.value)}
@@ -1333,6 +1429,8 @@ export default function TestSheet({ test, onBack }: Props) {
               : redoxP?.isTextAnswer  ? 'formula, e.g. Zn'
               : redoxP               ? 'e.g. +6 or −2'
               : balancingP           ? 'e.g. 2, 1, 2'
+              : reactionProfileP && !reactionProfileP.isNumeric ? reactionProfileP.acceptedAnswers[0]
+              : reactionProfileP     ? 'e.g. −200'
               : 'answer'
             }
             className={`bg-raised border rounded-sm px-3 py-1.5 font-mono text-base

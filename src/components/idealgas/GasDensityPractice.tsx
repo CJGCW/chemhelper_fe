@@ -123,6 +123,7 @@ export default function GasDensityPractice() {
           </button>
         </motion.div>
       )}
+      <p className="font-mono text-xs text-secondary">ρ = MP / RT · R = 0.08206 L·atm/(mol·K) · answers accepted within ±1%</p>
     </div>
   )
 }

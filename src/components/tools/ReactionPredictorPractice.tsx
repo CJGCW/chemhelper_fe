@@ -203,6 +203,7 @@ export default function ReactionPredictorPractice() {
           </button>
         </motion.div>
       )}
+      <p className="font-mono text-xs text-secondary">precipitation: two soluble ionic compounds exchange ions to form an insoluble product</p>
     </div>
   )
 }

@@ -288,6 +288,7 @@ export default function StoichiometryPractice() {
           </button>
         </motion.div>
       )}
+      <p className="font-mono text-xs text-secondary">moles = mass / M · use mole ratio from balanced equation · answers accepted within ±1%</p>
     </div>
   )
 }

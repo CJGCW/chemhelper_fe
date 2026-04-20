@@ -25,8 +25,9 @@ import type { ClausiusClapeyronProblem } from '../../utils/clausiusClapeyronPrac
 import type { SigmaPiProblem } from '../../utils/sigmaPiPractice'
 import type { HCProblem } from '../../utils/heatingCurveProblems'
 import type { PDProblem } from '../../utils/phaseDiagramProblems'
+import type { ProfileProblem } from '../../utils/reactionProfilePractice'
 
-export type { SigFigProblem, EmpiricalProblem, ConversionProblem, AtomicProblem, LewisProblem, LewisDrawProblem, VseprProblem, VseprDrawProblem, StoichProblem, RedoxProblem, PercCompProblem, GasStoichProblem, SolStoichProblem, BalancingEquation, CalorimetryProblem, EnthalpyProblem, HessProblem, BondEnthalpyProblem, HeatTransferProblem, VdWProblem, GasProblem, EcellProblem, RxnPracticeProblem, DilutionProblem, ConcProblem, ClausiusClapeyronProblem, SigmaPiProblem, HCProblem, PDProblem }
+export type { SigFigProblem, EmpiricalProblem, ConversionProblem, AtomicProblem, LewisProblem, LewisDrawProblem, VseprProblem, VseprDrawProblem, StoichProblem, RedoxProblem, PercCompProblem, GasStoichProblem, SolStoichProblem, BalancingEquation, CalorimetryProblem, EnthalpyProblem, HessProblem, BondEnthalpyProblem, HeatTransferProblem, VdWProblem, GasProblem, EcellProblem, RxnPracticeProblem, DilutionProblem, ConcProblem, ClausiusClapeyronProblem, SigmaPiProblem, HCProblem, PDProblem, ProfileProblem }
 
 export interface MolarTestProblem      { kind: 'molar';      data: MolarProblem      }
 export interface SigFigTestProblem     { kind: 'sigfig';     data: SigFigProblem     }
@@ -58,6 +59,7 @@ export interface ClausiusClapeyronTestProblem     { kind: 'clausius_clapeyron'; 
 export interface SigmaPiTestProblem               { kind: 'sigma_pi';           data: SigmaPiProblem               }
 export interface HeatingCurveTestProblem          { kind: 'heating_curve';      data: HCProblem                    }
 export interface PhaseDiagramTestProblem          { kind: 'phase_diagram';      data: PDProblem                    }
+export interface ReactionProfileTestProblem       { kind: 'reaction_profile';   data: ProfileProblem               }
 
 export type TestProblem =
   | MolarTestProblem
@@ -90,6 +92,7 @@ export type TestProblem =
   | SigmaPiTestProblem
   | HeatingCurveTestProblem
   | PhaseDiagramTestProblem
+  | ReactionProfileTestProblem
 
 export interface TestQuestion {
   id:           number

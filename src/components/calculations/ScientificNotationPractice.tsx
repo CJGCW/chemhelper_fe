@@ -7,16 +7,26 @@ import {
 } from '../../utils/sciNotationPractice'
 type Result = 'correct' | 'wrong' | 'format_error' | null
 
+type SfResult = 'correct' | 'wrong' | null
+
 interface ProblemState {
   problem: SciNotationProblem
   input: string
   result: Result
+  sfInput: string
+  sfResult: SfResult
   showHint: boolean
   showAnswer: boolean
 }
 
+function checkSfInput(raw: string, problem: SciNotationProblem): SfResult {
+  const n = parseInt(raw, 10)
+  if (isNaN(n)) return null
+  return n === problem.sigfigs ? 'correct' : 'wrong'
+}
+
 function makeStates(problems: SciNotationProblem[]): ProblemState[] {
-  return problems.map(p => ({ problem: p, input: '', result: null, showHint: false, showAnswer: false }))
+  return problems.map(p => ({ problem: p, input: '', result: null, sfInput: '', sfResult: null, showHint: false, showAnswer: false }))
 }
 
 const TYPE_LABELS: Record<string, string> = {
@@ -83,13 +93,15 @@ export default function ScientificNotationPractice() {
   function check(i: number) {
     const s = states[i]
     const result = checkSciAnswer(s.input, s.problem)
-    update(i, { result })
+    const sfResult = checkSfInput(s.sfInput, s.problem)
+    update(i, { result, sfResult })
   }
 
   function checkAll() {
     setStates(prev => prev.map(s => ({
       ...s,
-      result: s.result ?? checkSciAnswer(s.input, s.problem),
+      result:   s.result   ?? checkSciAnswer(s.input,   s.problem),
+      sfResult: s.sfResult ?? checkSfInput(s.sfInput, s.problem),
     })))
     setSubmitted(true)
   }
@@ -182,6 +194,29 @@ export default function ScientificNotationPractice() {
               >
                 Check
               </button>
+            </div>
+
+            {/* Sig figs input */}
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[10px] text-dim shrink-0">sig figs in answer</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={s.sfInput}
+                onChange={e => update(i, { sfInput: e.target.value, sfResult: null })}
+                onKeyDown={e => e.key === 'Enter' && check(i)}
+                placeholder="#"
+                className="w-14 font-mono text-sm bg-raised rounded-sm px-2 py-1 text-primary placeholder-dim focus:outline-none transition-colors"
+                style={{
+                  border: `1px solid ${
+                    s.sfResult === 'correct' ? 'color-mix(in srgb, #22c55e 45%, transparent)'
+                    : s.sfResult === 'wrong'  ? 'color-mix(in srgb, #ef4444 45%, transparent)'
+                    : 'rgba(var(--overlay),0.12)'
+                  }`
+                }}
+              />
+              {s.sfResult === 'correct' && <span className="font-mono text-xs" style={{ color: '#22c55e' }}>✓</span>}
+              {s.sfResult === 'wrong'   && <span className="font-sans text-xs" style={{ color: '#ef4444' }}>expected {s.problem.sigfigs}</span>}
             </div>
 
             {/* Hint / answer toggles */}

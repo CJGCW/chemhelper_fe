@@ -216,6 +216,7 @@ export default function MolesCalc() {
           />
         </div>
       )}
+      <p className="font-mono text-xs text-secondary">n = m / M · m = n × M · M = m / n · fill any two fields to solve for the third · fill all three to verify</p>
     </div>
   )
 }

@@ -487,6 +487,7 @@ export default function DaltonsLawCalc() {
           )}
         </div>
       )}
+      <p className="font-mono text-xs text-secondary">P_total = P₁ + P₂ + ... · χᵢ = nᵢ / n_total · Pᵢ = χᵢ × P_total</p>
     </div>
   )
 }

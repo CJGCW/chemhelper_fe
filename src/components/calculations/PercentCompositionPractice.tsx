@@ -176,6 +176,7 @@ export default function PercentCompositionPractice() {
           </AnimatePresence>
         </motion.div>
       </AnimatePresence>
+      <p className="font-mono text-xs text-secondary">% = (element mass in 1 mol / molar mass) × 100 · answers accepted within ±0.1%</p>
     </div>
   )
 }

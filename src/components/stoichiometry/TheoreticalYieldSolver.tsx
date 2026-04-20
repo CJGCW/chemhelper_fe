@@ -160,6 +160,7 @@ export default function TheoreticalYieldSolver() {
         ]}
         answer="11.95 g Fe₂O₃"
       />
+      <p className="font-mono text-xs text-secondary">theoretical yield = moles from limiting reagent × molar mass of product</p>
     </div>
   )
 }

@@ -288,6 +288,7 @@ export default function SolidTypesPractice() {
         </motion.div>
       </AnimatePresence>
 
+      <p className="font-mono text-xs text-secondary">ionic: electrostatic · metallic: delocalized e⁻ · covalent network: covalent bonds · molecular: IMFs</p>
     </div>
   )
 }

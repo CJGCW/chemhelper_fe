@@ -372,6 +372,7 @@ export default function StoichiometrySolver() {
         ]}
         answer="87.8 g CO₂"
       />
+      <p className="font-mono text-xs text-secondary">mass ↔ moles (÷ M) → mole ratio → moles ↔ mass (× M)</p>
     </div>
   )
 }

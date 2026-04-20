@@ -972,6 +972,7 @@ export default function CalorimetryCalc() {
           {mode === 'bomb'   && <BombCalorimeter />}
         </motion.div>
       </AnimatePresence>
+      <p className="font-mono text-xs text-secondary">q = mcΔT · q_system = −q_surroundings · c_water = 4.184 J/(g·°C)</p>
     </div>
   )
 }

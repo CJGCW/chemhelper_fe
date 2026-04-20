@@ -127,6 +127,7 @@ export default function DaltonsPractice() {
           </button>
         </motion.div>
       )}
+      <p className="font-mono text-xs text-secondary">P_total = P₁ + P₂ + ... · P_i = χᵢ × P_total · answers accepted within ±1%</p>
     </div>
   )
 }

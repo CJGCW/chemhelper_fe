@@ -677,6 +677,7 @@ export default function IdealGasCalc() {
           onClose={() => setShowExplanation(false)}
         />
       )}
+      <p className="font-mono text-xs text-secondary">PV = nRT · R = 0.08206 L·atm/(mol·K) · STP: 0°C, 1 atm · SATP: 25°C, 100 kPa</p>
     </div>
   )
 }

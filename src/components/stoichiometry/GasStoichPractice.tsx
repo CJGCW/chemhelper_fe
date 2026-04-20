@@ -199,6 +199,7 @@ export default function GasStoichPractice() {
           </AnimatePresence>
         </motion.div>
       </AnimatePresence>
+      <p className="font-mono text-xs text-secondary">n = PV / RT or volume ratios at same T, P · R = 0.08206 L·atm/(mol·K) · answers accepted within ±1%</p>
     </div>
   )
 }

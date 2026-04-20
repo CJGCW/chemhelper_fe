@@ -525,6 +525,7 @@ export default function HeatingCurveCalc() {
         </div>
       </div>
 
+      <p className="font-mono text-xs text-secondary">flat region = phase change (q = n·ΔH) · sloped region = q = mcΔT · c_water(l) = 4.184 J/(g·°C)</p>
     </div>
   )
 }

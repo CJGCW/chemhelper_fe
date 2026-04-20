@@ -551,6 +551,7 @@ export default function ElectronConfigPractice() {
           </button>
         )}
       </div>
+      <p className="font-mono text-xs text-secondary">Aufbau: fill lowest energy first · Hund's rule: maximize unpaired spins · order: 1s 2s 2p 3s 3p 4s 3d 4p…</p>
     </div>
   )
 }

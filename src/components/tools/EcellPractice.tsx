@@ -193,6 +193,7 @@ export default function EcellPractice() {
           </button>
         </motion.div>
       )}
+      <p className="font-mono text-xs text-secondary">E°cell = E°cathode − E°anode · larger E°red = cathode · positive E°cell = spontaneous · answers accepted within ±0.01 V</p>
     </div>
   )
 }

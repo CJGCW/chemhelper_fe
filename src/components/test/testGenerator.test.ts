@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { generateSolStoichProblem, checkSolStoichAnswer } from '../../utils/solutionStoichPractice'
 import { pickEquation, checkBalanced, formatEquation } from '../../utils/balancingPractice'
+import { generateProfileProblem, checkProfileAnswer } from '../../utils/reactionProfilePractice'
 
 // ── Solution stoich in test context ──────────────────────────────────────────
 
@@ -91,5 +92,48 @@ describe('balancing test problem generation', () => {
     const rCoeffs = nums.slice(0, nR)
     const pCoeffs = nums.slice(nR)
     expect(checkBalanced(eq, rCoeffs, pCoeffs).balanced).toBe(true)
+  })
+})
+
+// ── Reaction profile in test context ─────────────────────────────────────────
+
+describe('reaction_profile test problem generation', () => {
+  it('generates a problem with required fields', () => {
+    const p = generateProfileProblem()
+    expect(p.question.length).toBeGreaterThan(10)
+    expect(p.answer).toBeTruthy()
+    expect(p.acceptedAnswers.length).toBeGreaterThan(0)
+    expect(p.steps.length).toBeGreaterThanOrEqual(2)
+    expect(typeof p.dh).toBe('number')
+    expect(typeof p.ea).toBe('number')
+    expect(typeof p.reactantE).toBe('number')
+  })
+
+  it('generates each subtype explicitly', () => {
+    for (const t of ['identify', 'read_dh', 'read_ea', 'reverse_ea', 'catalyst'] as const) {
+      const p = generateProfileProblem(t)
+      expect(p.subtype).toBe(t)
+    }
+  })
+
+  it('checkProfileAnswer accepts canonical answer', () => {
+    for (let i = 0; i < 20; i++) {
+      const p = generateProfileProblem()
+      expect(checkProfileAnswer(p, p.answer)).toBe(true)
+    }
+  })
+
+  it('checkProfileAnswer rejects blank input', () => {
+    const p = generateProfileProblem()
+    expect(checkProfileAnswer(p, '')).toBe(false)
+  })
+
+  it('calc subtype generates only numeric subtypes', () => {
+    const calcSubs = new Set<string>()
+    for (let i = 0; i < 60; i++) {
+      const sub = (['read_dh', 'read_ea', 'reverse_ea'] as const)[Math.floor(Math.random() * 3)]
+      calcSubs.add(generateProfileProblem(sub).subtype)
+    }
+    expect([...calcSubs].every(s => ['read_dh', 'read_ea', 'reverse_ea'].includes(s))).toBe(true)
   })
 })

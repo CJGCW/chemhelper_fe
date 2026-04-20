@@ -296,6 +296,7 @@ export default function DilutionConcPractice() {
           </AnimatePresence>
         </motion.div>
       </AnimatePresence>
+      <p className="font-mono text-xs text-secondary">C₁V₁ = C₂V₂ · C (mol/L) = n / V · % = (mass_solute / mass_soln) × 100 · answers accepted within ±1%</p>
     </div>
   )
 }

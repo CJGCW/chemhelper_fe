@@ -38,11 +38,13 @@ import { genClausiusClapeyronProblem } from '../../utils/clausiusClapeyronPracti
 import { generateSigmaPiProblem } from '../../utils/sigmaPiPractice'
 import { genHCProblem } from '../../utils/heatingCurveProblems'
 import { genPDProblem } from '../../utils/phaseDiagramProblems'
+import type { ProfileSubtype } from '../../utils/reactionProfilePractice'
+import { generateProfileProblem } from '../../utils/reactionProfilePractice'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
 // ── Topic definitions ─────────────────────────────────────────────────────────
 
-type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'lewis_draw' | 'vsepr' | 'vsepr_draw' | 'sigma_pi' | 'stoich' | 'redox' | 'perc_comp' | 'gas_stoich' | 'sol_stoich' | 'balancing' | 'calorimetry' | 'enthalpy' | 'hess' | 'bond_enthalpy' | 'heat_transfer' | 'vdw' | 'ideal_gas' | 'ecell' | 'rxn_pred' | 'dilution' | 'conc' | 'clausius_clapeyron' | 'heating_curve' | 'phase_diagram'
+type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'lewis_draw' | 'vsepr' | 'vsepr_draw' | 'sigma_pi' | 'stoich' | 'redox' | 'perc_comp' | 'gas_stoich' | 'sol_stoich' | 'balancing' | 'calorimetry' | 'enthalpy' | 'hess' | 'bond_enthalpy' | 'heat_transfer' | 'vdw' | 'ideal_gas' | 'ecell' | 'rxn_pred' | 'dilution' | 'conc' | 'clausius_clapeyron' | 'heating_curve' | 'phase_diagram' | 'reaction_profile'
 type TopicGroup = 'core' | 'atomic_molecular' | 'structures' | 'molar_solutions' | 'stoichiometry' | 'gases' | 'redox' | 'thermochemistry'
 
 const GROUP_LABELS: Record<TopicGroup, string> = {
@@ -74,6 +76,7 @@ interface TopicDef {
   rxnSubtype?:     RxnSubtype
   dilutionSubtype?: DilutionSubtype
   concSubtype?:    ConcSubtype
+  profileSubtype?: ProfileSubtype
 }
 
 const ALL_TOPICS: TopicDef[] = [
@@ -128,8 +131,11 @@ const ALL_TOPICS: TopicDef[] = [
   { id: 'bond-enthalpy',  kind: 'bond_enthalpy',  group: 'thermochemistry', label: 'Bond Enthalpy',   formula: 'BE'      },
   { id: 'heat-transfer',       kind: 'heat_transfer',       group: 'thermochemistry', label: 'Heat Transfer',        formula: 'q₁=−q₂'  },
   { id: 'clausius-clapeyron', kind: 'clausius_clapeyron', group: 'thermochemistry', label: 'Clausius-Clapeyron',  formula: 'ln P₂/P₁' },
-  { id: 'heating-curve',      kind: 'heating_curve',      group: 'thermochemistry', label: 'Heating Curve',        formula: 'q/T diagram' },
-  { id: 'phase-diagram',      kind: 'phase_diagram',      group: 'thermochemistry', label: 'Phase Diagram',        formula: 'P-T diagram' },
+  { id: 'heating-curve',      kind: 'heating_curve',      group: 'thermochemistry', label: 'Heating Curve',              formula: 'q/T diagram' },
+  { id: 'phase-diagram',      kind: 'phase_diagram',      group: 'thermochemistry', label: 'Phase Diagram',              formula: 'P-T diagram' },
+  { id: 'rxn-profile-id',   kind: 'reaction_profile', group: 'thermochemistry', label: 'Reaction Profile: Exo/Endo',  formula: 'sign ΔH',  profileSubtype: 'identify'   },
+  { id: 'rxn-profile-calc', kind: 'reaction_profile', group: 'thermochemistry', label: 'Reaction Profile: ΔH & Eₐ',  formula: 'ΔH / Eₐ'                               },
+  { id: 'rxn-profile-cat',  kind: 'reaction_profile', group: 'thermochemistry', label: 'Reaction Profile: Catalyst',  formula: 'cat.',     profileSubtype: 'catalyst'   },
 ]
 
 const STYLES: ProblemStyle[] = ['word', 'arithmetic']
@@ -274,6 +280,11 @@ export default function TestBuilder({ onGenerate }: Props) {
         return { topic: t.label, topicFormula: t.formula, problem: { kind: 'heating_curve', data: genHCProblem() } }
       if (t.kind === 'phase_diagram')
         return { topic: t.label, topicFormula: t.formula, problem: { kind: 'phase_diagram', data: genPDProblem() } }
+      if (t.kind === 'reaction_profile') {
+        const sub: ProfileSubtype = t.profileSubtype
+          ?? (['read_dh', 'read_ea', 'reverse_ea'] as ProfileSubtype[])[Math.floor(Math.random() * 3)]
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'reaction_profile', data: generateProfileProblem(sub) } }
+      }
       return { topic: t.label, topicFormula: t.formula, problem: { kind: 'molar', data: generateMolarProblem(t.molarType!, randomStyle()) } }
     }
 

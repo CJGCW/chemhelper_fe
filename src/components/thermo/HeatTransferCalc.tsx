@@ -480,6 +480,7 @@ export default function HeatTransferCalc() {
           {mode === 'find_mass' && <FindMass />}
         </motion.div>
       </AnimatePresence>
+      <p className="font-mono text-xs text-secondary">q = mcΔT · q_hot = −q_cold at thermal equilibrium · c_water = 4.184 J/(g·°C)</p>
     </div>
   )
 }

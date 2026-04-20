@@ -593,6 +593,7 @@ export default function UnitCellCalc() {
         {show3D && <CrystalCanvas structureId={structureId} />}
       </div>
 
+      <p className="font-mono text-xs text-secondary">ρ = (Z × M) / (a³ × N_A) · fill any three fields and leave one blank to solve · fill all four to verify</p>
     </div>
   )
 }

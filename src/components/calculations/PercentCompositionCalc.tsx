@@ -290,6 +290,7 @@ export default function PercentCompositionCalc() {
           </motion.div>
         )}
       </AnimatePresence>
+      <p className="font-mono text-xs text-secondary">% = (element contribution / M) × 100 · all element percents sum to 100%</p>
     </div>
   )
 }

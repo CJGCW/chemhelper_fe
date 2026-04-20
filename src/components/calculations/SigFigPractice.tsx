@@ -78,6 +78,9 @@ function borderColor(r: SigFigCheckResult | undefined): string {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
+// Result type for the explicit precision input (sig figs or decimal places)
+type PrecResult = 'correct' | 'wrong' | null
+
 export default function SigFigPractice() {
   const [count, setCount] = useState(5)
   const [inclCount, setInclCount] = useState(true)
@@ -85,19 +88,37 @@ export default function SigFigPractice() {
   const [inclAddSub, setInclAddSub] = useState(true)
 
   const [problems, setProblems] = useState<Problem[]>([])
-  const [answers, setAnswers] = useState<Record<number, string>>({})
-  const [results, setResults] = useState<Record<number, SigFigCheckResult> | null>(null)
+  const [answers, setAnswers]       = useState<Record<number, string>>({})
+  const [precAnswers, setPrecAnswers] = useState<Record<number, string>>({})
+  const [results, setResults]       = useState<Record<number, SigFigCheckResult> | null>(null)
+  const [precResults, setPrecResults] = useState<Record<number, PrecResult> | null>(null)
 
   function generate() {
     setProblems(generateProblems(count, inclCount, inclMultDiv, inclAddSub))
     setAnswers({})
+    setPrecAnswers({})
     setResults(null)
+    setPrecResults(null)
+  }
+
+  function checkPrecAnswer(p: Problem, raw: string): PrecResult {
+    if (p.kind !== 'arith') return null
+    const n = parseInt(raw, 10)
+    if (isNaN(n)) return null
+    const expected = p.isAddSub ? p.limitingDP : p.limitingSF
+    if (expected === undefined) return null
+    return n === expected ? 'correct' : 'wrong'
   }
 
   function checkAll() {
     const r: Record<number, SigFigCheckResult> = {}
-    problems.forEach(p => { r[p.id] = checkSigFigAnswer(answers[p.id] ?? '', p) })
+    const pr: Record<number, PrecResult> = {}
+    problems.forEach(p => {
+      r[p.id] = checkSigFigAnswer(answers[p.id] ?? '', p)
+      pr[p.id] = checkPrecAnswer(p, precAnswers[p.id] ?? '')
+    })
     setResults(r)
+    setPrecResults(pr)
   }
 
   const noneSelected = !inclCount && !inclMultDiv && !inclAddSub
@@ -220,33 +241,73 @@ export default function SigFigPractice() {
                       </p>
                     )}
 
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <input
-                        type="text"
-                        inputMode={p.kind === 'count' ? 'numeric' : 'decimal'}
-                        value={answers[p.id] ?? ''}
-                        onChange={e => {
-                          setAnswers(prev => ({ ...prev, [p.id]: e.target.value }))
-                          if (results) setResults(prev => prev ? { ...prev, [p.id]: checkSigFigAnswer(e.target.value, p) } : null)
-                        }}
-                        placeholder={p.kind === 'count' ? '# sig figs' : 'answer'}
-                        className="w-36 font-mono text-sm bg-raised border border-border rounded-sm px-3 py-1.5 text-primary placeholder-dim focus:outline-none transition-colors"
-                        style={{ border: `1px solid ${borderColor(result)}` }}
-                      />
-                      {result === 'correct' && (
-                        <span className="font-mono text-sm" style={{ color: '#22c55e' }}>✓ Correct</span>
-                      )}
-                      {result === 'wrong_sf' && (
-                        <span className="font-sans text-xs" style={{ color: '#f97316' }}>
-                          Right value — check sig figs
-                          {p.isAddSub
-                            ? ` (expected ${p.limitingDP} d.p.)`
-                            : ` (expected ${p.limitingSF} sf)`}
+                    <div className="flex items-start gap-3 flex-wrap">
+                      {/* Answer value input */}
+                      <div className="flex flex-col gap-1">
+                        <span className="font-mono text-[10px] text-dim">
+                          {p.kind === 'count' ? 'sig figs' : 'answer'}
                         </span>
-                      )}
-                      {result === 'wrong_value' && (
-                        <span className="font-mono text-sm" style={{ color: '#ef4444' }}>✗</span>
-                      )}
+                        <div className="flex items-center gap-1.5">
+                          <input
+                            type="text"
+                            inputMode={p.kind === 'count' ? 'numeric' : 'decimal'}
+                            value={answers[p.id] ?? ''}
+                            onChange={e => {
+                              setAnswers(prev => ({ ...prev, [p.id]: e.target.value }))
+                              if (results) setResults(prev => prev ? { ...prev, [p.id]: checkSigFigAnswer(e.target.value, p) } : null)
+                            }}
+                            placeholder={p.kind === 'count' ? '#' : 'e.g. 8.1'}
+                            className="w-28 font-mono text-sm bg-raised border rounded-sm px-3 py-1.5 text-primary placeholder-dim focus:outline-none transition-colors"
+                            style={{ border: `1px solid ${borderColor(result)}` }}
+                          />
+                          {result === 'correct' && (
+                            <span className="font-mono text-xs" style={{ color: '#22c55e' }}>✓</span>
+                          )}
+                          {result === 'wrong_sf' && (
+                            <span className="font-sans text-xs" style={{ color: '#f97316' }}>right value</span>
+                          )}
+                          {result === 'wrong_value' && (
+                            <span className="font-mono text-xs" style={{ color: '#ef4444' }}>✗</span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Precision input — only for arith problems */}
+                      {p.kind === 'arith' && (() => {
+                        const pr = precResults?.[p.id] ?? null
+                        const label = p.isAddSub ? 'decimal places' : 'sig figs'
+                        return (
+                          <div className="flex flex-col gap-1">
+                            <span className="font-mono text-[10px] text-dim">{label} in answer</span>
+                            <div className="flex items-center gap-1.5">
+                              <input
+                                type="text"
+                                inputMode="numeric"
+                                value={precAnswers[p.id] ?? ''}
+                                onChange={e => {
+                                  setPrecAnswers(prev => ({ ...prev, [p.id]: e.target.value }))
+                                  if (precResults) setPrecResults(prev => prev ? { ...prev, [p.id]: checkPrecAnswer(p, e.target.value) } : null)
+                                }}
+                                placeholder="#"
+                                className="w-16 font-mono text-sm bg-raised border rounded-sm px-3 py-1.5 text-primary placeholder-dim focus:outline-none transition-colors"
+                                style={{
+                                  border: `1px solid ${
+                                    pr === 'correct' ? 'color-mix(in srgb, #22c55e 45%, transparent)'
+                                    : pr === 'wrong'  ? 'color-mix(in srgb, #ef4444 45%, transparent)'
+                                    : 'rgba(var(--overlay),0.12)'
+                                  }`
+                                }}
+                              />
+                              {pr === 'correct' && <span className="font-mono text-xs" style={{ color: '#22c55e' }}>✓</span>}
+                              {pr === 'wrong'   && (
+                                <span className="font-sans text-xs" style={{ color: '#ef4444' }}>
+                                  expected {p.isAddSub ? p.limitingDP : p.limitingSF}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      })()}
                     </div>
 
                     <AnimatePresence>
@@ -280,6 +341,7 @@ export default function SigFigPractice() {
           </motion.div>
         )}
       </AnimatePresence>
+      <p className="font-mono text-xs text-secondary">×/÷: keep fewest sig figs · +/−: keep fewest decimal places · leading zeros never significant</p>
     </div>
   )
 }

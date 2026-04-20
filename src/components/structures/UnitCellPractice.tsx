@@ -295,6 +295,7 @@ export default function UnitCellPractice() {
         </motion.div>
       </AnimatePresence>
 
+      <p className="font-mono text-xs text-secondary">corner = 1/8 atom · edge = 1/4 · face = 1/2 · interior = 1 · ρ = (Z × M) / (a³ × N_A)</p>
     </div>
   )
 }
