@@ -433,7 +433,7 @@ export default function MolarCalculationsPage() {
               <span>Print</span>
             </button>
           )}
-          {activeMode === 'reference' && (
+          {activeMode === 'reference' && refView !== 'visual' && (
             <button
               onClick={() => setPrintingAll(true)}
               className="flex items-center gap-2 px-3 py-1 rounded-sm font-sans text-sm border border-border

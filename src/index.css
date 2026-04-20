@@ -121,6 +121,12 @@ body {
 /* ── Print: override dark theme ──────────────────────────────────────────────── */
 
 @media print {
+  /* ── Slightly smaller base font so more content fits per page ─────────────── */
+  html { font-size: 90%; }
+
+  /* ── Keep every bordered card on one page — break between, not inside ─────── */
+  .rounded-sm { break-inside: avoid; }
+
   /* ── CSS variable overrides (darken accents for white paper) ──────────────── */
   :root {
     --c-halogen:      #1d4ed8;
@@ -248,3 +254,9 @@ body {
   pointer-events: none;
   z-index: 1;
 }
+
+
+/* ── Sidebar sub-item formula icons ──────────────────────────────────────────── */
+
+.nav-sub-formula { opacity: 0.65; }
+[data-theme="light"] .nav-sub-formula { opacity: 0.42; }

@@ -45,7 +45,7 @@ function SubItem({ formula, label, isActive, onClick }: {
                   }`}
       style={{ width: "calc(100% - 16px)" }}
     >
-      <span className="font-mono text-[9px] opacity-50 shrink-0">{formula}</span>
+      <span className="nav-sub-formula font-mono text-[9px] shrink-0">{formula}</span>
       <span className="truncate text-[14px]">{label}</span>
     </button>
   )
@@ -934,6 +934,7 @@ export default function NavSidebar({ open, onClose, theme, onToggleTheme }: Prop
               style={{ overflow: 'hidden' }}
             >
               <TestNavItem onNavigate={onClose} />
+              <PracticeNavItem path="/print" icon="⎙" label="Print Reference" onNavigate={onClose} />
             </motion.div>
           )}
         </AnimatePresence>

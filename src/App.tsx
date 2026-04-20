@@ -8,6 +8,7 @@ import ElectronConfigPage from './pages/ElectronConfigPage'
 import PlaceholderPage from './pages/PlaceholderPage'
 import EmpiricalPage from './pages/EmpiricalPage'
 import TestPage from './pages/TestPage'
+import PrintPage from './pages/PrintPage'
 import StoichiometryPage from './pages/StoichiometryPage'
 import ReferencePage from './pages/ReferencePage'
 import StructuresPage from './pages/StructuresPage'
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="/table" element={<TablePage />} />
         <Route path="/stoichiometry" element={<StoichiometryPage />} />
         <Route path="/test" element={<TestPage />} />
+        <Route path="/print" element={<PrintPage />} />
         <Route path="/calculations" element={<MolarCalculationsPage />} />
         <Route path="/base-calculations" element={<BaseCalculationsPage />} />
         <Route path="/structures" element={<StructuresPage />} />
