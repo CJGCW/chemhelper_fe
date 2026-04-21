@@ -4,7 +4,8 @@ import {
   ACID_SOLID_RXNS, ACID_BASE_RXNS,
   calcVolToMass, calcMassToVol, calcVolToVol,
 } from '../../utils/solutionStoichPractice'
-import { StepsPanel, WorkedExample } from './StoichiometrySolver'
+import { StepsPanel } from './StoichiometrySolver'
+import WorkedExample from '../calculations/WorkedExample'
 
 type Mode = 'vol_to_mass' | 'mass_to_vol' | 'vol_to_vol'
 
@@ -225,15 +226,15 @@ export default function SolutionStoichSolver() {
         )}
       </AnimatePresence>
 
-      <WorkedExample
-        problem="How many mL of 0.500 M HCl are needed to dissolve 5.00 g of CaCO₃? (CaCO₃ + 2 HCl → CaCl₂ + H₂O + CO₂)"
-        steps={[
+      <WorkedExample generate={() => ({
+        scenario: 'How many mL of 0.500 M HCl are needed to dissolve 5.00 g of CaCO₃? (CaCO₃ + 2 HCl → CaCl₂ + H₂O + CO₂)',
+        steps: [
           'n(CaCO₃) = 5.00 g ÷ 100.09 g/mol = 0.04996 mol',
           'Mole ratio: n(HCl) = 0.04996 × (2/1) = 0.09992 mol',
           'V(HCl) = 0.09992 mol ÷ 0.500 mol/L = 0.1998 L = 199.8 mL',
-        ]}
-        answer="199.8 mL HCl"
-      />
+        ],
+        result: '199.8 mL HCl',
+      })} />
       <p className="font-mono text-xs text-secondary">n = C × V · use mole ratio from balanced equation · result as mass (× M) or volume (÷ C)</p>
     </div>
   )

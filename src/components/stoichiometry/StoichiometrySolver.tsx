@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { REACTIONS, type Reaction, type Species } from '../../utils/stoichiometryPractice'
+import { generateReaction, type Reaction, type Species } from '../../utils/stoichiometryPractice'
+import WorkedExample from '../calculations/WorkedExample'
+import SigFigPanel from '../calculations/SigFigPanel'
+import CustomReactionForm from './CustomReactionForm'
+import { buildSigFigBreakdown, lowestSigFigs, type SigFigBreakdown } from '../../utils/sigfigs'
 
 // ── Gas volume helper ─────────────────────────────────────────────────────────
 
@@ -92,7 +96,7 @@ function GasVolumePanel({ onUse }: { onUse: (moles: string, note: string) => voi
   )
 }
 
-type InputUnit = 'g' | 'mol'
+export type InputUnit = 'g' | 'mol'
 
 function sig(n: number, sf = 4): string {
   return parseFloat(n.toPrecision(sf)).toString()
@@ -164,38 +168,6 @@ export function StepsPanel({ steps }: { steps: string[] }) {
   )
 }
 
-export function WorkedExample({ problem, steps, answer }: {
-  problem: string; steps: string[]; answer: string
-}) {
-  const [open, setOpen] = useState(false)
-  return (
-    <div className="rounded-sm border border-border">
-      <button onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center justify-between px-4 py-2.5 text-left">
-        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Worked Example</span>
-        <motion.span animate={{ rotate: open ? 90 : 0 }} transition={{ duration: 0.15 }}
-          className="font-mono text-xs text-secondary">▶</motion.span>
-      </button>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.15 }} style={{ overflow: 'hidden' }}>
-            <div className="px-4 pb-4 border-t border-border pt-3 flex flex-col gap-3">
-              <p className="font-mono text-sm text-secondary">{problem}</p>
-              <div className="flex flex-col gap-1.5 pl-3 border-l border-border">
-                {steps.map((s, i) => <p key={i} className="font-mono text-sm text-primary">{s}</p>)}
-              </div>
-              <p className="font-mono text-sm font-semibold" style={{ color: 'var(--c-halogen)' }}>
-                Answer: {answer}
-              </p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  )
-}
-
 // ── Standard calculation ──────────────────────────────────────────────────────
 
 interface StandardResult {
@@ -203,6 +175,7 @@ interface StandardResult {
   answer: number
   answerUnit: InputUnit
   answerDisplay: string
+  rawAnswer: number
 }
 
 function calcStandard(
@@ -225,36 +198,59 @@ function calcStandard(
 
   if (toUnit === 'mol') {
     const ans = parseFloat(sig(molTo))
-    return { steps, answer: ans, answerUnit: 'mol', answerDisplay: `${ans} mol ${to.display}` }
+    return { steps, answer: ans, answerUnit: 'mol', answerDisplay: `${ans} mol ${to.display}`, rawAnswer: molTo }
   }
   const massTo = molTo * to.molarMass
   steps.push(`Convert to grams: ${sig(molTo)} mol × ${to.molarMass} g/mol = ${sig(massTo)} g ${to.display}`)
   const ans = parseFloat(sig(massTo))
-  return { steps, answer: ans, answerUnit: 'g', answerDisplay: `${ans} g ${to.display}` }
+  return { steps, answer: ans, answerUnit: 'g', answerDisplay: `${ans} g ${to.display}`, rawAnswer: massTo }
+}
+
+// ── Worked example builder ────────────────────────────────────────────────────
+
+function fmt(n: number) { return parseFloat(n.toPrecision(4)).toString() }
+
+function buildWorkedExample(rxn: Reaction) {
+  const from = rxn.reactants[0]
+  const to   = rxn.products[0] ?? rxn.reactants[rxn.reactants.length - 1]
+  const massFrom = 20
+  const molFrom  = massFrom / from.molarMass
+  const molTo    = molFrom * (to.coeff / from.coeff)
+  const massTo   = molTo * to.molarMass
+  return {
+    problem: `How many grams of ${to.display} are produced from ${massFrom} g of ${from.display}?`,
+    steps: [
+      `Balanced equation: ${rxn.equation}`,
+      `mol ${from.display} = ${massFrom} g ÷ ${from.molarMass} g/mol = ${fmt(molFrom)} mol`,
+      `mol ${to.display} = ${fmt(molFrom)} × (${to.coeff}/${from.coeff}) = ${fmt(molTo)} mol`,
+      `mass ${to.display} = ${fmt(molTo)} × ${to.molarMass} g/mol = ${fmt(massTo)} g`,
+    ],
+    answer: `${fmt(massTo)} g ${to.display}`,
+  }
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function StoichiometrySolver() {
-  const [rxnIdx,      setRxnIdx]      = useState(0)
-  const [fromFormula, setFromFormula] = useState(() => REACTIONS[0].reactants[0].formula)
+  const [rxn,         setRxn]         = useState<Reaction>(() => generateReaction())
+  const [fromFormula, setFromFormula] = useState(() => rxn.reactants[0].formula)
   const [fromVal,     setFromVal]     = useState('')
   const [fromUnit,    setFromUnit]    = useState<InputUnit>('g')
-  const [toFormula,   setToFormula]   = useState(() => REACTIONS[0].products[0].formula)
+  const [toFormula,   setToFormula]   = useState(() => rxn.products[0]?.formula ?? rxn.reactants[rxn.reactants.length - 1].formula)
   const [toUnit,      setToUnit]      = useState<InputUnit>('g')
   const [result,      setResult]      = useState<StandardResult | null>(null)
+  const [sigBreakdown, setSigBreakdown] = useState<SigFigBreakdown | null>(null)
   const [gasNote,     setGasNote]     = useState<string | null>(null)
 
-  const rxn   = REACTIONS[rxnIdx]
   const allSp = [...rxn.reactants, ...rxn.products]
 
-  function switchReaction(idx: number) {
-    const r = REACTIONS[idx]
-    setRxnIdx(idx)
+  function applyReaction(r: Reaction) {
+    setRxn(r)
     setFromFormula(r.reactants[0].formula)
-    setToFormula(r.products[0].formula)
+    setToFormula(r.products[0]?.formula ?? r.reactants[r.reactants.length - 1].formula)
     setFromVal('')
     setResult(null)
+    setSigBreakdown(null)
     setGasNote(null)
   }
 
@@ -266,20 +262,37 @@ export default function StoichiometrySolver() {
     const from = getSpecies(fromFormula)
     const to   = getSpecies(toFormula)
     if (!from || !to || from.formula === to.formula) return
-    setResult(calcStandard(rxn, from, fv, fromUnit, to, toUnit))
+    const res = calcStandard(rxn, from, fv, fromUnit, to, toUnit)
+    setResult(res)
+
+    if (fromUnit === 'g') {
+      const sf = lowestSigFigs([fromVal])
+      if (sf && toUnit === 'g') {
+        setSigBreakdown(buildSigFigBreakdown(
+          [{ label: from.display, value: fromVal }],
+          res.rawAnswer, 'g',
+        ))
+      } else {
+        setSigBreakdown(null)
+      }
+    } else {
+      setSigBreakdown(null)
+    }
   }
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
 
-      {/* Reaction selector */}
+      {/* Reaction display */}
       <div className="flex flex-col gap-2">
-        <label className="font-mono text-xs text-secondary tracking-widest uppercase">Reaction</label>
-        <select value={rxnIdx} onChange={e => switchReaction(Number(e.target.value))}
-          className="bg-raised border border-border rounded-sm px-3 py-2
-                     font-sans text-sm text-bright focus:outline-none focus:border-muted">
-          {REACTIONS.map((r, i) => <option key={i} value={i}>{r.name}</option>)}
-        </select>
+        <div className="flex items-center gap-3">
+          <label className="font-mono text-xs text-secondary tracking-widest uppercase">Reaction</label>
+          <button onClick={() => applyReaction(generateReaction())}
+            className="font-mono text-xs px-3 py-1 rounded-sm border border-border text-secondary hover:text-bright transition-colors">
+            New ↺
+          </button>
+          <CustomReactionForm onApply={applyReaction} />
+        </div>
         <p className="font-mono text-sm text-secondary">{rxn.equation}</p>
       </div>
 
@@ -289,6 +302,7 @@ export default function StoichiometrySolver() {
         setFromUnit('mol')
         setGasNote(note)
         setResult(null)
+        setSigBreakdown(null)
       }} />
 
       {/* Given row */}
@@ -307,11 +321,11 @@ export default function StoichiometrySolver() {
           )}
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <NumInput value={fromVal} onChange={v => { setFromVal(v); setResult(null); setGasNote(null) }} />
-          <UnitToggle unit={fromUnit} onChange={u => { setFromUnit(u); setResult(null); setGasNote(null) }} />
+          <NumInput value={fromVal} onChange={v => { setFromVal(v); setResult(null); setSigBreakdown(null); setGasNote(null) }} />
+          <UnitToggle unit={fromUnit} onChange={u => { setFromUnit(u); setResult(null); setSigBreakdown(null); setGasNote(null) }} />
           <span className="font-mono text-xs text-dim">of</span>
           <SpeciesSelect rxn={rxn} value={fromFormula}
-            onChange={f => { setFromFormula(f); setResult(null) }} exclude={toFormula} />
+            onChange={f => { setFromFormula(f); setResult(null); setSigBreakdown(null) }} exclude={toFormula} />
         </div>
         {gasNote && (
           <p className="font-mono text-xs text-secondary">{gasNote}</p>
@@ -322,10 +336,10 @@ export default function StoichiometrySolver() {
       <div className="flex flex-col gap-2">
         <label className="font-mono text-xs text-secondary tracking-widest uppercase">Find</label>
         <div className="flex flex-wrap items-center gap-2">
-          <UnitToggle unit={toUnit} onChange={u => { setToUnit(u); setResult(null) }} />
+          <UnitToggle unit={toUnit} onChange={u => { setToUnit(u); setResult(null); setSigBreakdown(null) }} />
           <span className="font-mono text-xs text-dim">of</span>
           <SpeciesSelect rxn={rxn} value={toFormula}
-            onChange={f => { setToFormula(f); setResult(null) }} exclude={fromFormula} />
+            onChange={f => { setToFormula(f); setResult(null); setSigBreakdown(null) }} exclude={fromFormula} />
         </div>
       </div>
 
@@ -356,22 +370,17 @@ export default function StoichiometrySolver() {
                   {result.answerDisplay}
                 </span>
               </div>
+              <SigFigPanel breakdown={sigBreakdown} />
               <StepsPanel steps={result.steps} />
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <WorkedExample
-        problem="How many grams of CO₂ are produced when 32.0 g of CH₄ burns completely? (CH₄ + 2 O₂ → CO₂ + 2 H₂O)"
-        steps={[
-          'Balanced equation: CH₄ + 2 O₂ → CO₂ + 2 H₂O',
-          'Convert to moles: 32.0 g ÷ 16.04 g/mol = 1.995 mol CH₄',
-          'Mole ratio: 1.995 mol CH₄ × (1 mol CO₂ / 1 mol CH₄) = 1.995 mol CO₂',
-          'Convert to grams: 1.995 mol × 44.01 g/mol = 87.8 g CO₂',
-        ]}
-        answer="87.8 g CO₂"
-      />
+      <WorkedExample generate={() => {
+        const ex = buildWorkedExample(rxn)
+        return { scenario: ex.problem, steps: ex.steps, result: ex.answer }
+      }} />
       <p className="font-mono text-xs text-secondary">mass ↔ moles (÷ M) → mole ratio → moles ↔ mass (× M)</p>
     </div>
   )

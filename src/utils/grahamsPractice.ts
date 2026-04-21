@@ -55,7 +55,7 @@ export function generateGrahamsProblem(): GrahamsProblem {
       `= √${sig(g2.M / g1.M, 5)}`,
       `= ${sig(ratio)}`,
     ]
-    return { question, answer: ratio, unit: '', steps }
+    return { question, answer: parseFloat(sig(ratio)), unit: '', steps }
   }
 
   if (type === 'find-rate') {
@@ -70,7 +70,7 @@ export function generateGrahamsProblem(): GrahamsProblem {
       `= ${r1} × ${sig(Math.sqrt(g1.M / g2.M))}`,
       `= ${sig(r2)} mL/s`,
     ]
-    return { question, answer: r2, unit: 'mL/s', steps }
+    return { question, answer: parseFloat(sig(r2)), unit: 'mL/s', steps }
   }
 
   if (type === 'find-molar-mass') {
@@ -87,7 +87,7 @@ export function generateGrahamsProblem(): GrahamsProblem {
       `M_unknown = ${g2.M} / ${sig(ratio * ratio)}`,
       `M_unknown = ${sig(Munknown)} g/mol`,
     ]
-    return { question, answer: Munknown, unit: 'g/mol', steps }
+    return { question, answer: parseFloat(sig(Munknown)), unit: 'g/mol', steps }
   }
 
   // find-time: t2 = t1 × √(M2/M1)
@@ -101,7 +101,7 @@ export function generateGrahamsProblem(): GrahamsProblem {
     `= ${t1} × ${sig(Math.sqrt(g2.M / g1.M))}`,
     `= ${sig(t2)} s`,
   ]
-  return { question, answer: t2, unit: 's', steps }
+  return { question, answer: parseFloat(sig(t2)), unit: 's', steps }
 }
 
 export function checkGrahamsAnswer(raw: string, problem: GrahamsProblem): boolean {

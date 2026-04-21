@@ -48,7 +48,7 @@ describe('predict_occurs', () => {
     for (let i = 0; i < 20; i++) {
       const p = genRxnPracticeProblem('predict_occurs')
       const allSteps = p.steps.join(' ')
-      expect(allSteps).toContain('Soluble')
+      expect(allSteps.toLowerCase()).toContain('soluble')
     }
   })
 

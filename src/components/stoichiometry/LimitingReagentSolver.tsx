@@ -1,187 +1,297 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { REACTIONS, type Reaction, type Species } from '../../utils/stoichiometryPractice'
-import { UnitToggle, NumInput, StepsPanel, WorkedExample } from './StoichiometrySolver'
+import { generateReaction, type Reaction, type Species } from '../../utils/stoichiometryPractice'
+import { UnitToggle, NumInput, StepsPanel } from './StoichiometrySolver'
+import WorkedExample from '../calculations/WorkedExample'
+import SigFigPanel from '../calculations/SigFigPanel'
+import CustomReactionForm from './CustomReactionForm'
+import { buildSigFigBreakdown, lowestSigFigs, formatSigFigs, roundToSigFigs, type SigFigBreakdown } from '../../utils/sigfigs'
 
 type InputUnit = 'g' | 'mol'
 
 function sig(n: number, sf = 4): string {
   return parseFloat(n.toPrecision(sf)).toString()
 }
+function fmt(n: number): string { return parseFloat(n.toPrecision(4)).toString() }
 
 function toMoles(val: number, unit: InputUnit, species: Species): number {
   return unit === 'mol' ? val : val / species.molarMass
 }
 
-// ── Limiting reagent calculation ──────────────────────────────────────────────
+// ── N-reactant limiting reagent calculation ───────────────────────────────────
+
+interface ExcessEntry { species: Species; remainingMol: number; remainingG: number }
 
 interface LRResult {
   steps: string[]
-  limitingReagent: Species
-  excessReagent: Species
-  excessRemainingMol: number
-  excessRemainingG: number
+  limitingReagent: Species | null
+  excess: ExcessEntry[]
   products: { species: Species; mol: number; grams: number }[]
+  rawFirstG: number   // unrounded grams of first output — for sig fig breakdown
 }
 
 function calcLimitingReagent(
   rxn: Reaction,
-  valA: number, unitA: InputUnit,
-  valB: number, unitB: InputUnit,
+  inputs: { val: number; unit: InputUnit }[],
+  sf?: number,
 ): LRResult {
-  const [rA, rB] = rxn.reactants
+  const disp = (n: number) => sf ? formatSigFigs(n, sf) : sig(n)
+  const rnd  = (n: number) => sf ? roundToSigFigs(n, sf) : parseFloat(sig(n))
+
   const steps: string[] = []
   steps.push(`Balanced equation: ${rxn.equation}`)
 
-  const molA = toMoles(valA, unitA, rA)
-  const molB = toMoles(valB, unitB, rB)
-  const labelA = unitA === 'g' ? `${valA} g ÷ ${rA.molarMass} g/mol` : `${valA} mol`
-  const labelB = unitB === 'g' ? `${valB} g ÷ ${rB.molarMass} g/mol` : `${valB} mol`
-  steps.push(`mol ${rA.display} = ${labelA} = ${sig(molA)} mol`)
-  steps.push(`mol ${rB.display} = ${labelB} = ${sig(molB)} mol`)
+  const mols = rxn.reactants.map((sp, i) => {
+    const { val, unit } = inputs[i] ?? { val: 0, unit: 'g' as InputUnit }
+    const mol = toMoles(val, unit, sp)
+    const label = unit === 'g' ? `${val} g ÷ ${sp.molarMass} g/mol` : `${val} mol`
+    steps.push(`mol ${sp.display} = ${label} = ${disp(mol)} mol`)
+    return mol
+  })
 
-  const molBNeeded = molA * (rB.coeff / rA.coeff)
-  steps.push(`${rB.display} needed to consume all ${rA.display}: ${sig(molA)} × (${rB.coeff}/${rA.coeff}) = ${sig(molBNeeded)} mol`)
+  let limitingIdx = 0
+  let molPerCoeff: number
 
-  const isALimiting  = molBNeeded > molB
-  const limiting     = isALimiting ? rA : rB
-  const excess       = isALimiting ? rB : rA
-  const molLim       = isALimiting ? molA : molB
-  const molExcess    = isALimiting ? molB : molA
-  steps.push(`→ ${limiting.display} is the limiting reagent (${excess.display} is in excess)`)
+  if (rxn.reactants.length === 1) {
+    molPerCoeff = mols[0] / rxn.reactants[0].coeff
+    steps.push(`→ Single reactant: ${rxn.reactants[0].display}`)
+  } else {
+    if (rxn.reactants.length === 2) {
+      const [rA, rB] = rxn.reactants
+      const needed = mols[0] * (rB.coeff / rA.coeff)
+      steps.push(`${rB.display} needed to consume all ${rA.display}: ${disp(mols[0])} × (${rB.coeff}/${rA.coeff}) = ${disp(needed)} mol`)
+    } else {
+      steps.push(`mol/coeff ratios: ${rxn.reactants.map((sp, i) => `${sp.display}: ${disp(mols[i] / sp.coeff)}`).join(' | ')}`)
+    }
+    const ratios = rxn.reactants.map((sp, i) => mols[i] / sp.coeff)
+    limitingIdx = ratios.indexOf(Math.min(...ratios))
+    molPerCoeff = ratios[limitingIdx]
+    const limiting = rxn.reactants[limitingIdx]
+    const excessNames = rxn.reactants.filter((_, i) => i !== limitingIdx).map(s => s.display).join(', ')
+    steps.push(`→ ${limiting.display} is the limiting reagent (${excessNames} in excess)`)
+  }
 
-  const molExcessUsed   = molLim * (excess.coeff / limiting.coeff)
-  const molExcessRemain = molExcess - molExcessUsed
-  const gExcessRemain   = molExcessRemain * excess.molarMass
-  steps.push(`${excess.display} consumed: ${sig(molExcessUsed)} mol; remaining: ${sig(molExcessRemain)} mol (${sig(gExcessRemain)} g)`)
+  const limitingR = rxn.reactants[limitingIdx]
+  const limitingMol = mols[limitingIdx]
 
-  const products = rxn.products.map(p => {
-    const mol   = molLim * (p.coeff / limiting.coeff)
-    const grams = mol * p.molarMass
-    steps.push(`Theoretical yield ${p.display}: ${sig(molLim)} × (${p.coeff}/${limiting.coeff}) × ${p.molarMass} g/mol = ${sig(grams)} g`)
-    return { species: p, mol: parseFloat(sig(mol)), grams: parseFloat(sig(grams)) }
+  let rawFirstG = 0
+  const excess: ExcessEntry[] = []
+  rxn.reactants.forEach((sp, i) => {
+    if (rxn.reactants.length === 1 || i === limitingIdx) return
+    const consumed = molPerCoeff * sp.coeff
+    const remaining = mols[i] - consumed
+    const gRemaining = remaining * sp.molarMass
+    if (rawFirstG === 0) rawFirstG = gRemaining
+    steps.push(`${sp.display} consumed: ${disp(consumed)} mol; remaining: ${disp(remaining)} mol (${disp(gRemaining)} g)`)
+    excess.push({ species: sp, remainingMol: rnd(remaining), remainingG: rnd(gRemaining) })
+  })
+
+  const products = rxn.products.map((prod, pi) => {
+    const mol = molPerCoeff * prod.coeff
+    const grams = mol * prod.molarMass
+    if (pi === 0) rawFirstG = grams
+    steps.push(`Theoretical yield ${prod.display}: ${disp(limitingMol)} × (${prod.coeff}/${limitingR.coeff}) × ${prod.molarMass} g/mol = ${disp(grams)} g`)
+    return { species: prod, mol: rnd(mol), grams: rnd(grams) }
   })
 
   return {
     steps,
-    limitingReagent: limiting,
-    excessReagent: excess,
-    excessRemainingMol: parseFloat(sig(molExcessRemain)),
-    excessRemainingG: parseFloat(sig(gExcessRemain)),
+    limitingReagent: rxn.reactants.length > 1 ? limitingR : null,
+    excess,
     products,
+    rawFirstG,
+  }
+}
+
+// ── Build a worked example from any reaction ──────────────────────────────────
+
+function buildWorkedExample(rxn: Reaction) {
+  const massA = 20
+  const rA = rxn.reactants[0]
+  const molA = massA / rA.molarMass
+
+  if (rxn.reactants.length === 1) {
+    const yieldSteps: string[] = []
+    const firstP = rxn.products[0] ?? null
+    rxn.products.forEach(prod => {
+      const mol = molA * (prod.coeff / rA.coeff)
+      const g = mol * prod.molarMass
+      yieldSteps.push(`Theoretical yield ${prod.display}: ${fmt(molA)} × (${prod.coeff}/${rA.coeff}) × ${prod.molarMass} g/mol = ${fmt(g)} g`)
+    })
+    const firstMol = firstP ? molA * (firstP.coeff / rA.coeff) : 0
+    const firstG   = firstP ? firstMol * firstP.molarMass : 0
+    return {
+      problem: `${massA} g of ${rA.display} decomposes completely. What mass of ${firstP?.display ?? 'product'} is produced?`,
+      steps: [
+        `Reaction: ${rxn.equation}`,
+        `mol ${rA.display} = ${massA} g ÷ ${rA.molarMass} g/mol = ${fmt(molA)} mol`,
+        ...yieldSteps,
+      ],
+      answer: firstP ? `Theoretical yield of ${firstP.display}: ${fmt(firstG)} g` : 'No products defined',
+    }
+  }
+
+  const rB = rxn.reactants[1]
+  const stoichMolB = molA * (rB.coeff / rA.coeff)
+  const molB  = parseFloat((stoichMolB * 0.65).toPrecision(3))
+  const massB = parseFloat((molB * rB.molarMass).toPrecision(3))
+  const molBNeeded = parseFloat((molA * (rB.coeff / rA.coeff)).toPrecision(4))
+  const isBLimiting = molBNeeded > molB
+  const limiting = isBLimiting ? rB : rA
+  const excess   = isBLimiting ? rA : rB
+  const molLim   = isBLimiting ? molB : molA
+  const molExc   = isBLimiting ? molA : molB
+  const molExcUsed   = parseFloat((molLim * (excess.coeff / limiting.coeff)).toPrecision(4))
+  const molExcRemain = parseFloat((molExc - molExcUsed).toPrecision(4))
+  const gExcRemain   = parseFloat((molExcRemain * excess.molarMass).toPrecision(4))
+  const product = rxn.products[0] ?? null
+  const yieldSteps: string[] = []
+  let answerSuffix = ''
+  if (product) {
+    const yieldMol = parseFloat((molLim * (product.coeff / limiting.coeff)).toPrecision(4))
+    const yieldG   = parseFloat((yieldMol * product.molarMass).toPrecision(4))
+    yieldSteps.push(`Theoretical yield ${product.display}: ${fmt(molLim)} × (${product.coeff}/${limiting.coeff}) × ${product.molarMass} g/mol = ${yieldG} g`)
+    answerSuffix = ` — Theoretical yield of ${product.display}: ${yieldG} g`
+  }
+  return {
+    problem: `${massA} g of ${rA.display} is mixed with ${massB} g of ${rB.display}. Which is the limiting reagent?`,
+    steps: [
+      `Reaction: ${rxn.equation}`,
+      `mol ${rA.display} = ${massA} g ÷ ${rA.molarMass} g/mol = ${fmt(molA)} mol`,
+      `mol ${rB.display} = ${massB} g ÷ ${rB.molarMass} g/mol = ${fmt(molB)} mol`,
+      `${rB.display} needed to consume all ${rA.display}: ${fmt(molA)} × (${rB.coeff}/${rA.coeff}) = ${molBNeeded} mol`,
+      `Have ${fmt(molB)} mol ${rB.display}; need ${molBNeeded} mol → ${limiting.display} is the limiting reagent`,
+      `${excess.display} consumed: ${molExcUsed} mol; remaining: ${molExcRemain} mol (${gExcRemain} g)`,
+      ...yieldSteps,
+    ],
+    answer: `Limiting reagent: ${limiting.display}${answerSuffix}`,
   }
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export default function LimitingReagentSolver() {
-  const [rxnIdx,   setRxnIdx]   = useState(0)
-  const [lrValA,   setLrValA]   = useState('')
-  const [lrUnitA,  setLrUnitA]  = useState<InputUnit>('g')
-  const [lrValB,   setLrValB]   = useState('')
-  const [lrUnitB,  setLrUnitB]  = useState<InputUnit>('g')
-  const [lrResult, setLrResult] = useState<LRResult | null>(null)
+interface Props { allowCustom?: boolean }
 
-  const rxn   = REACTIONS[rxnIdx]
-  const canLR = rxn.reactants.length >= 2
+export default function LimitingReagentSolver({ allowCustom = true }: Props) {
+  const [rxn,      setRxn]      = useState<Reaction>(() => generateReaction())
+  const [lrInputs, setLrInputs] = useState<{val: string; unit: InputUnit}[]>([
+    { val: '', unit: 'g' },
+    { val: '', unit: 'g' },
+  ])
+  const [lrResult,     setLrResult]     = useState<LRResult | null>(null)
+  const [sigBreakdown, setSigBreakdown] = useState<SigFigBreakdown | null>(null)
 
-  function switchReaction(idx: number) {
-    setRxnIdx(idx)
-    setLrValA('')
-    setLrValB('')
+  function applyReaction(r: Reaction) {
+    setRxn(r)
+    setLrInputs(r.reactants.map(() => ({ val: '', unit: 'g' as InputUnit })))
     setLrResult(null)
+    setSigBreakdown(null)
   }
+
+  function newReaction() { applyReaction(generateReaction()) }
 
   function handleCalc() {
-    const va = parseFloat(lrValA)
-    const vb = parseFloat(lrValB)
-    if (isNaN(va) || va <= 0 || isNaN(vb) || vb <= 0) return
-    if (!canLR) return
-    setLrResult(calcLimitingReagent(rxn, va, lrUnitA, vb, lrUnitB))
+    const inputs = lrInputs.map(i => ({ val: parseFloat(i.val), unit: i.unit }))
+    if (inputs.some(i => isNaN(i.val) || i.val <= 0)) return
+
+    const hasMass = lrInputs.some(i => i.unit === 'g')
+    const sf = hasMass ? lowestSigFigs(lrInputs.map(i => i.val)) : undefined
+
+    const result = calcLimitingReagent(rxn, inputs, sf)
+    setLrResult(result)
+
+    if (hasMass && sf) {
+      const sfInputs = lrInputs.map((inp, i) => ({
+        label: rxn.reactants[i]?.display ?? `Reactant ${i + 1}`,
+        value: inp.val,
+      }))
+      setSigBreakdown(buildSigFigBreakdown(sfInputs, result.rawFirstG, 'g'))
+    } else {
+      setSigBreakdown(null)
+    }
   }
+
+  function updateInput(idx: number, patch: Partial<{val: string; unit: InputUnit}>) {
+    setLrInputs(prev => prev.map((p, i) => i === idx ? { ...p, ...patch } : p))
+    setLrResult(null)
+    setSigBreakdown(null)
+  }
+
+  const isDecomp = rxn.reactants.length === 1
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
 
-      {/* Reaction selector */}
+      {/* Reaction display */}
       <div className="flex flex-col gap-2">
-        <label className="font-mono text-xs text-secondary tracking-widest uppercase">Reaction</label>
-        <select value={rxnIdx} onChange={e => switchReaction(Number(e.target.value))}
-          className="bg-raised border border-border rounded-sm px-3 py-2
-                     font-sans text-sm text-bright focus:outline-none focus:border-muted">
-          {REACTIONS.filter(r => r.reactants.length >= 2).map(r => {
-            const origIdx = REACTIONS.indexOf(r)
-            return <option key={origIdx} value={origIdx}>{r.name}</option>
-          })}
-        </select>
+        <div className="flex items-center gap-3">
+          <label className="font-mono text-xs text-secondary tracking-widest uppercase">Reaction</label>
+          <button onClick={newReaction}
+            className="font-mono text-xs px-3 py-1 rounded-sm border border-border text-secondary hover:text-bright transition-colors">
+            New ↺
+          </button>
+          {allowCustom && <CustomReactionForm onApply={applyReaction} />}
+        </div>
         <p className="font-mono text-sm text-secondary">{rxn.equation}</p>
       </div>
 
-      {!canLR ? (
-        <p className="font-mono text-sm text-dim">
-          This reaction only has one reactant — choose a different reaction for limiting reagent analysis.
-        </p>
-      ) : (
-        <>
-          {/* Reactant inputs */}
-          {rxn.reactants.map((sp, idx) => {
-            const val     = idx === 0 ? lrValA : lrValB
-            const unit    = idx === 0 ? lrUnitA : lrUnitB
-            const setVal  = idx === 0 ? setLrValA : setLrValB
-            const setUnit = idx === 0
-              ? (u: InputUnit) => setLrUnitA(u)
-              : (u: InputUnit) => setLrUnitB(u)
-            return (
-              <div key={sp.formula} className="flex flex-col gap-2">
-                <label className="font-mono text-xs text-secondary tracking-widest uppercase">
-                  {sp.display}
-                  <span className="normal-case font-normal text-dim ml-2">
-                    ({sp.name}, M = {sp.molarMass} g/mol)
-                  </span>
-                </label>
-                <div className="flex items-center gap-2">
-                  <NumInput value={val} onChange={v => { setVal(v); setLrResult(null) }} />
-                  <UnitToggle unit={unit} onChange={u => { setUnit(u); setLrResult(null) }} />
-                </div>
+      <>
+        {rxn.reactants.map((sp, idx) => {
+          const input = lrInputs[idx] ?? { val: '', unit: 'g' as InputUnit }
+          return (
+            <div key={sp.formula + idx} className="flex flex-col gap-2">
+              <label className="font-mono text-xs text-secondary tracking-widest uppercase">
+                {sp.display}
+                <span className="normal-case font-normal text-dim ml-2">
+                  ({sp.name}, M = {sp.molarMass} g/mol)
+                </span>
+              </label>
+              <div className="flex items-center gap-2">
+                <NumInput value={input.val} onChange={v => updateInput(idx, { val: v })} />
+                <UnitToggle unit={input.unit} onChange={u => updateInput(idx, { unit: u })} />
               </div>
-            )
-          })}
+            </div>
+          )
+        })}
 
-          <button onClick={handleCalc}
-            disabled={!lrValA || !lrValB || parseFloat(lrValA) <= 0 || parseFloat(lrValB) <= 0}
-            className="self-start px-5 py-2 rounded-sm font-sans text-sm font-semibold
-                       transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-            style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-              border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
-              color: 'var(--c-halogen)',
-            }}>
-            Calculate
-          </button>
+        <button onClick={handleCalc}
+          disabled={lrInputs.some(i => !i.val || parseFloat(i.val) <= 0)}
+          className="self-start px-5 py-2 rounded-sm font-sans text-sm font-semibold
+                     transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          style={{
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
+            color: 'var(--c-halogen)',
+          }}>
+          Calculate
+        </button>
 
-          <AnimatePresence>
-            {lrResult && (
-              <motion.div key="lr-result"
-                initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }} style={{ overflow: 'hidden' }}>
-                <div className="flex flex-col gap-3 pt-1">
-                  {/* Summary cards */}
+        <AnimatePresence>
+          {lrResult && (
+            <motion.div key="lr-result"
+              initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }} style={{ overflow: 'hidden' }}>
+              <div className="flex flex-col gap-3 pt-1">
+                {!isDecomp && lrResult.limitingReagent && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="rounded-sm border border-rose-800/50 bg-rose-950/20 px-4 py-3">
                       <span className="font-mono text-xs text-secondary uppercase tracking-widest block mb-1">Limiting Reagent</span>
                       <span className="font-mono text-xl font-semibold text-rose-300">{lrResult.limitingReagent.display}</span>
                       <span className="font-mono text-xs text-dim block mt-0.5">{lrResult.limitingReagent.name}</span>
                     </div>
-                    <div className="rounded-sm border border-border bg-surface px-4 py-3">
-                      <span className="font-mono text-xs text-secondary uppercase tracking-widest block mb-1">
-                        {lrResult.excessReagent.display} Remaining
-                      </span>
-                      <span className="font-mono text-xl font-semibold text-bright">{lrResult.excessRemainingG} g</span>
-                      <span className="font-mono text-xs text-dim block mt-0.5">({lrResult.excessRemainingMol} mol)</span>
-                    </div>
+                    {lrResult.excess.map(e => (
+                      <div key={e.species.formula} className="rounded-sm border border-border bg-surface px-4 py-3">
+                        <span className="font-mono text-xs text-secondary uppercase tracking-widest block mb-1">
+                          {e.species.display} Remaining
+                        </span>
+                        <span className="font-mono text-xl font-semibold text-bright">{e.remainingG} g</span>
+                        <span className="font-mono text-xs text-dim block mt-0.5">({e.remainingMol} mol)</span>
+                      </div>
+                    ))}
                   </div>
+                )}
 
-                  {/* Theoretical yields */}
+                {lrResult.products.length > 0 && (
                   <div className="rounded-sm border border-border bg-surface px-4 py-1">
                     <span className="font-mono text-xs text-secondary uppercase tracking-widest block py-2 border-b border-border">
                       Theoretical Yields
@@ -195,28 +305,23 @@ export default function LimitingReagentSolver() {
                       </div>
                     ))}
                   </div>
+                )}
 
-                  <StepsPanel steps={lrResult.steps} />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </>
+                <SigFigPanel breakdown={sigBreakdown} />
+                <StepsPanel steps={lrResult.steps} />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </>
+
+      <WorkedExample generate={() => {
+        const ex = buildWorkedExample(rxn)
+        return { scenario: ex.problem, steps: ex.steps, result: ex.answer }
+      }} />
+      {!isDecomp && (
+        <p className="font-mono text-xs text-secondary">divide available moles by stoichiometric coefficient · smallest quotient = limiting reagent</p>
       )}
-
-      <WorkedExample
-        problem="28.0 g of N₂ and 9.09 g of H₂ are mixed. Which is the limiting reagent? (N₂ + 3 H₂ → 2 NH₃)"
-        steps={[
-          'mol N₂ = 28.0 g ÷ 28.01 g/mol = 0.9996 mol',
-          'mol H₂ = 9.09 g ÷ 2.016 g/mol = 4.509 mol',
-          'H₂ needed to consume all N₂: 0.9996 × (3/1) = 2.999 mol',
-          'Have 4.509 mol H₂ > 2.999 mol needed → N₂ is the limiting reagent',
-          'H₂ consumed: 0.9996 × (3/1) = 2.999 mol; remaining: 4.509 − 2.999 = 1.510 mol (3.044 g)',
-          'Theoretical yield NH₃: 0.9996 × (2/1) × 17.03 g/mol = 34.05 g',
-        ]}
-        answer="Limiting reagent: N₂ — Theoretical yield of NH₃: 34.05 g"
-      />
-      <p className="font-mono text-xs text-secondary">divide available moles by stoichiometric coefficient · smallest quotient = limiting reagent</p>
     </div>
   )
 }

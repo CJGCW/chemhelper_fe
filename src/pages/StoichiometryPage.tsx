@@ -13,6 +13,7 @@ import StoichReference, { type RefTopic } from '../components/stoichiometry/Stoi
 import SolutionStoichSolver from '../components/stoichiometry/SolutionStoichSolver'
 import SolutionStoichPractice from '../components/stoichiometry/SolutionStoichPractice'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
+import AdvancedPercentYieldSolver from '../components/stoichiometry/AdvancedPercentYieldSolver'
 
 type Tab =
   | 'stoich' | 'limiting' | 'theoretical' | 'percent'
@@ -20,6 +21,7 @@ type Tab =
   | 'gas-stoich' | 'solution'
   | 'solution-practice' | 'balance-practice' | 'gas-stoich-practice'
   | 'limiting-problems' | 'theoretical-problems' | 'percent-problems'
+  | 'adv-percent' | 'adv-percent-problems'
   | 'ref-stoich' | 'ref-limiting' | 'ref-theoretical' | 'ref-percent'
   | 'ref-balance' | 'ref-solution' | 'ref-gas-stoich'
 
@@ -31,20 +33,26 @@ type TabGroup = { id: string; label: string; pills: TabPill[] }
 
 const REFERENCE_GROUPS: TabGroup[] = [
   {
+    id: 'basic-ref',
+    label: 'Basic',
+    pills: [
+      { id: 'ref-percent', label: 'Percent Yield', formula: '%Y'   },
+      { id: 'ref-balance', label: 'Balancing',     formula: '_□_'  },
+    ],
+  },
+  {
     id: 'stoich-ref',
     label: 'Stoichiometry',
     pills: [
       { id: 'ref-stoich',      label: 'Stoichiometry',     formula: 'g↔mol' },
       { id: 'ref-limiting',    label: 'Limiting Reagent',  formula: 'LR'    },
       { id: 'ref-theoretical', label: 'Theoretical Yield', formula: 'T.Y.'  },
-      { id: 'ref-percent',     label: 'Percent Yield',     formula: '%Y'    },
     ],
   },
   {
     id: 'advanced-ref',
     label: 'Advanced',
     pills: [
-      { id: 'ref-balance',    label: 'Balancing',         formula: '_□_' },
       { id: 'ref-solution',   label: 'Solution Stoich',   formula: 'M·V' },
       { id: 'ref-gas-stoich', label: 'Gas Stoichiometry', formula: 'PV'  },
     ],
@@ -53,27 +61,42 @@ const REFERENCE_GROUPS: TabGroup[] = [
 
 const PRACTICE_GROUPS: TabGroup[] = [
   {
+    id: 'basic',
+    label: 'Basic',
+    pills: [
+      { id: 'percent',          label: 'Percent Yield', formula: '%Y'  },
+      { id: 'balance-practice', label: 'Balance',       formula: '_□_' },
+    ],
+  },
+  {
     id: 'stoich',
     label: 'Stoichiometry',
     pills: [
       { id: 'stoich',      label: 'Stoichiometry',     formula: 'g ↔ mol' },
       { id: 'limiting',    label: 'Limiting Reagent',  formula: 'LR'      },
       { id: 'theoretical', label: 'Theoretical Yield', formula: 'T.Y.'    },
-      { id: 'percent',     label: 'Percent Yield',     formula: '%Y'      },
     ],
   },
   {
     id: 'advanced',
     label: 'Advanced',
     pills: [
-      { id: 'solution',            label: 'Solution Stoich', formula: 'M·V' },
-      { id: 'gas-stoich-practice', label: 'Gas Stoich',      formula: 'PV'  },
-      { id: 'balance-practice',    label: 'Balance',         formula: '_□_' },
+      { id: 'adv-percent',         label: 'Percent Yield',   formula: 'TY→%' },
+      { id: 'solution',            label: 'Solution Stoich', formula: 'M·V'  },
+      { id: 'gas-stoich-practice', label: 'Gas Stoich',      formula: 'PV'   },
     ],
   },
 ]
 
 const PROBLEMS_GROUPS: TabGroup[] = [
+  {
+    id: 'basic',
+    label: 'Basic',
+    pills: [
+      { id: 'percent-problems', label: 'Percent Yield', formula: '%Y'  },
+      { id: 'balance',          label: 'Balance',       formula: '_□_' },
+    ],
+  },
   {
     id: 'stoich',
     label: 'Stoichiometry',
@@ -81,16 +104,15 @@ const PROBLEMS_GROUPS: TabGroup[] = [
       { id: 'practice',             label: 'Stoichiometry',     formula: '✎'    },
       { id: 'limiting-problems',    label: 'Limiting Reagent',  formula: 'LR'   },
       { id: 'theoretical-problems', label: 'Theoretical Yield', formula: 'T.Y.' },
-      { id: 'percent-problems',     label: 'Percent Yield',     formula: '%Y'   },
     ],
   },
   {
     id: 'advanced',
     label: 'Advanced',
     pills: [
-      { id: 'solution-practice', label: 'Solution Stoich', formula: 'M·V' },
-      { id: 'gas-stoich',        label: 'Gas Stoich',      formula: 'PV'  },
-      { id: 'balance',           label: 'Balance',         formula: '_□_' },
+      { id: 'adv-percent-problems', label: 'Percent Yield',   formula: 'TY→%' },
+      { id: 'solution-practice',    label: 'Solution Stoich', formula: 'M·V'  },
+      { id: 'gas-stoich',           label: 'Gas Stoich',      formula: 'PV'   },
     ],
   },
 ]
@@ -131,6 +153,8 @@ const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
   'gas-stoich':           'gas-stoich',
   'gas-stoich-practice':  'gas-stoich',
   'ref-gas-stoich':       'gas-stoich',
+  'adv-percent':          'adv-percent',
+  'adv-percent-problems': 'adv-percent',
 }
 
 const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
@@ -140,7 +164,8 @@ const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
   'theoretical': { reference: 'ref-theoretical', practice: 'theoretical',          problems: 'theoretical-problems' },
   'percent':     { reference: 'ref-percent',     practice: 'percent',              problems: 'percent-problems'     },
   'balance':     { reference: 'ref-balance',     practice: 'balance-practice',     problems: 'balance'              },
-  'gas-stoich':  { reference: 'ref-gas-stoich',  practice: 'gas-stoich-practice',  problems: 'gas-stoich'           },
+  'gas-stoich':  { reference: 'ref-gas-stoich',  practice: 'gas-stoich-practice',  problems: 'gas-stoich'                },
+  'adv-percent': {                               practice: 'adv-percent',           problems: 'adv-percent-problems'      },
 }
 
 const MODE_DEFAULT: Record<Mode, Tab> = {
@@ -496,14 +521,14 @@ export default function StoichiometryPage() {
           <motion.div key="limiting-problems"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <LimitingReagentSolver />
+            <LimitingReagentSolver allowCustom={false} />
           </motion.div>
         )}
         {activeTab === 'theoretical-problems' && (
           <motion.div key="theoretical-problems"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <TheoreticalYieldSolver />
+            <TheoreticalYieldSolver allowCustom={false} />
           </motion.div>
         )}
         {activeTab === 'percent-problems' && (
@@ -511,6 +536,20 @@ export default function StoichiometryPage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <PercentYieldSolver />
+          </motion.div>
+        )}
+        {activeTab === 'adv-percent' && (
+          <motion.div key="adv-percent"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <AdvancedPercentYieldSolver />
+          </motion.div>
+        )}
+        {activeTab === 'adv-percent-problems' && (
+          <motion.div key="adv-percent-problems"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <AdvancedPercentYieldSolver allowCustom={false} />
           </motion.div>
         )}
         {activeTab === 'solution-practice' && (

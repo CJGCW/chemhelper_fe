@@ -1,13 +1,18 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { REACTIONS, type Reaction, type Species } from '../../utils/stoichiometryPractice'
-import { UnitToggle, NumInput, SpeciesSelect, StepsPanel, WorkedExample } from './StoichiometrySolver'
+import { generateReaction, type Reaction, type Species } from '../../utils/stoichiometryPractice'
+import { UnitToggle, NumInput, SpeciesSelect, StepsPanel } from './StoichiometrySolver'
+import WorkedExample from '../calculations/WorkedExample'
+import SigFigPanel from '../calculations/SigFigPanel'
+import CustomReactionForm from './CustomReactionForm'
+import { buildSigFigBreakdown, lowestSigFigs, type SigFigBreakdown } from '../../utils/sigfigs'
 
 type InputUnit = 'g' | 'mol'
 
 function sig(n: number, sf = 4): string {
   return parseFloat(n.toPrecision(sf)).toString()
 }
+function fmt(n: number) { return parseFloat(n.toPrecision(4)).toString() }
 
 function toMoles(val: number, unit: InputUnit, species: Species): number {
   return unit === 'mol' ? val : val / species.molarMass
@@ -18,6 +23,7 @@ interface TYResult {
   molProduct: number
   gramsProduct: number
   productDisplay: string
+  rawGrams: number
 }
 
 function calcTheoreticalYield(
@@ -48,48 +54,85 @@ function calcTheoreticalYield(
     molProduct: parseFloat(sig(molProduct)),
     gramsProduct: parseFloat(sig(gramsProduct)),
     productDisplay: product.display,
+    rawGrams: gramsProduct,
   }
 }
 
-export default function TheoreticalYieldSolver() {
-  const [rxnIdx,     setRxnIdx]     = useState(0)
-  const [lrFormula,  setLrFormula]  = useState(() => REACTIONS[0].reactants[0].formula)
-  const [lrVal,      setLrVal]      = useState('')
-  const [lrUnit,     setLrUnit]     = useState<InputUnit>('g')
-  const [prodFormula,setProdFormula]= useState(() => REACTIONS[0].products[0].formula)
-  const [result,     setResult]     = useState<TYResult | null>(null)
+function buildWorkedExample(rxn: Reaction) {
+  const lr   = rxn.reactants[0]
+  const prod = rxn.products[0] ?? rxn.reactants[rxn.reactants.length - 1]
+  const massLR  = 20
+  const molLR   = massLR / lr.molarMass
+  const molProd = molLR * (prod.coeff / lr.coeff)
+  const massProd = molProd * prod.molarMass
+  return {
+    problem: `${massLR} g of ${lr.display} is the limiting reagent in the reaction above. What is the theoretical yield of ${prod.display}?`,
+    steps: [
+      `Balanced equation: ${rxn.equation}`,
+      `mol ${lr.display} = ${massLR} g ÷ ${lr.molarMass} g/mol = ${fmt(molLR)} mol`,
+      `mol ${prod.display} = ${fmt(molLR)} × (${prod.coeff}/${lr.coeff}) = ${fmt(molProd)} mol`,
+      `T.Y. = ${fmt(molProd)} mol × ${prod.molarMass} g/mol = ${fmt(massProd)} g`,
+    ],
+    answer: `${fmt(massProd)} g ${prod.display}`,
+  }
+}
 
-  const rxn = REACTIONS[rxnIdx]
+export default function TheoreticalYieldSolver({ allowCustom = true }: { allowCustom?: boolean }) {
+  const [rxn,         setRxn]         = useState<Reaction>(() => generateReaction())
+  const [lrFormula,   setLrFormula]   = useState(() => rxn.reactants[0].formula)
+  const [lrVal,       setLrVal]       = useState('')
+  const [lrUnit,      setLrUnit]      = useState<InputUnit>('g')
+  const [prodFormula, setProdFormula] = useState(() => rxn.products[0]?.formula ?? rxn.reactants[rxn.reactants.length - 1].formula)
+  const [result,      setResult]      = useState<TYResult | null>(null)
+  const [sigBreakdown, setSigBreakdown] = useState<SigFigBreakdown | null>(null)
 
-  function switchReaction(idx: number) {
-    const r = REACTIONS[idx]
-    setRxnIdx(idx)
+  function applyReaction(r: Reaction) {
+    setRxn(r)
     setLrFormula(r.reactants[0].formula)
-    setProdFormula(r.products[0].formula)
+    setProdFormula(r.products[0]?.formula ?? r.reactants[r.reactants.length - 1].formula)
     setLrVal('')
     setResult(null)
+    setSigBreakdown(null)
   }
 
   function handleCalc() {
     const val = parseFloat(lrVal)
     if (isNaN(val) || val <= 0) return
-    const lr   = [...rxn.reactants, ...rxn.products].find(s => s.formula === lrFormula)!
-    const prod = [...rxn.reactants, ...rxn.products].find(s => s.formula === prodFormula)!
+    const allSp = [...rxn.reactants, ...rxn.products]
+    const lr   = allSp.find(s => s.formula === lrFormula)!
+    const prod = allSp.find(s => s.formula === prodFormula)!
     if (!lr || !prod) return
-    setResult(calcTheoreticalYield(rxn, lr, val, lrUnit, prod))
+    const res = calcTheoreticalYield(rxn, lr, val, lrUnit, prod)
+    setResult(res)
+
+    if (lrUnit === 'g') {
+      const sf = lowestSigFigs([lrVal])
+      if (sf) {
+        setSigBreakdown(buildSigFigBreakdown(
+          [{ label: lr.display, value: lrVal }],
+          res.rawGrams, 'g',
+        ))
+      } else {
+        setSigBreakdown(null)
+      }
+    } else {
+      setSigBreakdown(null)
+    }
   }
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
 
-      {/* Reaction selector */}
+      {/* Reaction display */}
       <div className="flex flex-col gap-2">
-        <label className="font-mono text-xs text-secondary tracking-widest uppercase">Reaction</label>
-        <select value={rxnIdx} onChange={e => switchReaction(Number(e.target.value))}
-          className="bg-raised border border-border rounded-sm px-3 py-2
-                     font-sans text-sm text-bright focus:outline-none focus:border-muted">
-          {REACTIONS.map((r, i) => <option key={i} value={i}>{r.name}</option>)}
-        </select>
+        <div className="flex items-center gap-3">
+          <label className="font-mono text-xs text-secondary tracking-widest uppercase">Reaction</label>
+          <button onClick={() => applyReaction(generateReaction())}
+            className="font-mono text-xs px-3 py-1 rounded-sm border border-border text-secondary hover:text-bright transition-colors">
+            New ↺
+          </button>
+          {allowCustom && <CustomReactionForm onApply={applyReaction} />}
+        </div>
         <p className="font-mono text-sm text-secondary">{rxn.equation}</p>
       </div>
 
@@ -97,11 +140,11 @@ export default function TheoreticalYieldSolver() {
       <div className="flex flex-col gap-2">
         <label className="font-mono text-xs text-secondary tracking-widest uppercase">Limiting Reagent (given)</label>
         <div className="flex flex-wrap items-center gap-2">
-          <NumInput value={lrVal} onChange={v => { setLrVal(v); setResult(null) }} />
-          <UnitToggle unit={lrUnit} onChange={u => { setLrUnit(u); setResult(null) }} />
+          <NumInput value={lrVal} onChange={v => { setLrVal(v); setResult(null); setSigBreakdown(null) }} />
+          <UnitToggle unit={lrUnit} onChange={u => { setLrUnit(u); setResult(null); setSigBreakdown(null) }} />
           <span className="font-mono text-xs text-dim">of</span>
           <SpeciesSelect rxn={rxn} value={lrFormula} reactantsOnly
-            onChange={f => { setLrFormula(f); setResult(null) }} />
+            onChange={f => { setLrFormula(f); setResult(null); setSigBreakdown(null) }} />
         </div>
       </div>
 
@@ -109,7 +152,7 @@ export default function TheoreticalYieldSolver() {
       <div className="flex flex-col gap-2">
         <label className="font-mono text-xs text-secondary tracking-widest uppercase">Product to find yield of</label>
         <SpeciesSelect rxn={rxn} value={prodFormula} productsOnly
-          onChange={f => { setProdFormula(f); setResult(null) }} />
+          onChange={f => { setProdFormula(f); setResult(null); setSigBreakdown(null) }} />
       </div>
 
       <button onClick={handleCalc} disabled={!lrVal || parseFloat(lrVal) <= 0}
@@ -144,22 +187,17 @@ export default function TheoreticalYieldSolver() {
                   ({result.molProduct} mol)
                 </span>
               </div>
+              <SigFigPanel breakdown={sigBreakdown} />
               <StepsPanel steps={result.steps} />
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <WorkedExample
-        problem="8.36 g of Fe is the limiting reagent. What is the theoretical yield of Fe₂O₃? (4 Fe + 3 O₂ → 2 Fe₂O₃)"
-        steps={[
-          'Balanced equation: 4 Fe + 3 O₂ → 2 Fe₂O₃',
-          'Convert to moles: 8.36 g ÷ 55.85 g/mol = 0.1497 mol Fe',
-          'Apply mole ratio: 0.1497 mol Fe × (2 mol Fe₂O₃ / 4 mol Fe) = 0.07483 mol Fe₂O₃',
-          'Theoretical yield: 0.07483 mol × 159.69 g/mol = 11.95 g Fe₂O₃',
-        ]}
-        answer="11.95 g Fe₂O₃"
-      />
+      <WorkedExample generate={() => {
+        const ex = buildWorkedExample(rxn)
+        return { scenario: ex.problem, steps: ex.steps, result: ex.answer }
+      }} />
       <p className="font-mono text-xs text-secondary">theoretical yield = moles from limiting reagent × molar mass of product</p>
     </div>
   )

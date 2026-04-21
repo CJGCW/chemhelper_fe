@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { WorkedExample } from './StoichiometrySolver'
+import { generateStoichProblem } from '../../utils/stoichiometryPractice'
+import WorkedExample from '../calculations/WorkedExample'
+import SigFigPanel from '../calculations/SigFigPanel'
+import { buildSigFigBreakdown, lowestSigFigs, type SigFigBreakdown } from '../../utils/sigfigs'
 
 function sig(n: number, sf = 4): string {
   return parseFloat(n.toPrecision(sf)).toString()
@@ -20,6 +23,7 @@ function NumInput({ value, onChange, placeholder = 'value' }: {
 interface PYResult {
   percentYield: number
   steps: string[]
+  rawPct: number
 }
 
 function calcPercentYield(actual: number, theoretical: number): PYResult {
@@ -29,20 +33,32 @@ function calcPercentYield(actual: number, theoretical: number): PYResult {
     `% yield = (${sig(actual)} g / ${sig(theoretical)} g) × 100`,
     `% yield = ${sig(pct, 4)}%`,
   ]
-  return { percentYield: parseFloat(sig(pct, 4)), steps }
+  return { percentYield: parseFloat(sig(pct, 4)), steps, rawPct: pct }
 }
 
 export default function PercentYieldSolver() {
   const [actualVal,      setActualVal]      = useState('')
   const [theoreticalVal, setTheoreticalVal] = useState('')
   const [result,         setResult]         = useState<PYResult | null>(null)
+  const [sigBreakdown,   setSigBreakdown]   = useState<SigFigBreakdown | null>(null)
 
   function handleCalc() {
     const actual      = parseFloat(actualVal)
     const theoretical = parseFloat(theoreticalVal)
     if (isNaN(actual) || isNaN(theoretical) || actual <= 0 || theoretical <= 0) return
     if (actual > theoretical) return
-    setResult(calcPercentYield(actual, theoretical))
+    const res = calcPercentYield(actual, theoretical)
+    setResult(res)
+
+    const sf = lowestSigFigs([actualVal, theoreticalVal])
+    if (sf) {
+      setSigBreakdown(buildSigFigBreakdown(
+        [{ label: 'Actual yield', value: actualVal }, { label: 'Theoretical yield', value: theoreticalVal }],
+        res.rawPct, '%',
+      ))
+    } else {
+      setSigBreakdown(null)
+    }
   }
 
   const canCalc = (() => {
@@ -60,6 +76,8 @@ export default function PercentYieldSolver() {
     return null
   })()
 
+  function clearResult() { setResult(null); setSigBreakdown(null) }
+
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
 
@@ -73,7 +91,7 @@ export default function PercentYieldSolver() {
       <div className="flex flex-col gap-2">
         <label className="font-mono text-xs text-secondary tracking-widest uppercase">Actual Yield (g)</label>
         <div className="flex items-center gap-2">
-          <NumInput value={actualVal} onChange={v => { setActualVal(v); setResult(null) }}
+          <NumInput value={actualVal} onChange={v => { setActualVal(v); clearResult() }}
             placeholder="e.g. 9.85" />
           <span className="font-mono text-xs text-secondary">g</span>
         </div>
@@ -84,7 +102,7 @@ export default function PercentYieldSolver() {
       <div className="flex flex-col gap-2">
         <label className="font-mono text-xs text-secondary tracking-widest uppercase">Theoretical Yield (g)</label>
         <div className="flex items-center gap-2">
-          <NumInput value={theoreticalVal} onChange={v => { setTheoreticalVal(v); setResult(null) }}
+          <NumInput value={theoreticalVal} onChange={v => { setTheoreticalVal(v); clearResult() }}
             placeholder="e.g. 34.06" />
           <span className="font-mono text-xs text-secondary">g</span>
         </div>
@@ -122,6 +140,7 @@ export default function PercentYieldSolver() {
                   {result.percentYield}%
                 </span>
               </div>
+              <SigFigPanel breakdown={sigBreakdown} />
               <div className="rounded-sm border border-border bg-surface px-4 py-3 flex flex-col gap-2">
                 <span className="font-mono text-xs text-secondary tracking-widest uppercase">Solution Steps</span>
                 <div className="flex flex-col gap-1.5 pl-3 border-l border-border">
@@ -135,15 +154,14 @@ export default function PercentYieldSolver() {
         )}
       </AnimatePresence>
 
-      <WorkedExample
-        problem="In a lab synthesis of NH₃ (N₂ + 3H₂ → 2NH₃), the theoretical yield is 34.06 g. The student collected 9.85 g. What is the percent yield?"
-        steps={[
-          '% yield = (actual yield / theoretical yield) × 100',
-          '% yield = (9.85 g / 34.06 g) × 100',
-          '% yield = 28.92%',
-        ]}
-        answer="28.92%"
-      />
+      <WorkedExample generate={() => {
+        const p = generateStoichProblem('percent_yield')
+        return {
+          scenario: p.question,
+          steps: p.steps,
+          result: `${p.answer}%`,
+        }
+      }} />
       <p className="font-mono text-xs text-secondary">% yield = (actual / theoretical) × 100 · theoretical assumes limiting reagent fully consumed</p>
     </div>
   )

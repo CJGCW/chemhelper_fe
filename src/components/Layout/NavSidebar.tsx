@@ -2,6 +2,101 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
+// ── Search index ──────────────────────────────────────────────────────────────
+
+interface SearchItem {
+  label: string
+  formula: string
+  section: string
+  path: string
+  keywords?: string
+}
+
+const SEARCH_INDEX: SearchItem[] = [
+  // Base Calculations
+  { label: 'Sig Figs',          formula: 'sf',        section: 'Base Calculations',  path: '/base-calculations?tab=sig-figs',     keywords: 'significant figures precision' },
+  { label: 'Sci Notation',      formula: '×10ⁿ',      section: 'Base Calculations',  path: '/base-calculations?tab=sci-notation', keywords: 'scientific notation powers of ten' },
+  { label: 'Unit Conversions',  formula: '↔',         section: 'Base Calculations',  path: '/base-calculations?tab=conversions',  keywords: 'unit conversion factor label' },
+  { label: 'Empirical Formula', formula: '⌬',         section: 'Base Calculations',  path: '/empirical',                           keywords: 'empirical molecular formula percent composition' },
+  // Ideal Gas
+  { label: 'Combined Gas Law',  formula: 'P₁V₁/T₁',  section: 'Ideal Gas Law',      path: '/ideal-gas?tab=ref-combined',          keywords: 'boyles charles gay-lussac combined gas law PVT' },
+  { label: "Dalton's Law",      formula: 'Ptot',      section: 'Ideal Gas Law',      path: '/ideal-gas?tab=ref-daltons',           keywords: 'dalton partial pressure mixture' },
+  { label: "Graham's Law",      formula: '√M',        section: 'Ideal Gas Law',      path: '/ideal-gas?tab=ref-grahams',           keywords: 'graham effusion diffusion molar mass rate' },
+  { label: 'Gas Density',       formula: 'ρ=MP/RT',   section: 'Ideal Gas Law',      path: '/ideal-gas?tab=ref-density',           keywords: 'gas density molar mass' },
+  { label: 'Van der Waals',     formula: 'vdW',       section: 'Ideal Gas Law',      path: '/ideal-gas?tab=ref-vdw',               keywords: 'van der waals real gas correction a b' },
+  { label: 'Maxwell-Boltzmann', formula: 'f(v)',      section: 'Ideal Gas Law',      path: '/ideal-gas?tab=ref-maxwell',           keywords: 'maxwell boltzmann speed distribution kinetic' },
+  // Molar Calculations
+  { label: 'Moles',             formula: 'n = m/M',   section: 'Molar Calculations', path: '/calculations?tab=ref-moles',          keywords: 'moles mass molar mass n m M' },
+  { label: 'Molarity',          formula: 'C = n/V',   section: 'Molar Calculations', path: '/calculations?tab=ref-molarity',       keywords: 'molarity concentration solution moles per liter' },
+  { label: 'Molality',          formula: 'b = n/m',   section: 'Molar Calculations', path: '/calculations?tab=ref-molality',       keywords: 'molality concentration moles per kg solvent' },
+  { label: 'Molar Volume',      formula: 'Vm',        section: 'Molar Calculations', path: '/calculations?tab=ref-molar-volume',   keywords: 'molar volume STP gas 22.4' },
+  { label: 'Dilution',          formula: 'C₁V₁',     section: 'Molar Calculations', path: '/calculations?tab=ref-dilution',       keywords: 'dilution C1V1 C2V2 concentration volume' },
+  { label: 'BP Elevation',      formula: 'ΔTb',       section: 'Molar Calculations', path: '/calculations?tab=ref-colligative-bpe',keywords: 'boiling point elevation colligative kb' },
+  { label: 'FP Depression',     formula: 'ΔTf',       section: 'Molar Calculations', path: '/calculations?tab=ref-colligative-fpd',keywords: 'freezing point depression colligative kf' },
+  // Periodic Table
+  { label: 'Periodic Table',    formula: '⬡',         section: 'Periodic Table',     path: '/table',                               keywords: 'periodic table elements' },
+  { label: 'Electron Config',   formula: 'e⁻',        section: 'Periodic Table',     path: '/electron-config?topic=electron_config',keywords: 'electron configuration orbital spdf' },
+  { label: 'Quantum Numbers',   formula: 'QN',        section: 'Periodic Table',     path: '/electron-config?topic=quantum_numbers',keywords: 'quantum numbers n l ml ms spin' },
+  { label: 'Energy Levels',     formula: 'Eₙ',        section: 'Periodic Table',     path: '/electron-config?topic=energy_levels',  keywords: 'energy levels hydrogen Bohr Rydberg' },
+  { label: 'Multi-Electron',    formula: 'Zeff',      section: 'Periodic Table',     path: '/electron-config?topic=multi_electron', keywords: 'multi electron effective nuclear charge shielding zeff' },
+  { label: 'Isoelectronic',     formula: '≡',         section: 'Periodic Table',     path: '/electron-config?topic=isoelectronic',  keywords: 'isoelectronic same electrons ions' },
+  { label: 'Para/Diamagnetic',  formula: 'para',      section: 'Periodic Table',     path: '/electron-config?topic=para_dia',       keywords: 'paramagnetic diamagnetic unpaired electrons' },
+  { label: 'EM Spectrum',       formula: 'λf',        section: 'Periodic Table',     path: '/electron-config?topic=em_spectrum',    keywords: 'electromagnetic spectrum wavelength frequency light' },
+  // Reactions / Redox
+  { label: 'Rxn Classifier',    formula: '⇄',         section: 'Reactions / Redox',  path: '/redox?tab=classifier',                keywords: 'reaction classifier type synthesis decomposition single double displacement combustion' },
+  { label: 'Net Ionic',         formula: '⇌',         section: 'Reactions / Redox',  path: '/redox?tab=net-ionic',                 keywords: 'net ionic equation spectator ions' },
+  { label: 'Rxn Predictor',     formula: '→',         section: 'Reactions / Redox',  path: '/redox?tab=predictor',                 keywords: 'reaction predictor precipitation solubility product' },
+  { label: 'Activity Series',   formula: '↕',         section: 'Reactions / Redox',  path: '/redox?tab=activity',                  keywords: 'activity series reactivity metals displacement' },
+  { label: 'Electrolyte',       formula: '⚡',         section: 'Reactions / Redox',  path: '/redox?tab=electrolyte',               keywords: 'electrolyte strong weak nonelectrolyte' },
+  { label: 'Redox',             formula: 'e⁻',        section: 'Reactions / Redox',  path: '/redox?tab=redox-practice',            keywords: 'redox oxidation reduction electron transfer oxidation state' },
+  { label: 'E°cell / Nernst',   formula: 'E°',        section: 'Reactions / Redox',  path: '/redox?tab=ecell',                     keywords: 'cell potential Nernst equation reduction potential electrochemistry' },
+  // Solubility
+  { label: 'Solubility',        formula: 'S/I',       section: 'Reference',          path: '/reference?tab=solubility',            keywords: 'solubility rules soluble insoluble precipitate' },
+  // Stoichiometry
+  { label: 'Stoichiometry',     formula: 'g↔mol',     section: 'Stoichiometry',      path: '/stoichiometry?tab=stoich',            keywords: 'stoichiometry mole ratio conversion grams moles' },
+  { label: 'Limiting Reagent',  formula: 'LR',        section: 'Stoichiometry',      path: '/stoichiometry?tab=limiting',          keywords: 'limiting reagent reactant excess' },
+  { label: 'Theoretical Yield', formula: 'T.Y.',      section: 'Stoichiometry',      path: '/stoichiometry?tab=theoretical',       keywords: 'theoretical yield maximum product' },
+  { label: 'Percent Yield',     formula: '%Y',        section: 'Stoichiometry',      path: '/stoichiometry?tab=percent',           keywords: 'percent yield actual theoretical' },
+  { label: 'Solution Stoich',   formula: 'M·V',       section: 'Stoichiometry',      path: '/stoichiometry?tab=solution',          keywords: 'solution stoichiometry molarity volume' },
+  { label: 'Gas Stoich',        formula: 'PV',        section: 'Stoichiometry',      path: '/stoichiometry?tab=gas-stoich-practice',keywords: 'gas stoichiometry PV=nRT' },
+  { label: 'Balance',           formula: '_□_',       section: 'Stoichiometry',      path: '/stoichiometry?tab=balance-practice',  keywords: 'balance equations balancing coefficients' },
+  // Structures
+  { label: 'Lewis Structures',  formula: '⌬',         section: 'Structures',         path: '/structures?tab=lewis',                keywords: 'lewis structure dot diagram electron pairs bonds' },
+  { label: 'VSEPR',             formula: '⬡',         section: 'Structures',         path: '/structures?tab=vsepr',                keywords: 'VSEPR geometry molecular shape electron domain' },
+  { label: 'Solid Types',       formula: '4 types',   section: 'Structures',         path: '/structures?tab=solid-types',          keywords: 'solid types ionic metallic covalent molecular' },
+  { label: 'Unit Cell',         formula: 'SC/BCC/FCC',section: 'Structures',         path: '/structures?tab=unit-cell',            keywords: 'unit cell simple cubic BCC FCC packing' },
+  // Thermochemistry
+  { label: 'Calorimetry',       formula: 'q',         section: 'Thermochemistry',    path: '/thermochemistry?tab=calorimetry-reference', keywords: 'calorimetry q=mcΔT heat capacity specific heat' },
+  { label: 'Enthalpy ΔHrxn',    formula: 'ΔH',        section: 'Thermochemistry',    path: '/thermochemistry?tab=enthalpy-reference',    keywords: 'enthalpy delta H reaction standard formation' },
+  { label: "Hess's Law",        formula: 'ΣΔH',       section: 'Thermochemistry',    path: '/thermochemistry?tab=hess-reference',        keywords: 'hess law enthalpy path independent sum' },
+  { label: 'Bond Enthalpy',     formula: 'BE',        section: 'Thermochemistry',    path: '/thermochemistry?tab=bond-reference',        keywords: 'bond enthalpy energy dissociation broken formed' },
+  { label: 'Reaction Profiles', formula: '⇀',         section: 'Thermochemistry',    path: '/thermochemistry?tab=profile',               keywords: 'reaction profile energy diagram activation energy Ea exothermic endothermic' },
+  { label: 'Heat Transfer',     formula: 'q₁=−q₂',   section: 'Thermochemistry',    path: '/thermochemistry?tab=heattransfer-reference', keywords: 'heat transfer calorimetry q1 q2' },
+  { label: 'Heating Curves',    formula: 'q/T',       section: 'Thermochemistry',    path: '/thermochemistry?tab=heating-curve-reference',keywords: 'heating curve phase change melting boiling temperature' },
+  { label: 'Phase Diagrams',    formula: 'P-T',       section: 'Thermochemistry',    path: '/thermochemistry?tab=phase-diagram-reference',keywords: 'phase diagram solid liquid gas triple critical point' },
+  { label: 'Liquid Props',      formula: 'γ/η',       section: 'Thermochemistry',    path: '/thermochemistry?tab=liquid-props',           keywords: 'liquid properties surface tension viscosity vapor pressure' },
+  { label: 'Clausius-Clap.',    formula: 'ln P',      section: 'Thermochemistry',    path: '/thermochemistry?tab=cc-reference',           keywords: 'clausius clapeyron vapor pressure temperature enthalpy vaporization' },
+  // Practice
+  { label: 'Test Generator',    formula: '✎',         section: 'Practice',           path: '/test',                                keywords: 'test generator practice problems worksheet' },
+  { label: 'Print Reference',   formula: '⎙',         section: 'Practice',           path: '/print',                               keywords: 'print reference sheet cheat sheet' },
+  // Tools
+  { label: 'Ketcher Editor',    formula: '✎',         section: 'Tools',              path: '/tools?tool=ketcher',                  keywords: 'ketcher structure editor draw molecule' },
+  { label: 'Compound',          formula: '◈',         section: 'Tools',              path: '/compound',                            keywords: 'compound lookup molecular weight formula' },
+  { label: 'Naming',            formula: 'Nm',        section: 'Tools',              path: '/reference?tab=naming',                keywords: 'naming compounds ionic covalent acids nomenclature' },
+  { label: 'Glossary',          formula: 'A–Z',       section: 'Tools',              path: '/glossary',                            keywords: 'glossary definitions terms vocabulary chemistry' },
+]
+
+function searchItems(query: string): SearchItem[] {
+  const q = query.toLowerCase().trim()
+  if (!q) return []
+  return SEARCH_INDEX.filter(item =>
+    item.label.toLowerCase().includes(q) ||
+    item.section.toLowerCase().includes(q) ||
+    item.formula.toLowerCase().includes(q) ||
+    (item.keywords ?? '').toLowerCase().includes(q)
+  )
+}
+
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -798,6 +893,8 @@ function ExpandableSection({ icon, label, isActive, expanded, onToggle, children
 
 export default function NavSidebar({ open, onClose, theme, onToggleTheme }: Props) {
   const location = useLocation()
+  const navigate = useNavigate()
+  const [query, setQuery] = useState('')
 
   const currentPath   = location.pathname
 
@@ -836,135 +933,181 @@ export default function NavSidebar({ open, onClose, theme, onToggleTheme }: Prop
           </span>
         </div>
         <p className="font-mono text-[9px] lg:text-[10px] text-dim mt-0.5 tracking-wider">CHEMISTRY TOOLKIT</p>
+        {/* Search */}
+        <div className="relative mt-3">
+          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 font-mono text-[10px] text-dim pointer-events-none">⌕</span>
+          <input
+            type="text"
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            placeholder="Search topics…"
+            className="w-full font-mono text-xs pl-6 pr-7 py-1.5 rounded-sm border border-border bg-raised text-primary placeholder-dim focus:outline-none focus:border-accent/40 transition-colors"
+          />
+          {query && (
+            <button
+              onClick={() => setQuery('')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 font-mono text-[10px] text-dim hover:text-secondary transition-colors"
+            >
+              ✕
+            </button>
+          )}
+        </div>
       </div>
 
       <nav className="flex-1 overflow-y-auto py-2">
 
-        {/* Reference / Calculations */}
-        <NavGroup label="Topics" expanded={refCalcOpen} onToggle={() => setRefCalcOpen(e => !e)} />
-        <AnimatePresence initial={false}>
-          {refCalcOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }}
-              style={{ overflow: 'hidden' }}
-            >
-              <ExpandableSection
-                icon="±" label="Base Calculations"
-                isActive={isBaseCalcActive} expanded={baseCalcExpanded}
-                onToggle={() => setBaseCalcExpanded(e => !e)}
+        {/* Search results */}
+        {query.trim() && (() => {
+          const results = searchItems(query)
+          return (
+            <div className="flex flex-col gap-0.5 py-2">
+              {results.length === 0 ? (
+                <p className="font-mono text-xs text-dim px-5 py-3">No results for "{query}"</p>
+              ) : results.map(item => (
+                <button
+                  key={item.path}
+                  onClick={() => { navigate(item.path); setQuery(''); onClose() }}
+                  className="w-full flex items-center gap-2 pl-4 pr-3 py-1.5 mx-2 rounded-sm font-sans text-sm text-left text-secondary hover:text-primary hover:bg-surface transition-all"
+                  style={{ width: 'calc(100% - 16px)' }}
+                >
+                  <span className="nav-sub-formula font-mono text-[9px] shrink-0 w-8 text-right">{item.formula}</span>
+                  <div className="flex flex-col min-w-0">
+                    <span className="truncate text-[13px]">{item.label}</span>
+                    <span className="font-mono text-[9px] text-dim">{item.section}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )
+        })()}
+
+        {/* Normal nav — hidden during search */}
+        {!query.trim() && (<>
+          {/* Reference / Calculations */}
+          <NavGroup label="Topics" expanded={refCalcOpen} onToggle={() => setRefCalcOpen(e => !e)} />
+          <AnimatePresence initial={false}>
+            {refCalcOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }}
+                style={{ overflow: 'hidden' }}
               >
-                {BASE_CALC_ITEMS.map((item, i) => <BaseCalcSubItem key={i} item={item} onNavigate={onClose} />)}
-                <PathSubItem path="/empirical" formula="⌬" label="Empirical Formula" onNavigate={onClose} />
-              </ExpandableSection>
+                <ExpandableSection
+                  icon="±" label="Base Calculations"
+                  isActive={isBaseCalcActive} expanded={baseCalcExpanded}
+                  onToggle={() => setBaseCalcExpanded(e => !e)}
+                >
+                  {BASE_CALC_ITEMS.map((item, i) => <BaseCalcSubItem key={i} item={item} onNavigate={onClose} />)}
+                  <PathSubItem path="/empirical" formula="⌬" label="Empirical Formula" onNavigate={onClose} />
+                </ExpandableSection>
 
+                <ExpandableSection
+                  icon="PV" label="Ideal Gas Law"
+                  isActive={isIdealGasNavActive} expanded={idealGasNavExpanded}
+                  onToggle={() => setIdealGasNavExpanded(e => !e)}
+                >
+                  <IdealGasGroupedItems onNavigate={onClose} />
+                </ExpandableSection>
 
-              <ExpandableSection
-                icon="PV" label="Ideal Gas Law"
-                isActive={isIdealGasNavActive} expanded={idealGasNavExpanded}
-                onToggle={() => setIdealGasNavExpanded(e => !e)}
+                <ExpandableSection
+                  icon="⚗" label="Molar Calculations"
+                  isActive={isMolarCalcActive} expanded={calcExpanded}
+                  onToggle={() => setCalcExpanded(e => !e)}
+                >
+                  <CalcGroupedItems onNavigate={onClose} />
+                </ExpandableSection>
+
+                <ExpandableSection
+                  icon="⬡" label="Periodic Table"
+                  isActive={isTableActive} expanded={tableExpanded}
+                  onToggle={() => setTableExpanded(e => !e)}
+                >
+                  <TableGroupedItems onNavigate={onClose} />
+                </ExpandableSection>
+
+                <ExpandableSection
+                  icon="⇌" label="Reactions / Redox"
+                  isActive={isRedoxActive} expanded={redoxExpanded}
+                  onToggle={() => setRedoxExpanded(e => !e)}
+                >
+                  <RedoxGroupedItems onNavigate={onClose} />
+                </ExpandableSection>
+
+                <PracticeNavItem path="/reference?tab=solubility" icon="S/I" label="Solubility" onNavigate={onClose} />
+
+                <ExpandableSection
+                  icon="⚖" label="Stoichiometry"
+                  isActive={isStoichActive} expanded={stoichExpanded}
+                  onToggle={() => setStoichExpanded(e => !e)}
+                >
+                  <StoichGroupedItems onNavigate={onClose} />
+                </ExpandableSection>
+
+                <ExpandableSection
+                  icon="⬡" label="Structures"
+                  isActive={isStructActive} expanded={structExpanded}
+                  onToggle={() => setStructExpanded(e => !e)}
+                >
+                  {STRUCTURE_ITEMS.map((item, i) => (
+                    <PathSubItem key={i} path={item.path} formula={item.formula} label={item.label} onNavigate={onClose} />
+                  ))}
+                </ExpandableSection>
+
+                <ExpandableSection
+                  icon="ΔH" label="Thermochemistry"
+                  isActive={isThermoActive} expanded={thermoExpanded}
+                  onToggle={() => setThermoExpanded(e => !e)}
+                >
+                  <ThermoGroupedItems onNavigate={onClose} />
+                </ExpandableSection>
+
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Practice */}
+          <NavGroup label="Practice" expanded={pracSectionOpen} onToggle={() => setPracSectionOpen(e => !e)} />
+          <AnimatePresence initial={false}>
+            {pracSectionOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }}
+                style={{ overflow: 'hidden' }}
               >
-                <IdealGasGroupedItems onNavigate={onClose} />
-              </ExpandableSection>
+                <TestNavItem onNavigate={onClose} />
+                <PracticeNavItem path="/print" icon="⎙" label="Print Reference" onNavigate={onClose} />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-              <ExpandableSection
-                icon="⚗" label="Molar Calculations"
-                isActive={isMolarCalcActive} expanded={calcExpanded}
-                onToggle={() => setCalcExpanded(e => !e)}
+          {/* Tools */}
+          <NavGroup label="Tools/Reference" expanded={toolsSectionOpen} onToggle={() => setToolsSectionOpen(e => !e)} />
+          <AnimatePresence initial={false}>
+            {toolsSectionOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }}
+                style={{ overflow: 'hidden' }}
               >
-                <CalcGroupedItems onNavigate={onClose} />
-              </ExpandableSection>
-
-
-              <ExpandableSection
-                icon="⬡" label="Periodic Table"
-                isActive={isTableActive} expanded={tableExpanded}
-                onToggle={() => setTableExpanded(e => !e)}
-              >
-                <TableGroupedItems onNavigate={onClose} />
-              </ExpandableSection>
-
-              <ExpandableSection
-                icon="⇌" label="Reactions / Redox"
-                isActive={isRedoxActive} expanded={redoxExpanded}
-                onToggle={() => setRedoxExpanded(e => !e)}
-              >
-                <RedoxGroupedItems onNavigate={onClose} />
-              </ExpandableSection>
-
-              <PracticeNavItem path="/reference?tab=solubility" icon="S/I" label="Solubility" onNavigate={onClose} />
-
-              <ExpandableSection
-                icon="⚖" label="Stoichiometry"
-                isActive={isStoichActive} expanded={stoichExpanded}
-                onToggle={() => setStoichExpanded(e => !e)}
-              >
-                <StoichGroupedItems onNavigate={onClose} />
-              </ExpandableSection>
-
-              <ExpandableSection
-                icon="⬡" label="Structures"
-                isActive={isStructActive} expanded={structExpanded}
-                onToggle={() => setStructExpanded(e => !e)}
-              >
-                {STRUCTURE_ITEMS.map((item, i) => (
-                  <PathSubItem key={i} path={item.path} formula={item.formula} label={item.label} onNavigate={onClose} />
-                ))}
-              </ExpandableSection>
-
-              <ExpandableSection
-                icon="ΔH" label="Thermochemistry"
-                isActive={isThermoActive} expanded={thermoExpanded}
-                onToggle={() => setThermoExpanded(e => !e)}
-              >
-                <ThermoGroupedItems onNavigate={onClose} />
-              </ExpandableSection>
-
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Practice */}
-        <NavGroup label="Practice" expanded={pracSectionOpen} onToggle={() => setPracSectionOpen(e => !e)} />
-        <AnimatePresence initial={false}>
-          {pracSectionOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }}
-              style={{ overflow: 'hidden' }}
-            >
-              <TestNavItem onNavigate={onClose} />
-              <PracticeNavItem path="/print" icon="⎙" label="Print Reference" onNavigate={onClose} />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Tools */}
-        <NavGroup label="Tools/Reference" expanded={toolsSectionOpen} onToggle={() => setToolsSectionOpen(e => !e)} />
-        <AnimatePresence initial={false}>
-          {toolsSectionOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }}
-              style={{ overflow: 'hidden' }}
-            >
-              <PracticeNavItem path="/tools?tool=ketcher" icon="✎" label="Ketcher Editor" onNavigate={onClose} />
-              <PracticeNavItem path="/compound" icon="◈" label="Compound" onNavigate={onClose} />
-              <PracticeNavItem path="/reference?tab=naming" icon="Nm" label="Naming" onNavigate={onClose} />
-              <button
-                onClick={onToggleTheme}
-                title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-                className="w-full flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px] transition-all duration-150 text-left text-secondary hover:text-primary"
-                style={{ width: 'calc(100% - 16px)' }}
-              >
-                <span className="font-mono text-base leading-none shrink-0 w-4 text-center" style={{ color: 'rgb(var(--color-secondary))' }}>
-                  {theme === 'dark' ? '☀' : '☾'}
-                </span>
-                <span className="flex-1">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                <PracticeNavItem path="/tools?tool=ketcher" icon="✎" label="Ketcher Editor" onNavigate={onClose} />
+                <PracticeNavItem path="/compound" icon="◈" label="Compound" onNavigate={onClose} />
+                <PracticeNavItem path="/reference?tab=naming" icon="Nm" label="Naming" onNavigate={onClose} />
+                <PracticeNavItem path="/glossary" icon="Az" label="Glossary" onNavigate={onClose} />
+                <button
+                  onClick={onToggleTheme}
+                  title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                  className="w-full flex items-center gap-2.5 px-4 py-2 mx-2 rounded-sm font-sans text-sm lg:text-[13.5px] transition-all duration-150 text-left text-secondary hover:text-primary"
+                  style={{ width: 'calc(100% - 16px)' }}
+                >
+                  <span className="font-mono text-base leading-none shrink-0 w-4 text-center" style={{ color: 'rgb(var(--color-secondary))' }}>
+                    {theme === 'dark' ? '☀' : '☾'}
+                  </span>
+                  <span className="flex-1">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </>)}
 
       </nav>
 
