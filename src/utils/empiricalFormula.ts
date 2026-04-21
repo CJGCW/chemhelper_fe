@@ -163,6 +163,7 @@ export interface SolverResult {
   empiricalMolarMass: number
   molecularMultiplier?: number
   molecularFormula?: string
+  molecularMassWarning?: string
 }
 
 export function solveEmpiricalFormula(
@@ -192,16 +193,24 @@ export function solveEmpiricalFormula(
 
   let molecularMultiplier: number | undefined
   let molecularFormula: string | undefined
+  let molecularMassWarning: string | undefined
   if (molecularMass && isFinite(molecularMass) && molecularMass > 0) {
-    molecularMultiplier = Math.round(molecularMass / empiricalMolarMass)
-    if (molecularMultiplier >= 1) {
+    const rawRatio = molecularMass / empiricalMolarMass
+    const rounded  = Math.round(rawRatio)
+    const relErr   = Math.abs(rawRatio - rounded) / Math.max(rounded, 1)
+    if (rounded >= 1 && relErr < 0.05) {
+      molecularMultiplier = rounded
       molecularFormula = formatFormula(
-        Object.fromEntries(rows.map(r => [r.symbol, r.subscript * molecularMultiplier!]))
+        Object.fromEntries(rows.map(r => [r.symbol, r.subscript * rounded]))
       )
+    } else {
+      molecularMassWarning = rounded < 1
+        ? 'Molecular mass is smaller than empirical mass — check your input.'
+        : `Molecular mass doesn't fit a whole-number multiple of the empirical mass (ratio ≈ ${rawRatio.toFixed(2)}).`
     }
   }
 
-  return { rows, multiplier, empiricalFormula, empiricalMolarMass, molecularMultiplier, molecularFormula }
+  return { rows, multiplier, empiricalFormula, empiricalMolarMass, molecularMultiplier, molecularFormula, molecularMassWarning }
 }
 
 // ── Compound pool ─────────────────────────────────────────────────────────────

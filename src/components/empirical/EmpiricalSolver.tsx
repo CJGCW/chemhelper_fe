@@ -292,6 +292,11 @@ export default function EmpiricalSolver() {
                 />
               )}
             </div>
+            {result.molecularMassWarning && (
+              <p className="font-mono text-xs text-amber-400 border border-amber-700/40 bg-amber-950/20 rounded-sm px-3 py-2">
+                ⚠ {result.molecularMassWarning}
+              </p>
+            )}
 
             {/* Percent composition check */}
             <div className="flex flex-col gap-1 border-t border-border pt-3">
