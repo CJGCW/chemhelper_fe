@@ -6,6 +6,7 @@ import WorkedExample from '../calculations/WorkedExample'
 import SigFigPanel from '../calculations/SigFigPanel'
 import CustomReactionForm from './CustomReactionForm'
 import { buildSigFigBreakdown, lowestSigFigs, formatSigFigs, roundToSigFigs, type SigFigBreakdown } from '../../utils/sigfigs'
+import { limitingReagent } from '../../chem/stoich'
 
 type InputUnit = 'g' | 'mol'
 
@@ -13,10 +14,6 @@ function sig(n: number, sf = 4): string {
   return parseFloat(n.toPrecision(sf)).toString()
 }
 function fmt(n: number): string { return parseFloat(n.toPrecision(4)).toString() }
-
-function toMoles(val: number, unit: InputUnit, species: Species): number {
-  return unit === 'mol' ? val : val / species.molarMass
-}
 
 // ── N-reactant limiting reagent calculation ───────────────────────────────────
 
@@ -27,7 +24,7 @@ interface LRResult {
   limitingReagent: Species | null
   excess: ExcessEntry[]
   products: { species: Species; mol: number; grams: number }[]
-  rawFirstG: number   // unrounded grams of first output — for sig fig breakdown
+  rawFirstG: number
 }
 
 function calcLimitingReagent(
@@ -41,19 +38,26 @@ function calcLimitingReagent(
   const steps: string[] = []
   steps.push(`Balanced equation: ${rxn.equation}`)
 
-  const mols = rxn.reactants.map((sp, i) => {
+  // Delegate pure chemistry to domain layer
+  const chemResult = limitingReagent(
+    rxn.reactants.map((sp, i) => ({
+      coeff: sp.coeff,
+      molarMass: sp.molarMass,
+      amount: { value: inputs[i]?.val ?? 0, unit: inputs[i]?.unit ?? ('g' as InputUnit) },
+    })),
+    rxn.products.map(p => ({ coeff: p.coeff, molarMass: p.molarMass })),
+  )
+
+  const { limitingIdx, molPerCoeff, mols } = chemResult
+
+  // Build step strings
+  rxn.reactants.forEach((sp, i) => {
     const { val, unit } = inputs[i] ?? { val: 0, unit: 'g' as InputUnit }
-    const mol = toMoles(val, unit, sp)
     const label = unit === 'g' ? `${val} g ÷ ${sp.molarMass} g/mol` : `${val} mol`
-    steps.push(`mol ${sp.display} = ${label} = ${disp(mol)} mol`)
-    return mol
+    steps.push(`mol ${sp.display} = ${label} = ${disp(mols[i])} mol`)
   })
 
-  let limitingIdx = 0
-  let molPerCoeff: number
-
   if (rxn.reactants.length === 1) {
-    molPerCoeff = mols[0] / rxn.reactants[0].coeff
     steps.push(`→ Single reactant: ${rxn.reactants[0].display}`)
   } else {
     if (rxn.reactants.length === 2) {
@@ -63,32 +67,29 @@ function calcLimitingReagent(
     } else {
       steps.push(`mol/coeff ratios: ${rxn.reactants.map((sp, i) => `${sp.display}: ${disp(mols[i] / sp.coeff)}`).join(' | ')}`)
     }
-    const ratios = rxn.reactants.map((sp, i) => mols[i] / sp.coeff)
-    limitingIdx = ratios.indexOf(Math.min(...ratios))
-    molPerCoeff = ratios[limitingIdx]
     const limiting = rxn.reactants[limitingIdx]
     const excessNames = rxn.reactants.filter((_, i) => i !== limitingIdx).map(s => s.display).join(', ')
     steps.push(`→ ${limiting.display} is the limiting reagent (${excessNames} in excess)`)
   }
 
-  const limitingR = rxn.reactants[limitingIdx]
+  const limitingR   = rxn.reactants[limitingIdx]
   const limitingMol = mols[limitingIdx]
 
   let rawFirstG = 0
   const excess: ExcessEntry[] = []
   rxn.reactants.forEach((sp, i) => {
     if (rxn.reactants.length === 1 || i === limitingIdx) return
-    const consumed = molPerCoeff * sp.coeff
-    const remaining = mols[i] - consumed
-    const gRemaining = remaining * sp.molarMass
+    const consumed  = molPerCoeff * sp.coeff
+    const remaining = chemResult.excessMol[i]
+    const gRemaining = chemResult.excessGrams[i]
     if (rawFirstG === 0) rawFirstG = gRemaining
     steps.push(`${sp.display} consumed: ${disp(consumed)} mol; remaining: ${disp(remaining)} mol (${disp(gRemaining)} g)`)
     excess.push({ species: sp, remainingMol: rnd(remaining), remainingG: rnd(gRemaining) })
   })
 
   const products = rxn.products.map((prod, pi) => {
-    const mol = molPerCoeff * prod.coeff
-    const grams = mol * prod.molarMass
+    const mol   = chemResult.productMols[pi]
+    const grams = chemResult.productGrams[pi]
     if (pi === 0) rawFirstG = grams
     steps.push(`Theoretical yield ${prod.display}: ${disp(limitingMol)} × (${prod.coeff}/${limitingR.coeff}) × ${prod.molarMass} g/mol = ${disp(grams)} g`)
     return { species: prod, mol: rnd(mol), grams: rnd(grams) }
