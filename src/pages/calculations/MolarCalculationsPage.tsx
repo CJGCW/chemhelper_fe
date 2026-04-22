@@ -3,17 +3,17 @@ import { useSearchParams } from 'react-router-dom'
 import { useEffect } from 'react'
 import ExplanationModal from '../../components/calculations/ExplanationModal'
 import type { ExplanationContent } from '../../components/calculations/ExplanationModal'
-import MolesCalc from '../../components/calculations/MolesCalc'
-import MolarityCalc from '../../components/calculations/MolarityCalc'
-import MolalityCalc from '../../components/calculations/MolalityCalc'
-import ColligativeCalc from '../../components/calculations/ColligativeCalc'
+import MolesTool from '../../components/calculations/MolesTool'
+import MolarityTool from '../../components/calculations/MolarityTool'
+import MolalityTool from '../../components/calculations/MolalityTool'
+import ColligativeTool from '../../components/calculations/ColligativeTool'
 import MolarPractice from '../../components/calculations/MolarPractice'
 import MolarReference, { type RefTopic } from '../../components/calculations/MolarReference'
-import MolarVolumeCalc from '../../components/calculations/MolarVolumeCalc'
-import PercentCompositionCalc from '../../components/calculations/PercentCompositionCalc'
+import MolarVolumeTool from '../../components/calculations/MolarVolumeTool'
+import PercentCompositionTool from '../../components/calculations/PercentCompositionTool'
 import PercentCompositionPractice from '../../components/calculations/PercentCompositionPractice'
 import SigFigPractice from '../../components/calculations/SigFigPractice'
-import DilutionCalc from '../../components/calculations/DilutionCalc'
+import DilutionTool from '../../components/calculations/DilutionTool'
 import ConcentrationConverter from '../../components/calculations/ConcentrationConverter'
 import DilutionConcPractice from '../../components/calculations/DilutionConcPractice'
 import { useState } from 'react'
@@ -579,15 +579,15 @@ export default function MolarCalculationsPage() {
           exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.18 }}
         >
-          {activeTab === 'moles'               && <MolesCalc />}
-          {activeTab === 'molarity'            && <MolarityCalc />}
-          {activeTab === 'molality'            && <MolalityCalc />}
-          {activeTab === 'colligative'         && <ColligativeCalc initialMode={colligativeMode} />}
-          {activeTab === 'colligative-bpe'     && <ColligativeCalc initialMode="bpe" />}
-          {activeTab === 'colligative-fpd'     && <ColligativeCalc initialMode="fpd" />}
-          {activeTab === 'molar-volume'        && <MolarVolumeCalc />}
-          {activeTab === 'percent-comp'        && <PercentCompositionCalc />}
-          {activeTab === 'dilution'            && <DilutionCalc />}
+          {activeTab === 'moles'               && <MolesTool />}
+          {activeTab === 'molarity'            && <MolarityTool />}
+          {activeTab === 'molality'            && <MolalityTool />}
+          {activeTab === 'colligative'         && <ColligativeTool initialMode={colligativeMode} />}
+          {activeTab === 'colligative-bpe'     && <ColligativeTool initialMode="bpe" />}
+          {activeTab === 'colligative-fpd'     && <ColligativeTool initialMode="fpd" />}
+          {activeTab === 'molar-volume'        && <MolarVolumeTool />}
+          {activeTab === 'percent-comp'        && <PercentCompositionTool />}
+          {activeTab === 'dilution'            && <DilutionTool />}
           {activeTab === 'conc-converter'      && <ConcentrationConverter />}
           {activeTab === 'practice'            && <MolarPractice />}
           {activeTab === 'perc-comp-practice'  && <PercentCompositionPractice />}

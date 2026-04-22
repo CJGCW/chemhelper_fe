@@ -242,7 +242,7 @@ const GEOMETRIES: GeometryEntry[] = [
 
 export default function VsepReference() {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       {/* Concepts */}
       <div>

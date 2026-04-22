@@ -1,6 +1,4 @@
-function SectionHead({ label }: { label: string }) {
-  return <h3 className="font-mono text-xs text-secondary tracking-widest uppercase">{label}</h3>
-}
+import { SectionHead } from '../Layout/PageShell'
 
 const SPECIFIC_HEATS = [
   { substance: 'Water (l)',  formula: 'H₂O (l)',  c: '4.184'  },

@@ -1,3 +1,4 @@
+import React from 'react'
 import { useReactFlow, type EdgeProps, type Edge } from '@xyflow/react'
 import type { ElectronSlots } from './EditorAtomNode'
 

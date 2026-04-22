@@ -2,35 +2,35 @@ import { useSearchParams } from 'react-router-dom'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
-import CalorimetryCalc from '../components/thermo/CalorimetryCalc'
+import CalorimetryTool from '../components/thermo/CalorimetryTool'
 import CalorimetryPractice from '../components/thermo/CalorimetryPractice'
 import CalorimetryReference from '../components/thermo/CalorimetryReference'
-import EnthalpyCalc from '../components/thermo/EnthalpyCalc'
+import EnthalpyTool from '../components/thermo/EnthalpyTool'
 import EnthalpyPractice from '../components/thermo/EnthalpyPractice'
 import EnthalpyReference from '../components/thermo/EnthalpyReference'
-import HessCalc from '../components/thermo/HessCalc'
+import HessTool from '../components/thermo/HessTool'
 import HessPractice from '../components/thermo/HessPractice'
 import HessReference from '../components/thermo/HessReference'
-import BondEnthalpyCalc from '../components/thermo/BondEnthalpyCalc'
+import BondEnthalpyTool from '../components/thermo/BondEnthalpyTool'
 import BondEnthalpyPractice from '../components/thermo/BondEnthalpyPractice'
 import BondEnthalpyReference from '../components/thermo/BondEnthalpyReference'
 import EnergyDiagram from '../components/thermo/EnergyDiagram'
-import HeatTransferCalc from '../components/thermo/HeatTransferCalc'
+import HeatTransferTool from '../components/thermo/HeatTransferTool'
 import HeatTransferPractice from '../components/thermo/HeatTransferPractice'
 import HeatTransferReference from '../components/thermo/HeatTransferReference'
-import HeatingCurveCalc from '../components/thermo/HeatingCurveCalc'
+import HeatingCurveTool from '../components/thermo/HeatingCurveTool'
 import HeatingCurveProblems from '../components/thermo/HeatingCurveProblems'
 import HeatingCurveReference from '../components/thermo/HeatingCurveReference'
 import PhaseDiagram from '../components/thermo/PhaseDiagram'
 import PhaseDiagramProblems from '../components/thermo/PhaseDiagramProblems'
 import PhaseDiagramReference from '../components/thermo/PhaseDiagramReference'
 import LiquidProperties from '../components/thermo/LiquidProperties'
-import ClausiusClapeyronCalc from '../components/thermo/ClausiusClapeyronCalc'
+import ClausiusClapeyronTool from '../components/thermo/ClausiusClapeyronTool'
 import ClausiusClapeyronPractice from '../components/thermo/ClausiusClapeyronPractice'
 import ClausiusClapeyronReference from '../components/thermo/ClausiusClapeyronReference'
-import VaporPressureCalc from '../components/thermo/VaporPressureCalc'
+import VaporPressureTool from '../components/thermo/VaporPressureTool'
 import ReactionProfilePractice from '../components/thermo/ReactionProfilePractice'
-import ReactionProfileCalc from '../components/thermo/ReactionProfileCalc'
+import ReactionProfileTool from '../components/thermo/ReactionProfileTool'
 import PageShell from '../components/Layout/PageShell'
 
 type Tab =
@@ -447,33 +447,33 @@ export default function ThermochemistryPage() {
         <motion.div key={tab}
           initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-          {tab === 'calorimetry'           && <CalorimetryCalc />}
+          {tab === 'calorimetry'           && <CalorimetryTool />}
           {tab === 'calorimetry-practice'  && <CalorimetryPractice />}
           {tab === 'calorimetry-reference' && <CalorimetryReference />}
-          {tab === 'enthalpy'              && <EnthalpyCalc />}
+          {tab === 'enthalpy'              && <EnthalpyTool />}
           {tab === 'enthalpy-practice'     && <EnthalpyPractice />}
           {tab === 'enthalpy-reference'    && <EnthalpyReference />}
-          {tab === 'hess'                  && <HessCalc />}
+          {tab === 'hess'                  && <HessTool />}
           {tab === 'hess-practice'         && <HessPractice />}
           {tab === 'hess-reference'        && <HessReference />}
-          {tab === 'bond'                  && <BondEnthalpyCalc />}
+          {tab === 'bond'                  && <BondEnthalpyTool />}
           {tab === 'bond-practice'         && <BondEnthalpyPractice />}
           {tab === 'bond-reference'        && <BondEnthalpyReference />}
           {tab === 'profile'               && <EnergyDiagram />}
-          {tab === 'profile-practice'      && <ReactionProfileCalc />}
+          {tab === 'profile-practice'      && <ReactionProfileTool />}
           {tab === 'profile-problems'      && <ReactionProfilePractice />}
-          {tab === 'heattransfer'           && <HeatTransferCalc />}
+          {tab === 'heattransfer'           && <HeatTransferTool />}
           {tab === 'heattransfer-practice'  && <HeatTransferPractice />}
           {tab === 'heattransfer-reference' && <HeatTransferReference />}
-          {tab === 'heating-curve'           && <HeatingCurveCalc />}
+          {tab === 'heating-curve'           && <HeatingCurveTool />}
           {tab === 'heating-curve-problems'  && <HeatingCurveProblems />}
           {tab === 'heating-curve-reference' && <HeatingCurveReference />}
           {tab === 'phase-diagram'           && <PhaseDiagram />}
           {tab === 'phase-diagram-problems'  && <PhaseDiagramProblems />}
           {tab === 'phase-diagram-reference' && <PhaseDiagramReference />}
           {tab === 'liquid-props'           && <LiquidProperties />}
-          {tab === 'cc'                     && <ClausiusClapeyronCalc />}
-          {tab === 'vapor-pressure'         && <VaporPressureCalc />}
+          {tab === 'cc'                     && <ClausiusClapeyronTool />}
+          {tab === 'vapor-pressure'         && <VaporPressureTool />}
           {tab === 'cc-practice'            && <ClausiusClapeyronPractice />}
           {tab === 'cc-reference'           && <ClausiusClapeyronReference />}
         </motion.div>

@@ -1,14 +1,12 @@
+import { SectionHead } from '../Layout/PageShell'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import GasDensityCalc from './GasDensityCalc'
+import GasDensityTool from './GasDensityTool'
 
-function SectionHead({ label }: { label: string }) {
-  return <h3 className="font-mono text-xs text-secondary tracking-widest uppercase">{label}</h3>
-}
 
 function ReferenceContent() {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
       <div className="rounded-sm border border-border bg-raised px-6 py-5 flex flex-col gap-4">
         <p className="font-mono text-2xl font-bold text-bright">M = ρRT / P</p>
         <p className="font-sans text-sm text-secondary">
@@ -86,7 +84,7 @@ const EXAMPLES = [
 
 function ExamplesContent() {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
       <div className="flex flex-col gap-2">
         <SectionHead label="Worked Examples" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -110,7 +108,7 @@ function ExamplesContent() {
 
       <div className="flex flex-col gap-2">
         <SectionHead label="Calculator" />
-        <GasDensityCalc />
+        <GasDensityTool />
       </div>
     </div>
   )
@@ -120,7 +118,7 @@ export default function GasDensityReference() {
   const [pill, setPill] = useState<'reference' | 'examples'>('reference')
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
       <div className="flex gap-1 p-1 rounded-sm self-start print:hidden"
         style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
         {(['reference', 'examples'] as const).map(p => (

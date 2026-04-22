@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useElementStore } from '../stores/elementStore'
 import EmpiricalReference from '../components/empirical/EmpiricalReference'
-import EmpiricalSolver from '../components/empirical/EmpiricalSolver'
+import EmpiricalTool from '../components/empirical/EmpiricalTool'
 import EmpiricalPractice from '../components/empirical/EmpiricalPractice'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 import PageShell from '../components/Layout/PageShell'
@@ -123,7 +123,7 @@ export default function EmpiricalPage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}
             className="print:hidden">
-            <EmpiricalSolver />
+            <EmpiricalTool />
           </motion.div>
         )}
         {mode === 'problems' && !loading && !error && (

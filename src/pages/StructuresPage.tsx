@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchParams } from 'react-router-dom'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 import LewisPage from './LewisPage'
-import VsepPage from './VsepPage'
+import VseprPage from './VseprPage'
 import LewisReference from '../components/lewis/LewisReference'
 import VsepReference from '../components/vsepr/VsepReference'
 import LewisStructurePractice from '../components/lewis/LewisStructurePractice'
@@ -13,7 +13,7 @@ import LewisDrawChallenge from '../components/lewis/LewisDrawChallenge'
 import VseprPractice from '../components/vsepr/VseprPractice'
 import SolidTypesReference from '../components/structures/SolidTypesReference'
 import SolidTypesPractice from '../components/structures/SolidTypesPractice'
-import UnitCellCalc from '../components/structures/UnitCellCalc'
+import UnitCellTool from '../components/structures/UnitCellTool'
 import UnitCellPractice from '../components/structures/UnitCellPractice'
 import PageShell from '../components/Layout/PageShell'
 
@@ -333,7 +333,7 @@ export default function StructuresPage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}
             className="flex flex-col gap-8">
-            <VsepPage />
+            <VseprPage />
             <div className="border-t border-border pt-6">
               <VsepReference />
             </div>
@@ -394,7 +394,7 @@ export default function StructuresPage() {
           <motion.div key="unit-cell"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <UnitCellCalc />
+            <UnitCellTool />
           </motion.div>
         )}
         {(activeTab === 'solid-types-practice' || activeTab === 'solid-types-problems') && (

@@ -1,3 +1,4 @@
+import React from 'react'
 // ── Step row ──────────────────────────────────────────────────────────────────
 
 function Step({ n, children }: { n: number; children: React.ReactNode }) {
@@ -35,7 +36,7 @@ function ExampleCard({ title, question, steps, answer }: {
 
 export default function EmpiricalReference() {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       {/* Key formulas */}
       <div className="flex flex-col gap-3">

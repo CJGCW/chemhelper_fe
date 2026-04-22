@@ -4,7 +4,7 @@ import type { Element } from '../types'
 
 // atomicWeight strings can be "12.011", "12.011(2)", "[208]", etc.
 function parseAtomicWeight(w: string): number | null {
-  const cleaned = w.replace(/[\[\]]/g, '').split('(')[0].trim()
+  const cleaned = w.replace(/[[\]]/g, '').split('(')[0].trim()
   const n = parseFloat(cleaned)
   return isFinite(n) && n > 0 ? n : null
 }

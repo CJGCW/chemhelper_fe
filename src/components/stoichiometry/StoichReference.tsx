@@ -157,7 +157,7 @@ export default function StoichReference({ section = 'guide', topic }: { section?
   const show = (t: RefTopic) => !topic || topic === t
 
   return (
-    <div className="flex flex-col gap-5 print:max-w-none print:gap-4">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
 
       {/* Cards grid */}

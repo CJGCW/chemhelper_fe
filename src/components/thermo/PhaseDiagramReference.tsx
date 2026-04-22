@@ -1,6 +1,4 @@
-function SectionHead({ label }: { label: string }) {
-  return <h3 className="font-mono text-xs text-secondary tracking-widest uppercase">{label}</h3>
-}
+import { SectionHead } from '../Layout/PageShell'
 
 // ── Static phase diagram SVG ──────────────────────────────────────────────────
 

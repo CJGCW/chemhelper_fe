@@ -73,7 +73,7 @@ export default function QuantumNumbersReference() {
   const totalElectrons = 2 * selectedN * selectedN
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">

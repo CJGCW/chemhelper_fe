@@ -1,15 +1,13 @@
+import { SectionHead } from '../Layout/PageShell'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { VDW_GASES } from '../../utils/vanDerWaalsPractice'
-import VanDerWaalsCalc from './VanDerWaalsCalc'
+import VanDerWaalsTool from './VanDerWaalsTool'
 
-function SectionHead({ label }: { label: string }) {
-  return <h3 className="font-mono text-xs text-secondary tracking-widest uppercase">{label}</h3>
-}
 
 function ReferenceContent() {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       {/* Formula box */}
       <div className="rounded-sm border border-border bg-raised px-6 py-5 flex flex-col gap-4">
@@ -170,7 +168,7 @@ const EXAMPLES = [
 
 function ExamplesContent() {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
       <div className="flex flex-col gap-2">
         <SectionHead label="Worked Examples" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -196,7 +194,7 @@ function ExamplesContent() {
 
       <div className="flex flex-col gap-2">
         <SectionHead label="Calculator" />
-        <VanDerWaalsCalc />
+        <VanDerWaalsTool />
       </div>
     </div>
   )
@@ -206,7 +204,7 @@ export default function VanDerWaalsReference() {
   const [pill, setPill] = useState<'reference' | 'examples'>('reference')
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
       <div className="flex gap-1 p-1 rounded-sm self-start print:hidden"
         style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
         {(['reference', 'examples'] as const).map(p => (

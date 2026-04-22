@@ -1,11 +1,12 @@
+import React from 'react'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useHideExamples } from './ExampleBoxContext'
 
 export default function ExampleBox({ children }: { children: React.ReactNode }) {
   const hide = useHideExamples()
-  if (hide) return null
   const [open, setOpen] = useState(false)
+  if (hide) return null
 
   return (
     <div className="rounded-sm border border-border bg-raised overflow-hidden">

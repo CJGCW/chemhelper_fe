@@ -1,3 +1,4 @@
+import React from 'react'
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generateMolarProblem } from '../../utils/molarPractice'

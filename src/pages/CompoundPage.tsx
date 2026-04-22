@@ -25,7 +25,7 @@ export function detectInputType(s: string): string {
   if (/^\d+$/.test(t)) return 'cid'
   if (t.toUpperCase().startsWith('INCHI=')) return 'inchi'
   if (INCHI_KEY_RE.test(t)) return 'inchikey'
-  if (/[=#@\\/\[\]]/.test(t)) return 'smiles'
+  if (/[=#@\\/[\]]/.test(t)) return 'smiles'
   if (t.includes('(') && /[cnosp]/.test(t)) return 'smiles'
   // Plain organic SMILES (e.g. "CCO", "CC", "Cl") — only organic-subset atom
   // letters, no digits. Formulas always have digits (H2O, CH4); names contain

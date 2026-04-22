@@ -1,8 +1,6 @@
+import { SectionHead } from '../Layout/PageShell'
 // ── Shared primitives ────────────────────────────────────────────────────────
 
-function SectionHead({ label }: { label: string }) {
-  return <h3 className="font-mono text-xs text-secondary tracking-widest uppercase">{label}</h3>
-}
 
 function FormulaBox({ lines }: { lines: string[] }) {
   return (
@@ -164,7 +162,7 @@ export type RefTopic = 'oxidation' | 'reaction-types' | 'activity' | 'acids-base
 
 function OxidationSection() {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       <div className="flex flex-col gap-2">
         <SectionHead label="Oxidation State Rules" />
@@ -233,7 +231,7 @@ function OxidationSection() {
 
 function ReactionTypesSection() {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       <div className="flex flex-col gap-2">
         <SectionHead label="Reaction Types" />
@@ -313,7 +311,7 @@ function ReactionTypesSection() {
 
 function ActivitySection() {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       <div className="flex flex-col gap-2">
         <SectionHead label="Activity Series — Metals" />
@@ -440,7 +438,7 @@ function ActivitySection() {
 
 function AcidsBasesSection() {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 print:grid-cols-2 print:gap-4">
         <div className="flex flex-col gap-2">
@@ -519,7 +517,7 @@ function AcidsBasesSection() {
 
 function RedoxConceptsSection() {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       {/* OIL RIG + agents */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 print:grid-cols-3 print:gap-3">
@@ -715,7 +713,7 @@ function RedoxConceptsSection() {
 
 export default function RedoxReference({ topic }: { topic?: RefTopic }) {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
       {(!topic || topic === 'oxidation')      && <OxidationSection />}
       {(!topic || topic === 'reaction-types') && <ReactionTypesSection />}
       {(!topic || topic === 'activity')       && <ActivitySection />}

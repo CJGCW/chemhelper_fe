@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -211,7 +211,7 @@ function TableGroupedItems({ onNavigate }: { onNavigate: () => void }) {
   function toggleGroup(label: string) {
     setOpenGroups(prev => {
       const next = new Set(prev)
-      next.has(label) ? next.delete(label) : next.add(label)
+      if (next.has(label)) { next.delete(label) } else { next.add(label) }
       return next
     })
   }
@@ -350,7 +350,7 @@ function CalcGroupedItems({ onNavigate }: { onNavigate: () => void }) {
   function toggleGroup(label: string) {
     setOpenGroups(prev => {
       const next = new Set(prev)
-      next.has(label) ? next.delete(label) : next.add(label)
+      if (next.has(label)) { next.delete(label) } else { next.add(label) }
       return next
     })
   }
@@ -446,7 +446,7 @@ function IdealGasGroupedItems({ onNavigate }: { onNavigate: () => void }) {
   function toggleGroup(label: string) {
     setOpenGroups(prev => {
       const next = new Set(prev)
-      next.has(label) ? next.delete(label) : next.add(label)
+      if (next.has(label)) { next.delete(label) } else { next.add(label) }
       return next
     })
   }
@@ -543,7 +543,7 @@ function StoichGroupedItems({ onNavigate }: { onNavigate: () => void }) {
   function toggleGroup(label: string) {
     setOpenGroups(prev => {
       const next = new Set(prev)
-      next.has(label) ? next.delete(label) : next.add(label)
+      if (next.has(label)) { next.delete(label) } else { next.add(label) }
       return next
     })
   }
@@ -640,7 +640,7 @@ function RedoxGroupedItems({ onNavigate }: { onNavigate: () => void }) {
   function toggleGroup(label: string) {
     setOpenGroups(prev => {
       const next = new Set(prev)
-      next.has(label) ? next.delete(label) : next.add(label)
+      if (next.has(label)) { next.delete(label) } else { next.add(label) }
       return next
     })
   }
@@ -741,7 +741,7 @@ function ThermoGroupedItems({ onNavigate }: { onNavigate: () => void }) {
   function toggleGroup(label: string) {
     setOpenGroups(prev => {
       const next = new Set(prev)
-      next.has(label) ? next.delete(label) : next.add(label)
+      if (next.has(label)) { next.delete(label) } else { next.add(label) }
       return next
     })
   }
@@ -850,7 +850,7 @@ function TestNavItem({ onNavigate }: { onNavigate: () => void }) {
 // ── Expandable section ────────────────────────────────────────────────────────
 
 function ExpandableSection({ icon, label, isActive, expanded, onToggle, children }: {
-  icon: string; label: string; isActive: boolean; expanded: boolean; onToggle: () => void; children: React.ReactNode
+  icon: string; label: string; isActive: boolean; expanded: boolean; onToggle: () => void; children: ReactNode
 }) {
   return (
     <div>

@@ -70,7 +70,7 @@ export default function EnergyLevelsReference() {
   const color = lambda ? wavelengthColor(lambda) : null
 
   return (
-    <div className="flex flex-col gap-8 max-w-3xl">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
 
       {/* Formula card */}

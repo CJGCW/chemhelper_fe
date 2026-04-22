@@ -129,7 +129,7 @@ const ID_STEPS = [
 
 export default function SolidTypesReference() {
   return (
-    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none print:text-black">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       {/* Type cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -66,7 +66,7 @@ const NOTES = [
 
 export default function ClausiusClapeyronReference() {
   return (
-    <div className="flex flex-col gap-8 max-w-2xl print:max-w-none print:text-black">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       {/* Master equation */}
       <div className="rounded-sm border border-border bg-surface p-5 flex flex-col gap-4">

@@ -1,3 +1,4 @@
+import React from 'react'
 import { useState, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { checkSigFigAnswer } from '../../utils/sigfigPractice'
@@ -1013,7 +1014,7 @@ export default function TestSheet({ test, onBack }: Props) {
   }
 
   function toggleReveal(id: number) {
-    setRevealed(prev => { const s = new Set(prev); s.has(id) ? s.delete(id) : s.add(id); return s })
+    setRevealed(prev => { const s = new Set(prev); if (s.has(id)) { s.delete(id) } else { s.add(id) }; return s })
   }
 
   function handleDrawSubmit(id: number, mol: string | undefined, passed: boolean, snapshot?: LewisSnapshot) {

@@ -1,3 +1,4 @@
+import React from 'react'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -156,7 +157,7 @@ function T({ headers, rows }: { headers: string[]; rows: React.ReactNode[][] }) 
 
 function Ions() {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
           <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3">Anions</p>
@@ -322,7 +323,7 @@ function Ligands() {
 
 function Coordination() {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
       <div>
         <p className="font-mono text-xs text-secondary uppercase tracking-widest mb-3">Naming order</p>
         <ol className="flex flex-col gap-2 list-decimal list-inside font-sans text-sm text-secondary">

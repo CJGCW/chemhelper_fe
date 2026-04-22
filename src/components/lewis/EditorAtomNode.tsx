@@ -1,3 +1,4 @@
+import React from 'react'
 import { Handle, Position, useReactFlow, useEdges, type NodeProps, type Node } from '@xyflow/react'
 
 // ── Types ─────────────────────────────────────────────────────────────────────

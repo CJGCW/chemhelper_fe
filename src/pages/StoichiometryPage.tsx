@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchParams } from 'react-router-dom'
-import StoichiometrySolver from '../components/stoichiometry/StoichiometrySolver'
-import LimitingReagentSolver from '../components/stoichiometry/LimitingReagentSolver'
-import TheoreticalYieldSolver from '../components/stoichiometry/TheoreticalYieldSolver'
-import PercentYieldSolver from '../components/stoichiometry/PercentYieldSolver'
+import StoichiometryTool from '../components/stoichiometry/StoichiometryTool'
+import LimitingReagentTool from '../components/stoichiometry/LimitingReagentTool'
+import TheoreticalYieldTool from '../components/stoichiometry/TheoreticalYieldTool'
+import PercentYieldTool from '../components/stoichiometry/PercentYieldTool'
 import StoichiometryPractice from '../components/stoichiometry/StoichiometryPractice'
 import GasStoichPractice from '../components/stoichiometry/GasStoichPractice'
-import GasStoichCalc from '../components/stoichiometry/GasStoichCalc'
+import GasStoichTool from '../components/stoichiometry/GasStoichTool'
 import BalancingPractice from '../components/stoichiometry/BalancingPractice'
 import StoichReference, { type RefTopic } from '../components/stoichiometry/StoichReference'
-import SolutionStoichSolver from '../components/stoichiometry/SolutionStoichSolver'
+import SolutionStoichTool from '../components/stoichiometry/SolutionStoichTool'
 import SolutionStoichPractice from '../components/stoichiometry/SolutionStoichPractice'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
-import AdvancedPercentYieldSolver from '../components/stoichiometry/AdvancedPercentYieldSolver'
+import AdvancedPercentYieldTool from '../components/stoichiometry/AdvancedPercentYieldTool'
 import PageShell from '../components/Layout/PageShell'
 
 type Tab =
@@ -459,28 +459,28 @@ export default function StoichiometryPage() {
           <motion.div key="stoich"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <StoichiometrySolver />
+            <StoichiometryTool />
           </motion.div>
         )}
         {activeTab === 'limiting' && (
           <motion.div key="limiting"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <LimitingReagentSolver />
+            <LimitingReagentTool />
           </motion.div>
         )}
         {activeTab === 'theoretical' && (
           <motion.div key="theoretical"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <TheoreticalYieldSolver />
+            <TheoreticalYieldTool />
           </motion.div>
         )}
         {activeTab === 'percent' && (
           <motion.div key="percent"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <PercentYieldSolver />
+            <PercentYieldTool />
           </motion.div>
         )}
         {activeTab === 'practice' && (
@@ -494,7 +494,7 @@ export default function StoichiometryPage() {
           <motion.div key="solution"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <SolutionStoichSolver />
+            <SolutionStoichTool />
           </motion.div>
         )}
         {(activeTab === 'balance' || activeTab === 'balance-practice') && (
@@ -508,7 +508,7 @@ export default function StoichiometryPage() {
           <motion.div key="gas-stoich-practice"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <GasStoichCalc />
+            <GasStoichTool />
           </motion.div>
         )}
         {activeTab === 'gas-stoich' && (
@@ -522,35 +522,35 @@ export default function StoichiometryPage() {
           <motion.div key="limiting-problems"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <LimitingReagentSolver allowCustom={false} />
+            <LimitingReagentTool allowCustom={false} />
           </motion.div>
         )}
         {activeTab === 'theoretical-problems' && (
           <motion.div key="theoretical-problems"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <TheoreticalYieldSolver allowCustom={false} />
+            <TheoreticalYieldTool allowCustom={false} />
           </motion.div>
         )}
         {activeTab === 'percent-problems' && (
           <motion.div key="percent-problems"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <PercentYieldSolver />
+            <PercentYieldTool />
           </motion.div>
         )}
         {activeTab === 'adv-percent' && (
           <motion.div key="adv-percent"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <AdvancedPercentYieldSolver />
+            <AdvancedPercentYieldTool />
           </motion.div>
         )}
         {activeTab === 'adv-percent-problems' && (
           <motion.div key="adv-percent-problems"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <AdvancedPercentYieldSolver allowCustom={false} />
+            <AdvancedPercentYieldTool allowCustom={false} />
           </motion.div>
         )}
         {activeTab === 'solution-practice' && (

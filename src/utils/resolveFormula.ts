@@ -3,7 +3,7 @@
  * Formulas start with uppercase and contain only letters, digits, and grouping chars.
  */
 export function looksLikeFormula(s: string): boolean {
-  return /^[A-Z][A-Za-z0-9()\[\]{}]*$/.test(s.trim())
+  return /^[A-Z][A-Za-z0-9()[\]{}]*$/.test(s.trim())
 }
 
 export interface ResolveResult {

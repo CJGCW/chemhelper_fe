@@ -40,7 +40,7 @@ describe('calc_e0cell', () => {
     for (let i = 0; i < 30; i++) {
       const p = genEcellProblem('calc_e0cell')
       // Extract both E° values from the context string
-      const matches = [...p.context.matchAll(/E°red = ([+\-][0-9.]+) V/g)]
+      const matches = [...p.context.matchAll(/E°red = ([-+][0-9.]+) V/g)]
       expect(matches.length).toBe(2)
       const cE0 = parseFloat(matches[0][1])
       const aE0 = parseFloat(matches[1][1])
@@ -117,7 +117,7 @@ describe('spontaneity', () => {
     for (let i = 0; i < 30; i++) {
       const p = genEcellProblem('spontaneity')
       const stepText = p.steps[0]
-      const match = stepText.match(/= ([+\-][0-9.]+) V/)
+      const match = stepText.match(/= ([-+][0-9.]+) V/)
       if (!match) continue
       const e0 = parseFloat(match[1])
       if (e0 > 0) expect(p.answer).toBe('yes')
@@ -132,7 +132,7 @@ describe('nernst', () => {
   it('answer is a numeric string starting with + or -', () => {
     for (let i = 0; i < 30; i++) {
       const p = genEcellProblem('nernst')
-      expect(p.answer).toMatch(/^[+\-][0-9]/)
+      expect(p.answer).toMatch(/^[-+][0-9]/)
     }
   })
 
@@ -176,7 +176,7 @@ describe('delta_g', () => {
   it('answer is a numeric string with one decimal place', () => {
     for (let i = 0; i < 30; i++) {
       const p = genEcellProblem('delta_g')
-      expect(p.answer).toMatch(/^[+\-]?[0-9]+\.[0-9]$/)
+      expect(p.answer).toMatch(/^[-+]?[0-9]+\.[0-9]$/)
     }
   })
 
@@ -196,7 +196,7 @@ describe('delta_g', () => {
     for (let i = 0; i < 50; i++) {
       const p = genEcellProblem('delta_g')
       // Context has "E°cell = +X.XXX V" — verify it's positive
-      const match = p.context.match(/E°cell = ([+\-][0-9.]+) V/)
+      const match = p.context.match(/E°cell = ([-+][0-9.]+) V/)
       if (!match) continue
       const e0 = parseFloat(match[1])
       expect(e0).toBeGreaterThan(0)

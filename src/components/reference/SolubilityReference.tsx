@@ -34,7 +34,7 @@ function InteractiveLookup() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="flex flex-col gap-2">
           <span className="font-mono text-xs text-secondary tracking-widest uppercase">Cation</span>
@@ -355,7 +355,7 @@ export default function SolubilityReference() {
   const [view, setView] = useState<'lookup' | 'table'>('lookup')
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
 
       {/* View toggle */}

@@ -1,9 +1,7 @@
+import { SectionHead } from '../Layout/PageShell'
 import { useState } from 'react'
 import { HF_DATA } from '../../utils/enthalpyData'
 
-function SectionHead({ label }: { label: string }) {
-  return <h3 className="font-mono text-xs text-secondary tracking-widest uppercase">{label}</h3>
-}
 
 // Group the compound data for the reference table
 const GROUPS = [

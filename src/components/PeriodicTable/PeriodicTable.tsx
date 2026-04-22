@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useElementStore } from "../../stores/elementStore";
 import type { TrendMode } from "../../stores/elementStore";
@@ -208,12 +208,12 @@ export default function PeriodicTable() {
   const anyActinideMatch =
     searchQuery === "" || actinides.some((e) => matchesSearch(e, searchQuery));
 
-  const gridStyle: React.CSSProperties = {
+  const gridStyle: CSSProperties = {
     display: "grid",
     gridTemplateColumns: "repeat(18, minmax(0, 1fr))",
     gap: "2px",
   };
-  const footnoteGridStyle: React.CSSProperties = {
+  const footnoteGridStyle: CSSProperties = {
     display: "grid",
     gridTemplateColumns: "repeat(15, minmax(0, 1fr))",
     gap: "2px",

@@ -3,16 +3,16 @@ import { useSearchParams } from 'react-router-dom'
 import { useState } from 'react'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 import IdealGasReference from '../components/idealgas/IdealGasReference'
-import IdealGasSolver from '../components/idealgas/IdealGasSolver'
+import IdealGasTool from '../components/idealgas/IdealGasTool'
 import IdealGasPractice from '../components/idealgas/IdealGasPractice'
 import GasStoichPractice from '../components/stoichiometry/GasStoichPractice'
-import DaltonsLawCalc from '../components/idealgas/DaltonsLawCalc'
-import GrahamsLawCalc from '../components/idealgas/GrahamsLawCalc'
-import GasDensityCalc from '../components/idealgas/GasDensityCalc'
+import DaltonsLawTool from '../components/idealgas/DaltonsLawTool'
+import GrahamsLawTool from '../components/idealgas/GrahamsLawTool'
+import GasDensityTool from '../components/idealgas/GasDensityTool'
 import DaltonsLawReference from '../components/idealgas/DaltonsLawReference'
 import GrahamsLawReference from '../components/idealgas/GrahamsLawReference'
 import GasDensityReference from '../components/idealgas/GasDensityReference'
-import VanDerWaalsCalc from '../components/idealgas/VanDerWaalsCalc'
+import VanDerWaalsTool from '../components/idealgas/VanDerWaalsTool'
 import VanDerWaalsReference from '../components/idealgas/VanDerWaalsReference'
 import VanDerWaalsPractice from '../components/idealgas/VanDerWaalsPractice'
 import DaltonsPractice from '../components/idealgas/DaltonsPractice'
@@ -501,35 +501,35 @@ export default function IdealGasPage() {
           <motion.div key="solver"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <IdealGasSolver />
+            <IdealGasTool />
           </motion.div>
         )}
         {activeTab === 'daltons' && (
           <motion.div key="daltons"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <DaltonsLawCalc />
+            <DaltonsLawTool />
           </motion.div>
         )}
         {activeTab === 'grahams' && (
           <motion.div key="grahams"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <GrahamsLawCalc />
+            <GrahamsLawTool />
           </motion.div>
         )}
         {activeTab === 'gas-density' && (
           <motion.div key="gas-density"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <GasDensityCalc />
+            <GasDensityTool />
           </motion.div>
         )}
         {activeTab === 'vdw' && (
           <motion.div key="vdw"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <VanDerWaalsCalc />
+            <VanDerWaalsTool />
           </motion.div>
         )}
         {activeTab === 'pvnrt-problems' && (

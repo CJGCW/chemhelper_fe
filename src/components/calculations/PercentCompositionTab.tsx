@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import PercentCompositionCalc from './PercentCompositionCalc'
+import PercentCompositionTool from './PercentCompositionTool'
 import PercentCompositionPractice from './PercentCompositionPractice'
 
 type Mode = 'reference' | 'practice'
@@ -33,7 +33,7 @@ export default function PercentCompositionTab() {
         <motion.div key={mode}
           initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-          {mode === 'reference' ? <PercentCompositionCalc /> : <PercentCompositionPractice />}
+          {mode === 'reference' ? <PercentCompositionTool /> : <PercentCompositionPractice />}
         </motion.div>
       </AnimatePresence>
     </div>

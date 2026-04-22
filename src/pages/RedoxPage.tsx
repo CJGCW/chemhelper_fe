@@ -3,14 +3,14 @@ import { useSearchParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 import RedoxPractice from '../components/redox/RedoxPractice'
-import RedoxCalc from '../components/redox/RedoxCalc'
+import RedoxTool from '../components/redox/RedoxTool'
 import RedoxReference, { type RefTopic } from '../components/redox/RedoxReference'
 import ReactionClassifier from '../components/tools/ReactionClassifier'
 import ElectrolyteClassifier from '../components/tools/ElectrolyteClassifier'
 import NetIonicTool from '../components/tools/NetIonicTool'
 import ActivitySeries from '../components/tools/ActivitySeries'
 import ReactionPredictor from '../components/tools/ReactionPredictor'
-import EcellCalc from '../components/tools/EcellCalc'
+import EcellTool from '../components/tools/EcellTool'
 import ReactionPredictorPractice from '../components/tools/ReactionPredictorPractice'
 import EcellPractice from '../components/tools/EcellPractice'
 import ReactionClassifierProblems from '../components/tools/ReactionClassifierProblems'
@@ -422,7 +422,7 @@ export default function RedoxPage() {
           <motion.div key="redox-practice"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <RedoxCalc />
+            <RedoxTool />
           </motion.div>
         )}
         {activeTab === 'practice' && !printingAll && (
@@ -471,7 +471,7 @@ export default function RedoxPage() {
           <motion.div key="ecell"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <EcellCalc />
+            <EcellTool />
           </motion.div>
         )}
         {activeTab === 'rxn-practice' && (

@@ -9,7 +9,7 @@ export default function BondEnthalpyReference() {
     : null
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       {/* Main formula */}
       <div className="rounded-sm border border-border bg-surface p-5 flex flex-col gap-3">

@@ -1,15 +1,13 @@
+import { SectionHead } from '../Layout/PageShell'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { R_TABLE, EXAMPLES } from '../../utils/idealGas'
 import GasSimulation from './GasSimulation'
 
-function SectionHead({ label }: { label: string }) {
-  return <h3 className="font-mono text-xs text-secondary tracking-widest uppercase">{label}</h3>
-}
 
 function ReferenceContent() {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       {/* PV = nRT formula box */}
       <div className="rounded-sm border border-border bg-raised px-6 py-5 flex flex-col gap-4">
@@ -255,7 +253,7 @@ function ReferenceContent() {
 
 function ExamplesContent() {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       {/* PV = nRT worked examples */}
       <div className="flex flex-col gap-2">
@@ -466,7 +464,7 @@ export default function IdealGasReference() {
   const [pill, setPill] = useState<'reference' | 'examples'>('reference')
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       {/* Pills */}
       <div className="flex gap-1 p-1 rounded-sm self-start print:hidden"
