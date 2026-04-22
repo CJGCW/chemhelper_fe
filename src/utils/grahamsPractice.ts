@@ -1,6 +1,10 @@
 // Graham's Law of Effusion practice problem generator
 // r₁/r₂ = √(M₂/M₁)   and   t₁/t₂ = √(M₁/M₂)
 
+import {
+  calcGrahamsRatio, calcGrahamsRate2, calcGrahamsM1, calcGrahamsTime2,
+} from '../chem/gas'
+
 function pick<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]
 }
@@ -47,7 +51,7 @@ export function generateGrahamsProblem(): GrahamsProblem {
 
   if (type === 'find-ratio') {
     // r(g1)/r(g2) = √(M2/M1)
-    const ratio = Math.sqrt(g2.M / g1.M)
+    const ratio = calcGrahamsRatio(g1.M, g2.M)
     const question = `What is the ratio of effusion rates of ${g1.name} (M = ${g1.M} g/mol) to ${g2.name} (M = ${g2.M} g/mol)?`
     const steps = [
       `r(${g1.name}) / r(${g2.name}) = √(M(${g2.name}) / M(${g1.name}))`,
@@ -61,7 +65,7 @@ export function generateGrahamsProblem(): GrahamsProblem {
   if (type === 'find-rate') {
     // Given r1 and both M, find r2
     const r1 = rand(1.0, 8.0, 2)
-    const r2 = r1 * Math.sqrt(g1.M / g2.M)
+    const r2 = calcGrahamsRate2(r1, g1.M, g2.M)
     const question = `${g1.name} effuses at ${r1} mL/s. What is the effusion rate of ${g2.name} under the same conditions? (M(${g1.name}) = ${g1.M} g/mol, M(${g2.name}) = ${g2.M} g/mol)`
     const steps = [
       `r(${g1.name}) / r(${g2.name}) = √(M(${g2.name}) / M(${g1.name}))`,
@@ -79,7 +83,7 @@ export function generateGrahamsProblem(): GrahamsProblem {
     // Pick g1 as the "unknown" (lighter), g2 as the known
     const ratio = parseFloat(Math.sqrt(g2.M / g1.M).toPrecision(3))
     const question = `An unknown gas effuses ${ratio} times faster than ${g2.name} (M = ${g2.M} g/mol). What is the molar mass of the unknown gas?`
-    const Munknown = g2.M / (ratio * ratio)
+    const Munknown = calcGrahamsM1(ratio, 1, g2.M)
     const steps = [
       `r_unknown / r(${g2.name}) = √(M(${g2.name}) / M_unknown)`,
       `${ratio} = √(${g2.M} / M_unknown)`,
@@ -92,7 +96,7 @@ export function generateGrahamsProblem(): GrahamsProblem {
 
   // find-time: t2 = t1 × √(M2/M1)
   const t1 = rand(10, 90, 1)
-  const t2 = t1 * Math.sqrt(g2.M / g1.M)
+  const t2 = calcGrahamsTime2(t1, g1.M, g2.M)
   const question = `${g1.name} (M = ${g1.M} g/mol) takes ${t1} s to effuse through a small hole. How long does ${g2.name} (M = ${g2.M} g/mol) take under identical conditions?`
   const steps = [
     `t(${g1.name}) / t(${g2.name}) = √(M(${g1.name}) / M(${g2.name}))`,

@@ -2,6 +2,7 @@
 
 import { HALF_REACTIONS } from '../data/reductionPotentials'
 import type { HalfReaction } from '../data/reductionPotentials'
+import { calcEcell, calcNernstE, calcDeltaGFromEcell } from '../chem/electrochem'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -47,7 +48,7 @@ function nEff(c: HalfReaction, a: HalfReaction): number {
 
 function genCalcE0cell(): EcellProblem {
   const [cathode, anode] = pickCathodeAnode()
-  const e0 = cathode.e0 - anode.e0
+  const e0 = calcEcell(cathode.e0, anode.e0)
 
   const context =
     `Cathode (reduction): ${cathode.cathode}\n` +
@@ -82,7 +83,7 @@ function genSpontaneity(): EcellProblem {
   const flip = Math.random() < 0.4
   const displayCathode = flip ? anode   : cathode
   const displayAnode   = flip ? cathode : anode
-  const cellE0 = displayCathode.e0 - displayAnode.e0
+  const cellE0 = calcEcell(displayCathode.e0, displayAnode.e0)
   const spont  = cellE0 > 0
 
   const context =
@@ -119,11 +120,11 @@ const Q_LABELS: Record<number, string> = {
 
 function genNernst(): EcellProblem {
   const [cathode, anode] = pickCathodeAnode()
-  const e0 = cathode.e0 - anode.e0
+  const e0 = calcEcell(cathode.e0, anode.e0)
   const n  = nEff(cathode, anode)
   const Q  = pick(Q_VALUES)
   const logQ = Math.log10(Q)   // integer ±1…±4
-  const E  = e0 - (0.05916 / n) * logQ
+  const E  = calcNernstE(e0, n, Q)
 
   const context =
     `Cathode: ${cathode.cathode}  (E° = ${fmt(cathode.e0)} V)\n` +
@@ -153,14 +154,12 @@ function genNernst(): EcellProblem {
 
 // ── 4. delta_g ────────────────────────────────────────────────────────────────
 
-const F = 96485   // C/mol
-
 function genDeltaG(): EcellProblem {
   const [cathode, anode] = pickCathodeAnode()
-  const e0  = cathode.e0 - anode.e0
-  const n   = nEff(cathode, anode)
-  const dgJ = -n * F * e0
-  const dgKJ = dgJ / 1000
+  const e0   = calcEcell(cathode.e0, anode.e0)
+  const n    = nEff(cathode, anode)
+  const dgKJ = calcDeltaGFromEcell(n, e0)
+  const dgJ  = dgKJ * 1000
   // Round to 1 decimal
   const answerVal = Math.round(dgKJ * 10) / 10
 

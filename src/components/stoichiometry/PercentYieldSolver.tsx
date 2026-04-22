@@ -4,10 +4,7 @@ import { generateStoichProblem } from '../../utils/stoichiometryPractice'
 import WorkedExample from '../calculations/WorkedExample'
 import SigFigPanel from '../calculations/SigFigPanel'
 import { buildSigFigBreakdown, lowestSigFigs, type SigFigBreakdown } from '../../utils/sigfigs'
-
-function sig(n: number, sf = 4): string {
-  return parseFloat(n.toPrecision(sf)).toString()
-}
+import { calcPercentYield, type PYSolution } from '../../chem/stoich'
 
 function NumInput({ value, onChange, placeholder = 'value' }: {
   value: string; onChange: (v: string) => void; placeholder?: string
@@ -20,26 +17,10 @@ function NumInput({ value, onChange, placeholder = 'value' }: {
   )
 }
 
-interface PYResult {
-  percentYield: number
-  steps: string[]
-  rawPct: number
-}
-
-function calcPercentYield(actual: number, theoretical: number): PYResult {
-  const pct = (actual / theoretical) * 100
-  const steps = [
-    `% yield = (actual yield / theoretical yield) × 100`,
-    `% yield = (${sig(actual)} g / ${sig(theoretical)} g) × 100`,
-    `% yield = ${sig(pct, 4)}%`,
-  ]
-  return { percentYield: parseFloat(sig(pct, 4)), steps, rawPct: pct }
-}
-
 export default function PercentYieldSolver() {
   const [actualVal,      setActualVal]      = useState('')
   const [theoreticalVal, setTheoreticalVal] = useState('')
-  const [result,         setResult]         = useState<PYResult | null>(null)
+  const [result,         setResult]         = useState<PYSolution | null>(null)
   const [sigBreakdown,   setSigBreakdown]   = useState<SigFigBreakdown | null>(null)
 
   function handleCalc() {

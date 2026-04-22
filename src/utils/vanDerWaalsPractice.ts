@@ -2,7 +2,7 @@
 // Solves for pressure only: P = nRT / (V − nb) − a(n/V)²
 // Constants from Atkins' Physical Chemistry (a in L²·atm/mol², b in L/mol).
 
-const R = 0.082057 // L·atm / (mol·K)
+import { calcVanDerWaals, R_GAS as R } from '../chem/gas'
 
 // ── Gas database ──────────────────────────────────────────────────────────────
 
@@ -47,9 +47,7 @@ function pick<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length
 function sig(x: number, n: number): string { return parseFloat(x.toPrecision(n)).toString() }
 
 function calcPressures(gas: VdWGas, n: number, V: number, T: number) {
-  const idealP = (n * R * T) / V
-  const realP  = (n * R * T) / (V - n * gas.b) - gas.a * (n / V) ** 2
-  return { idealP, realP }
+  return calcVanDerWaals(n, V, T, gas.a, gas.b)
 }
 
 // ── Generator ─────────────────────────────────────────────────────────────────

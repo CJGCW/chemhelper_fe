@@ -1,62 +1,15 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { generateReaction, type Reaction, type Species } from '../../utils/stoichiometryPractice'
+import { generateReaction, type Reaction } from '../../utils/stoichiometryPractice'
 import { UnitToggle, NumInput, SpeciesSelect, StepsPanel } from './StoichiometrySolver'
 import WorkedExample from '../calculations/WorkedExample'
 import SigFigPanel from '../calculations/SigFigPanel'
 import CustomReactionForm from './CustomReactionForm'
 import { buildSigFigBreakdown, lowestSigFigs, type SigFigBreakdown } from '../../utils/sigfigs'
+import { calcTheoreticalYield, type TYSolution } from '../../chem/stoich'
+import type { Unit } from '../../chem/amount'
 
-type InputUnit = 'g' | 'mol'
-
-function sig(n: number, sf = 4): string {
-  return parseFloat(n.toPrecision(sf)).toString()
-}
 function fmt(n: number) { return parseFloat(n.toPrecision(4)).toString() }
-
-function toMoles(val: number, unit: InputUnit, species: Species): number {
-  return unit === 'mol' ? val : val / species.molarMass
-}
-
-interface TYResult {
-  steps: string[]
-  molProduct: number
-  gramsProduct: number
-  productDisplay: string
-  rawGrams: number
-}
-
-function calcTheoreticalYield(
-  rxn: Reaction,
-  lr: Species, lrVal: number, lrUnit: InputUnit,
-  product: Species,
-): TYResult {
-  const steps: string[] = []
-  steps.push(`Balanced equation: ${rxn.equation}`)
-
-  const molLR = toMoles(lrVal, lrUnit, lr)
-  if (lrUnit === 'g') {
-    steps.push(`Convert limiting reagent to moles: ${lrVal} g ÷ ${lr.molarMass} g/mol = ${sig(molLR)} mol ${lr.display}`)
-  } else {
-    steps.push(`Given: ${lrVal} mol ${lr.display} (limiting reagent)`)
-  }
-
-  const molProduct = molLR * (product.coeff / lr.coeff)
-  steps.push(
-    `Apply mole ratio: ${sig(molLR)} mol ${lr.display} × (${product.coeff} mol ${product.display} / ${lr.coeff} mol ${lr.display}) = ${sig(molProduct)} mol ${product.display}`,
-  )
-
-  const gramsProduct = molProduct * product.molarMass
-  steps.push(`Theoretical yield: ${sig(molProduct)} mol × ${product.molarMass} g/mol = ${sig(gramsProduct)} g ${product.display}`)
-
-  return {
-    steps,
-    molProduct: parseFloat(sig(molProduct)),
-    gramsProduct: parseFloat(sig(gramsProduct)),
-    productDisplay: product.display,
-    rawGrams: gramsProduct,
-  }
-}
 
 function buildWorkedExample(rxn: Reaction) {
   const lr   = rxn.reactants[0]
@@ -81,9 +34,9 @@ export default function TheoreticalYieldSolver({ allowCustom = true }: { allowCu
   const [rxn,         setRxn]         = useState<Reaction>(() => generateReaction())
   const [lrFormula,   setLrFormula]   = useState(() => rxn.reactants[0].formula)
   const [lrVal,       setLrVal]       = useState('')
-  const [lrUnit,      setLrUnit]      = useState<InputUnit>('g')
+  const [lrUnit,      setLrUnit]      = useState<Unit>('g')
   const [prodFormula, setProdFormula] = useState(() => rxn.products[0]?.formula ?? rxn.reactants[rxn.reactants.length - 1].formula)
-  const [result,      setResult]      = useState<TYResult | null>(null)
+  const [result,      setResult]      = useState<TYSolution | null>(null)
   const [sigBreakdown, setSigBreakdown] = useState<SigFigBreakdown | null>(null)
 
   function applyReaction(r: Reaction) {
@@ -119,6 +72,8 @@ export default function TheoreticalYieldSolver({ allowCustom = true }: { allowCu
       setSigBreakdown(null)
     }
   }
+
+  const prodDisplay = [...rxn.reactants, ...rxn.products].find(s => s.formula === prodFormula)?.display ?? ''
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
@@ -181,7 +136,7 @@ export default function TheoreticalYieldSolver({ allowCustom = true }: { allowCu
                   Theoretical Yield
                 </span>
                 <span className="font-mono text-2xl font-semibold" style={{ color: 'var(--c-halogen)' }}>
-                  {result.gramsProduct} g {result.productDisplay}
+                  {result.gramsProduct} g {prodDisplay}
                 </span>
                 <span className="font-mono text-sm text-dim block mt-1">
                   ({result.molProduct} mol)

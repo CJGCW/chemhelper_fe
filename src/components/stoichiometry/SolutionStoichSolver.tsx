@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ACID_SOLID_RXNS, ACID_BASE_RXNS,
-  calcVolToMass, calcMassToVol, calcVolToVol,
 } from '../../utils/solutionStoichPractice'
+import { calcVolToMass, calcMassToVol, calcVolToVol } from '../../chem/solutions'
 import { StepsPanel } from './StoichiometrySolver'
 import WorkedExample from '../calculations/WorkedExample'
 

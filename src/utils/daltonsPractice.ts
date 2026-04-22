@@ -1,5 +1,10 @@
 // Dalton's Law of Partial Pressures — practice problem generator
 
+import {
+  calcDaltonsTotal, calcDaltonsPartial,
+  calcDaltonsFromMoleFraction, calcDaltonsMoleFractionFromMoles, calcDaltonsMoleFraction,
+} from '../chem/gas'
+
 function pick<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]
 }
@@ -30,7 +35,7 @@ export function generateDaltonsProblem(): DaltonsProblem {
     const n = pick([2, 3] as const)
     const names = [...GAS_NAMES].sort(() => Math.random() - 0.5).slice(0, n)
     const pressures = names.map(() => rand(0.05, 0.80, 3))
-    const total = pressures.reduce((a, b) => a + b, 0)
+    const total = calcDaltonsTotal(pressures)
 
     const parts = names.map((g, i) => `P(${g}) = ${pressures[i]} atm`)
     const question = `A container holds a mixture of gases: ${parts.join(', ')}. What is the total pressure?`
@@ -47,7 +52,7 @@ export function generateDaltonsProblem(): DaltonsProblem {
     const names = [...GAS_NAMES].sort(() => Math.random() - 0.5).slice(0, 2)
     const p1 = rand(0.20, 0.60, 3)
     const total = rand(p1 + 0.20, p1 + 1.00, 3)
-    const p2 = total - p1
+    const p2 = calcDaltonsPartial(total, [p1])
     if (p2 <= 0) return generateDaltonsProblem()
 
     const question = `A gas mixture has a total pressure of ${total} atm. The partial pressure of ${names[0]} is ${p1} atm. What is the partial pressure of ${names[1]}?`
@@ -65,8 +70,8 @@ export function generateDaltonsProblem(): DaltonsProblem {
     const n2 = rand(0.50, 3.00, 2)
     const total = rand(1.00, 2.50, 3)
     const nTotal = n1 + n2
-    const chi1 = n1 / nTotal
-    const p1 = chi1 * total
+    const chi1 = calcDaltonsMoleFractionFromMoles(n1, nTotal)
+    const p1 = calcDaltonsFromMoleFraction(chi1, total)
 
     const question = `A mixture contains ${n1} mol ${names[0]} and ${n2} mol ${names[1]} at a total pressure of ${total} atm. What is the partial pressure of ${names[0]}?`
     const steps = [
@@ -81,7 +86,7 @@ export function generateDaltonsProblem(): DaltonsProblem {
   const name = pick(GAS_NAMES)
   const partial = rand(0.15, 0.80, 3)
   const total = rand(partial + 0.20, partial + 1.00, 3)
-  const chi = partial / total
+  const chi = calcDaltonsMoleFraction(partial, total)
 
   const question = `The partial pressure of ${name} in a gas mixture is ${partial} atm. The total pressure is ${total} atm. What is the mole fraction of ${name}?`
   const steps = [

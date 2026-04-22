@@ -1,3 +1,5 @@
+import { calcDilutionC2, calcDilutionV2, calcDilutionV1 } from '../chem/solutions'
+
 export type DilutionSubtype = 'find_c2' | 'find_v2' | 'find_v1'
 
 export interface DilutionProblem {
@@ -41,7 +43,7 @@ export function genDilutionProblem(subtype: DilutionSubtype): DilutionProblem {
     if (!v2_mL) v2_mL = v1_mL * 2
     const v1_L = v1_mL / 1000
     const v2_L = v2_mL / 1000
-    const c2 = sig(c1 * v1_L / v2_L, 4)
+    const c2 = sig(calcDilutionC2(c1, v1_L, v2_L), 4)
 
     return {
       subtype,
@@ -71,7 +73,7 @@ export function genDilutionProblem(subtype: DilutionSubtype): DilutionProblem {
     const c2Options = NICE_CONC.filter(c => c < c1)
     const c2 = c2Options.length > 0 ? pick(c2Options) : sig(c1 / 2, 4)
     const v1_L = v1_mL / 1000
-    const v2_L = sig(c1 * v1_L / c2, 4)
+    const v2_L = sig(calcDilutionV2(c1, v1_L, c2), 4)
     const v2_mL = sig(v2_L * 1000, 4)
 
     return {
@@ -102,7 +104,7 @@ export function genDilutionProblem(subtype: DilutionSubtype): DilutionProblem {
   const c1 = c1Options.length > 0 ? pick(c1Options) : sig(c2 * 4, 4)
   const v2_mL = pick(NICE_VOL_ML)
   const v2_L = v2_mL / 1000
-  const v1_L = sig(c2 * v2_L / c1, 4)
+  const v1_L = sig(calcDilutionV1(c2, v2_L, c1), 4)
   const v1_mL = sig(v1_L * 1000, 4)
 
   return {

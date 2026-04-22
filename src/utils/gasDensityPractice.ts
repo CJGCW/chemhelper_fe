@@ -1,7 +1,10 @@
 // Gas Density practice problem generator
 // ρ = MP / RT  →  rearranges to solve for M, T, or P
 
-const R = 0.08206 // L·atm / (mol·K)
+import {
+  calcGasDensity, calcGasDensityMolarMass, calcGasDensityTemp, calcGasDensityPressure,
+  R_GAS as R,
+} from '../chem/gas'
 
 function pick<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]
@@ -46,7 +49,7 @@ export function generateGasDensityProblem(): GasDensityProblem {
   const rho = parseFloat((gas.M * P / (R * T)).toPrecision(4))
 
   if (type === 'find-density') {
-    const answer = gas.M * P / (R * T)
+    const answer = calcGasDensity(gas.M, P, T)
     const question = `What is the density of ${gas.name} (M = ${gas.M} g/mol) at ${T} K and ${P} atm?`
     const steps = [
       `ρ = MP / RT`,
@@ -58,7 +61,7 @@ export function generateGasDensityProblem(): GasDensityProblem {
   }
 
   if (type === 'find-molar-mass') {
-    const answer = rho * R * T / P
+    const answer = calcGasDensityMolarMass(rho, P, T)
     const question = `A gas has a density of ${rho} g/L at ${T} K and ${P} atm. What is its molar mass?`
     const steps = [
       `M = ρRT / P`,
@@ -70,7 +73,7 @@ export function generateGasDensityProblem(): GasDensityProblem {
   }
 
   if (type === 'find-temperature') {
-    const answer = gas.M * P / (rho * R)
+    const answer = calcGasDensityTemp(gas.M, P, rho)
     const question = `${gas.name} (M = ${gas.M} g/mol) has a density of ${rho} g/L at ${P} atm. What is the temperature?`
     const steps = [
       `T = MP / (ρR)`,
@@ -82,7 +85,7 @@ export function generateGasDensityProblem(): GasDensityProblem {
   }
 
   // find-pressure
-  const answer = rho * R * T / gas.M
+  const answer = calcGasDensityPressure(rho, T, gas.M)
   const question = `${gas.name} (M = ${gas.M} g/mol) has a density of ${rho} g/L at ${T} K. What is the pressure?`
   const steps = [
     `P = ρRT / M`,

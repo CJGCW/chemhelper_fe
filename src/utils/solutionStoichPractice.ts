@@ -1,3 +1,11 @@
+import {
+  calcVolToMass as _calcVolToMass,
+  calcMassToVol as _calcMassToVol,
+  calcVolToVol as _calcVolToVol,
+  type AcidSolidRxn as _AcidSolidRxn,
+  type AcidBaseRxn as _AcidBaseRxn,
+} from '../chem/solutions'
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export type SolStoichType = 'vol_to_mass' | 'mass_to_vol' | 'vol_to_vol'
@@ -13,28 +21,8 @@ export interface SolStoichProblem {
 
 // ── Reaction data ─────────────────────────────────────────────────────────────
 
-export interface AcidSolidRxn {
-  name:             string
-  equation:         string
-  solidDisplay:     string
-  solidName:        string
-  solidCoeff:       number
-  solidMolarMass:   number
-  acidDisplay:      string
-  acidName:         string
-  acidCoeff:        number
-}
-
-export interface AcidBaseRxn {
-  name:         string
-  equation:     string
-  acidDisplay:  string
-  acidName:     string
-  acidCoeff:    number
-  baseDisplay:  string
-  baseName:     string
-  baseCoeff:    number
-}
+export type AcidSolidRxn = _AcidSolidRxn
+export type AcidBaseRxn  = _AcidBaseRxn
 
 export const ACID_SOLID_RXNS: AcidSolidRxn[] = [
   {
@@ -103,58 +91,15 @@ export const ACID_BASE_RXNS: AcidBaseRxn[] = [
 
 // ── Calculation functions (also used by solver UI) ────────────────────────────
 
+export const calcVolToMass = _calcVolToMass
+export const calcMassToVol = _calcMassToVol
+export const calcVolToVol  = _calcVolToVol
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
 function sig(x: number, n = 4): string {
   return parseFloat(x.toPrecision(n)).toString()
 }
-
-export function calcVolToMass(
-  rxn: AcidSolidRxn, volML: number, conc: number,
-): { steps: string[]; answer: number } {
-  const nAcid  = conc * (volML / 1000)
-  const nSolid = nAcid * (rxn.solidCoeff / rxn.acidCoeff)
-  const mass   = nSolid * rxn.solidMolarMass
-  const steps  = [
-    `Balanced equation: ${rxn.equation}`,
-    `n(${rxn.acidDisplay}) = ${sig(conc, 3)} mol/L × ${sig(volML / 1000, 3)} L = ${sig(nAcid, 4)} mol`,
-    `Mole ratio: n(${rxn.solidDisplay}) = ${sig(nAcid, 4)} × (${rxn.solidCoeff}/${rxn.acidCoeff}) = ${sig(nSolid, 4)} mol`,
-    `m(${rxn.solidDisplay}) = ${sig(nSolid, 4)} mol × ${rxn.solidMolarMass} g/mol = ${sig(mass, 4)} g`,
-  ]
-  return { steps, answer: mass }
-}
-
-export function calcMassToVol(
-  rxn: AcidSolidRxn, mass: number, conc: number,
-): { steps: string[]; answer: number } {
-  const nSolid = mass / rxn.solidMolarMass
-  const nAcid  = nSolid * (rxn.acidCoeff / rxn.solidCoeff)
-  const volL   = nAcid / conc
-  const volML  = volL * 1000
-  const steps  = [
-    `Balanced equation: ${rxn.equation}`,
-    `n(${rxn.solidDisplay}) = ${sig(mass, 4)} g ÷ ${rxn.solidMolarMass} g/mol = ${sig(nSolid, 4)} mol`,
-    `Mole ratio: n(${rxn.acidDisplay}) = ${sig(nSolid, 4)} × (${rxn.acidCoeff}/${rxn.solidCoeff}) = ${sig(nAcid, 4)} mol`,
-    `V(${rxn.acidDisplay}) = ${sig(nAcid, 4)} mol ÷ ${sig(conc, 3)} mol/L = ${sig(volL, 4)} L = ${sig(volML, 4)} mL`,
-  ]
-  return { steps, answer: volML }
-}
-
-export function calcVolToVol(
-  rxn: AcidBaseRxn, volAML: number, concA: number, concB: number,
-): { steps: string[]; answer: number } {
-  const nAcid  = concA * (volAML / 1000)
-  const nBase  = nAcid * (rxn.baseCoeff / rxn.acidCoeff)
-  const volBL  = nBase / concB
-  const volBML = volBL * 1000
-  const steps  = [
-    `Balanced equation: ${rxn.equation}`,
-    `n(${rxn.acidDisplay}) = ${sig(concA, 3)} mol/L × ${sig(volAML / 1000, 3)} L = ${sig(nAcid, 4)} mol`,
-    `Mole ratio: n(${rxn.baseDisplay}) = ${sig(nAcid, 4)} × (${rxn.baseCoeff}/${rxn.acidCoeff}) = ${sig(nBase, 4)} mol`,
-    `V(${rxn.baseDisplay}) = ${sig(nBase, 4)} mol ÷ ${sig(concB, 3)} mol/L = ${sig(volBL, 4)} L = ${sig(volBML, 4)} mL`,
-  ]
-  return { steps, answer: volBML }
-}
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]

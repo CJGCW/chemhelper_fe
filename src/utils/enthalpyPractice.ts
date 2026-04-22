@@ -30,10 +30,10 @@ function fmtSide(species: EnthalpySpecies[]): string {
   }).join(' + ')
 }
 
+import { calcEnthalpyOfReaction } from '../chem/thermo'
+
 function calcDH(reactants: EnthalpySpecies[], products: EnthalpySpecies[]): number {
-  const sumP = products.reduce((s, x)  => s + x.coeff * x.dhf, 0)
-  const sumR = reactants.reduce((s, x) => s + x.coeff * x.dhf, 0)
-  return parseFloat((sumP - sumR).toFixed(1))
+  return calcEnthalpyOfReaction(reactants, products)
 }
 
 function buildSteps(reactants: EnthalpySpecies[], products: EnthalpySpecies[], answer: number): string[] {
@@ -179,7 +179,5 @@ export function computeDHrxn(
   reactants: { coeff: number; dhf: number }[],
   products:  { coeff: number; dhf: number }[]
 ): number {
-  const sumP = products.reduce((s, x)  => s + x.coeff * x.dhf, 0)
-  const sumR = reactants.reduce((s, x) => s + x.coeff * x.dhf, 0)
-  return parseFloat((sumP - sumR).toFixed(2))
+  return calcEnthalpyOfReaction(reactants, products)
 }

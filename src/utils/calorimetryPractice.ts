@@ -1,3 +1,9 @@
+import {
+  calcHeatMcdt, calcMassMcdt, calcSHCMcdt, calcDeltaTMcdt,
+  calcHeatCdt, calcHeatCapCdt, calcDeltaTCdt,
+  calcCoffeeCupQrxn, calcBombQrxn,
+} from '../chem/thermo'
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export type CalorimetryMode = 'mcdt' | 'cdt' | 'coffee' | 'bomb'
@@ -55,7 +61,7 @@ function genMcdt(): CalorimetryProblem {
 
   switch (solveFor) {
     case 'q': {
-      const ans = sf3(m * c * dt)
+      const ans = sf3(calcHeatMcdt(m, c, dt))
       return {
         mode: 'mcdt', solveFor: 'q', answer: ans, answerUnit: 'J',
         question: `A ${sf(m, 3)} g sample of ${subst.name} undergoes a temperature change of ${sf(dt, 3)} °C. Its specific heat capacity is ${fmtC} J/(g·°C). How much heat is transferred?`,
@@ -72,7 +78,7 @@ function genMcdt(): CalorimetryProblem {
       }
     }
     case 'm': {
-      const ans = sf3(q / (c * dt))
+      const ans = sf3(calcMassMcdt(q, c, dt))
       return {
         mode: 'mcdt', solveFor: 'm', answer: ans, answerUnit: 'g',
         question: `${sf(q, 3)} J of heat is transferred to a sample of ${subst.name} (c = ${fmtC} J/(g·°C)), causing a temperature change of ${sf(dt, 3)} °C. What is the mass of the sample?`,
@@ -89,7 +95,7 @@ function genMcdt(): CalorimetryProblem {
       }
     }
     case 'c': {
-      const ans = sf3(q / (m * dt))
+      const ans = sf3(calcSHCMcdt(q, m, dt))
       return {
         mode: 'mcdt', solveFor: 'c', answer: ans, answerUnit: 'J/(g·°C)',
         question: `${sf(q, 3)} J of heat causes a ${sf(m, 3)} g metal sample to change temperature by ${sf(dt, 3)} °C. What is the specific heat capacity of the metal?`,
@@ -106,7 +112,7 @@ function genMcdt(): CalorimetryProblem {
       }
     }
     case 'dt': {
-      const ans = sf3(q / (m * c))
+      const ans = sf3(calcDeltaTMcdt(q, m, c))
       return {
         mode: 'mcdt', solveFor: 'ΔT', answer: ans, answerUnit: '°C',
         question: `${sf(q, 3)} J of heat is transferred to a ${sf(m, 3)} g sample of ${subst.name} (c = ${fmtC} J/(g·°C)). What is the temperature change?`,
@@ -134,11 +140,11 @@ function genCdt(): CalorimetryProblem {
 
   const C  = sf3(rand(50, 1500))   // J/°C
   const dt = sf3(rand(3, 40) * (Math.random() < 0.35 ? -1 : 1))
-  const q  = sf3(C * dt)
+  const q  = sf3(calcHeatCdt(C, dt))
 
   switch (solveFor) {
     case 'q': {
-      const ans = sf3(C * dt)
+      const ans = sf3(calcHeatCdt(C, dt))
       return {
         mode: 'cdt', solveFor: 'q', answer: ans, answerUnit: 'J',
         question: `A calorimeter with heat capacity ${sf(C, 3)} J/°C undergoes a temperature change of ${sf(dt, 3)} °C. How much heat is absorbed by the calorimeter?`,
@@ -154,7 +160,7 @@ function genCdt(): CalorimetryProblem {
       }
     }
     case 'C': {
-      const ans = sf3(q / dt)
+      const ans = sf3(calcHeatCapCdt(q, dt))
       return {
         mode: 'cdt', solveFor: 'C', answer: ans, answerUnit: 'J/°C',
         question: `A calorimeter absorbs ${sf(q, 3)} J of heat and its temperature changes by ${sf(dt, 3)} °C. What is the heat capacity of the calorimeter?`,
@@ -170,7 +176,7 @@ function genCdt(): CalorimetryProblem {
       }
     }
     case 'dt': {
-      const ans = sf3(q / C)
+      const ans = sf3(calcDeltaTCdt(q, C))
       return {
         mode: 'cdt', solveFor: 'ΔT', answer: ans, answerUnit: '°C',
         question: `A calorimeter with heat capacity ${sf(C, 3)} J/°C absorbs ${sf(q, 3)} J of heat. What is the temperature change of the calorimeter?`,
@@ -197,7 +203,7 @@ function genCoffee(): CalorimetryProblem {
   const dt = sf3(rand(3, 20) * (Math.random() < 0.5 ? -1 : 1))
   const tf = sf3(ti + dt)
   const qsol = m * c * (tf - ti)
-  const qrxn = sf3(-qsol)
+  const qrxn = sf3(calcCoffeeCupQrxn(m, c, ti, tf))
 
   return {
     mode: 'coffee', solveFor: 'q_rxn', answer: qrxn, answerUnit: 'J',
@@ -223,7 +229,7 @@ function genCoffee(): CalorimetryProblem {
 function genBomb(): CalorimetryProblem {
   const Ccal = sf3(rand(2, 15))        // kJ/°C
   const dt   = sf3(rand(1.5, 15))      // °C (always positive — exothermic combustion)
-  const qrxn = sf3(-(Ccal * dt))       // kJ (negative — exothermic)
+  const qrxn = sf3(calcBombQrxn(Ccal, dt))  // kJ (negative — exothermic)
 
   return {
     mode: 'bomb', solveFor: 'q_rxn', answer: qrxn, answerUnit: 'kJ',

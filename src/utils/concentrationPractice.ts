@@ -1,3 +1,8 @@
+import {
+  calcMolarityFromPercent, calcPercentFromMolarity,
+  calcMolarityFromPpm, calcMoleFraction,
+} from '../chem/solutions'
+
 export type ConcSubtype = 'percent_to_molarity' | 'molarity_to_percent' | 'ppm_to_molarity' | 'mole_fraction'
 
 export interface ConcProblem {
@@ -77,7 +82,7 @@ function genPercentToMolarity(): ConcProblem {
   const w = reagent.massPercent
   const rho = reagent.density
   const Mw = reagent.molarMass
-  const C = sig((w / 100 * rho * 1000) / Mw, 4)
+  const C = sig(calcMolarityFromPercent(w, rho, Mw), 4)
 
   return {
     subtype: 'percent_to_molarity',
@@ -105,8 +110,8 @@ function genMolarityToPercent(): ConcProblem {
   const reagent = pick(CONCENTRATED_REAGENTS)
   const rho = reagent.density
   const Mw = reagent.molarMass
-  const C = sig(reagent.massPercent / 100 * rho * 1000 / Mw, 4)
-  const wPct = sig((C * Mw) / (rho * 10), 4)
+  const C = sig(calcMolarityFromPercent(reagent.massPercent, rho, Mw), 4)
+  const wPct = sig(calcPercentFromMolarity(C, rho, Mw), 4)
 
   return {
     subtype: 'molarity_to_percent',
@@ -134,7 +139,7 @@ function genPpmToMolarity(): ConcProblem {
   const ion = pick(PPM_IONS)
   const ppm = pick(PPM_VALUES)
   const Mw = ion.molarMass
-  const C = sig(ppm / (Mw * 1000), 4)
+  const C = sig(calcMolarityFromPpm(ppm, Mw), 4)
 
   return {
     subtype: 'ppm_to_molarity',
@@ -163,7 +168,7 @@ function genMoleFraction(): ConcProblem {
   const Mw = solute.molarMass
   const nSol = mSol / Mw
   const nWater = mWater / 18.015
-  const chi = sig(nSol / (nSol + nWater), 4)
+  const chi = sig(calcMoleFraction(mSol, Mw, mWater, 18.015), 4)
 
   return {
     subtype: 'mole_fraction',

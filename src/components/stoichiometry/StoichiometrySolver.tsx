@@ -5,6 +5,8 @@ import WorkedExample from '../calculations/WorkedExample'
 import SigFigPanel from '../calculations/SigFigPanel'
 import CustomReactionForm from './CustomReactionForm'
 import { buildSigFigBreakdown, lowestSigFigs, type SigFigBreakdown } from '../../utils/sigfigs'
+import { calcStoich, type StoichSolution } from '../../chem/stoich'
+import type { Unit } from '../../chem/amount'
 
 // ── Gas volume helper ─────────────────────────────────────────────────────────
 
@@ -96,15 +98,7 @@ function GasVolumePanel({ onUse }: { onUse: (moles: string, note: string) => voi
   )
 }
 
-export type InputUnit = 'g' | 'mol'
-
-function sig(n: number, sf = 4): string {
-  return parseFloat(n.toPrecision(sf)).toString()
-}
-
-function toMoles(val: number, unit: InputUnit, species: Species): number {
-  return unit === 'mol' ? val : val / species.molarMass
-}
+export type InputUnit = Unit
 
 // ── Shared UI components ──────────────────────────────────────────────────────
 
@@ -168,43 +162,6 @@ export function StepsPanel({ steps }: { steps: string[] }) {
   )
 }
 
-// ── Standard calculation ──────────────────────────────────────────────────────
-
-interface StandardResult {
-  steps: string[]
-  answer: number
-  answerUnit: InputUnit
-  answerDisplay: string
-  rawAnswer: number
-}
-
-function calcStandard(
-  rxn: Reaction,
-  from: Species, fromVal: number, fromUnit: InputUnit,
-  to: Species, toUnit: InputUnit,
-): StandardResult {
-  const steps: string[] = []
-  steps.push(`Balanced equation: ${rxn.equation}`)
-
-  const molFrom = toMoles(fromVal, fromUnit, from)
-  if (fromUnit === 'g') {
-    steps.push(`Convert to moles: ${fromVal} g ÷ ${from.molarMass} g/mol = ${sig(molFrom)} mol ${from.display}`)
-  } else {
-    steps.push(`Given: ${fromVal} mol ${from.display}`)
-  }
-
-  const molTo = molFrom * (to.coeff / from.coeff)
-  steps.push(`Mole ratio: ${sig(molFrom)} mol ${from.display} × (${to.coeff}/${from.coeff}) = ${sig(molTo)} mol ${to.display}`)
-
-  if (toUnit === 'mol') {
-    const ans = parseFloat(sig(molTo))
-    return { steps, answer: ans, answerUnit: 'mol', answerDisplay: `${ans} mol ${to.display}`, rawAnswer: molTo }
-  }
-  const massTo = molTo * to.molarMass
-  steps.push(`Convert to grams: ${sig(molTo)} mol × ${to.molarMass} g/mol = ${sig(massTo)} g ${to.display}`)
-  const ans = parseFloat(sig(massTo))
-  return { steps, answer: ans, answerUnit: 'g', answerDisplay: `${ans} g ${to.display}`, rawAnswer: massTo }
-}
 
 // ── Worked example builder ────────────────────────────────────────────────────
 
@@ -238,7 +195,7 @@ export default function StoichiometrySolver() {
   const [fromUnit,    setFromUnit]    = useState<InputUnit>('g')
   const [toFormula,   setToFormula]   = useState(() => rxn.products[0]?.formula ?? rxn.reactants[rxn.reactants.length - 1].formula)
   const [toUnit,      setToUnit]      = useState<InputUnit>('g')
-  const [result,      setResult]      = useState<StandardResult | null>(null)
+  const [result,      setResult]      = useState<StoichSolution | null>(null)
   const [sigBreakdown, setSigBreakdown] = useState<SigFigBreakdown | null>(null)
   const [gasNote,     setGasNote]     = useState<string | null>(null)
 
@@ -262,7 +219,7 @@ export default function StoichiometrySolver() {
     const from = getSpecies(fromFormula)
     const to   = getSpecies(toFormula)
     if (!from || !to || from.formula === to.formula) return
-    const res = calcStandard(rxn, from, fv, fromUnit, to, toUnit)
+    const res = calcStoich(rxn, from, fv, fromUnit, to, toUnit)
     setResult(res)
 
     if (fromUnit === 'g') {
@@ -367,7 +324,7 @@ export default function StoichiometrySolver() {
                 }}>
                 <span className="font-mono text-xs text-secondary tracking-widest uppercase block mb-1">Result</span>
                 <span className="font-mono text-2xl font-semibold" style={{ color: 'var(--c-halogen)' }}>
-                  {result.answerDisplay}
+                  {result.answer} {result.answerUnit} {getSpecies(toFormula).display}
                 </span>
               </div>
               <SigFigPanel breakdown={sigBreakdown} />

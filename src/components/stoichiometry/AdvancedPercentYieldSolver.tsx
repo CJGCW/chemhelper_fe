@@ -1,77 +1,24 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { generateReaction, type Reaction, type Species } from '../../utils/stoichiometryPractice'
+import { generateReaction, type Reaction } from '../../utils/stoichiometryPractice'
 import { UnitToggle, NumInput, SpeciesSelect, StepsPanel } from './StoichiometrySolver'
 import WorkedExample from '../calculations/WorkedExample'
 import SigFigPanel from '../calculations/SigFigPanel'
 import CustomReactionForm from './CustomReactionForm'
 import { buildSigFigBreakdown, lowestSigFigs, type SigFigBreakdown } from '../../utils/sigfigs'
 import { genAdvPctProblem } from '../../utils/advancedPercentYieldPractice'
-
-type InputUnit = 'g' | 'mol'
-type SolveFor = 'percent' | 'actual'
-
-function sig(n: number, sf = 4): string { return parseFloat(n.toPrecision(sf)).toString() }
-
-function toMoles(val: number, unit: InputUnit, sp: Species): number {
-  return unit === 'mol' ? val : val / sp.molarMass
-}
-
-interface AdvPYResult {
-  theoreticalG: number
-  answer: number
-  answerUnit: string
-  steps: string[]
-  rawTheoretical: number
-}
-
-function calcAdvancedPercentYield(
-  rxn: Reaction,
-  lr: Species, lrVal: number, lrUnit: InputUnit,
-  product: Species,
-  solveFor: SolveFor,
-  knownVal: number,
-): AdvPYResult {
-  const steps: string[] = []
-  steps.push(`Balanced equation: ${rxn.equation}`)
-
-  const molLR = toMoles(lrVal, lrUnit, lr)
-  if (lrUnit === 'g') {
-    steps.push(`mol ${lr.display} = ${lrVal} g ÷ ${lr.molarMass} g/mol = ${sig(molLR)} mol`)
-  } else {
-    steps.push(`Given: ${lrVal} mol ${lr.display}`)
-  }
-
-  const molProd = molLR * (product.coeff / lr.coeff)
-  steps.push(`mol ${product.display} = ${sig(molLR)} × (${product.coeff}/${lr.coeff}) = ${sig(molProd)} mol`)
-
-  const tyRaw = molProd * product.molarMass
-  const ty    = parseFloat(sig(tyRaw))
-  steps.push(`Theoretical yield = ${sig(molProd)} mol × ${product.molarMass} g/mol = ${ty} g`)
-
-  if (solveFor === 'percent') {
-    const pct = (knownVal / ty) * 100
-    steps.push(`% yield = (actual / theoretical) × 100`)
-    steps.push(`% yield = (${sig(knownVal)} g / ${ty} g) × 100 = ${sig(pct)}%`)
-    return { theoreticalG: ty, answer: parseFloat(sig(pct)), answerUnit: '%', steps, rawTheoretical: tyRaw }
-  }
-
-  // solveFor === 'actual'
-  const actual = ty * (knownVal / 100)
-  steps.push(`Actual yield = theoretical × (% yield / 100)`)
-  steps.push(`Actual yield = ${ty} g × (${sig(knownVal)} / 100) = ${sig(actual)} g`)
-  return { theoreticalG: ty, answer: parseFloat(sig(actual)), answerUnit: 'g', steps, rawTheoretical: tyRaw }
-}
+import { calcAdvancedPercentYield, type AdvPYSolution, type SolveFor } from '../../chem/stoich'
+import type { Unit } from '../../chem/amount'
 
 export default function AdvancedPercentYieldSolver({ allowCustom = true }: { allowCustom?: boolean }) {
   const [rxn,         setRxn]         = useState<Reaction>(() => generateReaction())
   const [lrFormula,   setLrFormula]   = useState(() => rxn.reactants[0].formula)
   const [lrVal,       setLrVal]       = useState('')
-  const [lrUnit,      setLrUnit]      = useState<InputUnit>('g')
+  const [lrUnit,      setLrUnit]      = useState<Unit>('g')
   const [prodFormula, setProdFormula] = useState(() => rxn.products[0]?.formula ?? rxn.reactants[rxn.reactants.length - 1].formula)
   const [solveFor,    setSolveFor]    = useState<SolveFor>('actual')
   const [knownVal,    setKnownVal]    = useState('')
-  const [result,      setResult]      = useState<AdvPYResult | null>(null)
+  const [result,      setResult]      = useState<AdvPYSolution | null>(null)
   const [sigBreakdown, setSigBreakdown] = useState<SigFigBreakdown | null>(null)
 
   function applyReaction(r: Reaction) {

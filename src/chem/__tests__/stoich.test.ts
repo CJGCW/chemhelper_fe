@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { limitingReagent } from '../stoich'
+import { limitingReagent, calcLimitingReagent, type ChemReaction } from '../stoich'
 
 // Chang General Chemistry 10e, Example 3.15:
 // 2 NH₃ + CO₂ → (NH₂)₂CO + H₂O
@@ -91,6 +91,42 @@ describe('limitingReagent – single reactant', () => {
     expect(res.molPerCoeff).toBeCloseTo(1.0, 2)
     expect(res.productMols[0]).toBeCloseTo(2.0, 2) // water
     expect(res.productMols[1]).toBeCloseTo(1.0, 2) // O2
+  })
+})
+
+describe('calcLimitingReagent – Chang example 3.15', () => {
+  const rxn: ChemReaction = {
+    equation: '2 NH₃ + CO₂ → (NH₂)₂CO + H₂O',
+    reactants: [
+      { formula: 'NH3',        coeff: 2, molarMass: 17.03, display: 'NH₃', name: 'ammonia' },
+      { formula: 'CO2',        coeff: 1, molarMass: 44.01, display: 'CO₂', name: 'carbon dioxide' },
+    ],
+    products: [
+      { formula: '(NH2)2CO',   coeff: 1, molarMass: 60.06, display: '(NH₂)₂CO', name: 'urea' },
+      { formula: 'H2O',        coeff: 1, molarMass: 18.02, display: 'H₂O',      name: 'water' },
+    ],
+  }
+
+  const sol = calcLimitingReagent(
+    rxn,
+    [{ val: 637.2, unit: 'g' }, { val: 1142, unit: 'g' }],
+  )
+
+  it('identifies NH₃ as limiting', () => {
+    expect(sol.limitingSpecies?.display).toBe('NH₃')
+  })
+
+  it('produces urea yield ≈ 1124 g', () => {
+    expect(sol.products[0].grams).toBeCloseTo(1124, 0)
+  })
+
+  it('reports CO₂ excess', () => {
+    expect(sol.excess[0].species.display).toBe('CO₂')
+    expect(sol.excess[0].remainingMol).toBeGreaterThan(0)
+  })
+
+  it('includes equation as first step', () => {
+    expect(sol.steps[0]).toContain('NH₃')
   })
 })
 
