@@ -12,6 +12,7 @@ import NetIonicTool from '../components/tools/NetIonicTool'
 import ActivitySeries from '../components/tools/ActivitySeries'
 import IdealGasReference from '../components/idealgas/IdealGasReference'
 import EmpiricalVisual from '../components/empirical/EmpiricalVisual'
+import PageShell from '../components/Layout/PageShell'
 type Tab =
   | 'stoich' | 'molar' | 'solubility' | 'quantum' | 'energy' | 'naming'
   | 'classifier' | 'electrolyte' | 'net-ionic' | 'activity' | 'ideal-gas' | 'empirical'
@@ -38,7 +39,7 @@ export default function ReferencePage() {
   const pageLabel = TABS.find(t => t.id === activeTab)?.label ?? 'Reference'
 
   return (
-    <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
+    <PageShell>
 
       {/* Header */}
       <div className="flex items-center gap-3 print:hidden">
@@ -144,6 +145,6 @@ export default function ReferencePage() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </PageShell>
   )
 }

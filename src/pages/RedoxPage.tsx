@@ -17,6 +17,7 @@ import ReactionClassifierProblems from '../components/tools/ReactionClassifierPr
 import ElectrolyteProblems from '../components/tools/ElectrolyteProblems'
 import NetIonicProblems from '../components/tools/NetIonicProblems'
 import ActivitySeriesProblems from '../components/tools/ActivitySeriesProblems'
+import PageShell from '../components/Layout/PageShell'
 
 type Tab = 'practice' | 'rxn-practice' | 'ecell-practice' | 'classifier' | 'electrolyte' | 'net-ionic' | 'activity' | 'predictor' | 'ecell' | 'reference' | 'redox-practice' | 'classifier-problems' | 'electrolyte-problems' | 'net-ionic-problems' | 'activity-problems'
   | 'ref-oxidation' | 'ref-reaction-types' | 'ref-activity' | 'ref-acids-bases' | 'ref-redox-concepts'
@@ -294,7 +295,7 @@ export default function RedoxPage() {
   }
 
   return (
-    <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
+    <PageShell>
 
       {/* Header */}
       <div className="flex flex-col gap-3">
@@ -531,6 +532,6 @@ export default function RedoxPage() {
           onClose={() => setShowExplanation(false)}
         />
       )}
-    </div>
+    </PageShell>
   )
 }

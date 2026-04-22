@@ -13,6 +13,7 @@ import ElectromagneticSpectrum from '../components/atomic/ElectromagneticSpectru
 import ParaDiaMagnetic from '../components/atomic/ParaDiaMagnetic'
 import ParaDiaMagneticPractice from '../components/atomic/ParaDiaMagneticPractice'
 import MultiElectronAtoms from '../components/atomic/MultiElectronAtoms'
+import PageShell from '../components/Layout/PageShell'
 
 type Topic = 'electron_config' | 'quantum_numbers' | 'energy_levels' | 'isoelectronic'
            | 'em_spectrum' | 'para_dia' | 'multi_electron'
@@ -218,7 +219,7 @@ export default function ElectronConfigPage() {
   }
 
   return (
-    <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
+    <PageShell>
 
       <div className="flex flex-col gap-4 print:hidden">
         <div className="flex items-center gap-3">
@@ -320,6 +321,6 @@ export default function ElectronConfigPage() {
           onClose={() => setShowExplanation(false)}
         />
       )}
-    </div>
+    </PageShell>
   )
 }

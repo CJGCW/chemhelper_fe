@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import LewisStructureDiagram from '../components/lewis/LewisStructureDiagram'
 import StepsPanel from '../components/calculations/StepsPanel'
@@ -85,7 +86,17 @@ type Mode = 'generate' | 'practice'
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function LewisPage({ embedded = false }: { embedded?: boolean }) {
-  const [mode, setMode]           = useState<Mode>('generate')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const mode: Mode = embedded ? 'generate' : (searchParams.get('mode') as Mode ?? 'generate')
+
+  function setMode(m: Mode) {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      if (m === 'generate') next.delete('mode')
+      else next.set('mode', m)
+      return next
+    }, { replace: true })
+  }
   const [input, setInput]         = useState('')
   const [chargeRaw, setChargeRaw] = useState('0')
   const [loading, setLoading]     = useState(false)
@@ -185,7 +196,7 @@ export default function LewisPage({ embedded = false }: { embedded?: boolean }) 
     <>
       {/* Header + mode tabs — hidden when embedded inside StructuresPage */}
       <div className="flex flex-col gap-3">
-        {!embedded && <h2 className="font-sans font-semibold text-bright text-xl">Lewis Structure</h2>}
+        {!embedded && <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Lewis Structure</h2>}
 
         {/* Mode tabs — only shown when not embedded */}
         {!embedded && (

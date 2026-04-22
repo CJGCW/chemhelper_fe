@@ -18,6 +18,7 @@ import ConcentrationConverter from '../../components/calculations/ConcentrationC
 import DilutionConcPractice from '../../components/calculations/DilutionConcPractice'
 import { useState } from 'react'
 import { HideExamplesContext } from '../../components/calculations/ExampleBoxContext'
+import PageShell from '../../components/Layout/PageShell'
 
 type CalcType = 'moles' | 'molarity' | 'molality' | 'colligative' | 'colligative-bpe' | 'colligative-fpd' | 'molar-volume' | 'percent-comp' | 'dilution' | 'conc-converter' | 'practice' | 'perc-comp-practice' | 'sig-figs' | 'conc-practice' | 'reference' | 'visual' | 'ref-moles' | 'ref-molarity' | 'ref-molality' | 'ref-colligative' | 'ref-colligative-bpe' | 'ref-colligative-fpd' | 'ref-molar-volume' | 'ref-dilution' | 'ref-other'
 type ColligativeMode = 'bpe' | 'fpd'
@@ -417,7 +418,7 @@ export default function MolarCalculationsPage() {
   const showExplanationButton = !!EXPLANATIONS[activeTab]
 
   return (
-    <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
+    <PageShell>
 
       {/* Header */}
       <div className="flex flex-col gap-3">
@@ -608,6 +609,6 @@ export default function MolarCalculationsPage() {
           onClose={() => setShowExplanation(false)}
         />
       )}
-    </div>
+    </PageShell>
   )
 }

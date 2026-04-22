@@ -19,6 +19,7 @@ import DaltonsPractice from '../components/idealgas/DaltonsPractice'
 import GrahamsPractice from '../components/idealgas/GrahamsPractice'
 import GasDensityPractice from '../components/idealgas/GasDensityPractice'
 import MaxwellBoltzmann from '../components/idealgas/MaxwellBoltzmann'
+import PageShell from '../components/Layout/PageShell'
 
 type Tab =
   // reference
@@ -368,7 +369,7 @@ export default function IdealGasPage() {
     : REFERENCE_GROUPS
 
   return (
-    <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
+    <PageShell>
 
       {/* Header */}
       <div className="flex flex-col gap-3">
@@ -582,6 +583,6 @@ export default function IdealGasPage() {
           onClose={() => setShowExplanation(false)}
         />
       )}
-    </div>
+    </PageShell>
   )
 }

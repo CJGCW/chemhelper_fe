@@ -1,6 +1,7 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchParams } from 'react-router-dom'
+import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 import LewisPage from './LewisPage'
 import VsepPage from './VsepPage'
 import LewisReference from '../components/lewis/LewisReference'
@@ -14,6 +15,7 @@ import SolidTypesReference from '../components/structures/SolidTypesReference'
 import SolidTypesPractice from '../components/structures/SolidTypesPractice'
 import UnitCellCalc from '../components/structures/UnitCellCalc'
 import UnitCellPractice from '../components/structures/UnitCellPractice'
+import PageShell from '../components/Layout/PageShell'
 
 const VseprDrawChallenge = lazy(() => import('../components/vsepr/VseprDrawChallenge'))
 
@@ -77,8 +79,138 @@ const MODE_DEFAULT: Record<Mode, Tab> = {
   problems:  'lewis-draw',
 }
 
+const EXPLANATIONS: Record<string, ExplanationContent> = {
+  lewis: {
+    title: 'Lewis Structures',
+    formula: 'total valence e⁻ → bonds → lone pairs → formal charges',
+    formulaVars: [
+      { symbol: 'V',  meaning: 'Total valence electrons = sum of all atoms\' valence e⁻ (−1 per + charge, +1 per − charge)', unit: 'e⁻' },
+      { symbol: 'FC', meaning: 'Formal charge = valence e⁻ − lone pair e⁻ − ½ bonding e⁻',                                   unit: 'integer' },
+      { symbol: 'octet', meaning: 'Most atoms want 8 electrons around them; H and He need only 2',                            unit: '8 e⁻'    },
+      { symbol: 'expanded', meaning: 'Period 3+ atoms can exceed an octet using d orbitals',                                  unit: '>8 e⁻'  },
+    ],
+    description:
+      'Count all valence electrons. Connect atoms with single bonds using 2 e⁻ each. ' +
+      'Complete octets on all terminal atoms first using lone pairs, then place remaining electrons on the central atom. ' +
+      'If the central atom is short, convert lone pairs on adjacent atoms to double or triple bonds. ' +
+      'Check formal charges — minimise them by preferring the structure where atoms have charges closest to zero.',
+    example: {
+      scenario: 'Draw the Lewis structure of CO₂.',
+      steps: [
+        'Valence e⁻: C(4) + 2×O(6) = 16 e⁻',
+        'Two C–O single bonds use 4 e⁻; fill O octets with 6 e⁻ each (12 e⁻ total) — 0 e⁻ left for C',
+        'C only has 4 e⁻ — convert 1 lone pair on each O to a C=O double bond',
+        'C now has 8 e⁻; each O has 8 e⁻; formal charges all zero',
+      ],
+      result: 'O=C=O (2 double bonds, 2 lone pairs on each O)',
+    },
+  },
+  vsepr: {
+    title: 'VSEPR Theory',
+    formula: 'steric number = bonding pairs + lone pairs → geometry',
+    formulaVars: [
+      { symbol: 'SN 2', meaning: '2 bonding + 0 lone → linear (180°)',                          unit: 'e.g. CO₂'  },
+      { symbol: 'SN 3', meaning: '3+0 → trigonal planar · 2+1 → bent (~120°)',                  unit: 'BF₃ · SO₂' },
+      { symbol: 'SN 4', meaning: '4+0 → tetrahedral · 3+1 → trig. pyramidal · 2+2 → bent',     unit: 'CH₄ · NH₃ · H₂O' },
+      { symbol: 'SN 5', meaning: '5+0 → trig. bipyramidal · lone pairs fill equatorial sites',  unit: 'PCl₅ family' },
+      { symbol: 'SN 6', meaning: '6+0 → octahedral · 5+1 → square pyramidal · 4+2 → square planar', unit: 'SF₆ family' },
+    ],
+    description:
+      'Electron pairs — both bonding and lone — repel each other and adopt the arrangement that maximises angles between them. ' +
+      'Determine the steric number (SN) = bonding pairs + lone pairs on the central atom. ' +
+      'The electron geometry follows from SN; the molecular geometry is the same but ignores lone pairs. ' +
+      'Lone pairs repel more strongly than bonding pairs, compressing bond angles by ~2° each.',
+    example: {
+      scenario: 'Predict the shape and bond angle of water (H₂O).',
+      steps: [
+        'O: 6 valence e⁻, forms 2 bonds → 2 bonding pairs + 2 lone pairs; SN = 4',
+        'Electron geometry: tetrahedral (SN 4)',
+        'Molecular geometry: bent (2 lone pairs not counted in shape)',
+        '2 lone pairs compress angle: ideal 109.5° → actual ~104.5°',
+      ],
+      result: 'Bent molecular geometry, bond angle ≈ 104.5°',
+    },
+  },
+  'sigma-pi': {
+    title: 'Sigma & Pi Bonds',
+    formula: 'single = 1σ  ·  double = 1σ+1π  ·  triple = 1σ+2π',
+    formulaVars: [
+      { symbol: 'σ',   meaning: 'End-to-end orbital overlap; present in every bond; allows free rotation', unit: 'per bond'    },
+      { symbol: 'π',   meaning: 'Side-by-side p orbital overlap; restricts rotation; locks geometry',      unit: 'double/triple' },
+      { symbol: 'sp³', meaning: '4 σ bonds, 0 π; tetrahedral; all single bonds',                           unit: '109.5°'     },
+      { symbol: 'sp²', meaning: '3 σ bonds, 1 π; trigonal planar; one double bond',                        unit: '120°'       },
+      { symbol: 'sp',  meaning: '2 σ bonds, 2 π; linear; one triple bond (or two double bonds)',           unit: '180°'       },
+    ],
+    description:
+      'Every covalent bond contains exactly one σ bond formed by direct head-on orbital overlap. ' +
+      'Additional bonds in a multiple bond are π bonds formed by parallel p orbital overlap. ' +
+      'σ bonds allow rotation; π bonds create rigidity. ' +
+      'Total σ bonds = number of bonds in the molecule. Total π bonds = (double bonds × 1) + (triple bonds × 2).',
+    example: {
+      scenario: 'Count σ and π bonds in acetylene, C₂H₂ (H–C≡C–H).',
+      steps: [
+        '2 C–H single bonds = 2σ',
+        '1 C≡C triple bond = 1σ + 2π',
+        'Total: 3σ + 2π',
+        'Each C is sp hybridised (2 σ bonds each)',
+      ],
+      result: '3σ bonds, 2π bonds; both C atoms are sp hybridised',
+    },
+  },
+  'solid-types': {
+    title: 'Types of Solids',
+    formula: 'ionic · metallic · molecular · network covalent',
+    formulaVars: [
+      { symbol: 'ionic',    meaning: 'Cation/anion lattice; electrostatic forces; high MP; brittle; conducts when molten', unit: 'NaCl, MgO'      },
+      { symbol: 'metallic', meaning: 'Metal nuclei + delocalised e⁻ sea; conducts; malleable; variable MP',               unit: 'Fe, Cu, Al'     },
+      { symbol: 'molecular', meaning: 'Discrete molecules held by IMFs (dispersion, dipole, H-bond); low MP; soft',       unit: 'ice, I₂, CO₂'  },
+      { symbol: 'network',  meaning: 'Extended covalent lattice; extremely high MP; very hard; usually non-conductive',   unit: 'diamond, SiO₂' },
+    ],
+    description:
+      'The properties of a solid—melting point, hardness, conductivity, solubility—are determined by what particles are in the lattice and how strongly they interact. ' +
+      'Ionic and network covalent solids have the highest melting points. ' +
+      'Metallic solids conduct electricity in all phases. ' +
+      'Molecular solids have the lowest melting points and are held together only by intermolecular forces.',
+    example: {
+      scenario: 'Classify: NaCl, Fe, dry ice (CO₂), and diamond.',
+      steps: [
+        'NaCl: Na⁺ and Cl⁻ lattice → ionic solid',
+        'Fe: metal atoms + delocalised electrons → metallic solid',
+        'CO₂: discrete molecules, weak dispersion forces → molecular solid',
+        'Diamond: C atoms in infinite covalent network → network covalent solid',
+      ],
+      result: 'NaCl ionic · Fe metallic · CO₂ molecular · diamond network covalent',
+    },
+  },
+  'unit-cell': {
+    title: 'Unit Cells',
+    formula: 'SC: 1 atom  ·  BCC: 2 atoms  ·  FCC: 4 atoms',
+    formulaVars: [
+      { symbol: 'SC',  meaning: '8 corners × 1/8 = 1 atom/cell; coord. no. = 6; APF = 52%',                   unit: 'simple cubic'  },
+      { symbol: 'BCC', meaning: '8 corners × 1/8 + 1 body = 2 atoms/cell; coord. no. = 8; APF = 68%',         unit: 'body-centred'  },
+      { symbol: 'FCC', meaning: '8 corners × 1/8 + 6 faces × 1/2 = 4 atoms/cell; coord. no. = 12; APF = 74%', unit: 'face-centred'  },
+      { symbol: 'APF', meaning: 'Atomic packing fraction = (n × V_atom) / V_cell',                             unit: 'dimensionless' },
+    ],
+    description:
+      'The unit cell is the smallest repeating unit of a crystal lattice. ' +
+      'Corner atoms are shared among 8 adjacent cells (contributing 1/8 each), face atoms between 2 cells (1/2 each), and body-centre atoms belong to one cell. ' +
+      'APF measures how efficiently space is filled; FCC and HCP are the most efficient common packings at 74%.',
+    example: {
+      scenario: 'Copper crystallises in FCC. How many atoms per unit cell? What is the coordination number?',
+      steps: [
+        '8 corner atoms × 1/8 = 1',
+        '6 face atoms × 1/2 = 3',
+        'Total = 4 atoms per unit cell',
+        'Each Cu atom touches 4 face atoms in its own layer, 4 in the layer above, 4 below → 12 nearest neighbours',
+      ],
+      result: '4 atoms/unit cell; coordination number = 12; APF = 74%',
+    },
+  },
+}
+
 export default function StructuresPage() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const [showExplanation, setShowExplanation] = useState(false)
   const activeTab = (searchParams.get('tab') as Tab) ?? 'lewis'
   const activeMode: Mode = PROBLEMS_TAB_IDS.has(activeTab) ? 'problems'
     : PRACTICE_TAB_IDS.has(activeTab) ? 'practice'
@@ -103,8 +235,11 @@ export default function StructuresPage() {
     : activeMode === 'practice' ? PRACTICE_TABS
     : REFERENCE_TABS
 
+  const activeTopic = TAB_TO_TOPIC[activeTab]
+  const activeExplanation = activeTopic ? EXPLANATIONS[activeTopic] : undefined
+
   return (
-    <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
+    <PageShell>
 
       {/* Header */}
       <div className="flex flex-col gap-3">
@@ -118,6 +253,16 @@ export default function StructuresPage() {
             >
               <span>⎙</span>
               <span>Print</span>
+            </button>
+          )}
+          {activeExplanation && (
+            <button
+              onClick={() => setShowExplanation(true)}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm border border-border
+                         font-sans text-xs text-secondary hover:text-primary hover:border-muted transition-colors"
+            >
+              <span className="font-mono">?</span>
+              <span>What is this</span>
             </button>
           )}
         </div>
@@ -267,6 +412,14 @@ export default function StructuresPage() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+
+      {activeExplanation && (
+        <ExplanationModal
+          content={activeExplanation}
+          open={showExplanation}
+          onClose={() => setShowExplanation(false)}
+        />
+      )}
+    </PageShell>
   )
 }

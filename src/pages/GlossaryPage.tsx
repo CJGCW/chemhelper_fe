@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import PageShell from '../components/Layout/PageShell'
 
 interface Term {
   term: string
@@ -139,9 +140,9 @@ export default function GlossaryPage() {
   })
 
   return (
-    <div className="flex flex-col gap-5">
+    <PageShell>
       <div>
-        <h1 className="font-sans font-semibold text-xl text-bright">Chemistry Glossary</h1>
+        <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Chemistry Glossary</h2>
         <p className="font-mono text-xs text-secondary mt-0.5">{TERMS.length} terms across {CATEGORIES.length} categories</p>
       </div>
 
@@ -200,6 +201,6 @@ export default function GlossaryPage() {
       )}
 
       <p className="font-mono text-xs text-secondary">{filtered.length} term{filtered.length !== 1 ? 's' : ''} shown</p>
-    </div>
+    </PageShell>
   )
 }

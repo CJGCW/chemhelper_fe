@@ -31,6 +31,7 @@ import ClausiusClapeyronReference from '../components/thermo/ClausiusClapeyronRe
 import VaporPressureCalc from '../components/thermo/VaporPressureCalc'
 import ReactionProfilePractice from '../components/thermo/ReactionProfilePractice'
 import ReactionProfileCalc from '../components/thermo/ReactionProfileCalc'
+import PageShell from '../components/Layout/PageShell'
 
 type Tab =
   | 'calorimetry'
@@ -358,7 +359,7 @@ export default function ThermochemistryPage() {
   const currentModeIdx = currentSection ? Math.max(0, currentSection.tabs.findIndex(t => t.id === tab)) : 0
 
   return (
-    <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
+    <PageShell>
 
       {/* Header */}
       <div className="flex flex-col gap-4">
@@ -485,6 +486,6 @@ export default function ThermochemistryPage() {
           onClose={() => setShowExplanation(false)}
         />
       )}
-    </div>
+    </PageShell>
   )
 }

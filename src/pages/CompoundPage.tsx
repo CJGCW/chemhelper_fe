@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import PageShell from '../components/Layout/PageShell'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -111,7 +112,7 @@ export default function CompoundPage() {
   }
 
   return (
-    <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
+    <PageShell>
 
       <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Compound Converter</h2>
 
@@ -213,7 +214,7 @@ export default function CompoundPage() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </PageShell>
   )
 }
 

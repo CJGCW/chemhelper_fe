@@ -1,6 +1,7 @@
 import { useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import KetcherGuide from '../components/vsepr/KetcherGuide'
+import PageShell from '../components/Layout/PageShell'
 
 type Tool = 'ketcher'
 
@@ -21,7 +22,7 @@ export default function ToolsPage() {
   }
 
   return (
-    <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full flex flex-col gap-6 lg:gap-8">
+    <PageShell>
 
       {/* Header */}
       <div className="flex flex-col gap-3">
@@ -63,6 +64,6 @@ export default function ToolsPage() {
         )}
       </AnimatePresence>
 
-    </div>
+    </PageShell>
   )
 }
