@@ -147,8 +147,8 @@ export default function PeriodicTrendsReference() {
         </p>
       </div>
 
-      {/* Property selector + print button */}
-      <div className="flex flex-wrap items-center gap-1.5 print:hidden">
+      {/* Property selector */}
+      <div className="flex flex-wrap gap-1.5 print:hidden">
         {PROPERTIES.map(p => {
           const active = prop === p.id
           return (
@@ -165,14 +165,6 @@ export default function PeriodicTrendsReference() {
             </button>
           )
         })}
-        <button
-          onClick={() => window.print()}
-          className="flex items-center gap-2 px-3 py-1 rounded-sm font-sans text-sm border border-border
-                     text-secondary hover:text-primary hover:border-muted transition-colors ml-2"
-        >
-          <span>⎙</span>
-          <span>Print</span>
-        </button>
       </div>
 
       {/* Description */}

@@ -228,6 +228,16 @@ export default function ElectronConfigPage() {
       <div className="flex flex-col gap-4 print:hidden">
         <div className="flex items-center gap-3">
           <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Atomic Structure</h2>
+          {topic === 'periodic_trends' && mode === 'reference' && (
+            <button
+              onClick={() => window.print()}
+              className="flex items-center gap-2 px-3 py-1 rounded-sm font-sans text-sm border border-border
+                         text-secondary hover:text-primary hover:border-muted transition-colors"
+            >
+              <span>⎙</span>
+              <span>Print</span>
+            </button>
+          )}
           {EXPLANATIONS[topic] && (
             <button
               onClick={() => setShowExplanation(true)}
