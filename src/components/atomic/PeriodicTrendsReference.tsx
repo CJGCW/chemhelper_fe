@@ -48,6 +48,27 @@ const CW = 30  // cell width px
 const CH = 26  // cell height px
 const G  = 2   // gap px
 
+function formatV(v: number | null | undefined): string {
+  if (v == null) return ''
+  return v < 10 ? v.toFixed(2) : String(Math.round(v))
+}
+
+const PRINT_STYLES = `
+@media print {
+  .pt-cell {
+    height: auto !important;
+    min-height: 38px !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 1px !important;
+    padding: 2px 1px !important;
+  }
+  .pt-val { display: block !important; }
+  .pt-tooltip { display: none !important; }
+}
+`
+
 export default function PeriodicTrendsReference() {
   const { elements, loadElements } = useElementStore()
   const [prop, setProp]       = useState<Property>('atomicRadius')
@@ -116,6 +137,15 @@ export default function PeriodicTrendsReference() {
 
   return (
     <div className="flex flex-col gap-5">
+      <style>{PRINT_STYLES}</style>
+
+      {/* Print-only heading */}
+      <div className="hidden print:block">
+        <p className="font-sans font-semibold text-bright text-base">
+          Periodic Trends — {propInfo.label}
+          <span className="font-mono text-xs font-normal text-secondary ml-2">({propInfo.unit})</span>
+        </p>
+      </div>
 
       {/* Property selector */}
       <div className="flex flex-wrap gap-1.5 print:hidden">
@@ -141,7 +171,7 @@ export default function PeriodicTrendsReference() {
       <p className="font-sans text-sm text-secondary leading-relaxed max-w-2xl">{propInfo.desc}</p>
 
       {/* Hover tooltip */}
-      <div style={{ minHeight: 28 }}>
+      <div className="pt-tooltip" style={{ minHeight: 28 }}>
         {hoveredEl ? (
           <div className="font-mono text-xs text-secondary px-3 py-1.5 rounded-sm border border-border bg-raised inline-block">
             <span style={{ color: 'var(--c-halogen)' }}>{hoveredEl.symbol}</span>
@@ -151,7 +181,7 @@ export default function PeriodicTrendsReference() {
               : <span className="text-dim"> · no data</span>}
           </div>
         ) : (
-          <p className="font-mono text-xs text-dim italic">hover an element to see its value</p>
+          <p className="font-mono text-xs text-dim italic print:hidden">hover an element to see its value</p>
         )}
       </div>
 
@@ -182,6 +212,7 @@ export default function PeriodicTrendsReference() {
               }}>
                 {rowEls.map(el => (
                   <div key={el.atomicNumber}
+                    className="pt-cell"
                     onMouseEnter={() => setHoveredZ(el.atomicNumber)}
                     onMouseLeave={() => setHoveredZ(null)}
                     style={{
@@ -201,6 +232,9 @@ export default function PeriodicTrendsReference() {
                   >
                     <span style={{ fontFamily: 'monospace', fontSize: 9, color: symbolColor(el.atomicNumber), userSelect: 'none' }}>
                       {el.symbol}
+                    </span>
+                    <span className="pt-val" style={{ display: 'none', fontFamily: 'monospace', fontSize: 6, color: symbolColor(el.atomicNumber) }}>
+                      {formatV(values[el.atomicNumber])}
                     </span>
                   </div>
                 ))}
@@ -230,6 +264,7 @@ export default function PeriodicTrendsReference() {
           <div style={{ display: 'flex', gap: G, paddingLeft: fBlockOffset }}>
             {lanthanides.map(el => (
               <div key={el.atomicNumber}
+                className="pt-cell"
                 onMouseEnter={() => setHoveredZ(el.atomicNumber)}
                 onMouseLeave={() => setHoveredZ(null)}
                 style={{
@@ -247,6 +282,9 @@ export default function PeriodicTrendsReference() {
                 <span style={{ fontFamily: 'monospace', fontSize: 9, color: symbolColor(el.atomicNumber), userSelect: 'none' }}>
                   {el.symbol}
                 </span>
+                <span className="pt-val" style={{ display: 'none', fontFamily: 'monospace', fontSize: 6, color: symbolColor(el.atomicNumber) }}>
+                  {formatV(values[el.atomicNumber])}
+                </span>
               </div>
             ))}
           </div>
@@ -255,6 +293,7 @@ export default function PeriodicTrendsReference() {
           <div style={{ display: 'flex', gap: G, paddingLeft: fBlockOffset }}>
             {actinides.map(el => (
               <div key={el.atomicNumber}
+                className="pt-cell"
                 onMouseEnter={() => setHoveredZ(el.atomicNumber)}
                 onMouseLeave={() => setHoveredZ(null)}
                 style={{
@@ -271,6 +310,9 @@ export default function PeriodicTrendsReference() {
               >
                 <span style={{ fontFamily: 'monospace', fontSize: 9, color: symbolColor(el.atomicNumber), userSelect: 'none' }}>
                   {el.symbol}
+                </span>
+                <span className="pt-val" style={{ display: 'none', fontFamily: 'monospace', fontSize: 6, color: symbolColor(el.atomicNumber) }}>
+                  {formatV(values[el.atomicNumber])}
                 </span>
               </div>
             ))}
