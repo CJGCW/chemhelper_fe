@@ -46,7 +46,7 @@ export default function ReferencePage() {
         <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">
           {pageLabel}
         </h2>
-        {(['stoich','molar','solubility','quantum','energy'] as Tab[]).includes(activeTab) && (
+        {(['stoich','molar','solubility','quantum','energy','naming','classifier','electrolyte','net-ionic','activity','ideal-gas','empirical'] as Tab[]).includes(activeTab) && (
           <button
             onClick={() => window.print()}
             className="flex items-center gap-2 px-3 py-1 rounded-sm font-sans text-sm border border-border

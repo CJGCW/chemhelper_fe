@@ -1,77 +1,49 @@
 import { useState } from 'react'
 import { generateReaction, type Reaction } from '../../utils/stoichiometryPractice'
 import { UnitToggle, NumInput } from './StoichiometryTool'
-import { useStepsPanelState, StepsTrigger, StepsContent } from '../calculations/StepsPanel'
-import { SigFigTrigger, SigFigContent } from '../calculations/SigFigPanel'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
+import { SigFigTrigger, SigFigContent } from '../shared/SigFigPanel'
 import CustomReactionForm from './CustomReactionForm'
-import { buildSigFigBreakdown, lowestSigFigs, type SigFigBreakdown } from '../../utils/sigfigs'
+import { buildSigFigBreakdown, lowestSigFigs, formatSigFigs, roundToSigFigs, type SigFigBreakdown } from '../../utils/sigfigs'
 import { calcLimitingReagent, type LRSolution } from '../../chem/stoich'
 import type { Unit } from '../../chem/amount'
-
-function fmt(n: number): string { return parseFloat(n.toPrecision(4)).toString() }
 
 // ── Build a worked example from any reaction ──────────────────────────────────
 
 function buildWorkedExample(rxn: Reaction) {
   const massA = 20
   const rA = rxn.reactants[0]
-  const molA = massA / rA.molarMass
 
   if (rxn.reactants.length === 1) {
-    const yieldSteps: string[] = []
+    const sol = calcLimitingReagent(rxn, [{ val: massA, unit: 'g' }])
     const firstP = rxn.products[0] ?? null
-    rxn.products.forEach(prod => {
-      const mol = molA * (prod.coeff / rA.coeff)
-      const g = mol * prod.molarMass
-      yieldSteps.push(`Theoretical yield ${prod.display}: ${fmt(molA)} × (${prod.coeff}/${rA.coeff}) × ${prod.molarMass} g/mol = ${fmt(g)} g`)
-    })
-    const firstMol = firstP ? molA * (firstP.coeff / rA.coeff) : 0
-    const firstG   = firstP ? firstMol * firstP.molarMass : 0
     return {
       problem: `${massA} g of ${rA.display} decomposes completely. What mass of ${firstP?.display ?? 'product'} is produced?`,
-      steps: [
-        `Reaction: ${rxn.equation}`,
-        `mol ${rA.display} = ${massA} g ÷ ${rA.molarMass} g/mol = ${fmt(molA)} mol`,
-        ...yieldSteps,
-      ],
-      answer: firstP ? `Theoretical yield of ${firstP.display}: ${fmt(firstG)} g` : 'No products defined',
+      steps: sol.steps,
+      answer: firstP && sol.products[0]
+        ? `Theoretical yield of ${firstP.display}: ${sol.products[0].grams} g`
+        : 'No products defined',
     }
   }
 
   const rB = rxn.reactants[1]
-  const stoichMolB = molA * (rB.coeff / rA.coeff)
-  const molB  = parseFloat((stoichMolB * 0.65).toPrecision(3))
+  const molA = massA / rA.molarMass
+  const molB  = parseFloat((molA * (rB.coeff / rA.coeff) * 0.65).toPrecision(3))
   const massB = parseFloat((molB * rB.molarMass).toPrecision(3))
-  const molBNeeded = parseFloat((molA * (rB.coeff / rA.coeff)).toPrecision(4))
-  const isBLimiting = molBNeeded > molB
-  const limiting = isBLimiting ? rB : rA
-  const excess   = isBLimiting ? rA : rB
-  const molLim   = isBLimiting ? molB : molA
-  const molExc   = isBLimiting ? molA : molB
-  const molExcUsed   = parseFloat((molLim * (excess.coeff / limiting.coeff)).toPrecision(4))
-  const molExcRemain = parseFloat((molExc - molExcUsed).toPrecision(4))
-  const gExcRemain   = parseFloat((molExcRemain * excess.molarMass).toPrecision(4))
-  const product = rxn.products[0] ?? null
-  const yieldSteps: string[] = []
-  let answerSuffix = ''
-  if (product) {
-    const yieldMol = parseFloat((molLim * (product.coeff / limiting.coeff)).toPrecision(4))
-    const yieldG   = parseFloat((yieldMol * product.molarMass).toPrecision(4))
-    yieldSteps.push(`Theoretical yield ${product.display}: ${fmt(molLim)} × (${product.coeff}/${limiting.coeff}) × ${product.molarMass} g/mol = ${yieldG} g`)
-    answerSuffix = ` — Theoretical yield of ${product.display}: ${yieldG} g`
-  }
+
+  const sol = calcLimitingReagent(rxn, [
+    { val: massA, unit: 'g' },
+    { val: massB, unit: 'g' },
+  ])
+  const firstP = rxn.products[0] ?? null
+  const answerSuffix = firstP && sol.products[0]
+    ? ` — Theoretical yield of ${firstP.display}: ${sol.products[0].grams} g`
+    : ''
+
   return {
     problem: `${massA} g of ${rA.display} is mixed with ${massB} g of ${rB.display}. Which is the limiting reagent?`,
-    steps: [
-      `Reaction: ${rxn.equation}`,
-      `mol ${rA.display} = ${massA} g ÷ ${rA.molarMass} g/mol = ${fmt(molA)} mol`,
-      `mol ${rB.display} = ${massB} g ÷ ${rB.molarMass} g/mol = ${fmt(molB)} mol`,
-      `${rB.display} needed to consume all ${rA.display}: ${fmt(molA)} × (${rB.coeff}/${rA.coeff}) = ${molBNeeded} mol`,
-      `Have ${fmt(molB)} mol ${rB.display}; need ${molBNeeded} mol → ${limiting.display} is the limiting reagent`,
-      `${excess.display} consumed: ${molExcUsed} mol; remaining: ${molExcRemain} mol (${gExcRemain} g)`,
-      ...yieldSteps,
-    ],
-    answer: `Limiting reagent: ${limiting.display}${answerSuffix}`,
+    steps: sol.steps,
+    answer: `Limiting reagent: ${sol.limitingSpecies?.display ?? 'unknown'}${answerSuffix}`,
   }
 }
 
@@ -112,7 +84,9 @@ export default function LimitingReagentTool({ allowCustom = true }: Props) {
     const hasMass = lrInputs.some(i => i.unit === 'g')
     const sf = hasMass ? lowestSigFigs(lrInputs.map(i => i.val)) : undefined
 
-    const result = calcLimitingReagent(rxn, inputs, sf)
+    const sfFmt = sf ? (n: number) => formatSigFigs(n, sf) : undefined
+    const sfRnd = sf ? (n: number) => roundToSigFigs(n, sf) : undefined
+    const result = calcLimitingReagent(rxn, inputs, sfFmt, sfRnd)
     setLrResult(result)
     setSteps(result.steps)
 
