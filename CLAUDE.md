@@ -140,6 +140,29 @@ src/
 
 Import shared primitives as `'../shared/X'` from any component subdir.
 
+The `calculations/` entry above is now empty of shared primitives (all moved to `shared/`). It still holds topic-specific components like `MolarReference`, `MolesTool`, etc. — those belong there.
+
+---
+
+## Domain Math Migration (chem/)
+
+**Phase 1 (done):** `chem/stoich.ts` — all stoichiometry solvers live in `chem/` with pure numeric defaults; formatters are caller-supplied.
+
+**Phase 2 (pending):** The following areas still do math locally inside components. Extract to `chem/` when touching for other reasons — don't refactor speculatively.
+
+| Area | Files with local math |
+|---|---|
+| Thermochemistry | ~9 tools (CalorimetryTool, HeatTransferTool, HessTool, EnthalpyTool, BondEnthalpyTool, VaporPressureTool, ClausiusClapeyronTool, ReactionProfileTool, HeatingCurveTool) |
+| Ideal Gas | ~5 tools (IdealGasTool, GasDensityTool, GrahamsLawTool, DaltonsLawTool, VanDerWaalsTool) |
+| Molar Calculations | ~7 tools in `calculations/` |
+| Empirical | EmpiricalTool |
+
+---
+
+## Backend API Scaffold
+
+`src/api/` contains `client.ts` (axios, baseURL `/api`, 15s timeout, error interceptor) and stubs `calculations.ts`, `elements.ts`. Nothing is wired through it yet. If server-side routing is added, this is the right place — keep all fetch calls in `src/api/` files, not inside components or utils.
+
 ---
 
 ## Styling Conventions

@@ -1,9 +1,10 @@
 import PeriodicTable from '../components/PeriodicTable/PeriodicTable'
+import PageShell from '../components/Layout/PageShell'
 
 export default function TablePage() {
   return (
-    <div className="pl-4 pr-4 md:pl-6 md:pr-8 lg:pl-8 lg:pr-12 py-4 md:py-6 lg:py-8 w-full">
-      <div className="mb-4 md:mb-6">
+    <PageShell>
+      <div>
         <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">
           Periodic Table
         </h2>
@@ -13,6 +14,6 @@ export default function TablePage() {
         </p>
       </div>
       <PeriodicTable />
-    </div>
+    </PageShell>
   )
 }
