@@ -10,6 +10,9 @@ export default defineConfig({
     'global': 'globalThis',
   },
   plugins: [react()],
+  build: {
+    chunkSizeWarningLimit: 30_000,
+  },
   server: {
     port: 5173,
     proxy: {
