@@ -1,67 +1,37 @@
 import React from 'react'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import {
+  POLYATOMIC_ANIONS as _ANIONS,
+  POLYATOMIC_CATIONS as _CATIONS,
+  TRANSITION_METAL_CATIONS,
+  GREEK_PREFIXES,
+} from '../../data/nomenclature'
 
-// ── Data ───────────────────────────────────────────────────────────────────────
+// ── Local display adapters (reference uses string charges; data module uses numbers) ──
 
-const POLYATOMIC_ANIONS = [
-  { formula: 'OH⁻',      name: 'hydroxide',                        charge: '1−' },
-  { formula: 'NO₃⁻',     name: 'nitrate',                          charge: '1−' },
-  { formula: 'NO₂⁻',     name: 'nitrite',                          charge: '1−' },
-  { formula: 'ClO₄⁻',    name: 'perchlorate',                      charge: '1−' },
-  { formula: 'ClO₃⁻',    name: 'chlorate',                         charge: '1−' },
-  { formula: 'ClO₂⁻',    name: 'chlorite',                         charge: '1−' },
-  { formula: 'ClO⁻',     name: 'hypochlorite',                     charge: '1−' },
-  { formula: 'CN⁻',      name: 'cyanide',                          charge: '1−' },
-  { formula: 'SCN⁻',     name: 'thiocyanate',                      charge: '1−' },
-  { formula: 'HCO₃⁻',    name: 'bicarbonate (hydrogen carbonate)', charge: '1−' },
-  { formula: 'HSO₄⁻',    name: 'bisulfate (hydrogen sulfate)',     charge: '1−' },
-  { formula: 'MnO₄⁻',    name: 'permanganate',                     charge: '1−' },
-  { formula: 'C₂H₃O₂⁻', name: 'acetate',                          charge: '1−' },
-  { formula: 'H₂PO₄⁻',  name: 'dihydrogen phosphate',             charge: '1−' },
-  { formula: 'SO₄²⁻',    name: 'sulfate',                          charge: '2−' },
-  { formula: 'SO₃²⁻',    name: 'sulfite',                          charge: '2−' },
-  { formula: 'CO₃²⁻',    name: 'carbonate',                        charge: '2−' },
-  { formula: 'CrO₄²⁻',   name: 'chromate',                         charge: '2−' },
-  { formula: 'Cr₂O₇²⁻',  name: 'dichromate',                       charge: '2−' },
-  { formula: 'S₂O₃²⁻',   name: 'thiosulfate',                      charge: '2−' },
-  { formula: 'HPO₄²⁻',   name: 'hydrogen phosphate',               charge: '2−' },
-  { formula: 'O₂²⁻',     name: 'peroxide',                         charge: '2−' },
-  { formula: 'PO₄³⁻',    name: 'phosphate',                        charge: '3−' },
-  { formula: 'AsO₄³⁻',   name: 'arsenate',                         charge: '3−' },
-]
+const POLYATOMIC_ANIONS = _ANIONS.map(ion => ({
+  formula: ion.formula,
+  name:    ion.aliases ? `${ion.name} (${ion.aliases.join(' / ')})` : ion.name,
+  charge:  `${Math.abs(ion.charge)}−`,
+}))
 
-const POLYATOMIC_CATIONS = [
-  { formula: 'NH₄⁺',   name: 'ammonium',              charge: '1+' },
-  { formula: 'Hg₂²⁺',  name: 'mercury(I) / mercurous', charge: '2+' },
-]
+const POLYATOMIC_CATIONS = _CATIONS.map(ion => ({
+  formula: ion.formula,
+  name:    ion.charge === 2 ? 'mercury(I) / mercurous' : ion.name,
+  charge:  `${ion.charge}+`,
+}))
 
-const TRANSITION_METALS = [
-  { formula: 'Fe²⁺', iupac: 'iron(II)',      classical: 'ferrous'   },
-  { formula: 'Fe³⁺', iupac: 'iron(III)',     classical: 'ferric'    },
-  { formula: 'Cu⁺',  iupac: 'copper(I)',     classical: 'cuprous'   },
-  { formula: 'Cu²⁺', iupac: 'copper(II)',    classical: 'cupric'    },
-  { formula: 'Sn²⁺', iupac: 'tin(II)',       classical: 'stannous'  },
-  { formula: 'Sn⁴⁺', iupac: 'tin(IV)',       classical: 'stannic'   },
-  { formula: 'Pb²⁺', iupac: 'lead(II)',      classical: 'plumbous'  },
-  { formula: 'Pb⁴⁺', iupac: 'lead(IV)',      classical: 'plumbic'   },
-  { formula: 'Hg²⁺', iupac: 'mercury(II)',   classical: 'mercuric'  },
-  { formula: 'Cr²⁺', iupac: 'chromium(II)',  classical: '—'         },
-  { formula: 'Cr³⁺', iupac: 'chromium(III)', classical: '—'         },
-  { formula: 'Mn²⁺', iupac: 'manganese(II)', classical: 'manganous' },
-  { formula: 'Co²⁺', iupac: 'cobalt(II)',    classical: 'cobaltous' },
-  { formula: 'Co³⁺', iupac: 'cobalt(III)',   classical: 'cobaltic'  },
-  { formula: 'Ni²⁺', iupac: 'nickel(II)',    classical: '—'         },
-  { formula: 'Au⁺',  iupac: 'gold(I)',       classical: 'aurous'    },
-  { formula: 'Au³⁺', iupac: 'gold(III)',     classical: 'auric'     },
-  { formula: 'Ag⁺',  iupac: 'silver',        classical: '—'         },
-  { formula: 'Zn²⁺', iupac: 'zinc',          classical: '—'         },
-]
+const TRANSITION_METALS = TRANSITION_METAL_CATIONS.map(m => ({
+  formula:   m.formula,
+  iupac:     m.iupac,
+  classical: m.classical ?? '—',
+})).concat([
+  { formula: 'Ag⁺',  iupac: 'silver', classical: '—' },
+  { formula: 'Zn²⁺', iupac: 'zinc',   classical: '—' },
+])
 
-const STANDARD_PREFIXES = [
-  ['1','mono'],['2','di'],['3','tri'],['4','tetra'],
-  ['5','penta'],['6','hexa'],['7','hepta'],['8','octa'],['9','nona'],['10','deca'],
-]
+const STANDARD_PREFIXES = Object.entries(GREEK_PREFIXES).map(([n, pfx]) => [n, pfx])
 
 const COMPLEX_PREFIXES = [
   ['2','bis'],['3','tris'],['4','tetrakis'],['5','pentakis'],['6','hexakis'],

@@ -84,6 +84,7 @@ const SEARCH_INDEX: SearchItem[] = [
   { label: 'Ketcher Editor',    formula: '✎',         section: 'Tools',              path: '/tools?tool=ketcher',                  keywords: 'ketcher structure editor draw molecule' },
   { label: 'Compound',          formula: '◈',         section: 'Tools',              path: '/compound',                            keywords: 'compound lookup molecular weight formula' },
   { label: 'Naming',            formula: 'Nm',        section: 'Tools',              path: '/reference?tab=naming',                keywords: 'naming compounds ionic covalent acids nomenclature' },
+  { label: 'Nomenclature',      formula: '⚗',         section: 'Tools',              path: '/reference?tab=nomenclature-practice',  keywords: 'nomenclature naming practice compound name formula from name ionic covalent' },
   { label: 'Glossary',          formula: 'A–Z',       section: 'Tools',              path: '/glossary',                            keywords: 'glossary definitions terms vocabulary chemistry' },
 ]
 
