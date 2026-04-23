@@ -1,9 +1,10 @@
 import { useState, useId } from 'react'
 import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
+import ResultDisplay from '../shared/ResultDisplay'
 import { pick, randBetween, roundTo, sig } from '../shared/WorkedExample'
 import { P_UNITS, TO_ATM, type PUnit } from '../../utils/idealGas'
 import { formatSigFigs, lowestSigFigs, countSigFigs } from '../../utils/sigfigs'
-import { sanitize, hasValue } from '../../utils/calcHelpers'
+import { sanitize, hasValue, type VerifyState } from '../../utils/calcHelpers'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -115,7 +116,7 @@ export default function DaltonsLawTool() {
   const [totalResult, setTotalResult] = useState<string | null>(null)
   const [partialResults, setPartialResults] = useState<PartialResult[]>([])
   const [error, setError]           = useState<string | null>(null)
-  const [verified, setVerified]     = useState<'correct' | 'incorrect' | 'sig_fig_warning' | null>(null)
+  const [verified, setVerified]     = useState<VerifyState>(null)
 
   function reset() {
     setSteps([]); setTotalResult(null); setPartialResults([]); setError(null); setVerified(null)
@@ -426,40 +427,7 @@ export default function DaltonsLawTool() {
 
           {/* Mode 1: single total result */}
           {mode === 'partial' && totalResult !== null && (
-            <div
-              className="flex flex-col gap-2 p-5 rounded-sm border"
-              style={{
-                borderColor: verified === 'correct' ? 'color-mix(in srgb, #4ade80 45%, rgb(var(--color-border)))'
-                  : verified === 'sig_fig_warning' ? 'color-mix(in srgb, #facc15 45%, rgb(var(--color-border)))'
-                  : verified === 'incorrect'       ? 'color-mix(in srgb, #f87171 45%, rgb(var(--color-border)))'
-                  : 'color-mix(in srgb, var(--c-halogen) 35%, rgb(var(--color-border)))',
-                background: verified === 'correct' ? 'color-mix(in srgb, #4ade80 6%, rgb(var(--color-surface)))'
-                  : verified === 'sig_fig_warning' ? 'color-mix(in srgb, #facc15 5%, rgb(var(--color-surface)))'
-                  : verified === 'incorrect'       ? 'color-mix(in srgb, #f87171 6%, rgb(var(--color-surface)))'
-                  : 'color-mix(in srgb, var(--c-halogen) 6%, rgb(var(--color-surface)))',
-              }}
-            >
-              <span className="font-sans text-sm font-medium text-secondary">Total Pressure (P_total)</span>
-              <div className="flex items-baseline gap-3">
-                <span className="font-mono text-3xl font-semibold" style={{ color: 'var(--c-halogen)' }}>
-                  {totalResult}
-                </span>
-                <span className="font-mono text-base text-secondary">{unit}</span>
-              </div>
-              {verified && (
-                <div className="flex items-center gap-2 pt-2 border-t border-border/30 mt-1">
-                  <span className="text-lg leading-none">
-                    {verified === 'correct' ? '✓' : verified === 'sig_fig_warning' ? '⚠' : '✗'}
-                  </span>
-                  <span className="font-sans text-sm font-medium"
-                    style={{ color: verified === 'correct' ? '#4ade80' : verified === 'sig_fig_warning' ? '#facc15' : '#f87171' }}>
-                    {verified === 'correct' ? 'Correct!'
-                      : verified === 'sig_fig_warning' ? 'Correct value — check sig figs'
-                      : `Incorrect — expected ≈ ${totalResult} ${unit}`}
-                  </span>
-                </div>
-              )}
-            </div>
+            <ResultDisplay label="Total Pressure (P_total)" value={String(totalResult)} unit={unit} verified={verified} />
           )}
 
           {/* Mode 2: per-gas partial pressures table */}
