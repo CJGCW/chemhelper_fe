@@ -1,12 +1,15 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { generateReaction, type Reaction } from '../../utils/stoichiometryPractice'
 import { UnitToggle, NumInput } from './StoichiometryTool'
 import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
 import { SigFigTrigger, SigFigContent } from '../shared/SigFigPanel'
+import NumberField from '../shared/NumberField'
+import ResultDisplay from '../shared/ResultDisplay'
 import CustomReactionForm from './CustomReactionForm'
-import { buildSigFigBreakdown, lowestSigFigs, formatSigFigs, roundToSigFigs, type SigFigBreakdown } from '../../utils/sigfigs'
+import { buildSigFigBreakdown, lowestSigFigs, countSigFigs, formatSigFigs, roundToSigFigs, type SigFigBreakdown } from '../../utils/sigfigs'
 import { calcLimitingReagent, type LRSolution } from '../../chem/stoich'
 import type { Unit } from '../../chem/amount'
+import type { VerifyState } from '../../utils/calcHelpers'
 
 // ── Build a worked example from any reaction ──────────────────────────────────
 
@@ -61,6 +64,7 @@ export default function LimitingReagentTool({ allowCustom = true }: Props) {
   const [steps,        setSteps]        = useState<string[]>([])
   const [sigBreakdown, setSigBreakdown] = useState<SigFigBreakdown | null>(null)
   const [sfOpen,       setSfOpen]       = useState(false)
+  const [answerVal,    setAnswerVal]    = useState('')
 
   const stepsState = useStepsPanelState(steps, () => {
     const ex = buildWorkedExample(rxn)
@@ -73,6 +77,7 @@ export default function LimitingReagentTool({ allowCustom = true }: Props) {
     setLrResult(null)
     setSteps([])
     setSigBreakdown(null)
+    setAnswerVal('')
   }
 
   function newReaction() { applyReaction(generateReaction()) }
@@ -105,7 +110,22 @@ export default function LimitingReagentTool({ allowCustom = true }: Props) {
     setLrResult(null)
     setSteps([])
     setSigBreakdown(null)
+    setAnswerVal('')
   }
+
+  const hasMassInput = lrInputs.some(i => i.unit === 'g')
+  const sf = hasMassInput ? lowestSigFigs(lrInputs.map(i => i.val)) : undefined
+
+  const firstProductVerified = useMemo<VerifyState>(() => {
+    if (!lrResult || !lrResult.products.length || !answerVal) return null
+    const parsed = parseFloat(answerVal)
+    if (isNaN(parsed)) return null
+    const expected = lrResult.rawFirstG
+    if (Math.abs(expected) < 1e-10) return null
+    const valueOk = Math.abs(parsed - expected) / Math.abs(expected) <= 0.01
+    const sfOk = sf ? countSigFigs(answerVal) === sf : true
+    return !valueOk ? 'incorrect' : !sfOk ? 'sig_fig_warning' : 'correct'
+  }, [answerVal, lrResult, sf])
 
   const isDecomp = rxn.reactants.length === 1
 
@@ -197,6 +217,25 @@ export default function LimitingReagentTool({ allowCustom = true }: Props) {
                     <span className="font-mono text-sm text-dim">({p.mol} mol)</span>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {lrResult.products.length > 0 && (
+              <div className="flex flex-col gap-3">
+                <NumberField
+                  label={`Your answer — ${lrResult.products[0].species.display} yield (g)`}
+                  value={answerVal}
+                  onChange={setAnswerVal}
+                  placeholder="enter your answer to check"
+                />
+                {firstProductVerified && (
+                  <ResultDisplay
+                    label={`Theoretical yield ${lrResult.products[0].species.display}`}
+                    value={String(lrResult.products[0].grams)}
+                    unit="g"
+                    verified={firstProductVerified}
+                  />
+                )}
               </div>
             )}
           </div>
