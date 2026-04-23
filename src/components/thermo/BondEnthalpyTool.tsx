@@ -3,7 +3,11 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { BOND_DATA, BOND_CATEGORIES, lookupBond } from '../../utils/bondEnthalpyData'
 import { genBondEnthalpyProblem } from '../../utils/bondEnthalpyPractice'
-import StepsPanel from '../calculations/StepsPanel'
+import StepsPanel from '../shared/StepsPanel'
+import NumberField from '../shared/NumberField'
+import ResultDisplay from '../shared/ResultDisplay'
+import { hasValue } from '../../utils/calcHelpers'
+import type { VerifyState } from '../../utils/calcHelpers'
 
 const BOND_CALC_EMPTY: string[] = []
 
@@ -144,6 +148,7 @@ function BondPanel({
 export default function BondEnthalpyTool() {
   const [brokenRows, setBrokenRows] = useState<BondRow[]>([newRow('H-H'), newRow('Cl-Cl')])
   const [formedRows, setFormedRows] = useState<BondRow[]>([newRow('H-Cl')])
+  const [answerVal, setAnswerVal] = useState('')
 
   function updateRow(setter: React.Dispatch<React.SetStateAction<BondRow[]>>) {
     return (id: string, field: keyof BondRow, value: string) => {
@@ -166,6 +171,10 @@ export default function BondEnthalpyTool() {
   const brokenTotal = rowTotal(brokenRows)
   const formedTotal = rowTotal(formedRows)
   const dh = parseFloat((brokenTotal - formedTotal).toFixed(1))
+
+  const verified: VerifyState = (brokenTotal > 0 || formedTotal > 0) && hasValue(answerVal)
+    ? (Math.abs(dh - parseFloat(answerVal)) / (Math.abs(dh) || 1) <= 0.01 ? 'correct' : 'incorrect')
+    : null
 
   return (
     <div className="flex flex-col gap-8 max-w-3xl">
@@ -226,9 +235,20 @@ export default function BondEnthalpyTool() {
             <p className="font-mono text-xs text-secondary mt-1">
               Bond energies are average values — result is an approximation.
             </p>
+            <ResultDisplay label="ΔH" value={`${dh >= 0 ? '+' : ''}${dh.toFixed(0)}`} unit="kJ" verified={verified} />
           </motion.div>
         )}
       </AnimatePresence>
+
+      {(brokenTotal > 0 || formedTotal > 0) && (
+        <NumberField
+          label="Your ΔH — optional, enter to check"
+          value={answerVal}
+          onChange={setAnswerVal}
+          placeholder="optional"
+          unit={<span className="font-mono text-sm text-secondary px-2">kJ</span>}
+        />
+      )}
 
       <p className="font-mono text-xs text-secondary">
         Select bond types for reactants (broken) and products (formed). Counts and energies are editable.

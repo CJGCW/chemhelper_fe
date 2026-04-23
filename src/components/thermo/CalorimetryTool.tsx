@@ -1,13 +1,14 @@
 import React from 'react'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { pick, randBetween, roundTo, sig } from '../calculations/WorkedExample'
-import NumberField from '../calculations/NumberField'
-import { useStepsPanelState, StepsTrigger, StepsContent } from '../calculations/StepsPanel'
-import { SigFigTrigger, SigFigContent } from '../calculations/SigFigPanel'
-import ResultDisplay from '../calculations/ResultDisplay'
+import { pick, randBetween, roundTo, sig } from '../shared/WorkedExample'
+import NumberField from '../shared/NumberField'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
+import { SigFigTrigger, SigFigContent } from '../shared/SigFigPanel'
+import ResultDisplay from '../shared/ResultDisplay'
 import { sanitize, hasValue } from '../../utils/calcHelpers'
-import { buildSigFigBreakdown, formatSigFigs, lowestSigFigs } from '../../utils/sigfigs'
+import type { VerifyState } from '../../utils/calcHelpers'
+import { buildSigFigBreakdown, countSigFigs, formatSigFigs, lowestSigFigs } from '../../utils/sigfigs'
 import type { SigFigBreakdown } from '../../utils/sigfigs'
 
 // ── Example generators ────────────────────────────────────────────────────────
@@ -189,9 +190,10 @@ function McDeltaT() {
   const [resultLabel, setResultLabel] = useState('Result')
   const [steps, setSteps]       = useState<string[]>([])
   const [breakdown, setBreakdown] = useState<SigFigBreakdown | null>(null)
+  const [verified, setVerified] = useState<VerifyState>(null)
   const [error, setError]       = useState<string | null>(null)
 
-  function reset() { setResult(null); setSteps([]); setBreakdown(null); setError(null) }
+  function reset() { setResult(null); setSteps([]); setBreakdown(null); setVerified(null); setError(null) }
 
   function handleClear() {
     setQVal(''); setMVal(''); setCVal(''); setCPreset('Custom')
@@ -240,6 +242,10 @@ function McDeltaT() {
       const expectedJ = m * c * dt
       const expected  = fromJoules(expectedJ, qUnit)
       const sf  = lowestSigFigs([mVal, cVal, ...(useTiTf ? [tiVal, tfVal] : [dtVal])])
+      const userSF = countSigFigs(qVal)
+      const valueOk = Math.abs(expectedJ - qJ) / Math.abs(expectedJ) <= 0.01
+      const sfOk = userSF === sf
+      setVerified(!valueOk ? 'incorrect' : !sfOk ? 'sig_fig_warning' : 'correct')
       setSteps([
         `q = m × c × ΔT`,
         `q = ${fmtNum(m)} g × ${fmtNum(c)} J/(g·°C) × ${dtStr} °C`,
@@ -409,7 +415,7 @@ function McDeltaT() {
       <SigFigContent breakdown={breakdown} open={sfOpen} />
       {(steps.length > 0 || result) && (
         <div className="flex flex-col gap-4">
-          <ResultDisplay label={resultLabel} value={result} unit={resultUnit} sigFigsValue={sfResult} />
+          <ResultDisplay label={resultLabel} value={result} unit={resultUnit} sigFigsValue={sfResult} verified={verified} />
         </div>
       )}
     </div>
@@ -433,9 +439,10 @@ function CDeltaT() {
   const [resultLabel, setResultLabel] = useState('Result')
   const [steps, setSteps]           = useState<string[]>([])
   const [breakdown, setBreakdown]   = useState<SigFigBreakdown | null>(null)
+  const [verified, setVerified]     = useState<VerifyState>(null)
   const [error, setError]           = useState<string | null>(null)
 
-  function reset() { setResult(null); setSteps([]); setBreakdown(null); setError(null) }
+  function reset() { setResult(null); setSteps([]); setBreakdown(null); setVerified(null); setError(null) }
 
   function handleClear() {
     setQVal(''); setCVal(''); setDtVal(''); setTiVal(''); setTfVal('')
@@ -475,6 +482,26 @@ function CDeltaT() {
     const dt  = dtObj?.dt ?? NaN
     const dtStr = dtObj?.dtStr ?? ''
     const qJ  = hasQ  ? toJoules(qVal, qUnit) : NaN
+
+    if (filled === 3) {
+      if (!ok(C) || !ok(dt) || !ok(qJ)) { setError('One or more values are invalid.'); return }
+      const expectedJ = C * dt
+      const expected  = fromJoules(expectedJ, qUnit)
+      const sf  = lowestSigFigs([cVal, ...(useTiTf ? [tiVal, tfVal] : [dtVal])])
+      const userSF = countSigFigs(qVal)
+      const valueOk = Math.abs(expectedJ - qJ) / Math.abs(expectedJ) <= 0.01
+      const sfOk = userSF === sf
+      setVerified(!valueOk ? 'incorrect' : !sfOk ? 'sig_fig_warning' : 'correct')
+      setSteps([
+        `q = C × ΔT`,
+        `q = ${fmtNum(C)} J/°C × ${dtStr} °C = ${fmtNum(expectedJ)} J`,
+        `Rounded to ${sf} sf: ${formatSigFigs(expected, sf)} ${qUnit}`,
+      ])
+      setResult(formatSigFigs(expected, sf))
+      setResultUnit(qUnit)
+      setResultLabel('Expected q')
+      return
+    }
 
     if (!hasQ) {
       if (!ok(C) || !ok(dt)) { setError('Invalid values.'); return }
@@ -610,7 +637,7 @@ function CDeltaT() {
       <SigFigContent breakdown={breakdown} open={sfOpen} />
       {(steps.length > 0 || result) && (
         <div className="flex flex-col gap-4">
-          <ResultDisplay label={resultLabel} value={result} unit={resultUnit} sigFigsValue={sfResult} />
+          <ResultDisplay label={resultLabel} value={result} unit={resultUnit} sigFigsValue={sfResult} verified={verified} />
         </div>
       )}
     </div>
@@ -628,18 +655,21 @@ function CoffeeCup() {
   const [nVal, setNVal]   = useState('')
   const [qUnit, setQUnit] = useState('J')
 
+  const [answerVal, setAnswerVal]     = useState('')
   const [result, setResult]           = useState<string | null>(null)
   const [resultLabel, setResultLabel] = useState('Result')
   const [dhResult, setDhResult]       = useState<string | null>(null)
   const [steps, setSteps]             = useState<string[]>([])
+  const [verified, setVerified]       = useState<VerifyState>(null)
   const [error, setError]             = useState<string | null>(null)
   const stepsState = useStepsPanelState(steps, generateCoffeeCupExample)
 
-  function reset() { setResult(null); setDhResult(null); setSteps([]); setError(null) }
+  function reset() { setResult(null); setDhResult(null); setSteps([]); setVerified(null); setError(null) }
 
   function handleClear() {
     setMVal(''); setCVal('4.184'); setCPreset('Water (l)')
     setTiVal(''); setTfVal(''); setNVal('')
+    setAnswerVal('')
     reset()
   }
 
@@ -683,6 +713,14 @@ function CoffeeCup() {
       s.push(`ΔH = q_rxn / n = ${fmtNum(qrxn)} J / ${fmtNum(n)} mol = ${fmtNum(dhJ)} J/mol`)
       s.push(`ΔH = ${fmtNum(dhkJ)} kJ/mol`)
       setDhResult(fmtNum(dhkJ))
+    }
+
+    if (hasValue(answerVal)) {
+      const sf = lowestSigFigs([mVal, cVal, tiVal, tfVal].filter(hasValue))
+      const userSF = countSigFigs(answerVal)
+      const valueOk = Math.abs(qrxn - toJoules(answerVal, qUnit)) / Math.abs(qrxn) <= 0.01
+      const sfOk = userSF === sf
+      setVerified(!valueOk ? 'incorrect' : !sfOk ? 'sig_fig_warning' : 'correct')
     }
 
     setSteps(s)
@@ -758,6 +796,12 @@ function CoffeeCup() {
         <EnergyUnitSelect value={qUnit} onChange={u => { setQUnit(u); reset() }} />
       </div>
 
+      <NumberField label="Your q_rxn — optional, enter to check" value={answerVal}
+        onChange={v => { setAnswerVal(sanitize(v)); setVerified(null) }}
+        placeholder="optional"
+        unit={<span className="font-mono text-sm text-secondary px-2">{qUnit}</span>}
+      />
+
       {error && <p className="font-mono text-xs text-red-400">{error}</p>}
       <div className="flex items-stretch gap-2">
         <CalcButton onClick={calculate} />
@@ -772,7 +816,7 @@ function CoffeeCup() {
       <StepsContent {...stepsState} />
       {(steps.length > 0 || result) && (
         <div className="flex flex-col gap-4">
-          <ResultDisplay label={resultLabel} value={result} unit={qUnit} />
+          <ResultDisplay label={resultLabel} value={result} unit={qUnit} verified={verified} />
           {dhResult && (
             <ResultDisplay label="Molar enthalpy change (ΔH)" value={dhResult} unit="kJ/mol" />
           )}
@@ -792,17 +836,20 @@ function BombCalorimeter() {
   const [nVal, setNVal]     = useState('')
   const [qUnit, setQUnit]   = useState('kJ')
 
+  const [answerVal, setAnswerVal]     = useState('')
   const [result, setResult]           = useState<string | null>(null)
   const [resultLabel, setResultLabel] = useState('Result')
   const [deResult, setDeResult]       = useState<string | null>(null)
   const [steps, setSteps]             = useState<string[]>([])
+  const [verified, setVerified]       = useState<VerifyState>(null)
   const [error, setError]             = useState<string | null>(null)
   const stepsState = useStepsPanelState(steps, generateBombCalExample)
 
-  function reset() { setResult(null); setDeResult(null); setSteps([]); setError(null) }
+  function reset() { setResult(null); setDeResult(null); setSteps([]); setVerified(null); setError(null) }
 
   function handleClear() {
     setCcalVal(''); setTiVal(''); setTfVal(''); setNVal('')
+    setAnswerVal('')
     reset()
   }
 
@@ -841,6 +888,14 @@ function BombCalorimeter() {
       s.push(`ΔE_rxn = q_rxn / n = ${fmtNum(qrxn / 1000)} kJ / ${fmtNum(n)} mol`)
       s.push(`ΔE_rxn = ${fmtNum(deKJ)} kJ/mol`)
       setDeResult(fmtNum(deKJ))
+    }
+
+    if (hasValue(answerVal)) {
+      const userSF = countSigFigs(answerVal)
+      const valueOk = Math.abs(qrxn - toJoules(answerVal, qUnit)) / Math.abs(qrxn) <= 0.01
+      const sf = lowestSigFigs([ccalVal, tiVal, tfVal].filter(hasValue))
+      const sfOk = userSF === sf
+      setVerified(!valueOk ? 'incorrect' : !sfOk ? 'sig_fig_warning' : 'correct')
     }
 
     setSteps(s)
@@ -910,6 +965,12 @@ function BombCalorimeter() {
         <EnergyUnitSelect value={qUnit} onChange={u => { setQUnit(u); reset() }} />
       </div>
 
+      <NumberField label="Your q_rxn — optional, enter to check" value={answerVal}
+        onChange={v => { setAnswerVal(sanitize(v)); setVerified(null) }}
+        placeholder="optional"
+        unit={<span className="font-mono text-sm text-secondary px-2">{qUnit}</span>}
+      />
+
       {error && <p className="font-mono text-xs text-red-400">{error}</p>}
       <div className="flex items-stretch gap-2">
         <CalcButton onClick={calculate} />
@@ -924,7 +985,7 @@ function BombCalorimeter() {
       <StepsContent {...stepsState} />
       {(steps.length > 0 || result) && (
         <div className="flex flex-col gap-4">
-          <ResultDisplay label={resultLabel} value={result} unit={qUnit} />
+          <ResultDisplay label={resultLabel} value={result} unit={qUnit} verified={verified} />
           {deResult && (
             <ResultDisplay label="Internal energy change (ΔE_rxn)" value={deResult} unit="kJ/mol" />
           )}

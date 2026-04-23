@@ -4,8 +4,10 @@ import {
   ACID_SOLID_RXNS, ACID_BASE_RXNS,
 } from '../../utils/solutionStoichPractice'
 import { calcVolToMass, calcMassToVol, calcVolToVol } from '../../chem/solutions'
-import { useStepsPanelState, StepsTrigger, StepsContent } from '../calculations/StepsPanel'
-import ResultDisplay from '../calculations/ResultDisplay'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
+import ResultDisplay from '../shared/ResultDisplay'
+import NumberField from '../shared/NumberField'
+import type { VerifyState } from '../../utils/calcHelpers'
 
 type Mode = 'vol_to_mass' | 'mass_to_vol' | 'vol_to_vol'
 
@@ -45,8 +47,10 @@ export default function SolutionStoichTool() {
   const [ttConcA, setTtConcA] = useState('')
   const [ttConcB, setTtConcB] = useState('')
 
-  const [result, setResult] = useState<{ value: string; unit: string } | null>(null)
-  const [steps,  setSteps]  = useState<string[]>([])
+  const [result,    setResult]    = useState<{ value: string; unit: string } | null>(null)
+  const [steps,     setSteps]     = useState<string[]>([])
+  const [answerVal, setAnswerVal] = useState('')
+  const [verified,  setVerified]  = useState<VerifyState>(null)
 
   const stepsState = useStepsPanelState(steps, () => ({
     scenario: 'How many mL of 0.500 M HCl are needed to dissolve 5.00 g of CaCO₃? (CaCO₃ + 2 HCl → CaCl₂ + H₂O + CO₂)',
@@ -67,33 +71,48 @@ export default function SolutionStoichTool() {
     setRxnIdx(0)
     setResult(null)
     setSteps([])
+    setAnswerVal(''); setVerified(null)
   }
 
   function switchRxn(idx: number) {
     setRxnIdx(idx)
     setResult(null)
     setSteps([])
+    setVerified(null)
   }
 
   function handleTool() {
+    setVerified(null)
     if (mode === 'vol_to_mass') {
       const v = parseFloat(vmVol), c = parseFloat(vmConc)
       if (isNaN(v) || isNaN(c) || v <= 0 || c <= 0) return
       const { steps: newSteps, answer } = calcVolToMass(solidRxn, v, c)
       setResult({ value: sig(answer), unit: `g ${solidRxn.solidDisplay}` })
       setSteps(newSteps)
+      if (answerVal) {
+        const valueOk = Math.abs(answer - parseFloat(answerVal)) / answer <= 0.01
+        setVerified(valueOk ? 'correct' : 'incorrect')
+      }
     } else if (mode === 'mass_to_vol') {
       const m = parseFloat(mvMass), c = parseFloat(mvConc)
       if (isNaN(m) || isNaN(c) || m <= 0 || c <= 0) return
       const { steps: newSteps, answer } = calcMassToVol(solidRxn, m, c)
       setResult({ value: sig(answer), unit: `mL ${solidRxn.acidDisplay}` })
       setSteps(newSteps)
+      if (answerVal) {
+        const valueOk = Math.abs(answer - parseFloat(answerVal)) / answer <= 0.01
+        setVerified(valueOk ? 'correct' : 'incorrect')
+      }
     } else {
       const v = parseFloat(ttVol), ca = parseFloat(ttConcA), cb = parseFloat(ttConcB)
       if (isNaN(v) || isNaN(ca) || isNaN(cb) || v <= 0 || ca <= 0 || cb <= 0) return
       const { steps: newSteps, answer } = calcVolToVol(baseRxn, v, ca, cb)
       setResult({ value: sig(answer), unit: `mL ${baseRxn.baseDisplay}` })
       setSteps(newSteps)
+      if (answerVal) {
+        const valueOk = Math.abs(answer - parseFloat(answerVal)) / answer <= 0.01
+        setVerified(valueOk ? 'correct' : 'incorrect')
+      }
     }
   }
 
@@ -209,6 +228,16 @@ export default function SolutionStoichTool() {
         </motion.div>
       </AnimatePresence>
 
+      <NumberField
+        label="Your answer — optional, enter to check"
+        value={answerVal}
+        onChange={v => setAnswerVal(v)}
+        placeholder="your answer"
+        unit={<span className="font-mono text-sm text-secondary px-2">
+          {mode === 'vol_to_mass' ? `g ${solidRxn.solidDisplay}` : mode === 'mass_to_vol' ? `mL ${solidRxn.acidDisplay}` : `mL ${baseRxn.baseDisplay}`}
+        </span>}
+      />
+
       <div className="flex items-stretch gap-2">
         <button onClick={handleTool} disabled={!canCalc}
           className="shrink-0 px-5 py-2 rounded-sm font-sans text-sm font-semibold
@@ -226,7 +255,7 @@ export default function SolutionStoichTool() {
       <StepsContent {...stepsState} />
 
       {result && (
-        <ResultDisplay label="Result" value={result.value} unit={result.unit} />
+        <ResultDisplay label="Result" value={result.value} unit={result.unit} verified={verified} />
       )}
 
       <p className="font-mono text-xs text-secondary">n = C × V · use mole ratio from balanced equation · result as mass (× M) or volume (÷ C)</p>

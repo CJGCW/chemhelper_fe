@@ -1,9 +1,11 @@
 import { useState } from 'react'
-import { pick, randBetween, roundTo } from '../calculations/WorkedExample'
-import { useStepsPanelState, StepsTrigger, StepsContent } from '../calculations/StepsPanel'
-import { SigFigTrigger, SigFigContent } from '../calculations/SigFigPanel'
-import NumberField from '../calculations/NumberField'
-import { buildSigFigBreakdown } from '../../utils/sigfigs'
+import { pick, randBetween, roundTo } from '../shared/WorkedExample'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
+import { SigFigTrigger, SigFigContent } from '../shared/SigFigPanel'
+import NumberField from '../shared/NumberField'
+import ResultDisplay from '../shared/ResultDisplay'
+import type { VerifyState } from '../../utils/calcHelpers'
+import { buildSigFigBreakdown, countSigFigs, lowestSigFigs } from '../../utils/sigfigs'
 import type { SigFigBreakdown } from '../../utils/sigfigs'
 import { VDW_GASES, type VdWGas } from '../../utils/vanDerWaalsPractice'
 
@@ -75,16 +77,18 @@ export default function VanDerWaalsTool() {
   const [vVal,   setVVal]   = useState('')
   const [tVal,   setTVal]   = useState('')
   const [tUnit,  setTUnit]  = useState<'K' | '°C'>('K')
-  const [result, setResult] = useState<CalcResult | null>(null)
-  const [steps,  setSteps]  = useState<string[]>([])
+  const [result,    setResult]    = useState<CalcResult | null>(null)
+  const [steps,     setSteps]     = useState<string[]>([])
   const [breakdown, setBreakdown] = useState<SigFigBreakdown | null>(null)
-  const [sfOpen, setSfOpen] = useState(false)
-  const [error,  setError]  = useState('')
+  const [sfOpen,    setSfOpen]    = useState(false)
+  const [error,     setError]     = useState('')
+  const [answerVal, setAnswerVal] = useState('')
+  const [verified,  setVerified]  = useState<VerifyState>(null)
 
   const stepsState = useStepsPanelState(steps, generateVanDerWaalsExample)
 
   function handleTool() {
-    setError(''); setResult(null); setSteps([]); setBreakdown(null)
+    setError(''); setResult(null); setSteps([]); setBreakdown(null); setVerified(null)
     const n   = parseFloat(nVal)
     const V   = parseFloat(vVal)
     const Tin = parseFloat(tVal)
@@ -102,6 +106,14 @@ export default function VanDerWaalsTool() {
     if (realP <= 0) { setError('Van der Waals gives non-physical pressure at these conditions. Try lower n or larger V.'); return }
 
     const deviationPct = ((realP - idealP) / idealP) * 100
+
+    if (answerVal) {
+      const sf = lowestSigFigs([nVal, vVal, tVal])
+      const userSF = countSigFigs(answerVal)
+      const valueOk = Math.abs(realP - parseFloat(answerVal)) / realP <= 0.01
+      const sfOk = userSF === sf
+      setVerified(!valueOk ? 'incorrect' : !sfOk ? 'sig_fig_warning' : 'correct')
+    }
 
     const newSteps = [
       `van der Waals: P = nRT / (V − nb) − a(n/V)²`,
@@ -124,6 +136,7 @@ export default function VanDerWaalsTool() {
   function handleClear() {
     setNVal(''); setVVal(''); setTVal('')
     setResult(null); setSteps([]); setBreakdown(null); setError('')
+    setAnswerVal(''); setVerified(null)
   }
 
   const devColor = result
@@ -164,25 +177,33 @@ export default function VanDerWaalsTool() {
         <NumberField
           label="n — Moles"
           value={nVal}
-          onChange={v => { setNVal(v); setResult(null) }}
+          onChange={v => { setNVal(v); setResult(null); setVerified(null) }}
           placeholder="e.g. 1.00"
           unit={<span className="font-mono text-sm text-secondary px-2">mol</span>}
         />
         <NumberField
           label="V — Volume"
           value={vVal}
-          onChange={v => { setVVal(v); setResult(null) }}
+          onChange={v => { setVVal(v); setResult(null); setVerified(null) }}
           placeholder="e.g. 2.00"
           unit={<span className="font-mono text-sm text-secondary px-2">L</span>}
         />
         <NumberField
           label="T — Temperature"
           value={tVal}
-          onChange={v => { setTVal(v); setResult(null) }}
+          onChange={v => { setTVal(v); setResult(null); setVerified(null) }}
           placeholder="e.g. 300"
           unit={<UnitPill options={['K', '°C']} active={tUnit} onChange={v => { setTUnit(v as 'K' | '°C'); setResult(null) }} />}
         />
       </div>
+
+      <NumberField
+        label="Your P_real (atm) — optional, enter to check"
+        value={answerVal}
+        onChange={v => setAnswerVal(v)}
+        placeholder="your answer"
+        unit={<span className="font-mono text-sm text-secondary px-2">atm</span>}
+      />
 
       {error && <p className="font-mono text-xs text-red-400">{error}</p>}
 
@@ -213,7 +234,7 @@ export default function VanDerWaalsTool() {
 
       {/* Dual result display */}
       {result && (
-        <div className="flex flex-col gap-3">
+        <>
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-sm border border-border bg-surface p-4 flex flex-col gap-1">
               <span className="font-mono text-xs text-secondary uppercase tracking-widest">Ideal Gas</span>
@@ -246,7 +267,11 @@ export default function VanDerWaalsTool() {
               ? 'Real pressure is lower than ideal — intermolecular attraction dominates (high density or polar gas).'
               : 'Real pressure is higher than ideal — molecular volume (repulsion) dominates (very high pressure).'}
           </p>
-        </div>
+
+          {verified !== null && (
+            <ResultDisplay label="Real Gas Pressure (P)" value={sig(result.realP, 4)} unit="atm" verified={verified} />
+          )}
+        </>
       )}
 
       <p className="font-mono text-xs text-secondary">

@@ -1,8 +1,9 @@
 import { useState, type ReactNode } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { pick, randBetween, roundTo } from '../calculations/WorkedExample'
-import { useStepsPanelState, StepsTrigger, StepsContent } from '../calculations/StepsPanel'
-import ResultDisplay from '../calculations/ResultDisplay'
+import { pick, randBetween, roundTo } from '../shared/WorkedExample'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
+import ResultDisplay from '../shared/ResultDisplay'
+import type { VerifyState } from '../../utils/calcHelpers'
 
 // ── Example generators ────────────────────────────────────────────────────────
 
@@ -195,7 +196,9 @@ function ObjectCard({ title, children }: { title: string; children: ReactNode })
 function FindTf() {
   const [m1, setM1] = useState(''); const [c1, setC1] = useState(''); const [p1, setP1] = useState('Custom'); const [T1, setT1] = useState('')
   const [m2, setM2] = useState(''); const [c2, setC2] = useState(''); const [p2, setP2] = useState('Custom'); const [T2, setT2] = useState('')
+  const [answerVal, setAnswerVal] = useState('')
   const [result, setResult] = useState<string | null>(null)
+  const [verified, setVerified] = useState<VerifyState>(null)
   const [steps,  setSteps]  = useState<string[]>([])
   const [error,  setError]  = useState<string | null>(null)
   const stepsState = useStepsPanelState(steps, generateFindTfExample)
@@ -203,11 +206,12 @@ function FindTf() {
   function handleClear() {
     setM1(''); setC1(''); setP1('Custom'); setT1('')
     setM2(''); setC2(''); setP2('Custom'); setT2('')
-    setResult(null); setSteps([]); setError(null)
+    setAnswerVal('')
+    setResult(null); setSteps([]); setVerified(null); setError(null)
   }
 
   function calculate() {
-    setResult(null); setSteps([]); setError(null)
+    setResult(null); setSteps([]); setVerified(null); setError(null)
     const nm1 = parse(m1), nc1 = parse(c1), nT1 = parse(T1)
     const nm2 = parse(m2), nc2 = parse(c2), nT2 = parse(T2)
     if (!ok(nm1) || !ok(nc1) || !ok(nT1)) { setError('Check Object 1 inputs.'); return }
@@ -224,6 +228,10 @@ function FindTf() {
       `Tf = ${fmtNum(Tf)} °C`,
     ])
     setResult(fmtNum(Tf))
+    if (answerVal.trim() !== '') {
+      const valueOk = Math.abs(Tf - parseFloat(answerVal)) / Math.abs(Tf) <= 0.01
+      setVerified(!valueOk ? 'incorrect' : 'correct')
+    }
   }
 
   return (
@@ -244,6 +252,7 @@ function FindTf() {
           <NumberInput label="Initial Temp (T₂)" value={T2} onChange={setT2} unit="°C" />
         </ObjectCard>
       </div>
+      <NumberInput label="Your answer — optional, enter to check" value={answerVal} onChange={setAnswerVal} unit="°C" />
       <div className="flex items-stretch gap-2">
         <SolveBtn onClick={calculate} />
         <StepsTrigger {...stepsState} />
@@ -256,7 +265,7 @@ function FindTf() {
       </div>
       <StepsContent {...stepsState} />
       {error  && <ErrorMsg msg={error} />}
-      {result && <ResultDisplay label="Final Temperature" value={result} unit="°C" />}
+      {result && <ResultDisplay label="Final Temperature" value={result} unit="°C" verified={verified} />}
     </div>
   )
 }
@@ -267,7 +276,9 @@ function FindTi() {
   const [m1, setM1] = useState(''); const [c1, setC1] = useState(''); const [p1, setP1] = useState('Custom')
   const [m2, setM2] = useState(''); const [c2, setC2] = useState(''); const [p2, setP2] = useState('Custom'); const [T2, setT2] = useState('')
   const [Tf, setTf] = useState('')
+  const [answerVal, setAnswerVal] = useState('')
   const [result, setResult] = useState<string | null>(null)
+  const [verified, setVerified] = useState<VerifyState>(null)
   const [steps,  setSteps]  = useState<string[]>([])
   const [error,  setError]  = useState<string | null>(null)
   const stepsState = useStepsPanelState(steps, generateFindTiExample)
@@ -275,11 +286,11 @@ function FindTi() {
   function handleClear() {
     setM1(''); setC1(''); setP1('Custom')
     setM2(''); setC2(''); setP2('Custom'); setT2('')
-    setTf(''); setResult(null); setSteps([]); setError(null)
+    setTf(''); setAnswerVal(''); setResult(null); setSteps([]); setVerified(null); setError(null)
   }
 
   function calculate() {
-    setResult(null); setSteps([]); setError(null)
+    setResult(null); setSteps([]); setVerified(null); setError(null)
     const nm1 = parse(m1), nc1 = parse(c1)
     const nm2 = parse(m2), nc2 = parse(c2), nT2 = parse(T2), nTf = parse(Tf)
     if (!ok(nm1) || !ok(nc1)) { setError('Check Object 1 inputs.'); return }
@@ -297,6 +308,10 @@ function FindTi() {
       `T₁ = ${fmtNum(T1)} °C`,
     ])
     setResult(fmtNum(T1))
+    if (answerVal.trim() !== '') {
+      const valueOk = Math.abs(T1 - parseFloat(answerVal)) / Math.abs(T1) <= 0.01
+      setVerified(!valueOk ? 'incorrect' : 'correct')
+    }
   }
 
   return (
@@ -317,6 +332,7 @@ function FindTi() {
         </ObjectCard>
       </div>
       <NumberInput label="Final (Equilibrium) Temperature" value={Tf} onChange={setTf} unit="°C" />
+      <NumberInput label="Your answer — optional, enter to check" value={answerVal} onChange={setAnswerVal} unit="°C" />
       <div className="flex items-stretch gap-2">
         <SolveBtn onClick={calculate} />
         <StepsTrigger {...stepsState} />
@@ -329,7 +345,7 @@ function FindTi() {
       </div>
       <StepsContent {...stepsState} />
       {error  && <ErrorMsg msg={error} />}
-      {result && <ResultDisplay label="Initial Temp of Object 1" value={result} unit="°C" />}
+      {result && <ResultDisplay label="Initial Temp of Object 1" value={result} unit="°C" verified={verified} />}
     </div>
   )
 }
@@ -340,7 +356,9 @@ function FindMass() {
   const [m1, setM1] = useState(''); const [c1, setC1] = useState(''); const [p1, setP1] = useState('Custom'); const [T1, setT1] = useState('')
   const [c2, setC2] = useState(''); const [p2, setP2] = useState('Custom'); const [T2, setT2] = useState('')
   const [Tf, setTf] = useState('')
+  const [answerVal, setAnswerVal] = useState('')
   const [result, setResult] = useState<string | null>(null)
+  const [verified, setVerified] = useState<VerifyState>(null)
   const [steps,  setSteps]  = useState<string[]>([])
   const [error,  setError]  = useState<string | null>(null)
   const stepsState = useStepsPanelState(steps, generateFindMassExample)
@@ -348,11 +366,11 @@ function FindMass() {
   function handleClear() {
     setM1(''); setC1(''); setP1('Custom'); setT1('')
     setC2(''); setP2('Custom'); setT2('')
-    setTf(''); setResult(null); setSteps([]); setError(null)
+    setTf(''); setAnswerVal(''); setResult(null); setSteps([]); setVerified(null); setError(null)
   }
 
   function calculate() {
-    setResult(null); setSteps([]); setError(null)
+    setResult(null); setSteps([]); setVerified(null); setError(null)
     const nm1 = parse(m1), nc1 = parse(c1), nT1 = parse(T1)
     const nc2 = parse(c2), nT2 = parse(T2), nTf = parse(Tf)
     if (!ok(nm1) || !ok(nc1) || !ok(nT1)) { setError('Check Object 1 inputs.'); return }
@@ -371,6 +389,10 @@ function FindMass() {
       `m₂ = ${fmtNum(m2)} g`,
     ])
     setResult(fmtNum(m2))
+    if (answerVal.trim() !== '') {
+      const valueOk = Math.abs(m2 - parseFloat(answerVal)) / Math.abs(m2) <= 0.01
+      setVerified(!valueOk ? 'incorrect' : 'correct')
+    }
   }
 
   return (
@@ -391,6 +413,7 @@ function FindMass() {
         </ObjectCard>
       </div>
       <NumberInput label="Final (Equilibrium) Temperature" value={Tf} onChange={setTf} unit="°C" />
+      <NumberInput label="Your answer — optional, enter to check" value={answerVal} onChange={setAnswerVal} unit="g" />
       <div className="flex items-stretch gap-2">
         <SolveBtn onClick={calculate} />
         <StepsTrigger {...stepsState} />
@@ -403,7 +426,7 @@ function FindMass() {
       </div>
       <StepsContent {...stepsState} />
       {error  && <ErrorMsg msg={error} />}
-      {result && <ResultDisplay label="Mass of Object 2" value={result} unit="g" />}
+      {result && <ResultDisplay label="Mass of Object 2" value={result} unit="g" verified={verified} />}
     </div>
   )
 }

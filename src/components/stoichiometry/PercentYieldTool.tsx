@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { generateStoichProblem } from '../../utils/stoichiometryPractice'
-import { useStepsPanelState, StepsTrigger, StepsContent } from '../calculations/StepsPanel'
-import { SigFigTrigger, SigFigContent } from '../calculations/SigFigPanel'
-import NumberField from '../calculations/NumberField'
-import ResultDisplay from '../calculations/ResultDisplay'
-import { buildSigFigBreakdown, lowestSigFigs, formatSigFigs, type SigFigBreakdown } from '../../utils/sigfigs'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
+import { SigFigTrigger, SigFigContent } from '../shared/SigFigPanel'
+import NumberField from '../shared/NumberField'
+import ResultDisplay from '../shared/ResultDisplay'
+import { buildSigFigBreakdown, lowestSigFigs, formatSigFigs, countSigFigs, type SigFigBreakdown } from '../../utils/sigfigs'
+import type { VerifyState } from '../../utils/calcHelpers'
 import { calcPercentYield } from '../../chem/stoich'
 
 function generatePercentYieldExample() {
@@ -19,6 +20,8 @@ export default function PercentYieldTool() {
   const [steps,          setSteps]          = useState<string[]>([])
   const [breakdown,      setBreakdown]      = useState<SigFigBreakdown | null>(null)
   const [sfOpen,         setSfOpen]         = useState(false)
+  const [answerVal,      setAnswerVal]      = useState('')
+  const [verified,       setVerified]       = useState<VerifyState>(null)
 
   const stepsState = useStepsPanelState(steps, generatePercentYieldExample)
 
@@ -40,6 +43,13 @@ export default function PercentYieldTool() {
     } else {
       setBreakdown(null)
     }
+
+    if (answerVal) {
+      const userSF = countSigFigs(answerVal)
+      const valueOk = Math.abs(res.rawPct - parseFloat(answerVal)) / res.rawPct <= 0.01
+      const sfOk = sf ? userSF === sf : true
+      setVerified(!valueOk ? 'incorrect' : !sfOk ? 'sig_fig_warning' : 'correct')
+    }
   }
 
   const canCalc = (() => {
@@ -60,6 +70,7 @@ export default function PercentYieldTool() {
   function clearAll() {
     setActualVal(''); setTheoreticalVal('')
     setResult(null); setSteps([]); setBreakdown(null)
+    setAnswerVal(''); setVerified(null)
   }
 
   const sigFigsResult = breakdown ? formatSigFigs(breakdown.rawResult, breakdown.limiting) : null
@@ -76,20 +87,28 @@ export default function PercentYieldTool() {
         <NumberField
           label="Actual Yield"
           value={actualVal}
-          onChange={v => { setActualVal(v); setResult(null); setSteps([]); setBreakdown(null) }}
+          onChange={v => { setActualVal(v); setResult(null); setSteps([]); setBreakdown(null); setVerified(null) }}
           placeholder="e.g. 9.85"
           unit={<span className="font-mono text-sm text-secondary px-2">g</span>}
         />
         <NumberField
           label="Theoretical Yield"
           value={theoreticalVal}
-          onChange={v => { setTheoreticalVal(v); setResult(null); setSteps([]); setBreakdown(null) }}
+          onChange={v => { setTheoreticalVal(v); setResult(null); setSteps([]); setBreakdown(null); setVerified(null) }}
           placeholder="e.g. 34.06"
           unit={<span className="font-mono text-sm text-secondary px-2">g</span>}
         />
       </div>
 
       {errorMsg && <p className="font-mono text-xs text-rose-400">{errorMsg}</p>}
+
+      <NumberField
+        label="Your answer — optional, enter to check"
+        value={answerVal}
+        onChange={v => setAnswerVal(v)}
+        placeholder="your answer"
+        unit={<span className="font-mono text-sm text-secondary px-2">%</span>}
+      />
 
       <div className="flex items-stretch gap-2">
         <button onClick={handleTool} disabled={!canCalc}
@@ -121,6 +140,7 @@ export default function PercentYieldTool() {
           value={result}
           unit="%"
           sigFigsValue={sigFigsResult}
+          verified={verified}
         />
       )}
 

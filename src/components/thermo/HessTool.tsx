@@ -1,7 +1,11 @@
 import { useState } from 'react'
-import { pick } from '../calculations/WorkedExample'
-import StepsPanel from '../calculations/StepsPanel'
+import { pick } from '../shared/WorkedExample'
+import StepsPanel from '../shared/StepsPanel'
+import ResultDisplay from '../shared/ResultDisplay'
+import NumberField from '../shared/NumberField'
 import { motion, AnimatePresence } from 'framer-motion'
+import { hasValue } from '../../utils/calcHelpers'
+import type { VerifyState } from '../../utils/calcHelpers'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -75,6 +79,7 @@ function parseRow(r: StepRow): { dh: number; mult: number; contribution: number 
 export default function HessTool() {
   const [rows, setRows] = useState<StepRow[]>([newRow(), newRow(), newRow()])
   const [target, setTarget] = useState('')
+  const [answerVal, setAnswerVal] = useState('')
 
   function updateRow(id: string, field: keyof StepRow, value: string | boolean) {
     setRows(prev => prev.map(r => r.id === id ? { ...r, [field]: value } : r))
@@ -90,6 +95,10 @@ export default function HessTool() {
   const anyFilled = rows.some(r => r.dh.trim() !== '')
   const total = allValid && anyFilled
     ? parseFloat(parsed.reduce((s, p) => s + (p?.contribution ?? 0), 0).toFixed(2))
+    : null
+
+  const verified: VerifyState = total !== null && hasValue(answerVal)
+    ? (Math.abs(total - parseFloat(answerVal)) / Math.abs(total) <= 0.01 ? 'correct' : 'incorrect')
     : null
 
   const labelCls = "font-mono text-xs text-secondary tracking-widest uppercase"
@@ -244,9 +253,19 @@ export default function HessTool() {
                 </p>
               )}
             </div>
+
+            <ResultDisplay label="ΔH_rxn" value={String(total)} unit="kJ" verified={verified} />
           </motion.div>
         )}
       </AnimatePresence>
+
+      <NumberField
+        label="Your ΔH_rxn (kJ) — optional, enter to check"
+        value={answerVal}
+        onChange={setAnswerVal}
+        placeholder="optional"
+        unit={<span className="font-mono text-sm text-secondary px-2">kJ</span>}
+      />
 
       <p className="font-mono text-xs text-secondary">
         Enter each known reaction and its ΔH. Use the flip toggle to reverse a reaction (negates ΔH) and the multiplier to scale it. ΔHrxn updates live.

@@ -1,4 +1,8 @@
 import { useState, useMemo } from 'react'
+import NumberField from '../shared/NumberField'
+import ResultDisplay from '../shared/ResultDisplay'
+import { hasValue } from '../../utils/calcHelpers'
+import type { VerifyState } from '../../utils/calcHelpers'
 
 const R = 8.314
 
@@ -55,6 +59,8 @@ export default function VaporPressureTool() {
   const [t2,        setT2]        = useState('80')
   const [tu2,       setTu2]       = useState<TUnit>('°C')
   const [showSteps, setShowSteps] = useState(false)
+  const [answerVal, setAnswerVal] = useState('')
+  const [pUnit,     setPUnit]     = useState<PUnit>('kPa')
 
   const isCustom = substanceId === CUSTOM_ID
   const substance = SUBSTANCES.find(s => s.name === substanceId) ?? null
@@ -85,6 +91,12 @@ export default function VaporPressureTool() {
     const v = P1_Pa * Math.exp((-dH_J / R) * (1 / T2_K - 1 / T1_K))
     return isFinite(v) && v > 0 ? v : null
   }, [dH_J, P1_Pa, T1_K, T2_K])
+
+  const P2_display = P2_Pa !== null ? P2_Pa / P_FROM_PA[pUnit] : null
+
+  const verified: VerifyState = P2_Pa !== null && P2_Pa > 0 && hasValue(answerVal)
+    ? (Math.abs(P2_display! - parseFloat(answerVal)) / P2_display! <= 0.01 ? 'correct' : 'incorrect')
+    : null
 
   // Context note
   const contextNote = useMemo(() => {
@@ -242,6 +254,25 @@ export default function VaporPressureTool() {
         <div className="rounded-sm border border-border px-4 py-3 text-secondary font-sans text-sm">
           Enter a target temperature above to calculate vapor pressure.
         </div>
+      )}
+
+      {P2_Pa !== null && (
+        <>
+          <NumberField
+            label="Your P₂ — optional, enter to check"
+            value={answerVal}
+            onChange={setAnswerVal}
+            placeholder="optional"
+            unit={
+              <select value={pUnit} onChange={e => setPUnit(e.target.value as PUnit)}
+                className="font-mono text-xs bg-raised border border-border rounded-sm px-2 py-1.5
+                           text-primary focus:outline-none cursor-pointer">
+                {P_LABELS.map(u => <option key={u} value={u}>{u}</option>)}
+              </select>
+            }
+          />
+          <ResultDisplay label={`P₂ (${pUnit})`} value={P2_display !== null ? sig(P2_display, 4) : null} unit={pUnit} verified={verified} />
+        </>
       )}
 
       {/* Step-by-step */}

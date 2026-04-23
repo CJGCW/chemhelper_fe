@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import { generateReaction, type Reaction } from '../../utils/stoichiometryPractice'
 import { UnitToggle, NumInput, SpeciesSelect } from './StoichiometryTool'
-import { useStepsPanelState, StepsTrigger, StepsContent } from '../calculations/StepsPanel'
-import { SigFigTrigger, SigFigContent } from '../calculations/SigFigPanel'
+import NumberField from '../shared/NumberField'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
+import { SigFigTrigger, SigFigContent } from '../shared/SigFigPanel'
 import CustomReactionForm from './CustomReactionForm'
-import { buildSigFigBreakdown, lowestSigFigs, type SigFigBreakdown } from '../../utils/sigfigs'
+import ResultDisplay from '../shared/ResultDisplay'
+import { buildSigFigBreakdown, lowestSigFigs, countSigFigs, type SigFigBreakdown } from '../../utils/sigfigs'
+import type { VerifyState } from '../../utils/calcHelpers'
 import { calcTheoreticalYield, type TYSolution } from '../../chem/stoich'
 import type { Unit } from '../../chem/amount'
 
@@ -39,6 +42,8 @@ export default function TheoreticalYieldTool({ allowCustom = true }: { allowCust
   const [steps,       setSteps]       = useState<string[]>([])
   const [sigBreakdown, setSigBreakdown] = useState<SigFigBreakdown | null>(null)
   const [sfOpen,      setSfOpen]      = useState(false)
+  const [answerVal,   setAnswerVal]   = useState('')
+  const [verified,    setVerified]    = useState<VerifyState>(null)
 
   const stepsState = useStepsPanelState(steps, () => {
     const ex = buildWorkedExample(rxn)
@@ -53,6 +58,7 @@ export default function TheoreticalYieldTool({ allowCustom = true }: { allowCust
     setResult(null)
     setSteps([])
     setSigBreakdown(null)
+    setAnswerVal(''); setVerified(null)
   }
 
   function handleTool() {
@@ -75,6 +81,13 @@ export default function TheoreticalYieldTool({ allowCustom = true }: { allowCust
         ))
       } else {
         setSigBreakdown(null)
+      }
+
+      if (answerVal) {
+        const userSF = countSigFigs(answerVal)
+        const valueOk = Math.abs(res.rawGrams - parseFloat(answerVal)) / res.rawGrams <= 0.01
+        const sfOk = sf ? userSF === sf : true
+        setVerified(!valueOk ? 'incorrect' : !sfOk ? 'sig_fig_warning' : 'correct')
       }
     } else {
       setSigBreakdown(null)
@@ -103,11 +116,11 @@ export default function TheoreticalYieldTool({ allowCustom = true }: { allowCust
       <div className="flex flex-col gap-2">
         <label className="font-mono text-xs text-secondary tracking-widest uppercase">Limiting Reagent (given)</label>
         <div className="flex flex-wrap items-center gap-2">
-          <NumInput value={lrVal} onChange={v => { setLrVal(v); setResult(null); setSteps([]); setSigBreakdown(null) }} />
-          <UnitToggle unit={lrUnit} onChange={u => { setLrUnit(u); setResult(null); setSteps([]); setSigBreakdown(null) }} />
+          <NumInput value={lrVal} onChange={v => { setLrVal(v); setResult(null); setSteps([]); setSigBreakdown(null); setVerified(null) }} />
+          <UnitToggle unit={lrUnit} onChange={u => { setLrUnit(u); setResult(null); setSteps([]); setSigBreakdown(null); setVerified(null) }} />
           <span className="font-mono text-xs text-dim">of</span>
           <SpeciesSelect rxn={rxn} value={lrFormula} reactantsOnly
-            onChange={f => { setLrFormula(f); setResult(null); setSteps([]); setSigBreakdown(null) }} />
+            onChange={f => { setLrFormula(f); setResult(null); setSteps([]); setSigBreakdown(null); setVerified(null) }} />
         </div>
       </div>
 
@@ -115,8 +128,16 @@ export default function TheoreticalYieldTool({ allowCustom = true }: { allowCust
       <div className="flex flex-col gap-2">
         <label className="font-mono text-xs text-secondary tracking-widest uppercase">Product to find yield of</label>
         <SpeciesSelect rxn={rxn} value={prodFormula} productsOnly
-          onChange={f => { setProdFormula(f); setResult(null); setSteps([]); setSigBreakdown(null) }} />
+          onChange={f => { setProdFormula(f); setResult(null); setSteps([]); setSigBreakdown(null); setVerified(null) }} />
       </div>
+
+      <NumberField
+        label="Your answer — optional, enter to check"
+        value={answerVal}
+        onChange={v => setAnswerVal(v)}
+        placeholder="your answer"
+        unit={<span className="font-mono text-sm text-secondary px-2">g</span>}
+      />
 
       <div className="flex items-stretch gap-2">
         <button onClick={handleTool} disabled={!lrVal || parseFloat(lrVal) <= 0}
@@ -137,21 +158,12 @@ export default function TheoreticalYieldTool({ allowCustom = true }: { allowCust
       <SigFigContent breakdown={sigBreakdown} open={sfOpen} />
 
       {result && (
-        <div className="rounded-sm border px-4 py-3"
-          style={{
-            borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
-            background: 'color-mix(in srgb, var(--c-halogen) 8%, rgb(var(--color-surface)))',
-          }}>
-          <span className="font-mono text-xs text-secondary tracking-widest uppercase block mb-1">
-            Theoretical Yield
-          </span>
-          <span className="font-mono text-2xl font-semibold" style={{ color: 'var(--c-halogen)' }}>
-            {result.gramsProduct} g {prodDisplay}
-          </span>
-          <span className="font-mono text-sm text-dim block mt-1">
-            ({result.molProduct} mol)
-          </span>
-        </div>
+        <ResultDisplay
+          label={prodDisplay + ' (Theoretical Yield)'}
+          value={String(result.gramsProduct)}
+          unit="g"
+          verified={verified}
+        />
       )}
 
       <p className="font-mono text-xs text-secondary">theoretical yield = moles from limiting reagent × molar mass of product</p>

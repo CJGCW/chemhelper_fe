@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import { generateReaction, type Reaction } from '../../utils/stoichiometryPractice'
 import { UnitToggle, NumInput, SpeciesSelect } from './StoichiometryTool'
-import { useStepsPanelState, StepsTrigger, StepsContent } from '../calculations/StepsPanel'
-import { SigFigTrigger, SigFigContent } from '../calculations/SigFigPanel'
+import NumberField from '../shared/NumberField'
+import ResultDisplay from '../shared/ResultDisplay'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
+import { SigFigTrigger, SigFigContent } from '../shared/SigFigPanel'
 import CustomReactionForm from './CustomReactionForm'
-import { buildSigFigBreakdown, lowestSigFigs, type SigFigBreakdown } from '../../utils/sigfigs'
+import { buildSigFigBreakdown, lowestSigFigs, countSigFigs, type SigFigBreakdown } from '../../utils/sigfigs'
+import type { VerifyState } from '../../utils/calcHelpers'
 import { genAdvPctProblem } from '../../utils/advancedPercentYieldPractice'
 import { calcAdvancedPercentYield, type AdvPYSolution, type SolveFor } from '../../chem/stoich'
 import type { Unit } from '../../chem/amount'
@@ -21,6 +24,8 @@ export default function AdvancedPercentYieldTool({ allowCustom = true }: { allow
   const [steps,       setSteps]       = useState<string[]>([])
   const [sigBreakdown, setSigBreakdown] = useState<SigFigBreakdown | null>(null)
   const [sfOpen,      setSfOpen]      = useState(false)
+  const [answerVal,   setAnswerVal]   = useState('')
+  const [verified,    setVerified]    = useState<VerifyState>(null)
 
   const stepsState = useStepsPanelState(steps, () => {
     const p = genAdvPctProblem()
@@ -36,6 +41,7 @@ export default function AdvancedPercentYieldTool({ allowCustom = true }: { allow
     setResult(null)
     setSteps([])
     setSigBreakdown(null)
+    setAnswerVal(''); setVerified(null)
   }
 
   function handleTool() {
@@ -65,12 +71,19 @@ export default function AdvancedPercentYieldTool({ allowCustom = true }: { allow
       } else {
         setSigBreakdown(null)
       }
+
+      if (answerVal) {
+        const userSF = countSigFigs(answerVal)
+        const valueOk = Math.abs(res.answer - parseFloat(answerVal)) / res.answer <= 0.01
+        const sfOk = sf ? userSF === sf : true
+        setVerified(!valueOk ? 'incorrect' : !sfOk ? 'sig_fig_warning' : 'correct')
+      }
     } else {
       setSigBreakdown(null)
     }
   }
 
-  function clearResult() { setResult(null); setSteps([]); setSigBreakdown(null) }
+  function clearResult() { setResult(null); setSteps([]); setSigBreakdown(null); setVerified(null) }
 
   const knownLabel = solveFor === 'percent' ? 'Actual Yield (g)' : 'Percent Yield (%)'
   const knownPlaceholder = solveFor === 'percent' ? 'e.g. 8.5' : 'e.g. 78'
@@ -131,7 +144,7 @@ export default function AdvancedPercentYieldTool({ allowCustom = true }: { allow
         <label className="font-mono text-xs text-secondary tracking-widest uppercase">Solve For</label>
         <div className="flex rounded-sm overflow-hidden border border-border self-start">
           {(['actual', 'percent'] as SolveFor[]).map(sf => (
-            <button key={sf} onClick={() => { setSolveFor(sf); setKnownVal(''); clearResult() }}
+            <button key={sf} onClick={() => { setSolveFor(sf); setKnownVal(''); setAnswerVal(''); setVerified(null); clearResult() }}
               className="px-3 py-1.5 font-sans text-sm transition-colors"
               style={solveFor === sf
                 ? { background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', color: 'var(--c-halogen)' }
@@ -151,6 +164,14 @@ export default function AdvancedPercentYieldTool({ allowCustom = true }: { allow
         </div>
         {knownError && <p className="font-mono text-xs text-rose-400">{knownError}</p>}
       </div>
+
+      <NumberField
+        label={solveFor === 'actual' ? 'Your actual yield (g) — optional' : 'Your % yield — optional'}
+        value={answerVal}
+        onChange={v => setAnswerVal(v)}
+        placeholder="your answer"
+        unit={<span className="font-mono text-sm text-secondary px-2">{solveFor === 'actual' ? 'g' : '%'}</span>}
+      />
 
       <div className="flex items-stretch gap-2">
         <button onClick={handleTool} disabled={!canCalc}
@@ -177,19 +198,12 @@ export default function AdvancedPercentYieldTool({ allowCustom = true }: { allow
             <span className="font-mono text-xs text-secondary tracking-widest uppercase block mb-1">Theoretical Yield</span>
             <span className="font-mono text-xl font-semibold text-primary">{result.theoreticalG} g</span>
           </div>
-          {/* Final answer */}
-          <div className="rounded-sm border px-4 py-3"
-            style={{
-              borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
-              background: 'color-mix(in srgb, var(--c-halogen) 8%, rgb(var(--color-surface)))',
-            }}>
-            <span className="font-mono text-xs text-secondary tracking-widest uppercase block mb-1">
-              {result.answerUnit === '%' ? 'Percent Yield' : 'Actual Yield'}
-            </span>
-            <span className="font-mono text-2xl font-semibold" style={{ color: 'var(--c-halogen)' }}>
-              {result.answer}{result.answerUnit}
-            </span>
-          </div>
+          <ResultDisplay
+            label={result.answerUnit === '%' ? 'Percent Yield' : 'Actual Yield'}
+            value={String(result.answer)}
+            unit={result.answerUnit}
+            verified={verified}
+          />
         </div>
       )}
 

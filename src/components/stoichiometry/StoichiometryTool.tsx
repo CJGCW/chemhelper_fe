@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generateReaction, type Reaction, type Species } from '../../utils/stoichiometryPractice'
-import { useStepsPanelState, StepsTrigger, StepsContent } from '../calculations/StepsPanel'
-import { SigFigTrigger, SigFigContent } from '../calculations/SigFigPanel'
-import ResultDisplay from '../calculations/ResultDisplay'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
+import { SigFigTrigger, SigFigContent } from '../shared/SigFigPanel'
+import ResultDisplay from '../shared/ResultDisplay'
+import NumberField from '../shared/NumberField'
 import CustomReactionForm from './CustomReactionForm'
-import { buildSigFigBreakdown, lowestSigFigs, formatSigFigs, type SigFigBreakdown } from '../../utils/sigfigs'
+import { buildSigFigBreakdown, lowestSigFigs, formatSigFigs, countSigFigs, type SigFigBreakdown } from '../../utils/sigfigs'
+import type { VerifyState } from '../../utils/calcHelpers'
 import { calcStoich, type StoichSolution } from '../../chem/stoich'
 import type { Unit } from '../../chem/amount'
 
@@ -201,6 +203,8 @@ export default function StoichiometryTool() {
   const [sigBreakdown, setSigBreakdown] = useState<SigFigBreakdown | null>(null)
   const [sfOpen,      setSfOpen]      = useState(false)
   const [gasNote,     setGasNote]     = useState<string | null>(null)
+  const [answerVal,   setAnswerVal]   = useState('')
+  const [verified,    setVerified]    = useState<VerifyState>(null)
 
   const allSp = [...rxn.reactants, ...rxn.products]
 
@@ -218,6 +222,7 @@ export default function StoichiometryTool() {
     setSteps([])
     setSigBreakdown(null)
     setGasNote(null)
+    setAnswerVal(''); setVerified(null)
   }
 
   function getSpecies(f: string) { return allSp.find(s => s.formula === f)! }
@@ -231,6 +236,7 @@ export default function StoichiometryTool() {
     const res = calcStoich(rxn, from, fv, fromUnit, to, toUnit)
     setResult(res)
     setSteps(res.steps)
+    setVerified(null)
 
     if (fromUnit === 'g') {
       const sf = lowestSigFigs([fromVal])
@@ -241,6 +247,13 @@ export default function StoichiometryTool() {
         ))
       } else {
         setSigBreakdown(null)
+      }
+
+      if (answerVal) {
+        const userSF = countSigFigs(answerVal)
+        const valueOk = Math.abs(res.rawAnswer - parseFloat(answerVal)) / res.rawAnswer <= 0.01
+        const sfOk = sf ? userSF === sf : true
+        setVerified(!valueOk ? 'incorrect' : !sfOk ? 'sig_fig_warning' : 'correct')
       }
     } else {
       setSigBreakdown(null)
@@ -273,6 +286,7 @@ export default function StoichiometryTool() {
         setResult(null)
         setSteps([])
         setSigBreakdown(null)
+        setVerified(null)
       }} />
 
       {/* Given row */}
@@ -291,11 +305,11 @@ export default function StoichiometryTool() {
           )}
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <NumInput value={fromVal} onChange={v => { setFromVal(v); setResult(null); setSteps([]); setSigBreakdown(null); setGasNote(null) }} />
-          <UnitToggle unit={fromUnit} onChange={u => { setFromUnit(u); setResult(null); setSteps([]); setSigBreakdown(null); setGasNote(null) }} />
+          <NumInput value={fromVal} onChange={v => { setFromVal(v); setResult(null); setSteps([]); setSigBreakdown(null); setGasNote(null); setVerified(null) }} />
+          <UnitToggle unit={fromUnit} onChange={u => { setFromUnit(u); setResult(null); setSteps([]); setSigBreakdown(null); setGasNote(null); setVerified(null) }} />
           <span className="font-mono text-xs text-dim">of</span>
           <SpeciesSelect rxn={rxn} value={fromFormula}
-            onChange={f => { setFromFormula(f); setResult(null); setSteps([]); setSigBreakdown(null) }} exclude={toFormula} />
+            onChange={f => { setFromFormula(f); setResult(null); setSteps([]); setSigBreakdown(null); setVerified(null) }} exclude={toFormula} />
         </div>
         {gasNote && (
           <p className="font-mono text-xs text-secondary">{gasNote}</p>
@@ -306,12 +320,20 @@ export default function StoichiometryTool() {
       <div className="flex flex-col gap-2">
         <label className="font-mono text-xs text-secondary tracking-widest uppercase">Find</label>
         <div className="flex flex-wrap items-center gap-2">
-          <UnitToggle unit={toUnit} onChange={u => { setToUnit(u); setResult(null); setSteps([]); setSigBreakdown(null) }} />
+          <UnitToggle unit={toUnit} onChange={u => { setToUnit(u); setResult(null); setSteps([]); setSigBreakdown(null); setVerified(null) }} />
           <span className="font-mono text-xs text-dim">of</span>
           <SpeciesSelect rxn={rxn} value={toFormula}
-            onChange={f => { setToFormula(f); setResult(null); setSteps([]); setSigBreakdown(null) }} exclude={fromFormula} />
+            onChange={f => { setToFormula(f); setResult(null); setSteps([]); setSigBreakdown(null); setVerified(null) }} exclude={fromFormula} />
         </div>
       </div>
+
+      <NumberField
+        label="Your answer — optional, enter to check"
+        value={answerVal}
+        onChange={v => setAnswerVal(v)}
+        placeholder="your answer"
+        unit={<span className="font-mono text-sm text-secondary px-2">{toUnit}</span>}
+      />
 
       <div className="flex items-stretch gap-2">
         <button onClick={handleTool} disabled={!fromVal || parseFloat(fromVal) <= 0}
@@ -337,6 +359,7 @@ export default function StoichiometryTool() {
           value={String(result.answer)}
           unit={`${result.answerUnit}`}
           sigFigsValue={sigFigsResult}
+          verified={verified}
         />
       )}
 

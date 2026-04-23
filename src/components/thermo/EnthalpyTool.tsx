@@ -1,10 +1,14 @@
 import React from 'react'
 import { useState, useRef, useCallback } from 'react'
-import { pick } from '../calculations/WorkedExample'
-import { useStepsPanelState, StepsTrigger, StepsContent } from '../calculations/StepsPanel'
+import { pick } from '../shared/WorkedExample'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
 import { motion, AnimatePresence } from 'framer-motion'
 import { searchCompounds, type CompoundEntry } from '../../utils/enthalpyData'
 import { computeDHrxn } from '../../utils/enthalpyPractice'
+import NumberField from '../shared/NumberField'
+import ResultDisplay from '../shared/ResultDisplay'
+import { hasValue } from '../../utils/calcHelpers'
+import type { VerifyState } from '../../utils/calcHelpers'
 
 // ── Example generator ─────────────────────────────────────────────────────────
 
@@ -241,7 +245,12 @@ export default function EnthalpyTool() {
   const [result,    setResult]    = useState<Result | null>(null)
   const [error,     setError]     = useState<string | null>(null)
   const [noSteps]                 = useState<string[]>([])
+  const [answerVal, setAnswerVal] = useState('')
   const stepsState                = useStepsPanelState(noSteps, generateEnthalpyExample)
+
+  const verified: VerifyState = result !== null && hasValue(answerVal)
+    ? (Math.abs(result.dhrxn - parseFloat(answerVal)) / (Math.abs(result.dhrxn) || 1) <= 0.01 ? 'correct' : 'incorrect')
+    : null
 
   const updateRow = useCallback((
     setter: React.Dispatch<React.SetStateAction<Row[]>>,
@@ -418,6 +427,23 @@ export default function EnthalpyTool() {
       <AnimatePresence>
         {result && <ResultPanel result={result} />}
       </AnimatePresence>
+
+      <NumberField
+        label="Your ΔH_rxn (kJ) — optional, enter to check"
+        value={answerVal}
+        onChange={setAnswerVal}
+        placeholder="optional"
+        unit={<span className="font-mono text-sm text-secondary px-2">kJ</span>}
+      />
+
+      {result && (
+        <ResultDisplay
+          label="ΔH_rxn"
+          value={`${result.dhrxn > 0 ? '+' : ''}${result.dhrxn}`}
+          unit="kJ"
+          verified={verified}
+        />
+      )}
 
       {/* Hint */}
       <p className="font-mono text-xs text-secondary">

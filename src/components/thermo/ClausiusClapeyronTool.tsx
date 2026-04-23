@@ -1,6 +1,10 @@
 import { useState, useMemo } from 'react'
-import { useStepsPanelState, StepsTrigger, StepsContent } from '../calculations/StepsPanel'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
 import { generateClausiusClapeyronExample } from './ClausiusClapeyronPractice'
+import NumberField from '../shared/NumberField'
+import ResultDisplay from '../shared/ResultDisplay'
+import { hasValue } from '../../utils/calcHelpers'
+import type { VerifyState } from '../../utils/calcHelpers'
 
 const R = 8.314  // J/(mol·K)
 
@@ -227,17 +231,19 @@ const SOLVE_OPTIONS: { id: SolveFor; label: string; sub: string }[] = [
 ]
 
 export default function ClausiusClapeyronTool() {
-  const [sf,    setSf]    = useState<SolveFor>('P2')
-  const [p1,    setP1]    = useState('101.325')
-  const [p2,    setP2]    = useState('')
-  const [t1,    setT1]    = useState('100')
-  const [t2,    setT2]    = useState('80')
-  const [dh,    setDh]    = useState('40.7')
-  const [pu1,   setPu1]   = useState<PUnit>('kPa')
-  const [pu2,   setPu2]   = useState<PUnit>('kPa')
-  const [tu1,   setTu1]   = useState<TUnit>('°C')
-  const [tu2,   setTu2]   = useState<TUnit>('°C')
-  const [hu,    setHu]    = useState<HUnit>('kJ/mol')
+  const [sf,        setSf]        = useState<SolveFor>('P2')
+  const [p1,        setP1]        = useState('101.325')
+  const [p2,        setP2]        = useState('')
+  const [t1,        setT1]        = useState('100')
+  const [t2,        setT2]        = useState('80')
+  const [dh,        setDh]        = useState('40.7')
+  const [pu1,       setPu1]       = useState<PUnit>('kPa')
+  const [pu2,       setPu2]       = useState<PUnit>('kPa')
+  const [tu1,       setTu1]       = useState<TUnit>('°C')
+  const [tu2,       setTu2]       = useState<TUnit>('°C')
+  const [hu,        setHu]        = useState<HUnit>('kJ/mol')
+  const [answerVal, setAnswerVal] = useState('')
+  const [answerUnit, setAnswerUnit] = useState<string>('kPa')
 
   const vals = useMemo(() => {
     const P1_Pa = parseFloat(p1) * P_TO_PA[pu1]
@@ -260,6 +266,22 @@ export default function ClausiusClapeyronTool() {
 
   const stringSteps = useMemo(() => steps.map(s => `${s.label}: ${s.expr}`), [steps])
   const stepsState = useStepsPanelState(stringSteps, generateClausiusClapeyronExample)
+
+  const answerUnits: string[] = sf === 'P1' || sf === 'P2'
+    ? ['Pa', 'kPa', 'atm', 'mmHg']
+    : sf === 'T1' || sf === 'T2'
+    ? ['K', '°C']
+    : ['J/mol', 'kJ/mol']
+
+  const toBaseUnit = (val: number, unit: string): number => {
+    if (sf === 'P1' || sf === 'P2') return val * P_TO_PA[unit as PUnit]
+    if (sf === 'T1' || sf === 'T2') return unit === '°C' ? val + 273.15 : val
+    return unit === 'kJ/mol' ? val * 1e3 : val
+  }
+
+  const verified: VerifyState = result !== null && hasValue(answerVal)
+    ? (Math.abs(result - toBaseUnit(parseFloat(answerVal), answerUnit)) / Math.abs(result) <= 0.01 ? 'correct' : 'incorrect')
+    : null
 
   return (
     <div className="flex flex-col gap-8 max-w-2xl">
@@ -323,6 +345,32 @@ export default function ClausiusClapeyronTool() {
         <StepsTrigger {...stepsState} />
       </div>
       <StepsContent {...stepsState} />
+
+      {result !== null && (
+        <>
+          <NumberField
+            label="Your answer — optional, enter to check"
+            value={answerVal}
+            onChange={v => { setAnswerVal(v) }}
+            placeholder="optional"
+            unit={
+              <select value={answerUnit} onChange={e => setAnswerUnit(e.target.value)}
+                className="font-mono text-xs bg-raised border border-border rounded-sm px-2 py-1.5
+                           text-primary focus:outline-none cursor-pointer">
+                {answerUnits.map(u => <option key={u} value={u}>{u}</option>)}
+              </select>
+            }
+          />
+          {verified !== null && (
+            <ResultDisplay
+              label={SOLVE_OPTIONS.find(o => o.id === sf)?.label ?? sf}
+              value={sig(result, 4)}
+              unit={answerUnit}
+              verified={verified}
+            />
+          )}
+        </>
+      )}
 
     </div>
   )
