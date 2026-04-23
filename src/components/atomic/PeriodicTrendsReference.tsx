@@ -71,6 +71,7 @@ const PRINT_STYLES = `
   }
   .pt-val { display: block !important; }
   .pt-tooltip { display: none !important; }
+  .pt-cell span { color: #000 !important; }
 }
 `
 
