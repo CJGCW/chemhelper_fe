@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genHeatTransferProblem, checkHeatTransferAnswer, type HeatTransferProblem } from '../../utils/heatTransferPractice'
-import StepsPanel from '../calculations/StepsPanel'
+import StepsPanel from '../shared/StepsPanel'
 
 
 export default function HeatTransferPractice() {

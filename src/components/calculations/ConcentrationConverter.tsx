@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import WorkedExample, { pick, sig } from './WorkedExample'
+import WorkedExample, { pick, sig } from '../shared/WorkedExample'
 import { sanitize, hasValue } from '../../utils/calcHelpers'
 
 type SourceUnit = 'mol/L' | '% (w/w)' | 'ppm' | 'mol/kg'

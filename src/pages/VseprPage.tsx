@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import type { LewisStructure } from './LewisPage'
 import { looksLikeFormula, resolveToFormula } from '../utils/resolveFormula'
 import VsepDiagram from '../components/vsepr/VsepDiagram'
-import StepsPanel from '../components/calculations/StepsPanel'
+import StepsPanel from '../components/shared/StepsPanel'
 
 // ── VSEPR derivation ──────────────────────────────────────────────────────────
 

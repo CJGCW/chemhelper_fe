@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genGasProblem, checkGasAnswer, gasSolutionSteps, type GasProblem } from '../../utils/idealGasPractice'
-import StepsPanel from '../calculations/StepsPanel'
+import StepsPanel from '../shared/StepsPanel'
 
 
 export default function IdealGasPractice() {

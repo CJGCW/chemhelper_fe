@@ -1,4 +1,4 @@
-import WorkedExample from '../calculations/WorkedExample'
+import WorkedExample from '../shared/WorkedExample'
 import { generateReactionProfileExample } from './ReactionProfilePractice'
 import EnergyDiagram from './EnergyDiagram'
 

@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { pick, randBetween, roundTo, sig } from './WorkedExample'
+import { pick, randBetween, roundTo, sig } from '../shared/WorkedExample'
 import { motion, AnimatePresence } from "framer-motion";
-import NumberField from "./NumberField";
+import NumberField from "../shared/NumberField";
 import UnitSelect, { MASS_UNITS } from "./UnitSelect";
 import type { UnitOption } from "./UnitSelect";
 import MassToMolesHelper from "./MassToMolesHelper";
-import ResultDisplay from "./ResultDisplay";
-import { useStepsPanelState, StepsTrigger, StepsContent } from "./StepsPanel";
-import { SigFigTrigger, SigFigContent } from "./SigFigPanel";
+import ResultDisplay from "../shared/ResultDisplay";
+import { useStepsPanelState, StepsTrigger, StepsContent } from "../shared/StepsPanel";
+import { SigFigTrigger, SigFigContent } from "../shared/SigFigPanel";
 import { sanitize, hasValue } from "../../utils/calcHelpers";
 
 /** Format a raw number cleanly — no scientific notation, no trailing zeros */

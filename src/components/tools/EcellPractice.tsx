@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import type { EcellSubtype } from '../../utils/ecellPractice'
 import { genEcellProblem, checkEcellAnswer } from '../../utils/ecellPractice'
-import StepsPanel from '../calculations/StepsPanel'
+import StepsPanel from '../shared/StepsPanel'
 
 type Selection = EcellSubtype | 'random'
 

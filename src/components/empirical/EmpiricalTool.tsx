@@ -6,7 +6,7 @@ import {
   solveEmpiricalFormula,
   type SolverResult,
 } from '../../utils/empiricalFormula'
-import { useStepsPanelState, StepsTrigger, StepsContent } from '../calculations/StepsPanel'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
 import { generateEmpiricalExample } from './EmpiricalPractice'
 
 // ── Types ─────────────────────────────────────────────────────────────────────

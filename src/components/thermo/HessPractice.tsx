@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genHessProblem, checkHessAnswer, type HessProblem } from '../../utils/hessLawPractice'
-import StepsPanel from '../calculations/StepsPanel'
+import StepsPanel from '../shared/StepsPanel'
 
 
 export default function HessPractice() {

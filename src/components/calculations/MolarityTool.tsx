@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { pick, randBetween, roundTo, sig } from './WorkedExample'
-import NumberField from "./NumberField";
+import { pick, randBetween, roundTo, sig } from '../shared/WorkedExample'
+import NumberField from "../shared/NumberField";
 import UnitSelect, { VOLUME_UNITS } from "./UnitSelect";
 import type { UnitOption } from "./UnitSelect";
 import MassToMolesHelper from "./MassToMolesHelper";
-import ResultDisplay from "./ResultDisplay";
-import { useStepsPanelState, StepsTrigger, StepsContent } from "./StepsPanel";
-import { SigFigTrigger, SigFigContent } from "./SigFigPanel";
+import ResultDisplay from "../shared/ResultDisplay";
+import { useStepsPanelState, StepsTrigger, StepsContent } from "../shared/StepsPanel";
+import { SigFigTrigger, SigFigContent } from "../shared/SigFigPanel";
 import {
   sanitize,
   hasValue,

@@ -5,7 +5,7 @@
  */
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import NumberField from './NumberField'
+import NumberField from '../shared/NumberField'
 import UnitSelect, { MASS_UNITS } from './UnitSelect'
 import type { UnitOption } from './UnitSelect'
 import CompoundInput from './CompoundInput'

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { HALF_REACTIONS } from '../../data/reductionPotentials'
 import type { HalfReaction } from '../../data/reductionPotentials'
 import { genEcellProblem } from '../../utils/ecellPractice'
-import StepsPanel from '../calculations/StepsPanel'
+import StepsPanel from '../shared/StepsPanel'
 
 const ECELL_EMPTY: string[] = []
 

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genCalorimetryProblem, checkCalorimetryAnswer, type CalorimetryProblem } from '../../utils/calorimetryPractice'
-import StepsPanel from '../calculations/StepsPanel'
+import StepsPanel from '../shared/StepsPanel'
 
 const MODE_LABELS: Record<string, string> = {
   mcdt:   'q = mcΔT',

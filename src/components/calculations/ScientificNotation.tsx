@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { countSigFigs } from '../../utils/sigfigs'
-import WorkedExample from './WorkedExample'
+import WorkedExample from '../shared/WorkedExample'
 import { generateSciNotationExample } from './ScientificNotationPractice'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

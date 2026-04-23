@@ -7,7 +7,7 @@ import {
   type ProfileSubtype,
   type ProfileProblem,
 } from '../../utils/reactionProfilePractice'
-import type { ExampleData } from '../calculations/WorkedExample'
+import type { ExampleData } from '../shared/WorkedExample'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

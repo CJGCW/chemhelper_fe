@@ -4,7 +4,7 @@ import {
   makeCountProblem, makeArithProblem, checkSigFigAnswer,
   type SigFigProblem, type SigFigCheckResult,
 } from '../../utils/sigfigPractice'
-import WorkedExample from './WorkedExample'
+import WorkedExample from '../shared/WorkedExample'
 
 const SIGFIG_EXAMPLES = [
   {

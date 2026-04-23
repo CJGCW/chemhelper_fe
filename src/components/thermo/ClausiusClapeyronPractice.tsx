@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import WorkedExample from '../calculations/WorkedExample'
+import WorkedExample from '../shared/WorkedExample'
 
 const R = 8.314  // J/(mol·K)
 

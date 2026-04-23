@@ -1,6 +1,6 @@
 import { useState, useId } from 'react'
-import { useStepsPanelState, StepsTrigger, StepsContent } from '../calculations/StepsPanel'
-import { pick, randBetween, roundTo, sig } from '../calculations/WorkedExample'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
+import { pick, randBetween, roundTo, sig } from '../shared/WorkedExample'
 import { P_UNITS, TO_ATM, type PUnit } from '../../utils/idealGas'
 import { formatSigFigs, lowestSigFigs, countSigFigs } from '../../utils/sigfigs'
 import { sanitize, hasValue } from '../../utils/calcHelpers'

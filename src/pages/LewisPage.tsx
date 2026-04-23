@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import LewisStructureDiagram from '../components/lewis/LewisStructureDiagram'
-import StepsPanel from '../components/calculations/StepsPanel'
+import StepsPanel from '../components/shared/StepsPanel'
 import LewisEditor from '../components/lewis/LewisEditor'
 import { looksLikeFormula, resolveToFormula } from '../utils/resolveFormula'
 

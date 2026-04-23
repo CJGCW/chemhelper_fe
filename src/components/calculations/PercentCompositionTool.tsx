@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import WorkedExample, { pick } from './WorkedExample'
+import WorkedExample, { pick } from '../shared/WorkedExample'
 import { motion, AnimatePresence } from 'framer-motion'
 import { resolveFormula, resolveSmiles } from '../../api/calculations'
 import { useElementStore } from '../../stores/elementStore'

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generateGasDensityProblem, checkGasDensityAnswer, type GasDensityProblem } from '../../utils/gasDensityPractice'
-import StepsPanel from '../calculations/StepsPanel'
+import StepsPanel from '../shared/StepsPanel'
 
 type CheckState = 'idle' | 'correct' | 'wrong'
 
