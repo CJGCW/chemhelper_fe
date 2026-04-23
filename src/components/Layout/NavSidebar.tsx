@@ -39,6 +39,7 @@ const SEARCH_INDEX: SearchItem[] = [
   { label: 'Quantum Numbers',   formula: 'QN',        section: 'Periodic Table',     path: '/electron-config?topic=quantum_numbers',keywords: 'quantum numbers n l ml ms spin' },
   { label: 'Energy Levels',     formula: 'Eₙ',        section: 'Periodic Table',     path: '/electron-config?topic=energy_levels',  keywords: 'energy levels hydrogen Bohr Rydberg' },
   { label: 'Multi-Electron',    formula: 'Zeff',      section: 'Periodic Table',     path: '/electron-config?topic=multi_electron', keywords: 'multi electron effective nuclear charge shielding zeff' },
+  { label: 'Periodic Trends',   formula: '↗',         section: 'Periodic Table',     path: '/electron-config?topic=periodic_trends',keywords: 'periodic trends atomic radius ionization energy electronegativity electron affinity heatmap' },
   { label: 'Isoelectronic',     formula: '≡',         section: 'Periodic Table',     path: '/electron-config?topic=isoelectronic',  keywords: 'isoelectronic same electrons ions' },
   { label: 'Para/Diamagnetic',  formula: 'para',      section: 'Periodic Table',     path: '/electron-config?topic=para_dia',       keywords: 'paramagnetic diamagnetic unpaired electrons' },
   { label: 'EM Spectrum',       formula: 'λf',        section: 'Periodic Table',     path: '/electron-config?topic=em_spectrum',    keywords: 'electromagnetic spectrum wavelength frequency light' },
@@ -187,9 +188,10 @@ const TABLE_GROUPS: { label: string; items: { path: string; label: string; formu
   {
     label: 'Properties',
     items: [
-      { path: '/electron-config?topic=isoelectronic', label: 'Isoelectronic',    formula: '≡'   },
-      { path: '/electron-config?topic=para_dia',      label: 'Para/Diamagnetic', formula: 'para' },
-      { path: '/electron-config?topic=em_spectrum',   label: 'EM Spectrum',      formula: 'λf'  },
+      { path: '/electron-config?topic=periodic_trends', label: 'Periodic Trends',  formula: '↗'   },
+      { path: '/electron-config?topic=isoelectronic',   label: 'Isoelectronic',    formula: '≡'   },
+      { path: '/electron-config?topic=para_dia',        label: 'Para/Diamagnetic', formula: 'para' },
+      { path: '/electron-config?topic=em_spectrum',     label: 'EM Spectrum',      formula: 'λf'  },
     ],
   },
 ]
