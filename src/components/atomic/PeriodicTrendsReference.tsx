@@ -55,6 +55,11 @@ function formatV(v: number | null | undefined): string {
 
 const PRINT_STYLES = `
 @media print {
+  .pt-heatmap {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    filter: saturate(2.2) brightness(0.78);
+  }
   .pt-cell {
     height: auto !important;
     min-height: 38px !important;
@@ -199,7 +204,7 @@ export default function PeriodicTrendsReference() {
 
       {/* Heatmap */}
       <div className="overflow-x-auto pb-2">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: G, width: 18 * CW + 17 * G }}>
+        <div className="pt-heatmap" style={{ display: 'flex', flexDirection: 'column', gap: G, width: 18 * CW + 17 * G }}>
 
           {/* Main table: rows 1–7 */}
           {([1,2,3,4,5,6,7] as const).map(period => {
