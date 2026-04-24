@@ -15,10 +15,11 @@ import ParaDiaMagneticPractice from '../components/atomic/ParaDiaMagneticPractic
 import MultiElectronAtoms from '../components/atomic/MultiElectronAtoms'
 import PeriodicTrendsReference from '../components/atomic/PeriodicTrendsReference'
 import PeriodicTrendsPractice from '../components/atomic/PeriodicTrendsPractice'
+import ReverseIsotopeTool from '../components/atomic/ReverseIsotopeTool'
 import PageShell from '../components/Layout/PageShell'
 
 type Topic = 'electron_config' | 'quantum_numbers' | 'energy_levels' | 'isoelectronic'
-           | 'em_spectrum' | 'para_dia' | 'multi_electron' | 'periodic_trends'
+           | 'em_spectrum' | 'para_dia' | 'multi_electron' | 'periodic_trends' | 'isotopes'
 type Mode  = 'reference' | 'practice' | 'problems'
 
 // Modes available per topic — topics not listed here show no toggle
@@ -28,6 +29,7 @@ const TOPIC_MODES: Partial<Record<Topic, Mode[]>> = {
   energy_levels:    ['reference', 'problems'],
   para_dia:         ['reference', 'problems'],
   periodic_trends:  ['reference', 'practice'],
+  isotopes:         ['practice'],
 }
 
 const TOPIC_GROUPS: { label: string; topics: { id: Topic; label: string; subtitle: string }[] }[] = [
@@ -47,6 +49,7 @@ const TOPIC_GROUPS: { label: string; topics: { id: Topic; label: string; subtitl
       { id: 'isoelectronic',   label: 'Isoelectronic',    subtitle: 'Ion size comparison'              },
       { id: 'para_dia',        label: 'Para/Diamagnetic', subtitle: 'Unpaired electrons, magnetism'    },
       { id: 'em_spectrum',     label: 'EM Spectrum',      subtitle: 'λ ↔ f ↔ E interconverter'        },
+      { id: 'isotopes',        label: 'Isotope Abundance', subtitle: 'Find abundance from average mass'  },
     ],
   },
 ]
@@ -327,6 +330,7 @@ export default function ElectronConfigPage() {
           {topic === 'multi_electron'   && <MultiElectronAtoms />}
           {topic === 'periodic_trends' && mode === 'reference' && <PeriodicTrendsReference />}
           {topic === 'periodic_trends' && mode === 'practice'  && <PeriodicTrendsPractice />}
+          {topic === 'isotopes'        && <ReverseIsotopeTool />}
         </motion.div>
       </AnimatePresence>
 

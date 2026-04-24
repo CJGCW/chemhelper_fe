@@ -31,6 +31,7 @@ import ClausiusClapeyronReference from '../components/thermo/ClausiusClapeyronRe
 import VaporPressureTool from '../components/thermo/VaporPressureTool'
 import ReactionProfilePractice from '../components/thermo/ReactionProfilePractice'
 import ReactionProfileTool from '../components/thermo/ReactionProfileTool'
+import ExpansionWorkTool from '../components/thermo/ExpansionWorkTool'
 import PageShell from '../components/Layout/PageShell'
 
 type Tab =
@@ -63,6 +64,7 @@ type Tab =
   | 'heattransfer'
   | 'heattransfer-practice'
   | 'heattransfer-reference'
+  | 'expansion-work'
 
 type Section = { heading: string; tabs: { id: Tab; label: string }[] }
 type Group   = { id: string; label: string; sections: Section[] }
@@ -102,6 +104,12 @@ const GROUPS: Group[] = [
           { id: 'bond-reference' as Tab, label: 'Reference' },
           { id: 'bond'           as Tab, label: 'Practice'  },
           { id: 'bond-practice'  as Tab, label: 'Problems'  },
+        ],
+      },
+      {
+        heading: 'Expansion Work',
+        tabs: [
+          { id: 'expansion-work' as Tab, label: 'Calculator' },
         ],
       },
     ],
@@ -476,6 +484,7 @@ export default function ThermochemistryPage() {
           {tab === 'vapor-pressure'         && <VaporPressureTool />}
           {tab === 'cc-practice'            && <ClausiusClapeyronPractice />}
           {tab === 'cc-reference'           && <ClausiusClapeyronReference />}
+          {tab === 'expansion-work'         && <ExpansionWorkTool />}
         </motion.div>
       </AnimatePresence>
 

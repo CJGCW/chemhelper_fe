@@ -10,6 +10,8 @@ import { sanitize, hasValue } from '../../utils/calcHelpers'
 import type { VerifyState } from '../../utils/calcHelpers'
 import { buildSigFigBreakdown, countSigFigs, formatSigFigs, lowestSigFigs } from '../../utils/sigfigs'
 import type { SigFigBreakdown } from '../../utils/sigfigs'
+import { COMMON_SOLUTES } from '../../data/commonSolutes'
+import { heatOfSolution, heatOfNeutralization, deltaUtoDeltaH } from '../../chem/thermo'
 
 // ── Example generators ────────────────────────────────────────────────────────
 
@@ -83,15 +85,18 @@ function generateBombCalExample() {
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type Mode = 'mcdt' | 'cdt' | 'coffee' | 'bomb'
+type Mode = 'mcdt' | 'cdt' | 'coffee' | 'bomb' | 'soln' | 'neut' | 'du-dh'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const MODES: { id: Mode; label: string; formula: string }[] = [
-  { id: 'mcdt',   label: 'q = mcΔT',        formula: 'mcΔT' },
-  { id: 'cdt',    label: 'q = CΔT',         formula: 'CΔT'  },
-  { id: 'coffee', label: 'Coffee-Cup',       formula: '☕'    },
-  { id: 'bomb',   label: 'Bomb Calorimeter', formula: '⚗'    },
+  { id: 'mcdt',   label: 'q = mcΔT',        formula: 'mcΔT'    },
+  { id: 'cdt',    label: 'q = CΔT',         formula: 'CΔT'     },
+  { id: 'coffee', label: 'Coffee-Cup',       formula: '☕'       },
+  { id: 'bomb',   label: 'Bomb Cal.',        formula: '⚗'       },
+  { id: 'soln',   label: 'Heat of Solution', formula: 'ΔH_soln' },
+  { id: 'neut',   label: 'Neutralization',   formula: 'ΔH_neut' },
+  { id: 'du-dh',  label: 'ΔU → ΔH',         formula: 'Δn·RT'   },
 ]
 
 const SPECIFIC_HEATS = [
@@ -995,6 +1000,368 @@ function BombCalorimeter() {
   )
 }
 
+// ── Heat of Solution ──────────────────────────────────────────────────────────
+
+function generateHeatOfSolutionExample() {
+  const s = pick(COMMON_SOLUTES.filter(x => x.exampleDeltaHsoln !== undefined))
+  const massWater  = roundTo(randBetween(50, 150), 0)
+  const massSolute = roundTo(randBetween(2, 10), 2)
+  const dH         = s.exampleDeltaHsoln!
+  // Back-solve: ΔH_soln = q_rxn/n → q_rxn = dH × n; ΔT = -q_rxn / (m_w × 4.184)
+  const n          = massSolute / s.molarMass
+  const q_rxn      = dH * 1000 * n   // J
+  const q_water    = -q_rxn
+  const dT         = roundTo(q_water / (massWater * 4.184), 2)
+  const ti         = roundTo(randBetween(20, 25), 1)
+  const tf         = roundTo(ti + dT, 2)
+  const result     = heatOfSolution(massSolute, s.molarMass, massWater, dT)
+  return {
+    scenario: `${massSolute} g of ${s.displayName} (M = ${s.molarMass} g/mol) is dissolved in ` +
+              `${massWater} g of water. Temperature changes from ${ti}°C to ${tf}°C. Find ΔH_soln.`,
+    steps: [
+      `ΔT = ${sig(tf, 4)} − ${sig(ti, 4)} = ${sig(dT, 4)} °C`,
+      `q_water = m × c × ΔT = ${massWater} × 4.184 × (${sig(dT, 4)}) = ${sig(-q_rxn, 4)} J`,
+      `q_rxn = −q_water = ${sig(q_rxn, 4)} J`,
+      `n(solute) = ${massSolute} g ÷ ${s.molarMass} g/mol = ${sig(n, 4)} mol`,
+      `ΔH_soln = q_rxn / n / 1000 = ${sig(result, 4)} kJ/mol`,
+      result > 0 ? `Positive ΔH → endothermic (temperature dropped)` : `Negative ΔH → exothermic (temperature rose)`,
+    ],
+    result: `ΔH_soln = ${sig(result, 3)} kJ/mol`,
+  }
+}
+
+function HeatOfSolutionMode() {
+  const [soluteIdx, setSoluteIdx] = useState(0)
+  const [massSolute, setMassSolute] = useState('')
+  const [massWater,  setMassWater]  = useState('')
+  const [tiVal,      setTiVal]      = useState('')
+  const [tfVal,      setTfVal]      = useState('')
+  const [answerVal,  setAnswerVal]  = useState('')
+  const [steps,      setSteps]      = useState<string[]>([])
+  const [result,     setResult]     = useState<string | null>(null)
+  const [verified,   setVerified]   = useState<VerifyState>(null)
+  const [error,      setError]      = useState<string | null>(null)
+
+  const solute = COMMON_SOLUTES[soluteIdx]
+  const stepsState = useStepsPanelState(steps, generateHeatOfSolutionExample)
+
+  function reset() { setSteps([]); setResult(null); setVerified(null); setError(null) }
+  function handleClear() { setMassSolute(''); setMassWater(''); setTiVal(''); setTfVal(''); setAnswerVal(''); reset() }
+
+  function calculate() {
+    reset()
+    const ms = parse(massSolute), mw = parse(massWater), ti = parse(tiVal), tf = parse(tfVal)
+    if (!ok(ms) || !ok(mw) || !ok(ti) || !ok(tf)) { setError('Enter all four values.'); return }
+    if (ms <= 0 || mw <= 0)  { setError('Masses must be positive.'); return }
+    const dT      = tf - ti
+    const q_water = mw * 4.184 * dT
+    const q_rxn   = -q_water
+    const n       = ms / solute.molarMass
+    const dH      = heatOfSolution(ms, solute.molarMass, mw, dT)
+    const s: string[] = [
+      `ΔT = T_f − T_i = ${fmtNum(tf)} − ${fmtNum(ti)} = ${fmtNum(dT)} °C`,
+      `q_water = m × c × ΔT = ${fmtNum(mw)} g × 4.184 J/(g·°C) × ${fmtNum(dT)} °C = ${fmtNum(q_water)} J`,
+      `q_rxn = −q_water = ${fmtNum(q_rxn)} J`,
+      `n(${solute.displayName}) = ${fmtNum(ms)} g ÷ ${solute.molarMass} g/mol = ${fmtNum(n)} mol`,
+      `ΔH_soln = q_rxn / n = ${fmtNum(q_rxn)} J ÷ ${fmtNum(n)} mol = ${fmtNum(q_rxn / n)} J/mol`,
+      `ΔH_soln = ${fmtNum(dH)} kJ/mol`,
+      dH > 0 ? `ΔH > 0 → endothermic dissolution (solution cools)` : `ΔH < 0 → exothermic dissolution (solution warms)`,
+    ]
+    setSteps(s)
+    setResult(fmtNum(dH))
+    if (answerVal) {
+      const userVal = parse(answerVal)
+      setVerified(Math.abs(userVal - dH) / Math.abs(dH) <= 0.02 ? 'correct' : 'incorrect')
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-5 max-w-lg">
+      <InfoBox>
+        ΔH_soln = q_rxn / n_solute · q_rxn = −m_water × c × ΔT · c_water = 4.184 J/(g·°C)
+      </InfoBox>
+
+      <div className="flex flex-col gap-1.5">
+        <label className="font-sans text-sm font-medium text-primary">Solute</label>
+        <select value={soluteIdx} onChange={e => { setSoluteIdx(Number(e.target.value)); reset() }}
+          className="bg-raised border border-border rounded-sm px-3 py-2 font-mono text-sm text-primary
+                     focus:outline-none focus:border-muted transition-colors">
+          {COMMON_SOLUTES.map((s, i) => <option key={s.formula} value={i}>{s.displayName} — M = {s.molarMass} g/mol</option>)}
+        </select>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <NumberField label="Mass of solute" value={massSolute}
+          onChange={v => { setMassSolute(sanitize(v)); reset() }} placeholder="g"
+          unit={<span className="font-mono text-sm text-secondary px-2">g</span>} />
+        <NumberField label="Mass of water" value={massWater}
+          onChange={v => { setMassWater(sanitize(v)); reset() }} placeholder="g (= mL × 1.00)"
+          unit={<span className="font-mono text-sm text-secondary px-2">g</span>} />
+        <NumberField label="T initial" value={tiVal}
+          onChange={v => { setTiVal(sanitize(v)); reset() }} placeholder="°C"
+          unit={<span className="font-mono text-sm text-secondary px-2">°C</span>} />
+        <NumberField label="T final" value={tfVal}
+          onChange={v => { setTfVal(sanitize(v)); reset() }} placeholder="°C"
+          unit={<span className="font-mono text-sm text-secondary px-2">°C</span>} />
+      </div>
+
+      <NumberField label="Your ΔH_soln — optional, enter to check" value={answerVal}
+        onChange={v => { setAnswerVal(sanitize(v)); setVerified(null) }} placeholder="kJ/mol"
+        unit={<span className="font-mono text-sm text-secondary px-2">kJ/mol</span>} />
+
+      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      <div className="flex items-stretch gap-2">
+        <CalcButton onClick={calculate} />
+        <StepsTrigger {...stepsState} />
+        {(massSolute || massWater || tiVal || tfVal) && (
+          <button onClick={handleClear}
+            className="px-4 py-2 rounded-sm font-sans text-sm border border-border text-secondary hover:text-primary transition-colors">
+            Clear
+          </button>
+        )}
+      </div>
+      <StepsContent {...stepsState} />
+      {result && <ResultDisplay label="ΔH_soln (heat of solution)" value={result} unit="kJ/mol" verified={verified} />}
+    </div>
+  )
+}
+
+// ── Heat of Neutralization ────────────────────────────────────────────────────
+
+const ACID_BASE_PAIRS = [
+  { label: 'HCl + NaOH (1:1)',        acidRatio: 1.0 },
+  { label: 'HNO₃ + KOH (1:1)',        acidRatio: 1.0 },
+  { label: 'H₂SO₄ + 2 NaOH (1:2)',   acidRatio: 0.5 },
+  { label: 'CH₃COOH + NaOH (1:1)',    acidRatio: 1.0 },
+]
+
+function generateHeatOfNeutralizationExample() {
+  const pair      = pick(ACID_BASE_PAIRS)
+  const vAcid     = roundTo(randBetween(50, 200), 0)
+  const cAcid     = roundTo(randBetween(0.100, 1.00), 3)
+  const vBase     = vAcid
+  const cBase     = cAcid
+  const dHneut    = -56.2   // kJ/mol, typical strong acid/base
+  const n_water   = (vAcid / 1000) * cAcid / pair.acidRatio
+  const q_rxn     = dHneut * 1000 * n_water   // J
+  const q_soln    = -q_rxn
+  const mTotal    = vAcid + vBase
+  const dT        = roundTo(q_soln / (mTotal * 4.184), 2)
+  const dH        = heatOfNeutralization(vAcid, cAcid, vBase, cBase, pair.acidRatio, dT)
+  return {
+    scenario: `${vAcid} mL of ${cAcid} M acid mixed with ${vBase} mL of ${cBase} M base (${pair.label}). ` +
+              `Temperature rises by ${sig(dT, 3)} °C. Find ΔH_neut.`,
+    steps: [
+      `m_total = ${vAcid} + ${vBase} = ${mTotal} g`,
+      `q_soln = ${mTotal} × 4.184 × ${sig(dT, 3)} = ${sig(q_soln, 4)} J`,
+      `q_rxn = −q_soln = ${sig(q_rxn, 4)} J`,
+      `n(water) = (${vAcid}/1000) × ${cAcid} / ${pair.acidRatio} = ${sig(n_water, 4)} mol`,
+      `ΔH_neut = q_rxn / n / 1000 = ${sig(dH, 4)} kJ/mol`,
+    ],
+    result: `ΔH_neut = ${sig(dH, 3)} kJ/mol`,
+  }
+}
+
+function HeatOfNeutralizationMode() {
+  const [pairIdx,    setPairIdx]    = useState(0)
+  const [vAcid,      setVAcid]      = useState('')
+  const [cAcid,      setCacid]      = useState('')
+  const [vBase,      setVBase]      = useState('')
+  const [cBase,      setCbase]      = useState('')
+  const [tiVal,      setTiVal]      = useState('')
+  const [tfVal,      setTfVal]      = useState('')
+  const [answerVal,  setAnswerVal]  = useState('')
+  const [steps,      setSteps]      = useState<string[]>([])
+  const [result,     setResult]     = useState<string | null>(null)
+  const [verified,   setVerified]   = useState<VerifyState>(null)
+  const [error,      setError]      = useState<string | null>(null)
+
+  const pair = ACID_BASE_PAIRS[pairIdx]
+  const stepsState = useStepsPanelState(steps, generateHeatOfNeutralizationExample)
+
+  function reset() { setSteps([]); setResult(null); setVerified(null); setError(null) }
+  function handleClear() {
+    setVAcid(''); setCacid(''); setVBase(''); setCbase('')
+    setTiVal(''); setTfVal(''); setAnswerVal(''); reset()
+  }
+
+  function calculate() {
+    reset()
+    const va = parse(vAcid), ca = parse(cAcid), vb = parse(vBase), cb = parse(cBase)
+    const ti = parse(tiVal),  tf = parse(tfVal)
+    if ([va, ca, vb, cb, ti, tf].some(x => !ok(x))) { setError('Enter all six values.'); return }
+    if (va <= 0 || ca <= 0 || vb <= 0 || cb <= 0)   { setError('Volumes and concentrations must be positive.'); return }
+    const dT      = tf - ti
+    const mTotal  = va + vb
+    const q_soln  = mTotal * 4.184 * dT
+    const q_rxn   = -q_soln
+    const n_water = Math.min(
+      (va / 1000) * ca / pair.acidRatio,
+      (vb / 1000) * cb,
+    )
+    const dH = heatOfNeutralization(va, ca, vb, cb, pair.acidRatio, dT)
+    const s: string[] = [
+      `ΔT = ${fmtNum(tf)} − ${fmtNum(ti)} = ${fmtNum(dT)} °C`,
+      `m_solution = ${fmtNum(va)} + ${fmtNum(vb)} = ${fmtNum(mTotal)} g  (assumes 1 g/mL)`,
+      `q_solution = m × c × ΔT = ${fmtNum(mTotal)} × 4.184 × ${fmtNum(dT)} = ${fmtNum(q_soln)} J`,
+      `q_rxn = −q_solution = ${fmtNum(q_rxn)} J`,
+      `n(H₂O formed) = min(n_acid / ${pair.acidRatio}, n_base) = ${fmtNum(n_water)} mol`,
+      `ΔH_neut = q_rxn / n / 1000 = ${fmtNum(dH)} kJ/mol`,
+      dH < 0 ? `Negative ΔH → exothermic (strong acid + strong base ≈ −56 kJ/mol)` : `Positive ΔH → endothermic`,
+    ]
+    setSteps(s)
+    setResult(fmtNum(dH))
+    if (answerVal) {
+      const userVal = parse(answerVal)
+      setVerified(Math.abs(userVal - dH) / Math.abs(dH) <= 0.02 ? 'correct' : 'incorrect')
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-5 max-w-lg">
+      <InfoBox>
+        ΔH_neut = q_rxn / n(H₂O) · q_rxn = −m_soln × c × ΔT · c_soln = 4.184 J/(g·°C)
+      </InfoBox>
+
+      <div className="flex flex-col gap-1.5">
+        <label className="font-sans text-sm font-medium text-primary">Acid/base pair</label>
+        <select value={pairIdx} onChange={e => { setPairIdx(Number(e.target.value)); reset() }}
+          className="bg-raised border border-border rounded-sm px-3 py-2 font-mono text-sm text-primary
+                     focus:outline-none focus:border-muted transition-colors">
+          {ACID_BASE_PAIRS.map((p, i) => <option key={p.label} value={i}>{p.label}</option>)}
+        </select>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <NumberField label="Volume of acid" value={vAcid}
+          onChange={v => { setVAcid(sanitize(v)); reset() }} placeholder="mL"
+          unit={<span className="font-mono text-sm text-secondary px-2">mL</span>} />
+        <NumberField label="Conc. of acid" value={cAcid}
+          onChange={v => { setCacid(sanitize(v)); reset() }} placeholder="M"
+          unit={<span className="font-mono text-sm text-secondary px-2">M</span>} />
+        <NumberField label="Volume of base" value={vBase}
+          onChange={v => { setVBase(sanitize(v)); reset() }} placeholder="mL"
+          unit={<span className="font-mono text-sm text-secondary px-2">mL</span>} />
+        <NumberField label="Conc. of base" value={cBase}
+          onChange={v => { setCbase(sanitize(v)); reset() }} placeholder="M"
+          unit={<span className="font-mono text-sm text-secondary px-2">M</span>} />
+        <NumberField label="T initial" value={tiVal}
+          onChange={v => { setTiVal(sanitize(v)); reset() }} placeholder="°C"
+          unit={<span className="font-mono text-sm text-secondary px-2">°C</span>} />
+        <NumberField label="T final" value={tfVal}
+          onChange={v => { setTfVal(sanitize(v)); reset() }} placeholder="°C"
+          unit={<span className="font-mono text-sm text-secondary px-2">°C</span>} />
+      </div>
+
+      <NumberField label="Your ΔH_neut — optional, enter to check" value={answerVal}
+        onChange={v => { setAnswerVal(sanitize(v)); setVerified(null) }} placeholder="kJ/mol"
+        unit={<span className="font-mono text-sm text-secondary px-2">kJ/mol</span>} />
+
+      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      <div className="flex items-stretch gap-2">
+        <CalcButton onClick={calculate} />
+        <StepsTrigger {...stepsState} />
+        {(vAcid || cAcid || vBase || cBase || tiVal || tfVal) && (
+          <button onClick={handleClear}
+            className="px-4 py-2 rounded-sm font-sans text-sm border border-border text-secondary hover:text-primary transition-colors">
+            Clear
+          </button>
+        )}
+      </div>
+      <StepsContent {...stepsState} />
+      {result && <ResultDisplay label="ΔH_neut (heat of neutralization)" value={result} unit="kJ/mol" verified={verified} />}
+    </div>
+  )
+}
+
+// ── ΔU → ΔH conversion ───────────────────────────────────────────────────────
+
+function generateDeltaUExample() {
+  const deltaU = roundTo(randBetween(-600, -100), 1)
+  const deltaN = Math.round(randBetween(-3, 3))
+  const T      = 298.15
+  const dH     = deltaUtoDeltaH(deltaU, deltaN, T)
+  return {
+    scenario: `For a reaction with ΔU = ${deltaU} kJ, Δn_gas = ${deltaN > 0 ? '+' : ''}${deltaN}, T = ${T} K. Find ΔH.`,
+    steps: [
+      `ΔH = ΔU + Δn × R × T`,
+      `R = 8.314 × 10⁻³ kJ/(mol·K)`,
+      `Δn × R × T = ${deltaN} × 0.008314 × ${T} = ${sig(deltaN * 0.008314 * T, 4)} kJ`,
+      `ΔH = ${deltaU} + (${sig(deltaN * 0.008314 * T, 4)}) = ${sig(dH, 5)} kJ`,
+    ],
+    result: `ΔH = ${sig(dH, 4)} kJ`,
+  }
+}
+
+function DeltaUToDeltaHMode() {
+  const [duVal,   setDuVal]   = useState('')
+  const [dnVal,   setDnVal]   = useState('')
+  const [tVal,    setTVal]    = useState('298.15')
+  const [steps,   setSteps]   = useState<string[]>([])
+  const [result,  setResult]  = useState<string | null>(null)
+  const [error,   setError]   = useState<string | null>(null)
+
+  const stepsState = useStepsPanelState(steps, generateDeltaUExample)
+
+  function reset() { setSteps([]); setResult(null); setError(null) }
+  function handleClear() { setDuVal(''); setDnVal(''); setTVal('298.15'); reset() }
+
+  function calculate() {
+    reset()
+    const du = parse(duVal), dn = parse(dnVal), T = parse(tVal)
+    if (!ok(du) || !ok(dn) || !ok(T)) { setError('Enter all three values.'); return }
+    if (T <= 0)   { setError('Temperature must be positive (K).'); return }
+    const dH    = deltaUtoDeltaH(du, dn, T)
+    const correction = dn * 0.008314 * T
+    const s: string[] = [
+      `ΔH = ΔU + Δn_gas × R × T`,
+      `R = 8.314 × 10⁻³ kJ/(mol·K)`,
+      `Δn_gas × R × T = ${fmtNum(dn)} × 0.008314 kJ/(mol·K) × ${fmtNum(T)} K = ${fmtNum(correction)} kJ`,
+      `ΔH = ${fmtNum(du)} + (${fmtNum(correction)}) = ${fmtNum(dH)} kJ`,
+      Math.abs(correction) < 0.5 ? `Correction is small (<1 kJ) — ΔH ≈ ΔU for this reaction` : '',
+    ].filter(Boolean)
+    setSteps(s)
+    setResult(fmtNum(dH))
+  }
+
+  return (
+    <div className="flex flex-col gap-5 max-w-lg">
+      <InfoBox>
+        ΔH = ΔU + Δn_gas × R × T · Δn_gas = (moles gas products) − (moles gas reactants) · R = 8.314×10⁻³ kJ/(mol·K)
+      </InfoBox>
+
+      <NumberField label="ΔU (internal energy change)" value={duVal}
+        onChange={v => { setDuVal(sanitize(v)); reset() }} placeholder="kJ"
+        unit={<span className="font-mono text-sm text-secondary px-2">kJ</span>} />
+
+      <NumberField label="Δn_gas (moles gas products − reactants)" value={dnVal}
+        onChange={v => { setDnVal(sanitize(v)); reset() }} placeholder="integer, e.g. −3"
+        unit={<span className="font-mono text-sm text-secondary px-2">mol</span>} />
+
+      <NumberField label="Temperature (T)" value={tVal}
+        onChange={v => { setTVal(sanitize(v)); reset() }} placeholder="K"
+        unit={<span className="font-mono text-sm text-secondary px-2">K</span>} />
+
+      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      <div className="flex items-stretch gap-2">
+        <CalcButton onClick={calculate} />
+        <StepsTrigger {...stepsState} />
+        {(duVal || dnVal) && (
+          <button onClick={handleClear}
+            className="px-4 py-2 rounded-sm font-sans text-sm border border-border text-secondary hover:text-primary transition-colors">
+            Clear
+          </button>
+        )}
+      </div>
+      <StepsContent {...stepsState} />
+      {result && <ResultDisplay label="ΔH (enthalpy change)" value={result} unit="kJ" />}
+      <p className="font-mono text-xs text-secondary">
+        ΔH ≈ ΔU when Δn_gas = 0 · bomb calorimetry measures ΔU; constant-P measures ΔH
+      </p>
+    </div>
+  )
+}
+
 // ── Root component ────────────────────────────────────────────────────────────
 
 export default function CalorimetryTool() {
@@ -1032,6 +1399,9 @@ export default function CalorimetryTool() {
           {mode === 'cdt'    && <CDeltaT />}
           {mode === 'coffee' && <CoffeeCup />}
           {mode === 'bomb'   && <BombCalorimeter />}
+          {mode === 'soln'   && <HeatOfSolutionMode />}
+          {mode === 'neut'   && <HeatOfNeutralizationMode />}
+          {mode === 'du-dh'  && <DeltaUToDeltaHMode />}
         </motion.div>
       </AnimatePresence>
       <p className="font-mono text-xs text-secondary">q = mcΔT · q_system = −q_surroundings · c_water = 4.184 J/(g·°C)</p>

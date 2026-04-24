@@ -51,6 +51,7 @@ const SEARCH_INDEX: SearchItem[] = [
   { label: 'Electrolyte',       formula: '⚡',         section: 'Reactions / Redox',  path: '/redox?tab=electrolyte',               keywords: 'electrolyte strong weak nonelectrolyte' },
   { label: 'Redox',             formula: 'e⁻',        section: 'Reactions / Redox',  path: '/redox?tab=redox-practice',            keywords: 'redox oxidation reduction electron transfer oxidation state' },
   { label: 'E°cell / Nernst',   formula: 'E°',        section: 'Reactions / Redox',  path: '/redox?tab=ecell',                     keywords: 'cell potential Nernst equation reduction potential electrochemistry' },
+  { label: 'Titration',         formula: 'MₐVₐ=MᵦVᵦ', section: 'Reactions / Redox', path: '/redox?tab=titration',                  keywords: 'acid base redox titration neutralization equivalence point molarity volume' },
   // Solubility
   { label: 'Solubility',        formula: 'S/I',       section: 'Reference',          path: '/reference?tab=solubility',            keywords: 'solubility rules soluble insoluble precipitate' },
   // Stoichiometry
@@ -60,6 +61,8 @@ const SEARCH_INDEX: SearchItem[] = [
   { label: 'Percent Yield',     formula: '%Y',        section: 'Stoichiometry',      path: '/stoichiometry?tab=percent',           keywords: 'percent yield actual theoretical' },
   { label: 'Solution Stoich',   formula: 'M·V',       section: 'Stoichiometry',      path: '/stoichiometry?tab=solution',          keywords: 'solution stoichiometry molarity volume' },
   { label: 'Gas Stoich',        formula: 'PV',        section: 'Stoichiometry',      path: '/stoichiometry?tab=gas-stoich-practice',keywords: 'gas stoichiometry PV=nRT' },
+  { label: 'Adv Percent Yield', formula: 'TY→%',      section: 'Stoichiometry',      path: '/stoichiometry?tab=adv-percent',        keywords: 'advanced percent yield theoretical actual limiting' },
+  { label: 'Chained Yield',     formula: 'm→%Y',      section: 'Stoichiometry',      path: '/stoichiometry?tab=chained-yield',      keywords: 'chained yield industrial mass to percent yield step by step' },
   { label: 'Balance',           formula: '_□_',       section: 'Stoichiometry',      path: '/stoichiometry?tab=balance-practice',  keywords: 'balance equations balancing coefficients' },
   // Structures
   { label: 'Lewis Structures',  formula: '⌬',         section: 'Structures',         path: '/structures?tab=lewis',                keywords: 'lewis structure dot diagram electron pairs bonds' },
@@ -504,20 +507,27 @@ type StoichItem = { tab: string; label: string; formula: string }
 
 const STOICH_GROUPS: { label: string; items: StoichItem[] }[] = [
   {
+    label: 'Basic',
+    items: [
+      { tab: 'percent',         label: 'Percent Yield', formula: '%Y'  },
+      { tab: 'balance-practice', label: 'Balance',      formula: '_□_' },
+    ],
+  },
+  {
     label: 'Stoichiometry',
     items: [
       { tab: 'stoich',      label: 'Stoichiometry',     formula: 'g↔mol' },
       { tab: 'limiting',    label: 'Limiting Reagent',  formula: 'LR'    },
       { tab: 'theoretical', label: 'Theoretical Yield', formula: 'T.Y.'  },
-      { tab: 'percent',     label: 'Percent Yield',     formula: '%Y'    },
     ],
   },
   {
     label: 'Advanced',
     items: [
-      { tab: 'solution',            label: 'Solution Stoich', formula: 'M·V' },
-      { tab: 'gas-stoich-practice', label: 'Gas Stoich',      formula: 'PV'  },
-      { tab: 'balance-practice',    label: 'Balance',         formula: '_□_' },
+      { tab: 'adv-percent',         label: 'Percent Yield',   formula: 'TY→%' },
+      { tab: 'chained-yield',       label: 'Chained Yield',   formula: 'm→%Y' },
+      { tab: 'solution',            label: 'Solution Stoich', formula: 'M·V'  },
+      { tab: 'gas-stoich-practice', label: 'Gas Stoich',      formula: 'PV'   },
     ],
   },
 ]
@@ -540,7 +550,7 @@ function StoichGroupedItems({ onNavigate }: { onNavigate: () => void }) {
 
   const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
     const active = STOICH_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
-    return new Set(active ? [active.label] : ['Stoichiometry'])
+    return new Set(active ? [active.label] : ['Basic'])
   })
 
   function toggleGroup(label: string) {

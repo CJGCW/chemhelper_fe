@@ -51,6 +51,68 @@ export function calcMixtureFinalTemp(
   return (m1 * c1 * T1 + m2 * c2 * T2) / (m1 * c1 + m2 * c2)
 }
 
+// ── Heat of solution: ΔH_soln per mole of solute ─────────────────────────────
+// Returns kJ/mol (positive = endothermic, negative = exothermic).
+
+export function heatOfSolution(
+  massSolute:     number,   // g
+  molarMassSolute: number,  // g/mol
+  massWater:      number,   // g (assume dilute; c_soln ≈ c_water = 4.184 J/g·°C)
+  deltaT:         number,   // T_final − T_initial (°C or K)
+): number {
+  const q_water = massWater * 4.184 * deltaT   // J absorbed by water
+  const q_rxn   = -q_water                     // J released by reaction
+  const n       = massSolute / molarMassSolute  // mol
+  return q_rxn / n / 1000                       // kJ/mol
+}
+
+// ── Heat of neutralization: ΔH_neut per mole of water formed ─────────────────
+// Returns kJ/mol (negative for exothermic neutralization).
+
+export function heatOfNeutralization(
+  volumeAcidML:        number,   // mL
+  molarityAcid:        number,   // M
+  volumeBaseML:        number,   // mL
+  molarityBase:        number,   // M  (pass molarityBase × n_OH for polyprotic bases)
+  moleRatioAcidToWater: number,  // 1 for HCl, 0.5 for H₂SO₄ (1 mol H₂SO₄ → 2 mol H₂O)
+  deltaT:              number,   // T_final − T_initial (°C or K)
+): number {
+  const massSolution = volumeAcidML + volumeBaseML   // g (1 g/mL)
+  const q_soln = massSolution * 4.184 * deltaT       // J
+  const q_rxn  = -q_soln
+  const n_water = Math.min(
+    (volumeAcidML / 1000) * molarityAcid / moleRatioAcidToWater,
+    (volumeBaseML / 1000) * molarityBase,
+  )
+  return q_rxn / n_water / 1000   // kJ/mol
+}
+
+// ── ΔH = ΔU + Δn·RT (gas-phase correction) ───────────────────────────────────
+// deltaU in kJ, T in K; returns ΔH in kJ.
+
+export function deltaUtoDeltaH(
+  deltaU: number,   // kJ
+  deltaN: number,   // change in moles of gas (products − reactants)
+  T:      number,   // K
+): number {
+  const R = 0.008314   // kJ/(mol·K)
+  return deltaU + deltaN * R * T
+}
+
+// ── Expansion work w = −PΔV (constant pressure) ──────────────────────────────
+// Inputs: pressure in atm, volumes in L. Returns w in J.
+// Negative w → system expands (does work on surroundings).
+
+export function expansionWork(
+  pressureAtm: number,   // atm
+  vInitialL:   number,   // L
+  vFinalL:     number,   // L
+): number {
+  const P_Pa   = pressureAtm * 101325
+  const dV_m3  = (vFinalL - vInitialL) / 1000
+  return -P_Pa * dV_m3   // J
+}
+
 // ── Standard enthalpy of reaction from ΔHf° ──────────────────────────────────
 
 export function calcEnthalpyOfReaction(

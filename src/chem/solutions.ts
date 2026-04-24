@@ -114,3 +114,102 @@ export function calcVolToVol(
   ]
   return { steps, answer: volBML }
 }
+
+// ── Titration arithmetic ──────────────────────────────────────────────────────
+
+export interface TitrationSolution {
+  answer:     number
+  answerUnit: 'mL' | 'M'
+  steps:      string[]
+}
+
+/**
+ * Solve acid-base titration for unknown volume or molarity.
+ * acidPerBase = moles acid / moles base from balanced equation
+ *             = base.equivalents / acid.equivalents
+ * (e.g. HCl+NaOH → 1, H₂SO₄+2NaOH → 0.5, 2HCl+Ba(OH)₂ → 2)
+ */
+export function solveAcidBaseTitration(
+  acidPerBase:  number,
+  equation:     string,
+  acidLabel:    string,
+  baseLabel:    string,
+  given:        { side: 'acid' | 'base'; volumeML: number; molarity: number },
+  solvingFor:   { side: 'acid' | 'base'; unknown: 'volume' | 'molarity'; known: number },
+): TitrationSolution {
+  const steps: string[] = []
+  steps.push(`Balanced: ${equation}`)
+
+  const nGiven     = given.molarity * (given.volumeML / 1000)
+  const givenLabel = given.side === 'acid' ? acidLabel : baseLabel
+  steps.push(`n(${givenLabel}) = ${sig(given.molarity, 3)} M × ${sig(given.volumeML / 1000, 4)} L = ${sig(nGiven, 4)} mol`)
+
+  const solvingLabel = solvingFor.side === 'acid' ? acidLabel : baseLabel
+  let nSolving: number
+  if (given.side === 'acid' && solvingFor.side === 'base') {
+    nSolving = nGiven / acidPerBase
+    steps.push(`Mole ratio: n(${solvingLabel}) = ${sig(nGiven, 4)} mol ÷ ${sig(acidPerBase, 4)} = ${sig(nSolving, 4)} mol`)
+  } else if (given.side === 'base' && solvingFor.side === 'acid') {
+    nSolving = nGiven * acidPerBase
+    steps.push(`Mole ratio: n(${solvingLabel}) = ${sig(nGiven, 4)} mol × ${sig(acidPerBase, 4)} = ${sig(nSolving, 4)} mol`)
+  } else {
+    nSolving = nGiven
+  }
+
+  let answer: number
+  const answerUnit: 'mL' | 'M' = solvingFor.unknown === 'volume' ? 'mL' : 'M'
+  if (solvingFor.unknown === 'volume') {
+    const vL = nSolving / solvingFor.known
+    answer = vL * 1000
+    steps.push(`V(${solvingLabel}) = ${sig(nSolving, 4)} mol ÷ ${sig(solvingFor.known, 3)} M = ${sig(vL, 4)} L = ${sig(answer, 4)} mL`)
+  } else {
+    const vL = solvingFor.known / 1000
+    answer = nSolving / vL
+    steps.push(`[${solvingLabel}] = ${sig(nSolving, 4)} mol ÷ ${sig(vL, 4)} L = ${sig(answer, 4)} M`)
+  }
+
+  return { answer, answerUnit, steps }
+}
+
+/**
+ * Solve redox titration using electron balance.
+ * n_ox × oxidizerElectrons = n_red × reducerElectrons
+ */
+export function solveRedoxTitration(
+  oxidizerElectrons: number,
+  reducerElectrons:  number,
+  equation:          string,
+  oxidizerLabel:     string,
+  reducerLabel:      string,
+  given:      { side: 'oxidizer' | 'reducer'; volumeML: number; molarity: number },
+  solvingFor: { side: 'oxidizer' | 'reducer'; unknown: 'volume' | 'molarity'; known: number },
+): TitrationSolution {
+  const steps: string[] = []
+  steps.push(`Balanced: ${equation}`)
+
+  const nGiven     = given.molarity * (given.volumeML / 1000)
+  const givenLabel = given.side === 'oxidizer' ? oxidizerLabel : reducerLabel
+  steps.push(`n(${givenLabel}) = ${sig(given.molarity, 3)} M × ${sig(given.volumeML / 1000, 4)} L = ${sig(nGiven, 4)} mol`)
+
+  const eGiven      = given.side    === 'oxidizer' ? oxidizerElectrons : reducerElectrons
+  const eSolving    = solvingFor.side === 'oxidizer' ? oxidizerElectrons : reducerElectrons
+  const solvingLabel = solvingFor.side === 'oxidizer' ? oxidizerLabel : reducerLabel
+  steps.push(`Electron balance: ${eGiven} e⁻/mol ${givenLabel}, ${eSolving} e⁻/mol ${solvingLabel}`)
+
+  const nSolving = nGiven * (eGiven / eSolving)
+  steps.push(`n(${solvingLabel}) = ${sig(nGiven, 4)} mol × (${eGiven}/${eSolving}) = ${sig(nSolving, 4)} mol`)
+
+  let answer: number
+  const answerUnit: 'mL' | 'M' = solvingFor.unknown === 'volume' ? 'mL' : 'M'
+  if (solvingFor.unknown === 'volume') {
+    const vL = nSolving / solvingFor.known
+    answer = vL * 1000
+    steps.push(`V(${solvingLabel}) = ${sig(nSolving, 4)} mol ÷ ${sig(solvingFor.known, 3)} M = ${sig(vL, 4)} L = ${sig(answer, 4)} mL`)
+  } else {
+    const vL = solvingFor.known / 1000
+    answer = nSolving / vL
+    steps.push(`[${solvingLabel}] = ${sig(nSolving, 4)} mol ÷ ${sig(vL, 4)} L = ${sig(answer, 4)} M`)
+  }
+
+  return { answer, answerUnit, steps }
+}

@@ -318,3 +318,51 @@ After the recent cleanup, ReferencePage has two live tabs: `solubility` and `nam
 - Spring animation for pill transitions: `{ type: 'spring', stiffness: 400, damping: 32 }`.
 - `layoutId` strings must be unique across the whole page to avoid framer-motion conflicts.
 - `print:hidden` on every nav/pill row — no exceptions.
+
+---
+
+## Chained Problem Pattern
+
+For multi-step problems where the student must work through 2–5 sub-steps
+(industrial yield chains, gravimetric analysis, Born-Haber cycles, successive
+IE identification, etc.), use the `ChainedProblem` component from
+`src/components/shared/ChainedProblem.tsx`.
+
+The pattern:
+
+1. A pure `chem/` function builds a typed problem object containing `scenario` +
+   `steps[]`. Each step has `prompt`, `expectedAnswer`, `answerUnit`, and optional
+   `hint`/`explanation`.
+2. The tool component renders `<ChainedProblem scenario={...} steps={steps} />`.
+3. The student works through sub-steps one at a time. Each is verified independently.
+   Later steps unlock as earlier ones complete (correct or revealed).
+
+### When to use it
+
+- The problem naturally decomposes into 3–5 sub-steps with intermediate numeric
+  answers (not just reasoning).
+- Each sub-step has a clear right/wrong verification.
+- The pedagogy is improved by forcing the student to think one step at a time
+  rather than handing them a black-box result.
+
+### When NOT to use it
+
+- Single-step problems — use the heavy calculator pattern.
+- Problems where "the steps" are all the same operation on different inputs
+  (e.g., balancing 5 equations) — use a practice-deck pattern instead.
+- Problems where sub-steps don't have verifiable numeric answers — keep those
+  as reference content.
+
+### Reference implementation
+
+`src/chem/chainedYield.ts` + `src/components/stoichiometry/ChainedYieldTool.tsx`
+is the canonical example: mass of reactant → moles → moles (ratio) → theoretical
+mass → percent yield. Follow this for new chained-problem tools.
+
+### chem/ type-only import exception
+
+Chained problem builder functions in `src/chem/` may `import type` the
+`ChainedStep` type from `src/components/shared/ChainedProblem.tsx`. This is
+the only permitted cross-layer import from `chem/` to `components/`, and only
+for types (which erase at compile time). Runtime imports from `components/`
+into `chem/` remain forbidden.

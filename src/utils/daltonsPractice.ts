@@ -4,6 +4,7 @@ import {
   calcDaltonsTotal, calcDaltonsPartial,
   calcDaltonsFromMoleFraction, calcDaltonsMoleFractionFromMoles, calcDaltonsMoleFraction,
 } from '../chem/gas'
+import { waterVaporPressure } from '../data/waterVaporPressure'
 
 function pick<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]
@@ -26,12 +27,40 @@ export interface DaltonsProblem {
   steps: string[]
 }
 
-type ProblemType = 'find-total' | 'find-partial' | 'find-from-moles' | 'find-mole-fraction'
+export type DaltonsProblemType = 'find-total' | 'find-partial' | 'find-from-moles' | 'find-mole-fraction' | 'gas-over-water'
 
-export function generateDaltonsProblem(): DaltonsProblem {
-  const type = pick<ProblemType>(['find-total', 'find-partial', 'find-from-moles', 'find-mole-fraction'])
+// Common lab gases for gas-over-water problems (not H₂O itself)
+const COLLECTED_GASES = ['O₂', 'H₂', 'CO₂', 'N₂', 'Cl₂', 'CH₄', 'NH₃'] as const
+// Nice lab temperatures (°C) — all exactly in the water vapor pressure table
+const LAB_TEMPS = [15, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30] as const
 
-  if (type === 'find-total') {
+function generateGasOverWaterProblem(): DaltonsProblem {
+  const gas  = pick(COLLECTED_GASES)
+  const T    = pick(LAB_TEMPS)
+  const pH2O = waterVaporPressure(T)
+  // Nice total pressure near 760 mmHg
+  const pGas  = parseFloat((rand(700, 780, 1)).toFixed(1))
+  const total = parseFloat((pGas + pH2O).toPrecision(5))
+
+  const question =
+    `A sample of ${gas} is collected over water at ${T} °C. ` +
+    `The total pressure in the collection vessel is ${total} mmHg. ` +
+    `Calculate the partial pressure of dry ${gas}.`
+  const steps = [
+    `At ${T} °C, vapor pressure of water = ${pH2O} mmHg  (Chang Table 5.3)`,
+    `P_total = P(${gas}) + P(H₂O)`,
+    `P(${gas}) = P_total − P(H₂O)`,
+    `P(${gas}) = ${total} − ${pH2O} = ${sig(pGas)} mmHg`,
+  ]
+  return { question, answer: pGas, unit: 'mmHg', steps }
+}
+
+export function generateDaltonsProblem(type?: DaltonsProblemType): DaltonsProblem {
+  const resolvedType = type ?? pick<DaltonsProblemType>(['find-total', 'find-partial', 'find-from-moles', 'find-mole-fraction', 'gas-over-water'])
+  if (resolvedType === 'gas-over-water') return generateGasOverWaterProblem()
+  const effectiveType = resolvedType
+
+  if (effectiveType === 'find-total') {
     const n = pick([2, 3] as const)
     const names = [...GAS_NAMES].sort(() => Math.random() - 0.5).slice(0, n)
     const pressures = names.map(() => rand(0.05, 0.80, 3))
@@ -48,7 +77,7 @@ export function generateDaltonsProblem(): DaltonsProblem {
     return { question, answer: total, unit: 'atm', steps }
   }
 
-  if (type === 'find-partial') {
+  if (effectiveType === 'find-partial') {
     const names = [...GAS_NAMES].sort(() => Math.random() - 0.5).slice(0, 2)
     const p1 = rand(0.20, 0.60, 3)
     const total = rand(p1 + 0.20, p1 + 1.00, 3)
@@ -64,7 +93,7 @@ export function generateDaltonsProblem(): DaltonsProblem {
     return { question, answer: p2, unit: 'atm', steps }
   }
 
-  if (type === 'find-from-moles') {
+  if (effectiveType === 'find-from-moles') {
     const names = [...GAS_NAMES].sort(() => Math.random() - 0.5).slice(0, 2)
     const n1 = rand(0.50, 3.00, 2)
     const n2 = rand(0.50, 3.00, 2)

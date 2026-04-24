@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { pick, randBetween, roundTo } from '../shared/WorkedExample'
 import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
 import { SigFigTrigger, SigFigContent } from '../shared/SigFigPanel'
@@ -10,14 +11,14 @@ import { buildSigFigBreakdown, countSigFigs, formatSigFigs, lowestSigFigs } from
 import type { SigFigBreakdown } from '../../utils/sigfigs'
 import { R, P_UNITS, type PUnit, type TUnit, toK, fromK, toAtm, fromAtm } from '../../utils/idealGas'
 
-// ── Example generator ─────────────────────────────────────────────────────────
+// ── Example generators ────────────────────────────────────────────────────────
 
 const DENSITY_GAS_DATA = [
   { name: 'CO₂', M: 44.01 }, { name: 'O₂', M: 32.00 }, { name: 'N₂', M: 28.02 },
   { name: 'CH₄', M: 16.04 }, { name: 'Cl₂', M: 70.90 }, { name: 'SO₂', M: 64.07 },
 ]
 
-function generateGasDensityExample() {
+function generateDensityFromMExample() {
   const gas = pick(DENSITY_GAS_DATA)
   const T   = roundTo(randBetween(250, 400), 0)
   const P   = roundTo(randBetween(0.5, 2.0), 2)
@@ -31,6 +32,24 @@ function generateGasDensityExample() {
       `ρ = ${sf4(rho)} g/L`,
     ],
     result: `ρ = ${sf4(rho)} g/L`,
+  }
+}
+
+function generateMFromDensityExample() {
+  const gas = pick(DENSITY_GAS_DATA)
+  const T   = roundTo(randBetween(250, 400), 0)
+  const P   = roundTo(randBetween(0.5, 2.0), 2)
+  const sf4 = (v: number) => parseFloat(v.toPrecision(4)).toString()
+  const rho = parseFloat(((gas.M * P) / (R * T)).toPrecision(4))
+  const M   = (rho * R * T) / P
+  return {
+    scenario: `An unknown gas has a density of ${sf4(rho)} g/L at ${T} K and ${P} atm. Find its molar mass.`,
+    steps: [
+      `M = ρRT / P`,
+      `M = (${sf4(rho)} g/L × ${R} L·atm/(mol·K) × ${T} K) / ${P} atm`,
+      `M = ${sf4(M)} g/mol`,
+    ],
+    result: `M = ${sf4(M)} g/mol  (likely ${gas.name}, M = ${gas.M} g/mol)`,
   }
 }
 
@@ -60,11 +79,13 @@ function UnitPill({
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
+type ToolMode = 'density-from-M' | 'M-from-density'
 type SolveFor = 'M' | 'rho' | 'T' | 'P'
 
 interface Result { value: string; unit: string; label: string }
 
 export default function GasDensityTool() {
+  const [toolMode, setToolMode] = useState<ToolMode>('density-from-M')
   const [rho, setRho]     = useState('')
   const [M, setM]         = useState('')
   const [T, setT]         = useState('')
@@ -79,26 +100,41 @@ export default function GasDensityTool() {
   const [sfOpen,    setSfOpen]    = useState(false)
   const [error,     setError]     = useState('')
 
-  const stepsState = useStepsPanelState(steps, generateGasDensityExample)
+  const stepsState = useStepsPanelState(
+    steps,
+    () => toolMode === 'M-from-density' ? generateMFromDensityExample() : generateDensityFromMExample(),
+  )
 
-  const blanks = [rho, M, T, P].filter(v => !hasValue(v)).length
-  const isVerify = blanks === 0
+  // In M-from-density mode M is not shown so always treat it as blank
+  const blanks = (toolMode === 'M-from-density'
+    ? [rho, T, P]
+    : [rho, M, T, P]
+  ).filter(v => !hasValue(v)).length
+
+  const isVerify = toolMode === 'density-from-M' && blanks === 0
 
   function reset() {
     setRho(''); setM(''); setT(''); setP('')
     setResult(null); setSteps([]); setBreakdown(null); setVerified(null); setError('')
   }
 
+  function switchMode(m: ToolMode) { setToolMode(m); reset() }
+
   function handleTool() {
     setError(''); setResult(null); setSteps([]); setBreakdown(null); setVerified(null)
 
-    if (blanks > 1) {
-      setError(blanks === 4 ? 'Enter at least three values.' : 'Fill in exactly three fields.')
-      return
+    if (toolMode === 'M-from-density') {
+      if (blanks > 0) { setError('Enter density, temperature, and pressure.'); return }
+    } else {
+      if (blanks > 1) {
+        setError(blanks === 4 ? 'Enter at least three values.' : 'Fill in exactly three fields.')
+        return
+      }
     }
 
     const pRho = hasValue(rho) ? parseFloat(rho) : null
-    const pM   = hasValue(M)   ? parseFloat(M)   : null
+    // In M-from-density mode always solve for M (treat as blank)
+    const pM   = toolMode === 'M-from-density' ? null : (hasValue(M) ? parseFloat(M) : null)
     const pT   = hasValue(T)   ? toK(parseFloat(T), tUnit) : null
     const pP   = hasValue(P)   ? parseFloat(P)   : null
 
@@ -192,9 +228,33 @@ export default function GasDensityTool() {
   return (
     <div className="flex flex-col gap-5 max-w-lg">
 
+      {/* Mode toggle */}
+      <div className="flex items-center gap-1 p-1 rounded-full self-start"
+        style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
+        {(['density-from-M', 'M-from-density'] as ToolMode[]).map(m => (
+          <button key={m} onClick={() => switchMode(m)}
+            className="relative px-4 py-1.5 rounded-full font-sans text-sm font-medium transition-colors"
+            style={{ color: toolMode === m ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)' }}>
+            {toolMode === m && (
+              <motion.div layoutId="gas-density-tool-mode" className="absolute inset-0 rounded-full"
+                style={{
+                  background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                }}
+                transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
+            )}
+            <span className="relative z-10">
+              {m === 'density-from-M' ? 'ρ from M' : 'M from ρ'}
+            </span>
+          </button>
+        ))}
+      </div>
+
       <p className="font-sans text-sm text-secondary">
-        Fill in three fields and leave one blank — it will be solved using{' '}
-        <span className="font-mono">ρ = MP / RT</span>.
+        {toolMode === 'M-from-density'
+          ? <>Enter density, temperature, and pressure to find the <span className="font-mono">molar mass</span> of an unknown gas: M = ρRT / P.</>
+          : <>Fill in three fields and leave one blank — it will be solved using <span className="font-mono">ρ = MP / RT</span>.</>
+        }
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -202,28 +262,30 @@ export default function GasDensityTool() {
           label="ρ — Density"
           value={rho}
           onChange={v => { setRho(v); setResult(null); setVerified(null); setBreakdown(null) }}
-          placeholder="leave blank to solve"
+          placeholder={toolMode === 'M-from-density' ? 'g/L' : 'leave blank to solve'}
           unit={<span className="font-mono text-sm text-secondary px-2">g/L</span>}
         />
-        <NumberField
-          label="M — Molar mass"
-          value={M}
-          onChange={v => { setM(v); setResult(null); setVerified(null); setBreakdown(null) }}
-          placeholder="leave blank to solve"
-          unit={<span className="font-mono text-sm text-secondary px-2">g/mol</span>}
-        />
+        {toolMode === 'density-from-M' && (
+          <NumberField
+            label="M — Molar mass"
+            value={M}
+            onChange={v => { setM(v); setResult(null); setVerified(null); setBreakdown(null) }}
+            placeholder="leave blank to solve"
+            unit={<span className="font-mono text-sm text-secondary px-2">g/mol</span>}
+          />
+        )}
         <NumberField
           label="T — Temperature"
           value={T}
           onChange={v => { setT(v); setResult(null); setVerified(null); setBreakdown(null) }}
-          placeholder="leave blank to solve"
+          placeholder={toolMode === 'M-from-density' ? 'e.g. 298.15' : 'leave blank to solve'}
           unit={<UnitPill options={['K', 'C']} active={tUnit} onChange={v => { setTUnit(v as TUnit); setResult(null) }} />}
         />
         <NumberField
           label="P — Pressure"
           value={P}
           onChange={v => { setP(v); setResult(null); setVerified(null); setBreakdown(null) }}
-          placeholder="leave blank to solve"
+          placeholder={toolMode === 'M-from-density' ? 'e.g. 1.000' : 'leave blank to solve'}
           unit={<UnitPill options={P_UNITS} active={pUnit} onChange={v => { setPUnit(v as PUnit); setResult(null) }} />}
         />
       </div>

@@ -1,14 +1,16 @@
 import { useState, useId } from 'react'
 import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
 import ResultDisplay from '../shared/ResultDisplay'
+import NumberField from '../shared/NumberField'
 import { pick, randBetween, roundTo, sig } from '../shared/WorkedExample'
 import { P_UNITS, TO_ATM, type PUnit } from '../../utils/idealGas'
 import { formatSigFigs, lowestSigFigs, countSigFigs } from '../../utils/sigfigs'
 import { sanitize, hasValue, type VerifyState } from '../../utils/calcHelpers'
+import { waterVaporPressure, WATER_VAPOR_PRESSURE_MMHG } from '../../data/waterVaporPressure'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type Mode = 'partial' | 'fraction'
+type Mode = 'partial' | 'fraction' | 'gas-over-water'
 type FractionInput = 'chi' | 'moles'
 
 interface GasRow {
@@ -28,6 +30,23 @@ interface PartialResult {
 const DALTON_GAS_SETS = [
   ['N₂', 'O₂', 'Ar'], ['He', 'Ne', 'Ar'], ['H₂', 'N₂', 'CO₂'], ['CH₄', 'CO₂', 'N₂'],
 ]
+
+const GOW_TEMPS = Object.keys(WATER_VAPOR_PRESSURE_MMHG).map(Number).filter(t => t >= 15 && t <= 35)
+
+function generateGasOverWaterExample() {
+  const T    = pick(GOW_TEMPS)
+  const pH2O = waterVaporPressure(T)
+  const pGas = roundTo(randBetween(700, 780), 0)
+  const total = roundTo(pGas + pH2O, 1)
+  return {
+    scenario: `O₂ is collected over water at ${T} °C. Total pressure = ${total} mmHg. Find P(dry O₂).`,
+    steps: [
+      `At ${T} °C, P(H₂O) = ${pH2O} mmHg  (Chang Table 5.3)`,
+      `P(O₂) = P_total − P(H₂O) = ${total} − ${pH2O} = ${sig(pGas, 4)} mmHg`,
+    ],
+    result: `P(O₂) = ${sig(pGas, 4)} mmHg`,
+  }
+}
 
 function generateDaltonsLawExample() {
   const gases = pick(DALTON_GAS_SETS)
@@ -110,9 +129,19 @@ export default function DaltonsLawTool() {
   const [totalP, setTotalP]         = useState('')
   const [rows, setRows]             = useState<GasRow[]>([newRow('Gas 1'), newRow('Gas 2')])
 
+  // Gas-over-water specific state
+  const [gowTempC, setGowTempC]     = useState('')
+  const [gowTotalP, setGowTotalP]   = useState('')
+  const [gowUnit, setGowUnit]       = useState<PUnit>('mmHg')
+  const [gowAnswer, setGowAnswer]   = useState('')  // optional student answer for verify
+  const [gowResult, setGowResult]   = useState<{ pH2O: string; pGas: string } | null>(null)
+
   // Results state
   const [steps, setSteps]           = useState<string[]>([])
-  const stepsState = useStepsPanelState(steps, generateDaltonsLawExample)
+  const stepsState = useStepsPanelState(
+    steps,
+    () => mode === 'gas-over-water' ? generateGasOverWaterExample() : generateDaltonsLawExample(),
+  )
   const [totalResult, setTotalResult] = useState<string | null>(null)
   const [partialResults, setPartialResults] = useState<PartialResult[]>([])
   const [error, setError]           = useState<string | null>(null)
@@ -120,6 +149,7 @@ export default function DaltonsLawTool() {
 
   function reset() {
     setSteps([]); setTotalResult(null); setPartialResults([]); setError(null); setVerified(null)
+    setGowResult(null)
   }
 
   function handleModeChange(m: Mode) { setMode(m); reset() }
@@ -144,6 +174,51 @@ export default function DaltonsLawTool() {
 
   function calculate() {
     reset()
+
+    // ── Mode: gas collected over water ────────────────────────────────────────
+    if (mode === 'gas-over-water') {
+      const tVal = parseFloat(gowTempC)
+      const pVal = parseFloat(gowTotalP)
+      if (isNaN(tVal)) { setError('Enter a temperature in °C.'); return }
+      if (isNaN(pVal) || pVal <= 0) { setError('Enter a valid total pressure.'); return }
+
+      let pH2O_mmHg: number
+      try {
+        pH2O_mmHg = waterVaporPressure(tVal)
+      } catch {
+        setError(`Temperature ${tVal} °C is outside the table range [0, 100] °C.`); return
+      }
+
+      const sf4 = (v: number) => parseFloat(v.toPrecision(4)).toString()
+      // Convert P_total to mmHg, subtract, convert back
+      const pTotal_mmHg = pVal * TO_ATM[gowUnit] * 760
+      const pGas_mmHg   = pTotal_mmHg - pH2O_mmHg
+      if (pGas_mmHg <= 0) { setError('P_H₂O exceeds total pressure — check your inputs.'); return }
+
+      const FROM_ATM_UNIT: Record<PUnit, number> = { atm: 1, kPa: 101.325, mmHg: 760, torr: 760 }
+      const convFactor = FROM_ATM_UNIT[gowUnit] / 760  // mmHg → user unit
+      const pGas_out   = pGas_mmHg * convFactor
+      const pH2O_out   = pH2O_mmHg * convFactor
+
+      const newSteps: string[] = [
+        `At ${tVal} °C, P(H₂O) = ${pH2O_mmHg} mmHg  (Chang Table 5.3)`,
+        ...(gowUnit !== 'mmHg' ? [`Convert: ${sf4(pH2O_mmHg)} mmHg = ${sf4(pH2O_out)} ${gowUnit}`] : []),
+        `P_gas = P_total − P(H₂O)`,
+        `P_gas = ${sf4(pVal)} − ${sf4(pH2O_out)} = ${sf4(pGas_out)} ${gowUnit}`,
+      ]
+
+      if (hasValue(gowAnswer)) {
+        const userVal = parseFloat(gowAnswer)
+        if (isNaN(userVal)) { setError('Invalid answer value.'); return }
+        const relErr = Math.abs(userVal - pGas_out) / pGas_out
+        setVerified(relErr <= 0.01 ? 'correct' : 'incorrect')
+        newSteps.push(relErr <= 0.01 ? '✓ Correct' : `✗ Expected ≈ ${sf4(pGas_out)} ${gowUnit}`)
+      }
+
+      setSteps(newSteps)
+      setGowResult({ pH2O: `${sf4(pH2O_out)} ${gowUnit}`, pGas: `${sf4(pGas_out)} ${gowUnit}` })
+      return
+    }
 
     if (mode === 'partial') {
       // P_total = P1 + P2 + ...
@@ -254,11 +329,14 @@ export default function DaltonsLawTool() {
 
   // ── Derived ──────────────────────────────────────────────────────────────────
 
-  const canCalculate = mode === 'partial'
+  const canCalculate = mode === 'gas-over-water'
+    ? hasValue(gowTempC) && hasValue(gowTotalP)
+    : mode === 'partial'
     ? rows.every(r => hasValue(r.value))
     : rows.every(r => hasValue(r.value)) && hasValue(totalP)
 
-  const isVerifyMode = mode === 'partial' && hasValue(totalP)
+  const isVerifyMode = (mode === 'partial' && hasValue(totalP)) ||
+                       (mode === 'gas-over-water' && hasValue(gowAnswer))
 
   // ── Render ───────────────────────────────────────────────────────────────────
 
@@ -279,14 +357,75 @@ export default function DaltonsLawTool() {
             title="Mole Fractions → Partial P"
             sub="Pᵢ = χᵢ × P_total"
           />
+          <ModeCard
+            active={mode === 'gas-over-water'} onClick={() => handleModeChange('gas-over-water')}
+            title="Gas over Water"
+            sub="P_gas = P_total − P(H₂O)"
+          />
         </div>
       </div>
 
-      {/* Pressure unit */}
+      {/* Gas-over-water inputs */}
+      {mode === 'gas-over-water' && (
+        <div className="flex flex-col gap-4">
+          <p className="font-sans text-sm text-secondary leading-relaxed">
+            Enter the collection temperature and total pressure. The water vapor pressure is looked up
+            from Chang Table 5.3 and subtracted to give the partial pressure of the dry gas.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <NumberField
+              label="T — Temperature"
+              value={gowTempC}
+              onChange={v => { setGowTempC(sanitize(v)); reset() }}
+              placeholder="e.g. 25"
+              unit={<span className="font-mono text-sm text-secondary px-2">°C</span>}
+            />
+            <div className="flex flex-col gap-1.5">
+              <NumberField
+                label="P_total — Total pressure"
+                value={gowTotalP}
+                onChange={v => { setGowTotalP(sanitize(v)); reset() }}
+                placeholder="e.g. 762.0"
+                unit={
+                  <div className="shrink-0">
+                    <UnitPills active={gowUnit} onChange={u => { setGowUnit(u); reset() }} />
+                  </div>
+                }
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="font-sans text-sm font-medium text-primary">
+              Your answer for P_gas
+            </label>
+            <span className="font-sans text-xs text-secondary">Optional — enter to verify</span>
+            <div className="flex items-stretch gap-1.5">
+              <input
+                type="text"
+                inputMode="decimal"
+                value={gowAnswer}
+                onChange={e => { setGowAnswer(sanitize(e.target.value)); reset() }}
+                placeholder="optional — enter to verify"
+                className="flex-1 min-w-0 font-mono text-sm bg-raised border border-border rounded-sm px-3 py-2
+                           text-primary placeholder-dim focus:outline-none focus:border-accent/40 transition-colors"
+              />
+              <div className="shrink-0 flex items-center">
+                <span className="font-mono text-sm text-secondary px-2">{gowUnit}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Pressure unit (for partial/fraction modes) */}
+      {mode !== 'gas-over-water' && (
       <div className="flex items-center gap-3">
         <label className="font-sans text-sm font-medium text-primary">Pressure unit</label>
         <UnitPills active={unit} onChange={handleUnitChange} />
       </div>
+      )}
 
       {/* Fraction sub-mode */}
       {mode === 'fraction' && (
@@ -310,8 +449,8 @@ export default function DaltonsLawTool() {
         </div>
       )}
 
-      {/* Gas rows */}
-      <div className="flex flex-col gap-2">
+      {/* Gas rows (hidden in gas-over-water mode) */}
+      {mode !== 'gas-over-water' && <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
           <label className="font-sans text-sm font-medium text-primary">Gas components</label>
           <button onClick={addRow}
@@ -364,13 +503,14 @@ export default function DaltonsLawTool() {
             </div>
           ))}
         </div>
-      </div>
+      </div>}
 
-      {/* Total pressure field */}
+      {/* Total pressure field (partial/fraction only) */}
+      {mode !== 'gas-over-water' && (
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between">
           <label className="font-sans text-sm font-medium text-primary">
-            {mode === 'partial' ? `Total pressure (${unit})` : `Total pressure (${unit})`}
+            {`Total pressure (${unit})`}
           </label>
           {mode === 'partial' && (
             <span className="font-sans text-xs text-secondary">
@@ -401,6 +541,7 @@ export default function DaltonsLawTool() {
           </div>
         </div>
       </div>
+      )}
 
       {error && <p className="font-mono text-xs text-red-400">{error}</p>}
 
@@ -428,6 +569,33 @@ export default function DaltonsLawTool() {
           {/* Mode 1: single total result */}
           {mode === 'partial' && totalResult !== null && (
             <ResultDisplay label="Total Pressure (P_total)" value={String(totalResult)} unit={unit} verified={verified} />
+          )}
+
+          {/* Mode: gas over water */}
+          {mode === 'gas-over-water' && gowResult && (
+            <div className="rounded-sm border border-border overflow-hidden"
+              style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 35%, rgb(var(--color-border)))' }}>
+              <div className="grid gap-3 px-4 py-2 border-b border-border"
+                style={{ background: 'color-mix(in srgb, var(--c-halogen) 6%, rgb(var(--color-surface)))', gridTemplateColumns: '1fr auto' }}>
+                <span className="font-sans text-sm font-medium text-secondary">Species</span>
+                <span className="font-sans text-sm font-medium text-secondary text-right">Pressure</span>
+              </div>
+              <div className="grid gap-3 items-center px-4 py-3 border-b border-border"
+                style={{ gridTemplateColumns: '1fr auto' }}>
+                <span className="font-sans text-sm text-secondary">P(H₂O) — from table</span>
+                <span className="font-mono text-sm text-secondary text-right">{gowResult.pH2O}</span>
+              </div>
+              <div className="grid gap-3 items-center px-4 py-3"
+                style={{ gridTemplateColumns: '1fr auto' }}>
+                <span className="font-sans text-sm text-primary font-medium">P(dry gas)</span>
+                <span className="font-mono text-sm font-semibold text-right" style={{ color: 'var(--c-halogen)' }}>
+                  {gowResult.pGas}
+                </span>
+              </div>
+            </div>
+          )}
+          {mode === 'gas-over-water' && gowResult && verified !== null && (
+            <ResultDisplay label="P(dry gas)" value={gowResult.pGas.split(' ')[0]} unit={gowUnit} verified={verified} />
           )}
 
           {/* Mode 2: per-gas partial pressures table */}

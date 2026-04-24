@@ -10,9 +10,10 @@ type CheckState = 'idle' | 'correct' | 'wrong'
 type Filter = 'all' | GasStandard
 
 const FILTERS: { value: Filter; label: string; sub: string }[] = [
-  { value: 'all',  label: 'All',  sub: 'STP & SATP'      },
-  { value: 'STP',  label: 'STP',  sub: '0 °C, 1 atm'    },
-  { value: 'SATP', label: 'SATP', sub: '25 °C, 100 kPa'  },
+  { value: 'all',    label: 'All',       sub: 'STP & SATP'      },
+  { value: 'STP',   label: 'STP',       sub: '0 °C, 1 atm'    },
+  { value: 'SATP',  label: 'SATP',      sub: '25 °C, 100 kPa'  },
+  { value: 'custom', label: 'Custom T/P', sub: 'V = nRT/P'       },
 ]
 
 export function generateGasStoichExample() {
@@ -30,7 +31,9 @@ export default function GasStoichPractice() {
   const [score,      setScore]      = useState({ correct: 0, total: 0 })
 
   function newProblem(f: Filter = filter) {
-    setProblem(generateGasStoichProblem(f === 'all' ? undefined : f))
+    // 'all' randomly picks STP or SATP (not custom — custom must be explicitly selected)
+    const std = f === 'all' ? undefined : f
+    setProblem(generateGasStoichProblem(std))
     setAnswer('')
     setCheckState('idle')
     setShowSteps(false)
@@ -55,6 +58,8 @@ export default function GasStoichPractice() {
       <p className="font-sans text-sm text-secondary leading-relaxed">
         Convert a <span className="text-primary">gas volume</span> at STP or SATP to moles
         (n = V ÷ Vₘ), then apply mole ratios to find the amount of another species.
+        In <span className="text-primary">Custom T/P</span> mode a mass of solid is given and
+        the gas volume is found via V = nRT/P.
       </p>
 
       {/* Filter + score */}
@@ -106,9 +111,12 @@ export default function GasStoichPractice() {
                 color: 'var(--c-halogen)',
                 border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
               }}>
-              {problem.standard}
+              {problem.standard === 'custom' ? 'Custom T/P' : problem.standard}
             </span>
-            <span className="font-mono text-xs text-secondary">Vₘ = {problem.Vm} L/mol</span>
+            {problem.standard === 'custom'
+              ? <span className="font-mono text-xs text-secondary">T = {problem.T} K · P = {problem.P} atm · V = nRT/P</span>
+              : <span className="font-mono text-xs text-secondary">Vₘ = {problem.Vm} L/mol</span>
+            }
           </div>
 
           <p className="font-sans text-sm text-primary leading-relaxed">{problem.question}</p>
@@ -116,7 +124,7 @@ export default function GasStoichPractice() {
           {/* Answer input */}
           <div className="flex items-center gap-2 flex-wrap">
             <input
-              type="number" inputMode="decimal" value={answer}
+              type="text" inputMode="decimal" value={answer}
               onChange={e => { setAnswer(e.target.value); setCheckState('idle') }}
               onKeyDown={e => e.key === 'Enter' && handleSubmit()}
               placeholder="your answer"

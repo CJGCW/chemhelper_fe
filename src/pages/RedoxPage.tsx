@@ -17,10 +17,12 @@ import ReactionClassifierProblems from '../components/tools/ReactionClassifierPr
 import ElectrolyteProblems from '../components/tools/ElectrolyteProblems'
 import NetIonicProblems from '../components/tools/NetIonicProblems'
 import ActivitySeriesProblems from '../components/tools/ActivitySeriesProblems'
+import TitrationArithmeticTool from '../components/redox/TitrationArithmeticTool'
 import PageShell from '../components/Layout/PageShell'
 
 type Tab = 'practice' | 'rxn-practice' | 'ecell-practice' | 'classifier' | 'electrolyte' | 'net-ionic' | 'activity' | 'predictor' | 'ecell' | 'reference' | 'redox-practice' | 'classifier-problems' | 'electrolyte-problems' | 'net-ionic-problems' | 'activity-problems'
   | 'ref-oxidation' | 'ref-reaction-types' | 'ref-activity' | 'ref-acids-bases' | 'ref-redox-concepts'
+  | 'titration' | 'titration-problems'
 type Mode = 'reference' | 'practice' | 'problems'
 
 const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
@@ -64,6 +66,13 @@ const PRACTICE_GROUPS: TabGroup[] = [
       { id: 'ecell',          label: 'E°cell / Nernst', formula: 'E°' },
     ],
   },
+  {
+    id: 'titrations',
+    label: 'Titrations',
+    pills: [
+      { id: 'titration', label: 'Titration', formula: 'MₐVₐ=MᵦVᵦ' },
+    ],
+  },
 ]
 
 const PROBLEMS_GROUPS: TabGroup[] = [
@@ -86,6 +95,13 @@ const PROBLEMS_GROUPS: TabGroup[] = [
       { id: 'ecell-practice',       label: 'E°cell',      formula: 'E°' },
     ],
   },
+  {
+    id: 'titrations',
+    label: 'Titrations',
+    pills: [
+      { id: 'titration-problems', label: 'Titration', formula: 'e⁻ balance' },
+    ],
+  },
 ]
 
 const PRACTICE_TAB_IDS = new Set<Tab>(PRACTICE_GROUPS.flatMap(g => g.pills.map(p => p.id)))
@@ -106,6 +122,8 @@ const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
   'net-ionic-problems':    'net-ionic',
   'activity':              'activity',
   'activity-problems':     'activity',
+  'titration':             'titration',
+  'titration-problems':    'titration',
 }
 
 const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
@@ -116,6 +134,7 @@ const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
   'electrolyte':   { practice: 'electrolyte',    problems: 'electrolyte-problems'  },
   'net-ionic':     { practice: 'net-ionic',       problems: 'net-ionic-problems'    },
   'activity':      { practice: 'activity',        problems: 'activity-problems'     },
+  'titration':     { practice: 'titration',       problems: 'titration-problems'    },
 }
 
 const MODE_DEFAULT: Record<Mode, Tab> = {
@@ -521,6 +540,20 @@ export default function RedoxPage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <ActivitySeriesProblems />
+          </motion.div>
+        )}
+        {activeTab === 'titration' && (
+          <motion.div key="titration"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <TitrationArithmeticTool allowCustom={true} />
+          </motion.div>
+        )}
+        {activeTab === 'titration-problems' && (
+          <motion.div key="titration-problems"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <TitrationArithmeticTool allowCustom={false} />
           </motion.div>
         )}
       </AnimatePresence>

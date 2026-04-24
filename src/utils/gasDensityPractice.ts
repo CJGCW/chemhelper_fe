@@ -31,7 +31,10 @@ const GASES = [
   { name: 'Cl₂', M: 70.90  },
 ] as const
 
+export type GasDensityMode = 'density-from-M' | 'M-from-density'
+
 export interface GasDensityProblem {
+  mode: GasDensityMode
   question: string
   answer: number
   unit: string
@@ -40,8 +43,17 @@ export interface GasDensityProblem {
 
 type ProblemType = 'find-density' | 'find-molar-mass' | 'find-temperature' | 'find-pressure'
 
-export function generateGasDensityProblem(): GasDensityProblem {
-  const type = pick<ProblemType>(['find-density', 'find-molar-mass', 'find-temperature', 'find-pressure'])
+export function generateGasDensityProblem(options?: { mode?: GasDensityMode }): GasDensityProblem {
+  const modeFilter = options?.mode
+  let type: ProblemType
+  if (modeFilter === 'M-from-density') {
+    type = 'find-molar-mass'
+  } else if (modeFilter === 'density-from-M') {
+    type = pick<ProblemType>(['find-density', 'find-temperature', 'find-pressure'])
+  } else {
+    type = pick<ProblemType>(['find-density', 'find-molar-mass', 'find-temperature', 'find-pressure'])
+  }
+  const resolvedMode: GasDensityMode = type === 'find-molar-mass' ? 'M-from-density' : 'density-from-M'
   const gas = pick(GASES)
 
   const T = rand(250, 450, 1)  // K
@@ -57,19 +69,19 @@ export function generateGasDensityProblem(): GasDensityProblem {
       `ρ = ${sig(gas.M * P)} / ${sig(R * T)}`,
       `ρ = ${sig(answer)} g/L`,
     ]
-    return { question, answer, unit: 'g/L', steps }
+    return { mode: resolvedMode, question, answer, unit: 'g/L', steps }
   }
 
   if (type === 'find-molar-mass') {
     const answer = calcGasDensityMolarMass(rho, P, T)
-    const question = `A gas has a density of ${rho} g/L at ${T} K and ${P} atm. What is its molar mass?`
+    const question = `An unknown gas has a density of ${rho} g/L at ${T} K and ${P} atm. What is its molar mass?`
     const steps = [
       `M = ρRT / P`,
       `M = (${rho} × 0.08206 × ${T}) / ${P}`,
       `M = ${sig(rho * R * T)} / ${P}`,
       `M = ${sig(answer)} g/mol`,
     ]
-    return { question, answer, unit: 'g/mol', steps }
+    return { mode: resolvedMode, question, answer, unit: 'g/mol', steps }
   }
 
   if (type === 'find-temperature') {
@@ -81,7 +93,7 @@ export function generateGasDensityProblem(): GasDensityProblem {
       `T = ${sig(gas.M * P)} / ${sig(rho * R)}`,
       `T = ${sig(answer)} K`,
     ]
-    return { question, answer, unit: 'K', steps }
+    return { mode: resolvedMode, question, answer, unit: 'K', steps }
   }
 
   // find-pressure
@@ -93,7 +105,7 @@ export function generateGasDensityProblem(): GasDensityProblem {
     `P = ${sig(rho * R * T)} / ${gas.M}`,
     `P = ${sig(answer)} atm`,
   ]
-  return { question, answer, unit: 'atm', steps }
+  return { mode: resolvedMode, question, answer, unit: 'atm', steps }
 }
 
 export function checkGasDensityAnswer(raw: string, problem: GasDensityProblem): boolean {

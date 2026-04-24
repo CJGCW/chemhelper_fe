@@ -14,6 +14,7 @@ import SolutionStoichTool from '../components/stoichiometry/SolutionStoichTool'
 import SolutionStoichPractice from '../components/stoichiometry/SolutionStoichPractice'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 import AdvancedPercentYieldTool from '../components/stoichiometry/AdvancedPercentYieldTool'
+import ChainedYieldTool from '../components/stoichiometry/ChainedYieldTool'
 import PageShell from '../components/Layout/PageShell'
 
 type Tab =
@@ -23,6 +24,7 @@ type Tab =
   | 'solution-practice' | 'balance-practice' | 'gas-stoich-practice'
   | 'limiting-problems' | 'theoretical-problems' | 'percent-problems'
   | 'adv-percent' | 'adv-percent-problems'
+  | 'chained-yield' | 'chained-yield-problems'
   | 'ref-stoich' | 'ref-limiting' | 'ref-theoretical' | 'ref-percent'
   | 'ref-balance' | 'ref-solution' | 'ref-gas-stoich'
 
@@ -82,9 +84,10 @@ const PRACTICE_GROUPS: TabGroup[] = [
     id: 'advanced',
     label: 'Advanced',
     pills: [
-      { id: 'adv-percent',         label: 'Percent Yield',   formula: 'TY→%' },
-      { id: 'solution',            label: 'Solution Stoich', formula: 'M·V'  },
-      { id: 'gas-stoich-practice', label: 'Gas Stoich',      formula: 'PV'   },
+      { id: 'adv-percent',         label: 'Percent Yield',   formula: 'TY→%'  },
+      { id: 'chained-yield',       label: 'Chained Yield',   formula: 'm→%Y'  },
+      { id: 'solution',            label: 'Solution Stoich', formula: 'M·V'   },
+      { id: 'gas-stoich-practice', label: 'Gas Stoich',      formula: 'PV'    },
     ],
   },
 ]
@@ -111,9 +114,10 @@ const PROBLEMS_GROUPS: TabGroup[] = [
     id: 'advanced',
     label: 'Advanced',
     pills: [
-      { id: 'adv-percent-problems', label: 'Percent Yield',   formula: 'TY→%' },
-      { id: 'solution-practice',    label: 'Solution Stoich', formula: 'M·V'  },
-      { id: 'gas-stoich',           label: 'Gas Stoich',      formula: 'PV'   },
+      { id: 'adv-percent-problems',    label: 'Percent Yield',   formula: 'TY→%'  },
+      { id: 'chained-yield-problems', label: 'Chained Yield',   formula: 'm→%Y'  },
+      { id: 'solution-practice',      label: 'Solution Stoich', formula: 'M·V'   },
+      { id: 'gas-stoich',             label: 'Gas Stoich',      formula: 'PV'    },
     ],
   },
 ]
@@ -154,8 +158,10 @@ const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
   'gas-stoich':           'gas-stoich',
   'gas-stoich-practice':  'gas-stoich',
   'ref-gas-stoich':       'gas-stoich',
-  'adv-percent':          'adv-percent',
-  'adv-percent-problems': 'adv-percent',
+  'adv-percent':           'adv-percent',
+  'adv-percent-problems':  'adv-percent',
+  'chained-yield':         'chained-yield',
+  'chained-yield-problems':'chained-yield',
 }
 
 const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
@@ -166,7 +172,8 @@ const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
   'percent':     { reference: 'ref-percent',     practice: 'percent',              problems: 'percent-problems'     },
   'balance':     { reference: 'ref-balance',     practice: 'balance-practice',     problems: 'balance'              },
   'gas-stoich':  { reference: 'ref-gas-stoich',  practice: 'gas-stoich-practice',  problems: 'gas-stoich'                },
-  'adv-percent': {                               practice: 'adv-percent',           problems: 'adv-percent-problems'      },
+  'adv-percent':   {                               practice: 'adv-percent',           problems: 'adv-percent-problems'   },
+  'chained-yield': {                               practice: 'chained-yield',         problems: 'chained-yield-problems' },
 }
 
 const MODE_DEFAULT: Record<Mode, Tab> = {
@@ -558,6 +565,20 @@ export default function StoichiometryPage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <SolutionStoichPractice />
+          </motion.div>
+        )}
+        {activeTab === 'chained-yield' && (
+          <motion.div key="chained-yield"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <ChainedYieldTool allowCustom={true} />
+          </motion.div>
+        )}
+        {activeTab === 'chained-yield-problems' && (
+          <motion.div key="chained-yield-problems"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <ChainedYieldTool allowCustom={false} />
           </motion.div>
         )}
       </AnimatePresence>
