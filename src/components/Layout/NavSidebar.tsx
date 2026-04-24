@@ -18,6 +18,7 @@ const SEARCH_INDEX: SearchItem[] = [
   { label: 'Sci Notation',      formula: '×10ⁿ',      section: 'Base Calculations',  path: '/base-calculations?tab=sci-notation', keywords: 'scientific notation powers of ten' },
   { label: 'Unit Conversions',  formula: '↔',         section: 'Base Calculations',  path: '/base-calculations?tab=conversions',  keywords: 'unit conversion factor label' },
   { label: 'Empirical Formula', formula: '⌬',         section: 'Base Calculations',  path: '/empirical',                           keywords: 'empirical molecular formula percent composition' },
+  { label: 'Hydrate Analysis',  formula: '·nH₂O',    section: 'Base Calculations',  path: '/empirical?tab=hydrate',               keywords: 'hydrate water crystallization formula empirical anhydrous' },
   // Ideal Gas
   { label: 'Combined Gas Law',  formula: 'P₁V₁/T₁',  section: 'Ideal Gas Law',      path: '/ideal-gas?tab=ref-combined',          keywords: 'boyles charles gay-lussac combined gas law PVT' },
   { label: "Dalton's Law",      formula: 'Ptot',      section: 'Ideal Gas Law',      path: '/ideal-gas?tab=ref-daltons',           keywords: 'dalton partial pressure mixture' },
@@ -43,6 +44,9 @@ const SEARCH_INDEX: SearchItem[] = [
   { label: 'Isoelectronic',     formula: '≡',         section: 'Periodic Table',     path: '/electron-config?topic=isoelectronic',  keywords: 'isoelectronic same electrons ions' },
   { label: 'Para/Diamagnetic',  formula: 'para',      section: 'Periodic Table',     path: '/electron-config?topic=para_dia',       keywords: 'paramagnetic diamagnetic unpaired electrons' },
   { label: 'EM Spectrum',       formula: 'λf',        section: 'Periodic Table',     path: '/electron-config?topic=em_spectrum',    keywords: 'electromagnetic spectrum wavelength frequency light' },
+  { label: 'Isotope Abundance', formula: 'Ā=Σmf',    section: 'Periodic Table',     path: '/electron-config?topic=isotopes',               keywords: 'isotope abundance weighted average atomic mass natural percent' },
+  { label: 'Reverse Isotope',   formula: 'f=?',      section: 'Periodic Table',     path: '/electron-config?topic=isotopes&mode=practice', keywords: 'reverse isotope find abundance from atomic mass two isotopes' },
+  { label: 'Isotope Problems',  formula: '✎',        section: 'Periodic Table',     path: '/electron-config?topic=isotopes&mode=problems', keywords: 'isotope abundance practice problems weighted average mass forward reverse' },
   // Reactions / Redox
   { label: 'Rxn Classifier',    formula: '⇄',         section: 'Reactions / Redox',  path: '/redox?tab=classifier',                keywords: 'reaction classifier type synthesis decomposition single double displacement combustion' },
   { label: 'Net Ionic',         formula: '⇌',         section: 'Reactions / Redox',  path: '/redox?tab=net-ionic',                 keywords: 'net ionic equation spectator ions' },
@@ -80,6 +84,8 @@ const SEARCH_INDEX: SearchItem[] = [
   { label: 'Phase Diagrams',    formula: 'P-T',       section: 'Thermochemistry',    path: '/thermochemistry?tab=phase-diagram-reference',keywords: 'phase diagram solid liquid gas triple critical point' },
   { label: 'Liquid Props',      formula: 'γ/η',       section: 'Thermochemistry',    path: '/thermochemistry?tab=liquid-props',           keywords: 'liquid properties surface tension viscosity vapor pressure' },
   { label: 'Clausius-Clap.',    formula: 'ln P',      section: 'Thermochemistry',    path: '/thermochemistry?tab=cc-reference',           keywords: 'clausius clapeyron vapor pressure temperature enthalpy vaporization' },
+  { label: 'Vapor Pressure',    formula: 'P_vap',    section: 'Thermochemistry',    path: '/thermochemistry?tab=vapor-pressure',         keywords: 'vapor pressure temperature boiling liquid clausius clapeyron' },
+  { label: 'Expansion Work',    formula: 'w=−PΔV',   section: 'Thermochemistry',    path: '/thermochemistry?tab=expansion-work',         keywords: 'expansion work PV irreversible compression w=-PextDeltaV surroundings' },
   // Practice
   { label: 'Test Generator',    formula: '✎',         section: 'Practice',           path: '/test',                                keywords: 'test generator practice problems worksheet' },
   { label: 'Print Reference',   formula: '⎙',         section: 'Practice',           path: '/print',                               keywords: 'print reference sheet cheat sheet' },

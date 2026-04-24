@@ -1,5 +1,65 @@
 import { describe, it, expect } from 'vitest'
-import { reverseIsotopeAbundance } from '../isotope'
+import { weightedAverageMass, reverseIsotopeAbundance } from '../isotope'
+
+describe('weightedAverageMass', () => {
+  it('Chang 3.1: Cl = ³⁵Cl(75.77%) + ³⁷Cl(24.23%) → 35.45 amu', () => {
+    const sol = weightedAverageMass([
+      { mass: 34.968853, abundance: 75.77 },
+      { mass: 36.965903, abundance: 24.23 },
+    ])
+    expect(sol.average).toBeCloseTo(35.45, 1)
+  })
+
+  it('Boron: ¹⁰B(19.9%) + ¹¹B(80.1%) → 10.81 amu', () => {
+    const sol = weightedAverageMass([
+      { mass: 10.012937, abundance: 19.9 },
+      { mass: 11.009305, abundance: 80.1 },
+    ])
+    expect(sol.average).toBeCloseTo(10.811, 2)
+  })
+
+  it('monoisotopic element: 100% → exact mass returned unchanged', () => {
+    const sol = weightedAverageMass([{ mass: 18.998403, abundance: 100 }])
+    expect(sol.average).toBeCloseTo(18.998403, 5)
+  })
+
+  it('steps include formula and result line', () => {
+    const sol = weightedAverageMass([
+      { mass: 34.968853, abundance: 75.77 },
+      { mass: 36.965903, abundance: 24.23 },
+    ])
+    expect(sol.steps[0]).toMatch(/Ā.*Σ/)
+    expect(sol.steps[sol.steps.length - 1]).toMatch(/amu/)
+  })
+
+  it('three-isotope element: Ne (90.48%, 0.27%, 9.25%) → 20.18 amu', () => {
+    // ²⁰Ne, ²¹Ne, ²²Ne
+    const sol = weightedAverageMass([
+      { mass: 19.992440, abundance: 90.48 },
+      { mass: 20.993847, abundance: 0.27  },
+      { mass: 21.991386, abundance: 9.25  },
+    ])
+    expect(sol.average).toBeCloseTo(20.18, 1)
+  })
+
+  it('round-trip: forward then reverse recovers abundances', () => {
+    const iso = [
+      { mass: 34.968853, abundance: 75.77 },
+      { mass: 36.965903, abundance: 24.23 },
+    ]
+    const fwd = weightedAverageMass(iso)
+    const rev = reverseIsotopeAbundance({
+      averageMass: fwd.average,
+      isotopeMasses: [iso[0].mass, iso[1].mass],
+    })
+    expect(rev.abundance1 * 100).toBeCloseTo(iso[0].abundance, 1)
+    expect(rev.abundance2 * 100).toBeCloseTo(iso[1].abundance, 1)
+  })
+
+  it('throws on empty array', () => {
+    expect(() => weightedAverageMass([])).toThrow()
+  })
+})
 
 describe('reverseIsotopeAbundance', () => {
   it('Chang 3.97: Ga isotopes from average 69.72', () => {

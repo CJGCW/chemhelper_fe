@@ -16,6 +16,8 @@ import MultiElectronAtoms from '../components/atomic/MultiElectronAtoms'
 import PeriodicTrendsReference from '../components/atomic/PeriodicTrendsReference'
 import PeriodicTrendsPractice from '../components/atomic/PeriodicTrendsPractice'
 import ReverseIsotopeTool from '../components/atomic/ReverseIsotopeTool'
+import IsotopeAbundanceReference from '../components/atomic/IsotopeAbundanceReference'
+import IsotopeAbundancePractice from '../components/atomic/IsotopeAbundancePractice'
 import PageShell from '../components/Layout/PageShell'
 
 type Topic = 'electron_config' | 'quantum_numbers' | 'energy_levels' | 'isoelectronic'
@@ -29,7 +31,7 @@ const TOPIC_MODES: Partial<Record<Topic, Mode[]>> = {
   energy_levels:    ['reference', 'problems'],
   para_dia:         ['reference', 'problems'],
   periodic_trends:  ['reference', 'practice'],
-  isotopes:         ['practice'],
+  isotopes:         ['reference', 'practice', 'problems'],
 }
 
 const TOPIC_GROUPS: { label: string; topics: { id: Topic; label: string; subtitle: string }[] }[] = [
@@ -330,7 +332,9 @@ export default function ElectronConfigPage() {
           {topic === 'multi_electron'   && <MultiElectronAtoms />}
           {topic === 'periodic_trends' && mode === 'reference' && <PeriodicTrendsReference />}
           {topic === 'periodic_trends' && mode === 'practice'  && <PeriodicTrendsPractice />}
-          {topic === 'isotopes'        && <ReverseIsotopeTool />}
+          {topic === 'isotopes' && mode === 'reference' && <IsotopeAbundanceReference />}
+          {topic === 'isotopes' && mode === 'practice'  && <ReverseIsotopeTool />}
+          {topic === 'isotopes' && mode === 'problems'  && <IsotopeAbundancePractice />}
         </motion.div>
       </AnimatePresence>
 

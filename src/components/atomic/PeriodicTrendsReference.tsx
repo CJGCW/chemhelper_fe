@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import { useElementStore } from '../../stores/elementStore'
 import { IE1, EA } from '../../data/periodicTrends'
 import type { Element } from '../../types'
@@ -44,9 +44,22 @@ function getValue(el: Element, prop: Property): number | null {
   return null
 }
 
-const CW = 30  // cell width px
-const CH = 26  // cell height px
-const G  = 2   // gap px
+function useTableSize() {
+  const measure = useCallback(() => {
+    const w = window.innerWidth
+    if (w >= 1280) return { CW: 42, CH: 35, G: 3, FS: 11 }
+    if (w >= 1024) return { CW: 36, CH: 30, G: 2, FS: 10 }
+    return { CW: 30, CH: 26, G: 2, FS: 9 }
+  }, [])
+
+  const [size, setSize] = useState(measure)
+  useEffect(() => {
+    const handler = () => setSize(measure())
+    window.addEventListener('resize', handler)
+    return () => window.removeEventListener('resize', handler)
+  }, [measure])
+  return size
+}
 
 function formatV(v: number | null | undefined): string {
   if (v == null) return ''
@@ -77,6 +90,7 @@ const PRINT_STYLES = `
 
 export default function PeriodicTrendsReference() {
   const { elements, loadElements } = useElementStore()
+  const { CW, CH, G, FS } = useTableSize()
   const [prop, setProp]       = useState<Property>('atomicRadius')
   const [hoveredZ, setHoveredZ] = useState<number | null>(null)
 
@@ -236,10 +250,10 @@ export default function PeriodicTrendsReference() {
                       ...cellStyle(el.atomicNumber),
                     }}
                   >
-                    <span style={{ fontFamily: 'monospace', fontSize: 9, color: symbolColor(el.atomicNumber), userSelect: 'none' }}>
+                    <span style={{ fontFamily: 'monospace', fontSize: FS, color: symbolColor(el.atomicNumber), userSelect: 'none' }}>
                       {el.symbol}
                     </span>
-                    <span className="pt-val" style={{ display: 'none', fontFamily: 'monospace', fontSize: 6, color: symbolColor(el.atomicNumber) }}>
+                    <span className="pt-val" style={{ display: 'none', fontFamily: 'monospace', fontSize: Math.round(FS * 0.65), color: symbolColor(el.atomicNumber) }}>
                       {formatV(values[el.atomicNumber])}
                     </span>
                   </div>
@@ -285,10 +299,10 @@ export default function PeriodicTrendsReference() {
                   ...cellStyle(el.atomicNumber),
                 }}
               >
-                <span style={{ fontFamily: 'monospace', fontSize: 9, color: symbolColor(el.atomicNumber), userSelect: 'none' }}>
+                <span style={{ fontFamily: 'monospace', fontSize: FS, color: symbolColor(el.atomicNumber), userSelect: 'none' }}>
                   {el.symbol}
                 </span>
-                <span className="pt-val" style={{ display: 'none', fontFamily: 'monospace', fontSize: 6, color: symbolColor(el.atomicNumber) }}>
+                <span className="pt-val" style={{ display: 'none', fontFamily: 'monospace', fontSize: Math.round(FS * 0.65), color: symbolColor(el.atomicNumber) }}>
                   {formatV(values[el.atomicNumber])}
                 </span>
               </div>
@@ -314,10 +328,10 @@ export default function PeriodicTrendsReference() {
                   ...cellStyle(el.atomicNumber),
                 }}
               >
-                <span style={{ fontFamily: 'monospace', fontSize: 9, color: symbolColor(el.atomicNumber), userSelect: 'none' }}>
+                <span style={{ fontFamily: 'monospace', fontSize: FS, color: symbolColor(el.atomicNumber), userSelect: 'none' }}>
                   {el.symbol}
                 </span>
-                <span className="pt-val" style={{ display: 'none', fontFamily: 'monospace', fontSize: 6, color: symbolColor(el.atomicNumber) }}>
+                <span className="pt-val" style={{ display: 'none', fontFamily: 'monospace', fontSize: Math.round(FS * 0.65), color: symbolColor(el.atomicNumber) }}>
                   {formatV(values[el.atomicNumber])}
                 </span>
               </div>

@@ -3,12 +3,13 @@
 ## Philosophy
 
 ChemHelper is an educational chemistry tool — accuracy and pedagogical clarity come before feature breadth or visual polish. When in doubt:
+
 - Prefer correctness with a textbook worked example over UI elegance.
 - Prefer verbose step-by-step output over terse "the answer is X".
 - Prefer pushing domain logic into `src/chem/` over inline component math.
 - Prefer adding tests (especially against Chang or Atkins worked examples) over just visual verification.
 
-Chang's *Chemistry* (14e, 2022) is the primary curriculum reference. When reference data and textbook values disagree, prefer matching Chang so students comparing in-app answers to homework see consistency. Exceptions (more rigorous modern values) should be footnoted, not silently adopted.
+Chang's _Chemistry_ (14e, 2022) is the primary curriculum reference. When reference data and textbook values disagree, prefer matching Chang so students comparing in-app answers to homework see consistency. Exceptions (more rigorous modern values) should be footnoted, not silently adopted.
 
 ---
 
@@ -32,6 +33,7 @@ If the topic's data is already present, build the practice/problems tool on top 
 ## `src/chem/` purity rule (non-negotiable)
 
 No module in `src/chem/` may import from:
+
 - React or any React-adjacent library
 - `../utils/*` (especially `sigfigs`)
 - `../components/*`
@@ -61,14 +63,14 @@ When a tool has both a "live" calculator and a "show me an example" button, the 
 ```tsx
 function buildWorkedExample(rxn: Reaction) {
   const sol = calcLimitingReagent(rxn, [
-    { val: 20, unit: 'g' },
-    { val: computeNiceB(rxn), unit: 'g' },
-  ])
+    { val: 20, unit: "g" },
+    { val: computeNiceB(rxn), unit: "g" },
+  ]);
   return {
     problem: `...`,
     steps: sol.steps,
     answer: `Limiting reagent: ${sol.limitingSpecies?.display}`,
-  }
+  };
 }
 ```
 
@@ -78,40 +80,84 @@ function buildWorkedExample(rxn: Reaction) {
 
 ## Page Architecture: Reference | Practice | Problems (RPP)
 
-Topic pages (`src/pages/*Page.tsx`) follow the RPP three-mode layout:
+**Every topic page must have all three modes** unless it is a pure property reference with no calculations (e.g. solubility rules, naming conventions). If a topic has a Practice tab, it **must** also have a Problems tab — practice without auto-generated problems is incomplete.
 
 ```
 Reference  |  Practice  |  Problems
 ```
 
-- **Reference** — static guides, formula sheets, visual diagrams. Print button visible.
-- **Practice** — solver/calculator tools. Student uses the tool to check work.
-- **Problems** — generated problems with verify/check (same tool components, `allowCustom={false}`).
+- **Reference** — static guides, formula sheets, visual diagrams. Print button visible. **Print buttons appear ONLY in Reference mode** — never in Practice or Problems.
+- **Practice** — solver/calculator tools. Student uses the tool to check their own work.
+- **Problems** — randomly generated problems with verify/check. Uses the same tool components as Practice with `allowCustom={false}`. **Every Practice tool must have a corresponding problem generator.** A practice tool shipped without a problem generator is a bug.
 
 ### Mode switch
+
 A rounded-full pill toggle drives `Mode = 'reference' | 'practice' | 'problems'`. Tab changes via `?tab=` URL param — never component state — so deep links always work.
 
 ### Tab groups
+
 Tabs within each mode are grouped (Basic / Stoichiometry / Advanced, etc.) using `TabGroup[]`:
+
 ```ts
-{ id: string; label: string; pills: { id: Tab; label: string; formula: string }[] }
+{
+  id: string;
+  label: string;
+  pills: {
+    id: Tab;
+    label: string;
+    formula: string;
+  }
+  [];
+}
 ```
+
 The `formula` field is a short monospace annotation shown beside the label (e.g. `g↔mol`, `%Y`).
 
 ### Switching modes
+
 When the user switches mode, the topic is preserved via `TAB_TO_TOPIC` + `TOPIC_MODE_TAB` maps. If no mapping exists for the current tab, fall back to `MODE_DEFAULT[mode]`.
 
 ### Print
+
 - **All** navigation rows (`print:hidden`) — mode switch, tab pills, every group row.
-- Print button appears only in Reference mode, beside the page heading.
+- Print / Print All buttons appear **only in Reference mode**, beside the page heading. Never in Practice or Problems — students should not be printing generated problems or calculator interfaces.
 - For "Print All", set a `printingAll` flag, render the full reference outside `AnimatePresence`, then call `window.print()` in a `requestAnimationFrame` after mount.
+
+### "What is this?" explanation button
+
+**Every topic page must have an ExplanationModal.** This is a small "?" or "What is this?" button in the page heading row that opens a modal explaining what the topic is, why it matters, and how to use the tools on the page. It's the first thing a confused student looks for.
+
+The explanation content should be 2–4 sentences: one sentence defining the topic, one saying when students encounter it in coursework, and one pointing them to the Reference tab for deeper material. Don't write a textbook — write an orientation.
+
+**Known violations to fix when touched:** `LewisPage`, `VseprPage`, `StructuresPage` are missing ExplanationModal.
+
+### Page heading row
+
+Every topic page has a consistent heading row at the top:
+
+```tsx
+<div className="flex items-center gap-3">
+  <h2 className="text-xl lg:text-2xl font-bold text-bright">{title}</h2>
+  <ExplanationModal ... />
+  {mode === 'reference' && <PrintButton />}
+</div>
+```
+
+Title + "What is this?" button + Print button (Reference only). Same order, same styling, every page. Don't deviate.
+
+### URL sync
+
+**Every page with tabs must sync tab state to the URL** via `useSearchParams`. Tab state lives in `?tab=` query params, never in component state alone. This ensures deep links work (a student can share a URL that opens directly to the right tab) and browser back/forward navigate between tabs.
+
+**Known violations to fix when touched:** `LewisPage`, `VseprPage` have no `useSearchParams`.
 
 ### Shell variants currently in use
 
-- **Full 3-groups** (reference/practice/problems, all groups defined) — `StoichiometryPage`, `IdealGasPage`. This is the canonical pattern — default to this for new topic pages.
+- **Full 3-groups** (reference/practice/problems, all groups defined) — `StoichiometryPage`, `IdealGasPage`. This is the canonical pattern — **default to this for all new topic pages.**
 - **Section-based** — `ThermochemistryPage` only. Sections hold Reference/Practice/Problems tabs per subtopic. Pedagogically fits the subtopic-dense thermo material better; leave as-is unless there's a reason to converge.
-- **Mode without groups** — `EmpiricalPage`, `ElectronConfigPage`, `StructuresPage`, `LewisPage`. Topic has few enough tools that groups aren't needed. Fine.
-- **Partial groups** — `RedoxPage` (no REFERENCE_GROUPS, flat `REFERENCE_TABS`), `MolarCalculationsPage` (no PROBLEMS_GROUPS). These are drift and should converge to full 3-groups when touched for other reasons.
+- **Mode without groups** — `EmpiricalPage`, `ElectronConfigPage`, `StructuresPage`, `LewisPage`. Topic has few enough tools that groups aren't needed. Still has all three modes (Reference/Practice/Problems).
+- **Partial groups** — `RedoxPage` (no REFERENCE_GROUPS, flat `REFERENCE_TABS`), `MolarCalculationsPage` (no PROBLEMS_GROUPS). These are drift and must converge to full 3-groups when touched for other reasons. **A page with Practice but no Problems is incomplete.**
+- **Reference-only pages** (no Practice/Problems modes) — allowed only for pure property lookups with no calculation component: solubility rules, naming conventions, periodic table. These are the exception to the RPP rule. If you later add a calculator to one of these, it must gain Practice + Problems modes.
 
 ---
 
@@ -119,16 +165,17 @@ When the user switches mode, the topic is preserved via `TAB_TO_TOPIC` + `TOPIC_
 
 Every calculator tool must use these shared primitives from `src/components/shared/`:
 
-| Primitive | Purpose |
-|---|---|
-| `NumberField` | Labeled text input with `inputMode="decimal"` — **never `<input type="number">`** (see below) |
-| `useStepsPanelState` + `StepsTrigger` + `StepsContent` | Collapsible step-by-step panel; also drives the Example button |
-| `SigFigTrigger` + `SigFigContent` | Sig fig breakdown panel |
-| `ResultDisplay` | Animated result card with optional sig-fig alternate and verify state |
+| Primitive                                              | Purpose                                                                                       |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| `NumberField`                                          | Labeled text input with `inputMode="decimal"` — **never `<input type="number">`** (see below) |
+| `useStepsPanelState` + `StepsTrigger` + `StepsContent` | Collapsible step-by-step panel; also drives the Example button                                |
+| `SigFigTrigger` + `SigFigContent`                      | Sig fig breakdown panel                                                                       |
+| `ResultDisplay`                                        | Animated result card with optional sig-fig alternate and verify state                         |
 
 ### ⚠ Never use `<input type="number">` for numeric input
 
 Always use `NumberField` (which uses `<input type="text" inputMode="decimal">`). `type="number"`:
+
 - Mangles `inputMode` on mobile (especially iOS), forcing users to hunt for the decimal key
 - Eats accidental mouse scrolls and silently changes values
 - Rounds in browser-specific ways (Firefox vs Chrome vs Safari all differ)
@@ -139,6 +186,7 @@ This rule is about **numeric** inputs. Plain text inputs (for naming answers, se
 **Known violation to fix when touched:** `components/atomic/ElectromagneticSpectrum.tsx` uses raw `<input>` elements for wavelength/frequency/energy fields. These are numeric and should migrate to `NumberField`.
 
 ### Wiring pattern
+
 ```tsx
 // State
 const [steps, setSteps]               = useState<string[]>([])
@@ -173,10 +221,12 @@ function handleTool() {
 ```
 
 ### Rules
+
 - Reset `steps`, `breakdown`, and `result` to null/empty on every input change.
 - `ResultDisplay value` must be `string` — coerce with `String(n)` if the solver returns a number.
 - `SigFigBreakdown` only applies when the input unit is `'g'` (mass); skip it for mol inputs.
 - The example generator function is always defined inline (closure) when it depends on component state such as the current reaction.
+- **Every tool must have a worked-example button** via `useStepsPanelState`. Even reactive tools (no Calculate button) must have the "Show me an example" button. A tool without an example leaves students with no model of how to approach the problem.
 
 ---
 
@@ -189,6 +239,7 @@ Tools that ask the student to produce a numeric answer use the three-state verif
 - `'incorrect'` — value doesn't match
 
 This applies to all `*Tool` components with an answer field. Exceptions are tools without a single "answer" to check:
+
 - **Legitimate exceptions:** `HeatingCurveTool`, `ReactionProfileTool` (visualizers).
 - **Pending adoption:** `LimitingReagentTool`, `EmpiricalTool`, `GasStoichTool`, `PercentCompositionTool` should adopt verify-state when next touched.
 
@@ -216,22 +267,69 @@ const stepsState = useStepsPanelState(noSteps, generateMyExample)
 `useStepsPanelState` with an empty `steps` array and a `generate` function renders only the "Show me an example" button — it never shows calculation steps. Keep `AnimatePresence` for the reactive result display below.
 
 If the tool's internal steps are typed as `{ label: string; expr: string }[]` rather than `string[]`, map them before passing:
+
 ```tsx
-const stringSteps = useMemo(() => steps.map(s => `${s.label}: ${s.expr}`), [steps])
-const stepsState = useStepsPanelState(stringSteps, generateExample)
+const stringSteps = useMemo(
+  () => steps.map((s) => `${s.label}: ${s.expr}`),
+  [steps],
+);
+const stepsState = useStepsPanelState(stringSteps, generateExample);
 ```
 
 ---
 
-## Adding a New Practice Topic
+## Component & File Conventions
 
-When a new calculator/practice topic is added, all three of the following must be updated:
+### File naming
+
+- All calculator/solver components: `*Tool.tsx`. Never `*Calc.tsx` or `*Solver.tsx`. The codebase was unified to this convention; don't drift back.
+- All reference components: `*Reference.tsx`.
+- All practice/problem generators: `*Practice.tsx` (component) and `*Practice.ts` (pure logic in utils/).
+- All data files: `src/data/*.ts` — pure TypeScript, no React, no logic beyond type definitions and const arrays.
+
+### PageShell
+
+Every page must use `PageShell` from `src/components/Layout/PageShell.tsx` for its root wrapper. This provides consistent padding, max-width, and gap spacing. Don't inline the padding string (`pl-4 pr-4 md:pl-6 ...`) manually — use PageShell.
+
+**Exceptions:** `LewisPage` and `VseprPage` are component-pages embedded in `StructuresPage` and have different layout needs. These are the only permitted exceptions.
+
+### Reference component root container
+
+All `*Reference.tsx` components must use the same root container:
+
+```tsx
+<div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
+```
+
+The only exception is `EnthalpyReference` which is a data table with a genuinely different layout.
+
+### Data source attribution
+
+When reference data values (specific heats, bond enthalpies, reduction potentials, ionization energies, etc.) differ from Chang's tables, add a brief footnote in the reference component explaining the source. Don't silently use a different value — students comparing app output to homework answers will notice and lose trust.
+
+Example: "Values from CRC Handbook (2023). Chang Table 6.2 uses slightly different values for some metals."
+
+---
+
+## Adding a New Topic or Practice Tool
+
+When a new calculator/practice topic is added, **all five** of the following must be updated:
 
 1. **Practice tab** — add the tool as a tab in the relevant `*Page.tsx` under the Practice mode group.
-2. **Test generation** — add the problem type to `utils/*Practice.ts` or `chem/*` so the problems panel can generate it.
-3. **Automated tests** — add test cases in `src/tests/` covering the new solver and generated problems.
+2. **Problems tab** — add a corresponding auto-generated problem mode under the Problems group. Every Practice tool must have a Problems counterpart. If the tool has a `generate*Problem()` function, wire it into the Problems tab with `allowCustom={false}`.
+3. **Test generation** — add the problem type to `utils/*Practice.ts` or `chem/*` so the problems panel can generate random problems. The generator must produce varied, realistic inputs — not the same problem every time.
+4. **Automated tests** — add test cases covering the solver, the problem generator (verify correctness across 20+ random runs), and at least one Chang-verbatim verification case.
+5. **Navigation + search** — add the new topic to `NavSidebar.tsx`:
+   - Add a nav entry under the appropriate section, reflecting the page's actual tab structure.
+   - Add search keywords so students can find the tool by searching natural terms (e.g. "titration", "acid base", "neutralization" should all surface a titration tool).
 
 Skipping any one of these is a bug.
+
+### NavSidebar must reflect page layout
+
+The sidebar navigation structure should mirror what the student sees when they arrive at a page. If a page has tabs for "Limiting Reagent", "Theoretical Yield", and "Percent Yield" under Practice, the sidebar should show those as sub-entries under the topic — not just a single "Stoichiometry" link. When a new tab is added to a page, add a corresponding sidebar entry.
+
+Search entries should include common synonyms and related terms. A student searching "moles to grams" should find the moles tool; a student searching "neutralization" should find titration practice.
 
 ---
 
@@ -271,27 +369,27 @@ Other domains (thermo, idealgas, empirical, molar calculations) still compute lo
 
 Coverage against Chang 14e chapters, as of the most recent review:
 
-| Ch | Topic | Status |
-|---|---|---|
-| 1 | Measurement, sig figs, conversions | ✓ Strong |
-| 2 | Atoms, ions, molecules | ✓ Strong |
-| 2 | **Nomenclature practice** | ⚠ Reference only; no practice tool |
-| 3 | Stoichiometry | ✓ Strong |
-| 3 | **Weighted atomic mass from isotopes** | ⚠ Data exists; no tool |
-| 3 | **Combustion analysis mode for EmpiricalTool** | ⚠ Missing |
-| 4 | Aqueous reactions | ✓ Strong |
-| 4 | **Titration curves** (pH vs volume) | ⚠ Missing |
-| 5 | Gases | ✓ Complete |
-| 6 | Thermochemistry | ✓ Complete (phase diagrams, Clausius-Clapeyron added) |
-| 7 | Quantum theory / electron config | ✓ Reference strong |
-| 7 | **Bohr/photoelectric/deBroglie practice** | ⚠ Missing computational tools |
-| 8 | Periodic trends | ⚠ Data + comparison exist; no dedicated reference or practice |
-| 9 | Lewis structures, bonding | ✓ Complete |
-| 9 | **Lattice energy / Born-Haber** | ⚠ Missing (medium priority) |
-| 10 | VSEPR / molecular geometry | ✓ Complete |
-| 10 | **Hybridization practice tool** | ⚠ Reference only (embedded in VSEPR data) |
-| 10 | **Dipole moment / polarity tool** | ⚠ Missing |
-| 10 | **Molecular orbital theory** | ⚠ Missing (syllabus-dependent) |
+| Ch  | Topic                                          | Status                                                        |
+| --- | ---------------------------------------------- | ------------------------------------------------------------- |
+| 1   | Measurement, sig figs, conversions             | ✓ Strong                                                      |
+| 2   | Atoms, ions, molecules                         | ✓ Strong                                                      |
+| 2   | **Nomenclature practice**                      | ⚠ Reference only; no practice tool                            |
+| 3   | Stoichiometry                                  | ✓ Strong                                                      |
+| 3   | **Weighted atomic mass from isotopes**         | ⚠ Data exists; no tool                                        |
+| 3   | **Combustion analysis mode for EmpiricalTool** | ⚠ Missing                                                     |
+| 4   | Aqueous reactions                              | ✓ Strong                                                      |
+| 4   | **Titration curves** (pH vs volume)            | ⚠ Missing                                                     |
+| 5   | Gases                                          | ✓ Complete                                                    |
+| 6   | Thermochemistry                                | ✓ Complete (phase diagrams, Clausius-Clapeyron added)         |
+| 7   | Quantum theory / electron config               | ✓ Reference strong                                            |
+| 7   | **Bohr/photoelectric/deBroglie practice**      | ⚠ Missing computational tools                                 |
+| 8   | Periodic trends                                | ⚠ Data + comparison exist; no dedicated reference or practice |
+| 9   | Lewis structures, bonding                      | ✓ Complete                                                    |
+| 9   | **Lattice energy / Born-Haber**                | ⚠ Missing (medium priority)                                   |
+| 10  | VSEPR / molecular geometry                     | ✓ Complete                                                    |
+| 10  | **Hybridization practice tool**                | ⚠ Reference only (embedded in VSEPR data)                     |
+| 10  | **Dipole moment / polarity tool**              | ⚠ Missing                                                     |
+| 10  | **Molecular orbital theory**                   | ⚠ Missing (syllabus-dependent)                                |
 
 When adding a new topic, consult this table. If the topic is marked `⚠`, data or reference material likely already exists — build on it rather than duplicating.
 
@@ -318,51 +416,3 @@ After the recent cleanup, ReferencePage has two live tabs: `solubility` and `nam
 - Spring animation for pill transitions: `{ type: 'spring', stiffness: 400, damping: 32 }`.
 - `layoutId` strings must be unique across the whole page to avoid framer-motion conflicts.
 - `print:hidden` on every nav/pill row — no exceptions.
-
----
-
-## Chained Problem Pattern
-
-For multi-step problems where the student must work through 2–5 sub-steps
-(industrial yield chains, gravimetric analysis, Born-Haber cycles, successive
-IE identification, etc.), use the `ChainedProblem` component from
-`src/components/shared/ChainedProblem.tsx`.
-
-The pattern:
-
-1. A pure `chem/` function builds a typed problem object containing `scenario` +
-   `steps[]`. Each step has `prompt`, `expectedAnswer`, `answerUnit`, and optional
-   `hint`/`explanation`.
-2. The tool component renders `<ChainedProblem scenario={...} steps={steps} />`.
-3. The student works through sub-steps one at a time. Each is verified independently.
-   Later steps unlock as earlier ones complete (correct or revealed).
-
-### When to use it
-
-- The problem naturally decomposes into 3–5 sub-steps with intermediate numeric
-  answers (not just reasoning).
-- Each sub-step has a clear right/wrong verification.
-- The pedagogy is improved by forcing the student to think one step at a time
-  rather than handing them a black-box result.
-
-### When NOT to use it
-
-- Single-step problems — use the heavy calculator pattern.
-- Problems where "the steps" are all the same operation on different inputs
-  (e.g., balancing 5 equations) — use a practice-deck pattern instead.
-- Problems where sub-steps don't have verifiable numeric answers — keep those
-  as reference content.
-
-### Reference implementation
-
-`src/chem/chainedYield.ts` + `src/components/stoichiometry/ChainedYieldTool.tsx`
-is the canonical example: mass of reactant → moles → moles (ratio) → theoretical
-mass → percent yield. Follow this for new chained-problem tools.
-
-### chem/ type-only import exception
-
-Chained problem builder functions in `src/chem/` may `import type` the
-`ChainedStep` type from `src/components/shared/ChainedProblem.tsx`. This is
-the only permitted cross-layer import from `chem/` to `components/`, and only
-for types (which erase at compile time). Runtime imports from `components/`
-into `chem/` remain forbidden.

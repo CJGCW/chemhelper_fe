@@ -1,5 +1,32 @@
-// Reverse isotope abundance solver
-// Given average atomic mass and two isotope masses, finds natural abundances
+// Isotope abundance solvers:
+//   weightedAverageMass — forward: given masses + abundances → average mass
+//   reverseIsotopeAbundance — reverse: given average + two masses → abundances
+
+export interface IsotopeEntry {
+  mass:      number   // exact isotopic mass (amu)
+  abundance: number   // natural abundance (%)
+}
+
+export interface WeightedAverageSolution {
+  average: number
+  steps:   string[]
+}
+
+export function weightedAverageMass(isotopes: IsotopeEntry[]): WeightedAverageSolution {
+  if (isotopes.length === 0) throw new Error('At least one isotope required.')
+  const terms = isotopes.map(iso => ({ frac: iso.abundance / 100, contrib: iso.mass * iso.abundance / 100 }))
+  const average = terms.reduce((sum, t) => sum + t.contrib, 0)
+
+  const steps = [
+    `Formula: Ā = Σ (mᵢ × fᵢ)   where fᵢ = abundance ÷ 100`,
+    ...isotopes.map((iso, i) =>
+      `f${i + 1} = ${sig(iso.abundance)} ÷ 100 = ${sig(terms[i].frac)}  →  contribution: ${sig(iso.mass)} × ${sig(terms[i].frac)} = ${sig(terms[i].contrib, 6)} amu`
+    ),
+    `Ā = ${isotopes.map((_, i) => sig(terms[i].contrib, 6)).join(' + ')} = ${sig(average, 6)} amu`,
+  ]
+
+  return { average, steps }
+}
 
 export interface IsotopeReverseInput {
   averageMass:   number
