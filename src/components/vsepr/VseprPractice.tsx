@@ -1,140 +1,174 @@
-import { useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import VseprShapeDiagram from './VseprShapeDiagram'
+import KetcherStructureEditor, { type KetcherEditorHandle, type ValidationResult } from './KetcherStructureEditor'
 import type { LewisStructure } from '../../pages/LewisPage'
-import VsepDiagram from './VsepDiagram'
-import VseprEditor from './VseprEditor'
 
-// ── Static VSEPR problem pool ─────────────────────────────────────────────────
+const VseprDrawChallenge = lazy(() => import('./VseprDrawChallenge'))
+
+// ── Data ──────────────────────────────────────────────────────────────────────
 
 interface VseprEntry {
-  label:             string
-  formula:           string
-  charge:            number
-  molecularGeometry: string
-  electronGeometry:  string
-  hybridization:     string
-  bondAngles:        string
-  bondingPairs:      number
-  lonePairs:         number
-  // Minimal LewisStructure needed for VsepDiagram rendering
-  structure:         LewisStructure
+  formula:   string
+  central:   string
+  bonds:     number
+  lonePairs: number
+  geometry:  string  // molecular geometry (display string)
+  charge:    number  // molecular charge for /api/structure/lewis
 }
 
-// Helper to build a minimal LewisStructure for diagram rendering only
-function mol(name: string, formula: string, charge: number, geometry: string,
-  atoms: LewisStructure['atoms'], bonds: LewisStructure['bonds']): LewisStructure {
-  return { name, formula, charge, total_valence_electrons: 0, geometry, atoms, bonds, steps: [], notes: '' }
+function toApiFormula(formula: string): string {
+  return formula
+    .replace(/[₀₁₂₃₄₅₆₇₈₉]/g, c => String(c.charCodeAt(0) - 0x2080))
+    .replace(/[²³⁻⁺]/g, '')
+    .trim()
 }
 
 const PROBLEMS: VseprEntry[] = [
-  {
-    label: 'H₂O', formula: 'H2O', charge: 0,
-    molecularGeometry: 'Bent', electronGeometry: 'Tetrahedral',
-    hybridization: 'sp³', bondAngles: '≈104.5°', bondingPairs: 2, lonePairs: 2,
-    structure: mol('Water', 'H2O', 0, 'bent',
-      [{ id:'O', element:'O', lone_pairs:2, formal_charge:0 }, { id:'H1', element:'H', lone_pairs:0, formal_charge:0 }, { id:'H2', element:'H', lone_pairs:0, formal_charge:0 }],
-      [{ from:'O', to:'H1', order:1 }, { from:'O', to:'H2', order:1 }]),
-  },
-  {
-    label: 'CO₂', formula: 'CO2', charge: 0,
-    molecularGeometry: 'Linear', electronGeometry: 'Linear',
-    hybridization: 'sp', bondAngles: '180°', bondingPairs: 2, lonePairs: 0,
-    structure: mol('Carbon Dioxide', 'CO2', 0, 'linear',
-      [{ id:'C', element:'C', lone_pairs:0, formal_charge:0 }, { id:'O1', element:'O', lone_pairs:2, formal_charge:0 }, { id:'O2', element:'O', lone_pairs:2, formal_charge:0 }],
-      [{ from:'C', to:'O1', order:2 }, { from:'C', to:'O2', order:2 }]),
-  },
-  {
-    label: 'NH₃', formula: 'NH3', charge: 0,
-    molecularGeometry: 'Trigonal Pyramidal', electronGeometry: 'Tetrahedral',
-    hybridization: 'sp³', bondAngles: '≈107°', bondingPairs: 3, lonePairs: 1,
-    structure: mol('Ammonia', 'NH3', 0, 'trigonal_pyramidal',
-      [{ id:'N', element:'N', lone_pairs:1, formal_charge:0 }, { id:'H1', element:'H', lone_pairs:0, formal_charge:0 }, { id:'H2', element:'H', lone_pairs:0, formal_charge:0 }, { id:'H3', element:'H', lone_pairs:0, formal_charge:0 }],
-      [{ from:'N', to:'H1', order:1 }, { from:'N', to:'H2', order:1 }, { from:'N', to:'H3', order:1 }]),
-  },
-  {
-    label: 'CH₄', formula: 'CH4', charge: 0,
-    molecularGeometry: 'Tetrahedral', electronGeometry: 'Tetrahedral',
-    hybridization: 'sp³', bondAngles: '≈109.5°', bondingPairs: 4, lonePairs: 0,
-    structure: mol('Methane', 'CH4', 0, 'tetrahedral',
-      [{ id:'C', element:'C', lone_pairs:0, formal_charge:0 }, { id:'H1', element:'H', lone_pairs:0, formal_charge:0 }, { id:'H2', element:'H', lone_pairs:0, formal_charge:0 }, { id:'H3', element:'H', lone_pairs:0, formal_charge:0 }, { id:'H4', element:'H', lone_pairs:0, formal_charge:0 }],
-      [{ from:'C', to:'H1', order:1 }, { from:'C', to:'H2', order:1 }, { from:'C', to:'H3', order:1 }, { from:'C', to:'H4', order:1 }]),
-  },
-  {
-    label: 'BF₃', formula: 'BF3', charge: 0,
-    molecularGeometry: 'Trigonal Planar', electronGeometry: 'Trigonal Planar',
-    hybridization: 'sp²', bondAngles: '120°', bondingPairs: 3, lonePairs: 0,
-    structure: mol('Boron Trifluoride', 'BF3', 0, 'trigonal_planar',
-      [{ id:'B', element:'B', lone_pairs:0, formal_charge:0 }, { id:'F1', element:'F', lone_pairs:3, formal_charge:0 }, { id:'F2', element:'F', lone_pairs:3, formal_charge:0 }, { id:'F3', element:'F', lone_pairs:3, formal_charge:0 }],
-      [{ from:'B', to:'F1', order:1 }, { from:'B', to:'F2', order:1 }, { from:'B', to:'F3', order:1 }]),
-  },
-  {
-    label: 'SO₂', formula: 'SO2', charge: 0,
-    molecularGeometry: 'Bent', electronGeometry: 'Trigonal Planar',
-    hybridization: 'sp²', bondAngles: '≈120°', bondingPairs: 2, lonePairs: 1,
-    structure: mol('Sulfur Dioxide', 'SO2', 0, 'bent',
-      [{ id:'S', element:'S', lone_pairs:1, formal_charge:0 }, { id:'O1', element:'O', lone_pairs:2, formal_charge:0 }, { id:'O2', element:'O', lone_pairs:2, formal_charge:0 }],
-      [{ from:'S', to:'O1', order:2 }, { from:'S', to:'O2', order:1 }]),
-  },
-  {
-    label: 'PCl₅', formula: 'PCl5', charge: 0,
-    molecularGeometry: 'Trigonal Bipyramidal', electronGeometry: 'Trigonal Bipyramidal',
-    hybridization: 'sp³d', bondAngles: '90°, 120°', bondingPairs: 5, lonePairs: 0,
-    structure: mol('Phosphorus Pentachloride', 'PCl5', 0, 'trigonal_bipyramidal',
-      [{ id:'P', element:'P', lone_pairs:0, formal_charge:0 }, { id:'Cl1', element:'Cl', lone_pairs:3, formal_charge:0 }, { id:'Cl2', element:'Cl', lone_pairs:3, formal_charge:0 }, { id:'Cl3', element:'Cl', lone_pairs:3, formal_charge:0 }, { id:'Cl4', element:'Cl', lone_pairs:3, formal_charge:0 }, { id:'Cl5', element:'Cl', lone_pairs:3, formal_charge:0 }],
-      [{ from:'P', to:'Cl1', order:1 }, { from:'P', to:'Cl2', order:1 }, { from:'P', to:'Cl3', order:1 }, { from:'P', to:'Cl4', order:1 }, { from:'P', to:'Cl5', order:1 }]),
-  },
-  {
-    label: 'SF₄', formula: 'SF4', charge: 0,
-    molecularGeometry: 'See-Saw', electronGeometry: 'Trigonal Bipyramidal',
-    hybridization: 'sp³d', bondAngles: '≈90°, ≈120°, 180°', bondingPairs: 4, lonePairs: 1,
-    structure: mol('Sulfur Tetrafluoride', 'SF4', 0, 'see_saw',
-      [{ id:'S', element:'S', lone_pairs:1, formal_charge:0 }, { id:'F1', element:'F', lone_pairs:3, formal_charge:0 }, { id:'F2', element:'F', lone_pairs:3, formal_charge:0 }, { id:'F3', element:'F', lone_pairs:3, formal_charge:0 }, { id:'F4', element:'F', lone_pairs:3, formal_charge:0 }],
-      [{ from:'S', to:'F1', order:1 }, { from:'S', to:'F2', order:1 }, { from:'S', to:'F3', order:1 }, { from:'S', to:'F4', order:1 }]),
-  },
-  {
-    label: 'ClF₃', formula: 'ClF3', charge: 0,
-    molecularGeometry: 'T-Shaped', electronGeometry: 'Trigonal Bipyramidal',
-    hybridization: 'sp³d', bondAngles: '90°, 180°', bondingPairs: 3, lonePairs: 2,
-    structure: mol('Chlorine Trifluoride', 'ClF3', 0, 't_shaped',
-      [{ id:'Cl', element:'Cl', lone_pairs:2, formal_charge:0 }, { id:'F1', element:'F', lone_pairs:3, formal_charge:0 }, { id:'F2', element:'F', lone_pairs:3, formal_charge:0 }, { id:'F3', element:'F', lone_pairs:3, formal_charge:0 }],
-      [{ from:'Cl', to:'F1', order:1 }, { from:'Cl', to:'F2', order:1 }, { from:'Cl', to:'F3', order:1 }]),
-  },
-  {
-    label: 'SF₆', formula: 'SF6', charge: 0,
-    molecularGeometry: 'Octahedral', electronGeometry: 'Octahedral',
-    hybridization: 'sp³d²', bondAngles: '90°', bondingPairs: 6, lonePairs: 0,
-    structure: mol('Sulfur Hexafluoride', 'SF6', 0, 'octahedral',
-      [{ id:'S', element:'S', lone_pairs:0, formal_charge:0 }, { id:'F1', element:'F', lone_pairs:3, formal_charge:0 }, { id:'F2', element:'F', lone_pairs:3, formal_charge:0 }, { id:'F3', element:'F', lone_pairs:3, formal_charge:0 }, { id:'F4', element:'F', lone_pairs:3, formal_charge:0 }, { id:'F5', element:'F', lone_pairs:3, formal_charge:0 }, { id:'F6', element:'F', lone_pairs:3, formal_charge:0 }],
-      [{ from:'S', to:'F1', order:1 }, { from:'S', to:'F2', order:1 }, { from:'S', to:'F3', order:1 }, { from:'S', to:'F4', order:1 }, { from:'S', to:'F5', order:1 }, { from:'S', to:'F6', order:1 }]),
-  },
-  {
-    label: 'XeF₄', formula: 'XeF4', charge: 0,
-    molecularGeometry: 'Square Planar', electronGeometry: 'Octahedral',
-    hybridization: 'sp³d²', bondAngles: '90°', bondingPairs: 4, lonePairs: 2,
-    structure: mol('Xenon Tetrafluoride', 'XeF4', 0, 'square_planar',
-      [{ id:'Xe', element:'Xe', lone_pairs:2, formal_charge:0 }, { id:'F1', element:'F', lone_pairs:3, formal_charge:0 }, { id:'F2', element:'F', lone_pairs:3, formal_charge:0 }, { id:'F3', element:'F', lone_pairs:3, formal_charge:0 }, { id:'F4', element:'F', lone_pairs:3, formal_charge:0 }],
-      [{ from:'Xe', to:'F1', order:1 }, { from:'Xe', to:'F2', order:1 }, { from:'Xe', to:'F3', order:1 }, { from:'Xe', to:'F4', order:1 }]),
-  },
-  {
-    label: 'BrF₅', formula: 'BrF5', charge: 0,
-    molecularGeometry: 'Square Pyramidal', electronGeometry: 'Octahedral',
-    hybridization: 'sp³d²', bondAngles: '90°', bondingPairs: 5, lonePairs: 1,
-    structure: mol('Bromine Pentafluoride', 'BrF5', 0, 'square_pyramidal',
-      [{ id:'Br', element:'Br', lone_pairs:1, formal_charge:0 }, { id:'F1', element:'F', lone_pairs:3, formal_charge:0 }, { id:'F2', element:'F', lone_pairs:3, formal_charge:0 }, { id:'F3', element:'F', lone_pairs:3, formal_charge:0 }, { id:'F4', element:'F', lone_pairs:3, formal_charge:0 }, { id:'F5', element:'F', lone_pairs:3, formal_charge:0 }],
-      [{ from:'Br', to:'F1', order:1 }, { from:'Br', to:'F2', order:1 }, { from:'Br', to:'F3', order:1 }, { from:'Br', to:'F4', order:1 }, { from:'Br', to:'F5', order:1 }]),
-  },
+  // LINEAR (AB₂)
+  { formula: 'CO₂',    central: 'C',  bonds: 2, lonePairs: 0, geometry: 'linear',               charge:  0 },
+  { formula: 'BeCl₂',  central: 'Be', bonds: 2, lonePairs: 0, geometry: 'linear',               charge:  0 },
+  { formula: 'HgBr₂',  central: 'Hg', bonds: 2, lonePairs: 0, geometry: 'linear',               charge:  0 },
+  { formula: 'CS₂',    central: 'C',  bonds: 2, lonePairs: 0, geometry: 'linear',               charge:  0 },
+
+  // TRIGONAL PLANAR (AB₃)
+  { formula: 'BF₃',    central: 'B',  bonds: 3, lonePairs: 0, geometry: 'trigonal planar',      charge:  0 },
+  { formula: 'BCl₃',   central: 'B',  bonds: 3, lonePairs: 0, geometry: 'trigonal planar',      charge:  0 },
+  { formula: 'AlCl₃',  central: 'Al', bonds: 3, lonePairs: 0, geometry: 'trigonal planar',      charge:  0 },
+  { formula: 'SO₃',    central: 'S',  bonds: 3, lonePairs: 0, geometry: 'trigonal planar',      charge:  0 },
+  { formula: 'NO₃⁻',   central: 'N',  bonds: 3, lonePairs: 0, geometry: 'trigonal planar',      charge: -1 },
+  { formula: 'CO₃²⁻',  central: 'C',  bonds: 3, lonePairs: 0, geometry: 'trigonal planar',      charge: -2 },
+
+  // BENT from trigonal planar (AB₂E)
+  { formula: 'SO₂',    central: 'S',  bonds: 2, lonePairs: 1, geometry: 'bent',                 charge:  0 },
+  { formula: 'NO₂⁻',   central: 'N',  bonds: 2, lonePairs: 1, geometry: 'bent',                 charge: -1 },
+  { formula: 'O₃',     central: 'O',  bonds: 2, lonePairs: 1, geometry: 'bent',                 charge:  0 },
+
+  // TETRAHEDRAL (AB₄)
+  { formula: 'CH₄',    central: 'C',  bonds: 4, lonePairs: 0, geometry: 'tetrahedral',          charge:  0 },
+  { formula: 'SiH₄',   central: 'Si', bonds: 4, lonePairs: 0, geometry: 'tetrahedral',          charge:  0 },
+  { formula: 'SiCl₄',  central: 'Si', bonds: 4, lonePairs: 0, geometry: 'tetrahedral',          charge:  0 },
+  { formula: 'CBr₄',   central: 'C',  bonds: 4, lonePairs: 0, geometry: 'tetrahedral',          charge:  0 },
+  { formula: 'NH₄⁺',   central: 'N',  bonds: 4, lonePairs: 0, geometry: 'tetrahedral',          charge:  1 },
+  { formula: 'BF₄⁻',   central: 'B',  bonds: 4, lonePairs: 0, geometry: 'tetrahedral',          charge: -1 },
+  { formula: 'AlCl₄⁻', central: 'Al', bonds: 4, lonePairs: 0, geometry: 'tetrahedral',          charge: -1 },
+
+  // TRIGONAL PYRAMIDAL (AB₃E)
+  { formula: 'NH₃',    central: 'N',  bonds: 3, lonePairs: 1, geometry: 'trigonal pyramidal',   charge:  0 },
+  { formula: 'NF₃',    central: 'N',  bonds: 3, lonePairs: 1, geometry: 'trigonal pyramidal',   charge:  0 },
+  { formula: 'PCl₃',   central: 'P',  bonds: 3, lonePairs: 1, geometry: 'trigonal pyramidal',   charge:  0 },
+  { formula: 'H₃O⁺',   central: 'O',  bonds: 3, lonePairs: 1, geometry: 'trigonal pyramidal',   charge:  1 },
+
+  // BENT from tetrahedral (AB₂E₂)
+  { formula: 'H₂O',    central: 'O',  bonds: 2, lonePairs: 2, geometry: 'bent',                 charge:  0 },
+  { formula: 'H₂S',    central: 'S',  bonds: 2, lonePairs: 2, geometry: 'bent',                 charge:  0 },
+  { formula: 'H₂Se',   central: 'Se', bonds: 2, lonePairs: 2, geometry: 'bent',                 charge:  0 },
+  { formula: 'SCl₂',   central: 'S',  bonds: 2, lonePairs: 2, geometry: 'bent',                 charge:  0 },
+
+  // TRIGONAL BIPYRAMIDAL (AB₅)
+  { formula: 'PCl₅',   central: 'P',  bonds: 5, lonePairs: 0, geometry: 'trigonal bipyramidal', charge:  0 },
+
+  // SEESAW (AB₄E)
+  { formula: 'SF₄',    central: 'S',  bonds: 4, lonePairs: 1, geometry: 'seesaw',               charge:  0 },
+  { formula: 'SeF₄',   central: 'Se', bonds: 4, lonePairs: 1, geometry: 'seesaw',               charge:  0 },
+  { formula: 'TeCl₄',  central: 'Te', bonds: 4, lonePairs: 1, geometry: 'seesaw',               charge:  0 },
+
+  // T-SHAPED (AB₃E₂)
+  { formula: 'ClF₃',   central: 'Cl', bonds: 3, lonePairs: 2, geometry: 't-shaped',             charge:  0 },
+  { formula: 'ICl₃',   central: 'I',  bonds: 3, lonePairs: 2, geometry: 't-shaped',             charge:  0 },
+
+  // LINEAR from trigonal bipyramidal (AB₂E₃)
+  { formula: 'I₃⁻',    central: 'I',  bonds: 2, lonePairs: 3, geometry: 'linear',               charge: -1 },
+  { formula: 'ICl₂⁻',  central: 'I',  bonds: 2, lonePairs: 3, geometry: 'linear',               charge: -1 },
+  { formula: 'XeF₂',   central: 'Xe', bonds: 2, lonePairs: 3, geometry: 'linear',               charge:  0 },
+
+  // OCTAHEDRAL (AB₆)
+  { formula: 'SF₆',    central: 'S',  bonds: 6, lonePairs: 0, geometry: 'octahedral',           charge:  0 },
+  { formula: 'SbF₆⁻',  central: 'Sb', bonds: 6, lonePairs: 0, geometry: 'octahedral',           charge: -1 },
+
+  // SQUARE PYRAMIDAL (AB₅E)
+  { formula: 'BrF₅',   central: 'Br', bonds: 5, lonePairs: 1, geometry: 'square pyramidal',     charge:  0 },
+
+  // SQUARE PLANAR (AB₄E₂)
+  { formula: 'XeF₄',   central: 'Xe', bonds: 4, lonePairs: 2, geometry: 'square planar',        charge:  0 },
+  { formula: 'ICl₄⁻',  central: 'I',  bonds: 4, lonePairs: 2, geometry: 'square planar',        charge: -1 },
 ]
 
-// ── MCQ option generation ─────────────────────────────────────────────────────
+// ── Derived properties ────────────────────────────────────────────────────────
 
-const ALL_MOL_GEOMETRIES = ['Linear', 'Bent', 'Trigonal Planar', 'Trigonal Pyramidal', 'Tetrahedral', 'T-Shaped', 'See-Saw', 'Square Planar', 'Square Pyramidal', 'Trigonal Bipyramidal', 'Octahedral']
+const GEO_DISPLAY: Record<string, string> = {
+  'linear':               'Linear',
+  'trigonal planar':      'Trigonal Planar',
+  'bent':                 'Bent',
+  'tetrahedral':          'Tetrahedral',
+  'trigonal pyramidal':   'Trigonal Pyramidal',
+  'trigonal bipyramidal': 'Trigonal Bipyramidal',
+  'seesaw':               'See-Saw',
+  't-shaped':             'T-Shaped',
+  'octahedral':           'Octahedral',
+  'square pyramidal':     'Square Pyramidal',
+  'square planar':        'Square Planar',
+}
+
+function molGeo(e: VseprEntry): string {
+  return GEO_DISPLAY[e.geometry.toLowerCase()] ?? e.geometry
+}
+
+function elecGeo(e: VseprEntry): string {
+  const d = e.bonds + e.lonePairs
+  if (d === 2) return 'Linear'
+  if (d === 3) return 'Trigonal Planar'
+  if (d === 4) return 'Tetrahedral'
+  if (d === 5) return 'Trigonal Bipyramidal'
+  if (d === 6) return 'Octahedral'
+  return '?'
+}
+
+function hybrid(e: VseprEntry): string {
+  const d = e.bonds + e.lonePairs
+  if (d === 2) return 'sp'
+  if (d === 3) return 'sp²'
+  if (d === 4) return 'sp³'
+  if (d === 5) return 'sp³d'
+  if (d === 6) return 'sp³d²'
+  return '?'
+}
+
+function bondAngles(e: VseprEntry): string {
+  const g = e.geometry.toLowerCase()
+  if (g === 'linear')               return '180°'
+  if (g === 'trigonal planar')      return '120°'
+  if (g === 'bent')                 return e.lonePairs === 1 ? '≈120°' : '≈104.5°'
+  if (g === 'tetrahedral')          return '≈109.5°'
+  if (g === 'trigonal pyramidal')   return '≈107°'
+  if (g === 'trigonal bipyramidal') return '90°, 120°'
+  if (g === 'seesaw')               return '≈90°, ≈120°'
+  if (g === 't-shaped')             return '90°, 180°'
+  if (g === 'octahedral')           return '90°'
+  if (g === 'square pyramidal')     return '90°'
+  if (g === 'square planar')        return '90°'
+  return '?'
+}
+
+// ── Subtabs & question types ──────────────────────────────────────────────────
+
+type QuestionType = 'molecular_geometry' | 'electron_geometry' | 'hybridization' | 'bond_angles' | 'bonding_pairs' | 'lone_pairs'
+type Subtab = 'geometry' | 'bond_angles' | 'hybridization' | 'electron_pairs' | 'combined' | 'drawing'
+
+const SUBTABS: { id: Subtab; label: string; formula: string; types?: QuestionType[] }[] = [
+  { id: 'geometry',       label: 'Geometry',       formula: '⬡',   types: ['molecular_geometry', 'electron_geometry'] },
+  { id: 'bond_angles',    label: 'Bond Angles',    formula: '∠',   types: ['bond_angles'] },
+  { id: 'hybridization',  label: 'Hybridization',  formula: 'sp³', types: ['hybridization'] },
+  { id: 'electron_pairs', label: 'Electron Pairs', formula: '∶',   types: ['bonding_pairs', 'lone_pairs'] },
+  { id: 'drawing',        label: 'Drawing',        formula: '✎' },
+  { id: 'combined',       label: 'Combined',       formula: '⊞' },
+]
+
+const ALL_MOL_GEOMETRIES = Object.values(GEO_DISPLAY)
 const ALL_ELEC_GEOMETRIES = ['Linear', 'Trigonal Planar', 'Tetrahedral', 'Trigonal Bipyramidal', 'Octahedral']
-const ALL_HYBRIDIZATIONS  = ['s', 'sp', 'sp²', 'sp³', 'sp³d', 'sp³d²']
-const ALL_BOND_ANGLES     = ['90°', '≈104.5°', '≈107°', '≈109.5°', '≈120°', '120°', '90°, 120°', '90°, 180°', '≈90°, ≈120°, 180°', '180°']
-
-type QuestionType = 'molecular_geometry' | 'electron_geometry' | 'hybridization' | 'bond_angles'
-
-const QUESTION_TYPES: QuestionType[] = ['molecular_geometry', 'molecular_geometry', 'electron_geometry', 'hybridization', 'bond_angles']
+const ALL_HYBRIDIZATIONS  = ['sp', 'sp²', 'sp³', 'sp³d', 'sp³d²']
+const ALL_BOND_ANGLES     = ['90°', '≈104.5°', '≈107°', '≈109.5°', '≈120°', '120°', '90°, 120°', '90°, 180°', '≈90°, ≈120°', '180°']
+const ALL_PAIR_COUNTS     = ['0', '1', '2', '3', '4', '5', '6']
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr]
@@ -153,57 +187,353 @@ function makeOptions(correct: string, pool: string[]): string[] {
 function buildQuestion(entry: VseprEntry, qType: QuestionType) {
   switch (qType) {
     case 'molecular_geometry':
-      return { question: 'What is the molecular geometry?', correct: entry.molecularGeometry, options: makeOptions(entry.molecularGeometry, ALL_MOL_GEOMETRIES) }
+      return { question: 'What is the molecular geometry?',               correct: molGeo(entry),        options: makeOptions(molGeo(entry),        ALL_MOL_GEOMETRIES) }
     case 'electron_geometry':
-      return { question: 'What is the electron geometry?', correct: entry.electronGeometry, options: makeOptions(entry.electronGeometry, ALL_ELEC_GEOMETRIES) }
+      return { question: 'What is the electron geometry?',                correct: elecGeo(entry),       options: makeOptions(elecGeo(entry),       ALL_ELEC_GEOMETRIES) }
     case 'hybridization':
-      return { question: 'What is the hybridization of the central atom?', correct: entry.hybridization, options: makeOptions(entry.hybridization, ALL_HYBRIDIZATIONS) }
+      return { question: 'What is the hybridization of the central atom?', correct: hybrid(entry),       options: makeOptions(hybrid(entry),        ALL_HYBRIDIZATIONS) }
     case 'bond_angles':
-      return { question: 'What are the approximate bond angles?', correct: entry.bondAngles, options: makeOptions(entry.bondAngles, ALL_BOND_ANGLES) }
+      return { question: 'What are the approximate bond angles?',          correct: bondAngles(entry),   options: makeOptions(bondAngles(entry),    ALL_BOND_ANGLES) }
+    case 'bonding_pairs':
+      return { question: 'How many bonding pairs does the central atom have?', correct: String(entry.bonds),     options: makeOptions(String(entry.bonds),     ALL_PAIR_COUNTS) }
+    case 'lone_pairs':
+      return { question: 'How many lone pairs does the central atom have?',    correct: String(entry.lonePairs), options: makeOptions(String(entry.lonePairs), ALL_PAIR_COUNTS) }
   }
 }
 
-// ── Component ─────────────────────────────────────────────────────────────────
+// ── Combined section ──────────────────────────────────────────────────────────
 
-interface QuestionState {
-  entryIdx:  number
-  qType:     QuestionType
-  question:  string
-  correct:   string
-  options:   string[]
+const COMBINED_ROWS: { id: string; label: string; get: (e: VseprEntry) => string }[] = [
+  { id: 'mol_geo',  label: 'Molecular Geometry', get: e => molGeo(e)          },
+  { id: 'elec_geo', label: 'Electron Geometry',  get: e => elecGeo(e)         },
+  { id: 'hybrid',   label: 'Hybridization',      get: e => hybrid(e)          },
+  { id: 'angles',   label: 'Bond Angles',        get: e => bondAngles(e)      },
+  { id: 'bonding',  label: 'Bonding Pairs',      get: e => String(e.bonds)    },
+  { id: 'lone',     label: 'Lone Pairs',         get: e => String(e.lonePairs)},
+]
+
+function normalizeAns(s: string): string {
+  return s.toLowerCase().trim()
+    .replace(/²/g, '2').replace(/³/g, '3')
+    .replace(/[≈~]/g, '')
+    .replace(/°/g, '')
+    .replace(/\s+/g, ' ')
 }
 
-function newQuestion(entryIdx?: number): QuestionState {
-  const idx = entryIdx ?? Math.floor(Math.random() * PROBLEMS.length)
-  const entry = PROBLEMS[idx]
-  const qType = QUESTION_TYPES[Math.floor(Math.random() * QUESTION_TYPES.length)]
-  const q = buildQuestion(entry, qType)
+function checkAns(input: string, correct: string): boolean {
+  return normalizeAns(input) === normalizeAns(correct)
+}
+
+function randomEntry(): VseprEntry {
+  return PROBLEMS[Math.floor(Math.random() * PROBLEMS.length)]
+}
+
+const pillStyle = {
+  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-surface)))',
+  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
+  color: 'var(--c-halogen)',
+} as const
+
+function CombinedSection() {
+  const [entry, setEntry]           = useState<VseprEntry>(randomEntry)
+  const [structure, setStructure]   = useState<LewisStructure | null>(null)
+  const [inputs, setInputs]         = useState<Record<string, string>>({})
+  const [submitted, setSubmitted]   = useState(false)
+  const [score, setScore]           = useState({ correct: 0, total: 0 })
+  const [drawOpen, setDrawOpen]     = useState(false)
+  const [hasOpened, setHasOpened]   = useState(false)
+  const [drawnSvg, setDrawnSvg]     = useState<string | null>(null)
+  const [drawResult, setDrawResult] = useState<ValidationResult | null>(null)
+  const editorRef = useRef<KetcherEditorHandle>(null)
+
+  // Fetch LewisStructure for the current molecule
+  useEffect(() => {
+    let cancelled = false
+    setStructure(null)
+    const body: Record<string, unknown> = { input: toApiFormula(entry.formula) }
+    if (entry.charge !== 0) body.charge = entry.charge
+    fetch('/api/structure/lewis', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+      .then(r => r.json().then(d => ({ ok: r.ok, d })))
+      .then(({ ok, d }) => { if (!cancelled && ok) setStructure(d as LewisStructure) })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [entry]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  function openDraw() {
+    setHasOpened(true)
+    setDrawOpen(true)
+  }
+
+  async function closeDraw() {
+    const svg = await editorRef.current?.getSvg() ?? null
+    setDrawnSvg(svg)
+    if (svg) {
+      const result = await editorRef.current?.triggerCheck() ?? null
+      setDrawResult(result)
+    }
+    setDrawOpen(false)
+  }
+
+  function handleCheck() {
+    const n = COMBINED_ROWS.filter(r => checkAns(inputs[r.id] ?? '', r.get(entry))).length
+    setScore(s => ({ correct: s.correct + n, total: s.total + COMBINED_ROWS.length }))
+    setSubmitted(true)
+  }
+
+  function handleNext() {
+    setEntry(randomEntry())
+    setInputs({})
+    setSubmitted(false)
+    setDrawnSvg(null)
+    setDrawResult(null)
+    setDrawOpen(false)
+    setHasOpened(false)  // unmount Ketcher so next Draw starts fresh
+  }
+
+  function handleReset() {
+    setScore({ correct: 0, total: 0 })
+    setEntry(randomEntry())
+    setInputs({})
+    setSubmitted(false)
+    setDrawnSvg(null)
+    setDrawResult(null)
+    setDrawOpen(false)
+    setHasOpened(false)
+  }
+
+  const pct = score.total > 0 ? Math.round(score.correct / score.total * 100) : null
+
+  return (
+    <div className="flex flex-col gap-5 max-w-2xl">
+
+      {/* Score */}
+      <div className="flex items-center gap-3 print:hidden">
+        <span className="font-mono text-xs text-dim">Score:</span>
+        <span className="font-mono text-xs" style={{ color: 'var(--c-halogen)' }}>
+          {score.correct} / {score.total}
+        </span>
+        {pct !== null && (
+          <span className="font-mono text-xs text-dim">({pct}%)</span>
+        )}
+        <button onClick={handleReset}
+          className="ml-auto font-mono text-[10px] px-2 py-0.5 rounded-sm border border-border text-dim hover:text-secondary transition-colors">
+          reset
+        </button>
+      </div>
+
+      {/* Molecule header */}
+      <div className="flex gap-6 items-start">
+        <div className="flex flex-col gap-0.5">
+          <span className="font-mono text-xs text-secondary tracking-widest uppercase">Molecule</span>
+          <span className="font-sans font-semibold text-bright text-2xl">{entry.formula}</span>
+          <span className="font-mono text-xs text-dim">central atom: {entry.central}</span>
+        </div>
+
+        {/* Draw area */}
+        <div className="flex-shrink-0">
+          {drawnSvg ? (
+            <div className="flex gap-4 items-start">
+              {/* Thumbnail */}
+              <div className="w-36 flex-shrink-0 relative">
+                <img
+                  src={drawnSvg}
+                  alt="Your structure"
+                  className="w-full rounded-md border border-border"
+                  style={{ background: 'white' }}
+                />
+                {!submitted && (
+                  <button onClick={openDraw}
+                    className="absolute bottom-1.5 right-1.5 px-2 py-0.5 rounded-sm font-mono text-[10px] border border-border transition-colors hover:text-primary"
+                    style={{ background: 'rgb(var(--color-raised))', color: 'rgb(var(--color-secondary))' }}>
+                    Edit
+                  </button>
+                )}
+              </div>
+              {/* Validation checks — shown only after Check is clicked */}
+              {submitted && drawResult && (
+                <div className="flex flex-col gap-1.5 pt-0.5">
+                  {drawResult.checks.map((check, i) => (
+                    <div key={i} className="flex items-start gap-1.5">
+                      <span className="font-mono text-xs shrink-0 mt-px"
+                        style={{ color: check.passed ? '#4ade80' : '#f87171' }}>
+                        {check.passed ? '✓' : '✗'}
+                      </span>
+                      <div className="font-mono text-xs min-w-0">
+                        <span className="font-medium text-primary">{check.label}: </span>
+                        <span className="text-secondary">{check.detail}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="w-36">
+              <button onClick={openDraw}
+                className="w-full rounded-md border-2 border-dashed flex flex-col items-center justify-center gap-1 transition-colors hover:border-secondary"
+                style={{ borderColor: 'rgb(var(--color-border))', aspectRatio: '1', color: 'rgb(var(--color-dim))' }}>
+                <span className="font-mono text-xl">✎</span>
+                <span className="font-mono text-[11px]">Draw</span>
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Property table */}
+      <table className="w-full border-collapse font-sans text-sm">
+        <thead>
+          <tr style={{ borderBottom: '1px solid rgb(var(--color-border))' }}>
+            <th className="py-2 pr-4 text-left font-medium text-secondary w-44">Property</th>
+            <th className="py-2 text-left font-medium text-secondary">Answer</th>
+            <th className="py-2 pl-3 text-left font-medium text-secondary print:hidden w-40">
+              {submitted ? 'Result' : ''}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {/* Property rows */}
+          {COMBINED_ROWS.map((row, i) => {
+            const correct   = row.get(entry)
+            const val       = inputs[row.id] ?? ''
+            const isCorrect = submitted && checkAns(val, correct)
+            const isWrong   = submitted && !isCorrect
+            const rowBorder = i < COMBINED_ROWS.length - 1 ? '1px solid rgb(var(--color-border))' : undefined
+            return (
+              <tr key={row.id} style={{ borderBottom: rowBorder }}>
+                <td className="py-2 pr-4 font-medium text-primary">{row.label}</td>
+                <td className="py-2">
+                  <input
+                    type="text"
+                    value={val}
+                    onChange={e => setInputs(prev => ({ ...prev, [row.id]: e.target.value }))}
+                    onKeyDown={e => { if (e.key === 'Enter' && !submitted) handleCheck() }}
+                    disabled={submitted}
+                    placeholder="…"
+                    className="print:hidden w-full bg-transparent border-b font-mono text-sm text-primary outline-none placeholder:text-dim transition-colors"
+                    style={{
+                      borderColor: isCorrect ? '#4ade80' : isWrong ? '#f87171' : 'rgb(var(--color-border))',
+                      color: isWrong ? '#f87171' : undefined,
+                    }}
+                  />
+                  <span className="hidden print:block border-b border-current w-48 h-5" />
+                </td>
+                <td className="py-2 pl-3 font-mono text-xs print:hidden">
+                  {isCorrect && <span style={{ color: '#4ade80' }}>✓</span>}
+                  {isWrong   && <span style={{ color: '#f87171' }}>✗ {correct}</span>}
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+
+      {/* Actions */}
+      <div className="flex gap-2 print:hidden">
+        {!submitted ? (
+          <button onClick={handleCheck} className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-all" style={pillStyle}>
+            Check
+          </button>
+        ) : (
+          <button onClick={handleNext} className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-all" style={pillStyle}>
+            Next →
+          </button>
+        )}
+      </div>
+
+      {/* Draw modal — kept mounted once opened so drawing persists on close/reopen */}
+      {hasOpened && (
+        <div
+          className="fixed inset-0 z-50"
+          style={{
+            opacity: drawOpen ? 1 : 0,
+            pointerEvents: drawOpen ? 'auto' : 'none',
+            transition: 'opacity 0.15s',
+          }}
+        >
+          {/* Backdrop */}
+          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.7)' }} onClick={closeDraw} />
+
+          {/* Dialog */}
+          <div className="absolute inset-4 md:inset-8 rounded-sm border border-border flex flex-col overflow-hidden"
+            style={{ background: 'rgb(var(--color-surface))' }}>
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-3 border-b border-border shrink-0">
+              <div className="flex flex-col">
+                <span className="font-mono text-xs text-secondary">Draw the structure of</span>
+                <span className="font-sans font-semibold text-bright text-lg">{entry.formula}</span>
+              </div>
+              <button onClick={closeDraw}
+                className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-all"
+                style={pillStyle}>
+                Done
+              </button>
+            </div>
+
+            {/* Editor */}
+            <div className="flex-1 overflow-auto p-4">
+              <KetcherStructureEditor
+                ref={editorRef}
+                correctStructure={structure}
+                showCheck={false}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+    </div>
+  )
+
+}
+
+// ── MCQ section ───────────────────────────────────────────────────────────────
+
+interface QuestionState {
+  entryIdx: number
+  qType:    QuestionType
+  question: string
+  correct:  string
+  options:  string[]
+}
+
+function nextQuestion(types: QuestionType[]): QuestionState {
+  const idx    = Math.floor(Math.random() * PROBLEMS.length)
+  const entry  = PROBLEMS[idx]
+  const eligible = types.filter(t => t !== 'lone_pairs' || entry.lonePairs > 0)
+  const pool   = eligible.length > 0 ? eligible : types
+  const qType  = pool[Math.floor(Math.random() * pool.length)]
+  const q      = buildQuestion(entry, qType)
   return { entryIdx: idx, qType, question: q.question, correct: q.correct, options: q.options }
 }
 
-export default function VseprPractice() {
-  const [q, setQ]           = useState<QuestionState>(() => newQuestion())
-  const [selected, setSelected] = useState<string | null>(null)
-  const [score, setScore]   = useState({ correct: 0, total: 0 })
+function McqSection({ types }: { types: QuestionType[] }) {
+  const [q, setQ]          = useState<QuestionState>(() => nextQuestion(types))
+  const [selected, setSel] = useState<string | null>(null)
+  const [score, setScore]  = useState({ correct: 0, total: 0 })
 
-  const entry = PROBLEMS[q.entryIdx]
-  const answered = selected !== null
+  const entry     = PROBLEMS[q.entryIdx]
+  const answered  = selected !== null
   const isCorrect = selected === q.correct
 
   function handleSelect(opt: string) {
     if (answered) return
-    setSelected(opt)
+    setSel(opt)
     setScore(s => ({ correct: s.correct + (opt === q.correct ? 1 : 0), total: s.total + 1 }))
   }
 
   function handleNext() {
-    setSelected(null)
-    setQ(newQuestion())
+    setSel(null)
+    setQ(nextQuestion(types))
   }
 
   return (
-    <div className="flex flex-col gap-6 max-w-2xl">
-
+    <div className="flex flex-col gap-5 max-w-2xl">
       {/* Score */}
       <div className="flex items-center gap-3">
         <span className="font-mono text-xs text-dim">Score:</span>
@@ -211,11 +541,10 @@ export default function VseprPractice() {
           {score.correct} / {score.total}
         </span>
         {score.total > 0 && (
-          <span className="font-mono text-xs text-dim">
-            ({Math.round(score.correct / score.total * 100)}%)
-          </span>
+          <span className="font-mono text-xs text-dim">({Math.round(score.correct / score.total * 100)}%)</span>
         )}
-        <button onClick={() => setScore({ correct: 0, total: 0 })}
+        <button
+          onClick={() => { setScore({ correct: 0, total: 0 }); setSel(null); setQ(nextQuestion(types)) }}
           className="ml-auto font-mono text-[10px] px-2 py-0.5 rounded-sm border border-border text-dim hover:text-secondary transition-colors">
           reset
         </button>
@@ -227,52 +556,49 @@ export default function VseprPractice() {
           exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.15 }}
           className="flex flex-col gap-5">
 
-          {/* Molecule label + diagram */}
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-0.5">
             <span className="font-mono text-xs text-secondary tracking-widest uppercase">Molecule</span>
-            <span className="font-sans font-semibold text-bright text-xl">{entry.label}</span>
+            <span className="font-sans font-semibold text-bright text-2xl">{entry.formula}</span>
+            <span className="font-mono text-xs text-dim">central atom: {entry.central}</span>
           </div>
 
-          <div className="w-56">
-            <VsepDiagram structure={entry.structure} />
+          <div className="w-44">
+            <VseprShapeDiagram
+              central={entry.central}
+              geometry={entry.geometry}
+              bonds={entry.bonds}
+              lonePairs={entry.lonePairs}
+            />
           </div>
 
-          {/* Question */}
           <p className="font-sans text-base text-primary">{q.question}</p>
 
-          {/* Options */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {q.options.map(opt => {
               const isSelected = selected === opt
               const isRight    = answered && opt === q.correct
               const isWrong    = answered && isSelected && !isRight
-
               return (
-                <button key={opt} onClick={() => handleSelect(opt)}
-                  disabled={answered}
+                <button key={opt} onClick={() => handleSelect(opt)} disabled={answered}
                   className="px-4 py-2.5 rounded-sm font-sans text-sm text-left transition-all border"
                   style={{
-                    borderColor: isRight  ? 'color-mix(in srgb, #4ade80 40%, transparent)'
-                               : isWrong ? 'color-mix(in srgb, #f87171 40%, transparent)'
+                    borderColor: isRight    ? 'color-mix(in srgb, #4ade80 40%, transparent)'
+                               : isWrong   ? 'color-mix(in srgb, #f87171 40%, transparent)'
                                : isSelected ? 'color-mix(in srgb, var(--c-halogen) 40%, transparent)'
                                : 'rgb(var(--color-border))',
-                    background:  isRight  ? 'color-mix(in srgb, #4ade80 8%, rgb(var(--color-surface)))'
-                               : isWrong ? 'color-mix(in srgb, #f87171 8%, rgb(var(--color-surface)))'
+                    background:  isRight    ? 'color-mix(in srgb, #4ade80 8%, rgb(var(--color-surface)))'
+                               : isWrong   ? 'color-mix(in srgb, #f87171 8%, rgb(var(--color-surface)))'
                                : isSelected ? 'color-mix(in srgb, var(--c-halogen) 8%, rgb(var(--color-surface)))'
                                : 'rgb(var(--color-surface))',
-                    color:       isRight  ? '#4ade80'
-                               : isWrong ? '#f87171'
-                               : 'rgba(var(--overlay),0.75)',
+                    color:       isRight ? '#4ade80' : isWrong ? '#f87171' : 'rgba(var(--overlay),0.75)',
                     cursor:      answered ? 'default' : 'pointer',
-                  }}
-                >
+                  }}>
                   {opt}
                 </button>
               )
             })}
           </div>
 
-          {/* Feedback + next */}
           {answered && (
             <div className="flex flex-col gap-3">
               <div className="flex flex-col gap-1 px-3 py-2.5 rounded-sm border"
@@ -284,9 +610,10 @@ export default function VseprPractice() {
                   {isCorrect ? '✓ Correct!' : `✗ The answer is ${q.correct}`}
                 </span>
                 <span className="font-mono text-xs text-secondary">
-                  {entry.label}: {entry.bondingPairs} bonding pair{entry.bondingPairs !== 1 ? 's' : ''}, {entry.lonePairs} lone pair{entry.lonePairs !== 1 ? 's' : ''} on center · {entry.electronGeometry} → {entry.molecularGeometry} · {entry.hybridization} · {entry.bondAngles}
+                  {entry.formula}: {entry.bonds} bonding pair{entry.bonds !== 1 ? 's' : ''}, {entry.lonePairs} lone pair{entry.lonePairs !== 1 ? 's' : ''} · {elecGeo(entry)} → {molGeo(entry)} · {hybrid(entry)} · {bondAngles(entry)}
                 </span>
               </div>
+
               <button onClick={handleNext}
                 className="self-start px-5 py-2 rounded-sm font-sans text-sm font-medium transition-all"
                 style={{
@@ -301,12 +628,60 @@ export default function VseprPractice() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Structure builder — explore geometries while practicing */}
-      <div className="border-t border-border pt-6 mt-2">
-        <p className="font-mono text-xs text-secondary tracking-widest uppercase mb-4">Structure Builder</p>
-        <VseprEditor />
+      <p className="font-mono text-xs text-secondary">
+        electron geometry includes lone pairs · molecular geometry describes atom positions only · lone pairs compress bond angles
+      </p>
+    </div>
+  )
+}
+
+// ── Root component ────────────────────────────────────────────────────────────
+
+export default function VseprPractice() {
+  const [subtab, setSubtab] = useState<Subtab>('geometry')
+
+  return (
+    <div className="flex flex-col gap-5">
+
+      {/* Subtab pills */}
+      <div className="flex flex-wrap gap-1.5 print:hidden">
+        {SUBTABS.map(st => {
+          const active = subtab === st.id
+          return (
+            <button key={st.id} onClick={() => setSubtab(st.id)}
+              className="relative px-4 py-1.5 rounded-full font-sans text-sm font-medium transition-colors"
+              style={{ color: active ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.45)' }}>
+              {active && (
+                <motion.span layoutId="vsepr-subtab-pill" className="absolute inset-0 rounded-full"
+                  style={{
+                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
+                    border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                  }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
+              )}
+              <span className="relative z-10">{st.label}</span>
+              <span className="relative z-10 font-mono text-[10px] ml-1.5 opacity-50">{st.formula}</span>
+            </button>
+          )
+        })}
       </div>
-      <p className="font-mono text-xs text-secondary">electron geometry includes lone pairs · molecular geometry describes atom positions only · lone pairs compress bond angles</p>
+
+      {/* Content */}
+      <AnimatePresence mode="wait">
+        <motion.div key={subtab}
+          initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.15 }}>
+          {subtab !== 'drawing' && subtab !== 'combined' && (
+            <McqSection types={SUBTABS.find(s => s.id === subtab)!.types!} />
+          )}
+          {subtab === 'combined' && <CombinedSection />}
+          {subtab === 'drawing' && (
+            <Suspense fallback={<span className="font-mono text-xs text-dim animate-pulse">Loading editor…</span>}>
+              <VseprDrawChallenge />
+            </Suspense>
+          )}
+        </motion.div>
+      </AnimatePresence>
     </div>
   )
 }

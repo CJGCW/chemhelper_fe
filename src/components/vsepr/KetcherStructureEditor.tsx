@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { Editor } from 'ketcher-react'
 import { ChemicalMimeType } from 'ketcher-core'
 import ketcherCss from 'ketcher-react/dist/index.css?inline'
@@ -180,25 +180,95 @@ function inchiConnectivity(inchi: string): string {
 // ── Validation types ──────────────────────────────────────────────────────────
 
 interface ValidationCheck  { label: string; passed: boolean; detail: string }
-interface ValidationResult { passed: boolean; checks: ValidationCheck[] }
+export interface ValidationResult { passed: boolean; checks: ValidationCheck[] }
+
+// ── Handle (imperative API for CombinedSection) ───────────────────────────────
+
+export interface KetcherEditorHandle {
+  getSvg(): Promise<string | null>
+  triggerCheck(): Promise<ValidationResult | null>
+}
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 
 interface Props {
   correctStructure: LewisStructure | null
   onValidated?: (passed: boolean) => void
-  resetKey?: number   // increment to clear the canvas between problems
+  resetKey?: number
+  showCheck?: boolean  // default true; pass false to hide the button+result panel
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
 const KETCHER_CSS_ID = 'ketcher-react-css'
 
-export default function KetcherStructureEditor({ correctStructure, onValidated, resetKey }: Props) {
+const KetcherStructureEditor = forwardRef<KetcherEditorHandle, Props>(
+function KetcherStructureEditor({ correctStructure, onValidated, resetKey, showCheck = true }, ref) {
   const ketcherRef              = useRef<Ketcher | null>(null)
+  const containerRef            = useRef<HTMLDivElement>(null)
+  const checkingRef             = useRef(false)
   const [checking, setChecking] = useState(false)
   const [result, setResult]     = useState<ValidationResult | null>(null)
   const [ready, setReady]       = useState(false)
+
+  useImperativeHandle(ref, () => ({
+    async getSvg(): Promise<string | null> {
+      const ketcher = ketcherRef.current
+      if (!ketcher) return null
+
+      // Check canvas isn't empty
+      try {
+        const molfile = await ketcher.getMolfile()
+        const atomCount = parseInt((molfile.split('\n')[3] ?? '').substring(0, 3).trim(), 10) || 0
+        if (atomCount === 0) return null
+      } catch {
+        return null
+      }
+
+      // Primary: generateImage API → proper base64 data URL regardless of returned format
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const blob: Blob = await (ketcher as any).generateImage(
+          await ketcher.getMolfile(),
+          { outputFormat: 'image/svg+xml' },
+        )
+        const arr = new Uint8Array(await blob.arrayBuffer())
+        let binary = ''
+        arr.forEach(b => { binary += String.fromCharCode(b) })
+        return `data:${blob.type || 'image/svg+xml'};base64,${btoa(binary)}`
+      } catch { /* fall through */ }
+
+      // Fallback: grab the largest SVG element from Ketcher's DOM
+      try {
+        const container = containerRef.current
+        if (!container) return null
+        let largest: SVGSVGElement | null = null
+        let maxArea = 0
+        container.querySelectorAll<SVGSVGElement>('svg').forEach(s => {
+          const r = s.getBoundingClientRect()
+          const area = r.width * r.height
+          if (area > maxArea) { maxArea = area; largest = s }
+        })
+        if (!largest) return null
+        const el = largest as SVGSVGElement
+        const clone = el.cloneNode(true) as SVGSVGElement
+        const { width, height } = el.getBoundingClientRect()
+        clone.setAttribute('width', String(width))
+        clone.setAttribute('height', String(height))
+        const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+        bg.setAttribute('width', '100%'); bg.setAttribute('height', '100%'); bg.setAttribute('fill', 'white')
+        clone.insertBefore(bg, clone.firstChild)
+        const svgStr = new XMLSerializer().serializeToString(clone)
+        const encoded = new TextEncoder().encode(svgStr)
+        let binary = ''
+        encoded.forEach(b => { binary += String.fromCharCode(b) })
+        return `data:image/svg+xml;base64,${btoa(binary)}`
+      } catch {
+        return null
+      }
+    },
+    triggerCheck: () => runValidation(),
+  }))
 
   // Inject Ketcher CSS in a cascade layer so unlayered app styles always win
   useEffect(() => {
@@ -224,47 +294,35 @@ export default function KetcherStructureEditor({ correctStructure, onValidated, 
     }
   }, [resetKey])
 
-  async function handleCheck() {
-    if (!ketcherRef.current || !correctStructure || checking) return
+  async function runValidation(): Promise<ValidationResult | null> {
+    if (!ketcherRef.current || !correctStructure || checkingRef.current) return null
+    checkingRef.current = true
     setChecking(true)
 
     try {
-      const ketcher  = ketcherRef.current
-      const molfile  = await ketcher.getMolfile()
-      const isFlat   = FLAT_GEOMETRIES.has(correctStructure.geometry ?? '')
+      const ketcher = ketcherRef.current
+      const molfile = await ketcher.getMolfile()
+      const isFlat  = FLAT_GEOMETRIES.has(correctStructure.geometry ?? '')
 
       // ── 1. Empty check ───────────────────────────────────────────────────────
-      const parsedEmpty = molfile.split('\n')
-      const atomCountLine = parsedEmpty[3] ?? ''
-      const drawnAtomCount = parseInt(atomCountLine.substring(0, 3).trim(), 10) || 0
+      const drawnAtomCount = parseInt((molfile.split('\n')[3] ?? '').substring(0, 3).trim(), 10) || 0
       if (drawnAtomCount === 0) {
-        setResult({
-          passed: false,
-          checks: [{ label: 'Structure', passed: false, detail: 'No structure drawn yet.' }],
-        })
+        const v: ValidationResult = { passed: false, checks: [{ label: 'Structure', passed: false, detail: 'No structure drawn yet.' }] }
+        setResult(v)
         onValidated?.(false)
-        return
+        return v
       }
 
-      // ── 2. Chemical validity (Indigo check) ──────────────────────────────────
+      // ── 2. Chemical validity ─────────────────────────────────────────────────
       let validityPassed = true
       let validityDetail = 'No issues'
       try {
-        const checkResult = await ketcher.indigo.check(molfile, {
-          types: ['valence', 'overlapping_atoms', 'overlapping_bonds'],
-        })
-        const issues = Object.entries(checkResult)
-          .filter(([, msg]) => msg !== '')
-          .map(([type, msg]) => `${type}: ${msg}`)
-        if (issues.length > 0) {
-          validityPassed = false
-          validityDetail = issues.join('; ')
-        }
-      } catch {
-        // If Indigo check fails for any reason, skip this check rather than blocking
-      }
+        const checkResult = await ketcher.indigo.check(molfile, { types: ['valence', 'overlapping_atoms', 'overlapping_bonds'] })
+        const issues = Object.entries(checkResult).filter(([, msg]) => msg !== '').map(([type, msg]) => `${type}: ${msg}`)
+        if (issues.length > 0) { validityPassed = false; validityDetail = issues.join('; ') }
+      } catch { /* skip */ }
 
-      // ── 3. Structure match via InChI (Indigo-canonicalized) ──────────────────
+      // ── 3. Structure match via InChI ─────────────────────────────────────────
       let structurePassed = false
       let structureDetail = 'Could not compare structures'
       try {
@@ -275,54 +333,46 @@ export default function KetcherStructureEditor({ correctStructure, onValidated, 
         ])
         const userConn    = inchiConnectivity(userInchi)
         const correctConn = inchiConnectivity(correctConvert.struct)
-        structurePassed   = userConn === correctConn && userConn !== ''
-        structureDetail   = structurePassed
-          ? 'Correct'
-          : 'Structure does not match — check atoms and bond orders'
+        structurePassed = userConn === correctConn && userConn !== ''
+        structureDetail = structurePassed ? 'Correct' : 'Structure does not match — check atoms and bond orders'
       } catch {
         structureDetail = 'InChI comparison failed — check your structure and try again'
       }
 
-      // ── 4. Wedge/dash check (3D geometries only) ─────────────────────────────
+      // ── 4. Wedge/dash (3D geometries) ───────────────────────────────────────
       const checks: ValidationCheck[] = [
         { label: 'Chemical validity', passed: validityPassed, detail: validityDetail },
         { label: 'Structure',         passed: structurePassed, detail: structureDetail },
       ]
-
       if (!isFlat) {
         const has3D = molHas3DBonds(molfile)
-        checks.push({
-          label: 'Wedge/dash bonds (3D geometry)',
-          passed: has3D,
-          detail: has3D ? 'Present' : 'Use wedge (▶) or dash (– –) bonds to show 3D geometry',
-        })
+        checks.push({ label: 'Wedge/dash bonds (3D geometry)', passed: has3D, detail: has3D ? 'Present' : 'Use wedge (▶) or dash (– –) bonds to show 3D geometry' })
       }
 
-      // ── 5. Geometry check (flat geometries only) ─────────────────────────────
+      // ── 5. Geometry (flat geometries) ───────────────────────────────────────
       if (structurePassed && isFlat) {
         const geoResult = checkMolGeometry(molfile, correctStructure.geometry ?? '')
-        if (geoResult) {
-          checks.push({
-            label: 'Geometry',
-            passed: geoResult.passed,
-            detail: geoResult.detail,
-          })
-        }
+        if (geoResult) checks.push({ label: 'Geometry', passed: geoResult.passed, detail: geoResult.detail })
       }
 
       const validation: ValidationResult = { passed: checks.every(c => c.passed), checks }
       setResult(validation)
       onValidated?.(validation.passed)
+      return validation
     } finally {
+      checkingRef.current = false
       setChecking(false)
     }
   }
+
+  const handleCheck = () => { runValidation() }
 
   return (
     <div className="flex flex-col gap-4">
 
       {/* Editor container — fixed height so Ketcher has space to render */}
       <div
+        ref={containerRef}
         className="rounded-sm border border-border overflow-hidden"
         style={{ height: 480, position: 'relative' }}
       >
@@ -346,22 +396,24 @@ export default function KetcherStructureEditor({ correctStructure, onValidated, 
       </div>
 
       {/* Check button */}
-      <button
-        onClick={handleCheck}
-        disabled={!ready || !correctStructure || checking}
-        className="self-start px-5 py-2 rounded-sm font-sans text-sm font-medium
-                   transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-        style={{
-          background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-          border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
-          color: 'var(--c-halogen)',
-        }}
-      >
-        {checking ? 'Checking…' : 'Check'}
-      </button>
+      {showCheck && (
+        <button
+          onClick={handleCheck}
+          disabled={!ready || !correctStructure || checking}
+          className="self-start px-5 py-2 rounded-sm font-sans text-sm font-medium
+                     transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          style={{
+            background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            color: 'var(--c-halogen)',
+          }}
+        >
+          {checking ? 'Checking…' : 'Check'}
+        </button>
+      )}
 
       {/* Validation result */}
-      {result && (
+      {showCheck && result && (
         <div
           className="rounded-sm border p-4 flex flex-col gap-3"
           style={{
@@ -398,4 +450,6 @@ export default function KetcherStructureEditor({ correctStructure, onValidated, 
       )}
     </div>
   )
-}
+})
+
+export default KetcherStructureEditor

@@ -344,7 +344,7 @@ src/
     Layout/        — PageShell, nav
     tools/         — interactive classifiers (ReactionClassifier, NetIonicTool, etc.)
     calculations/  — legacy location; being migrated to shared/
-    reference/     — static-reference pages linked from ReferencePage (solubility, naming)
+    reference/     — static-reference components (SolubilityReference, NamingReference, NomenclatureTool)
   utils/           — pure TS, no React (problem generators, formatters)
   chem/            — domain math (stoich, amounts, solutions, sig figs, nomenclature)
   data/            — pure data modules (no logic). Used by both chem/ and components/
@@ -399,7 +399,9 @@ When a topic is completed, flip its row to `✓` and update the review summary.
 
 ## `ReferencePage.tsx`
 
-After the recent cleanup, ReferencePage has two live tabs: `solubility` and `naming`. If a nomenclature practice tool is added, it lives here as a third tab. Don't add unrelated topics here — dedicated topic pages handle everything else.
+ReferencePage (`/reference`) is now solubility-only — a single-purpose reference page with a print button and no tabs. Don't add unrelated topics here.
+
+Naming/nomenclature lives in `ElectronConfigPage` as the `naming` topic (`/electron-config?topic=naming`) with Reference (NamingReference) and Problems (NomenclatureTool) modes. Add any new nomenclature content there.
 
 ---
 

@@ -18,10 +18,13 @@ import PeriodicTrendsPractice from '../components/atomic/PeriodicTrendsPractice'
 import ReverseIsotopeTool from '../components/atomic/ReverseIsotopeTool'
 import IsotopeAbundanceReference from '../components/atomic/IsotopeAbundanceReference'
 import IsotopeAbundancePractice from '../components/atomic/IsotopeAbundancePractice'
+import NamingReference from '../components/reference/NamingReference'
+import NomenclatureTool from '../components/reference/NomenclatureTool'
 import PageShell from '../components/Layout/PageShell'
 
 type Topic = 'electron_config' | 'quantum_numbers' | 'energy_levels' | 'isoelectronic'
            | 'em_spectrum' | 'para_dia' | 'multi_electron' | 'periodic_trends' | 'isotopes'
+           | 'naming'
 type Mode  = 'reference' | 'practice' | 'problems'
 
 // Modes available per topic — topics not listed here show no toggle
@@ -32,6 +35,7 @@ const TOPIC_MODES: Partial<Record<Topic, Mode[]>> = {
   para_dia:         ['reference', 'problems'],
   periodic_trends:  ['reference', 'practice'],
   isotopes:         ['reference', 'practice', 'problems'],
+  naming:           ['reference', 'problems'],
 }
 
 const TOPIC_GROUPS: { label: string; topics: { id: Topic; label: string; subtitle: string }[] }[] = [
@@ -42,6 +46,7 @@ const TOPIC_GROUPS: { label: string; topics: { id: Topic; label: string; subtitl
       { id: 'quantum_numbers', label: 'Quantum Numbers', subtitle: 'n, l, mₗ, ms rules'                    },
       { id: 'energy_levels',   label: 'Energy Levels',   subtitle: 'Bohr model, transitions'               },
       { id: 'multi_electron',  label: 'Multi-Electron',  subtitle: 'Shielding, Zeff, Slater rules'         },
+      { id: 'para_dia',        label: 'Para/Diamagnetic', subtitle: 'Unpaired electrons, magnetism'        },
     ],
   },
   {
@@ -49,9 +54,14 @@ const TOPIC_GROUPS: { label: string; topics: { id: Topic; label: string; subtitl
     topics: [
       { id: 'periodic_trends', label: 'Periodic Trends',  subtitle: 'Radius, IE, EN heatmap & ranking' },
       { id: 'isoelectronic',   label: 'Isoelectronic',    subtitle: 'Ion size comparison'              },
-      { id: 'para_dia',        label: 'Para/Diamagnetic', subtitle: 'Unpaired electrons, magnetism'    },
       { id: 'em_spectrum',     label: 'EM Spectrum',      subtitle: 'λ ↔ f ↔ E interconverter'        },
-      { id: 'isotopes',        label: 'Isotope Abundance', subtitle: 'Find abundance from average mass'  },
+      { id: 'isotopes',        label: 'Isotope Abundance', subtitle: 'Weighted average & find abundances' },
+    ],
+  },
+  {
+    label: 'Nomenclature',
+    topics: [
+      { id: 'naming', label: 'Naming Rules', subtitle: 'Ionic, covalent, polyatomic ions' },
     ],
   },
 ]
@@ -335,6 +345,8 @@ export default function ElectronConfigPage() {
           {topic === 'isotopes' && mode === 'reference' && <IsotopeAbundanceReference />}
           {topic === 'isotopes' && mode === 'practice'  && <ReverseIsotopeTool />}
           {topic === 'isotopes' && mode === 'problems'  && <IsotopeAbundancePractice />}
+          {topic === 'naming'   && mode === 'reference' && <NamingReference />}
+          {topic === 'naming'   && mode === 'problems'  && <NomenclatureTool />}
         </motion.div>
       </AnimatePresence>
 

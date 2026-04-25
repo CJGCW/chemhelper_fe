@@ -92,8 +92,8 @@ const SEARCH_INDEX: SearchItem[] = [
   // Tools
   { label: 'Ketcher Editor',    formula: '✎',         section: 'Tools',              path: '/tools?tool=ketcher',                  keywords: 'ketcher structure editor draw molecule' },
   { label: 'Compound',          formula: '◈',         section: 'Tools',              path: '/compound',                            keywords: 'compound lookup molecular weight formula' },
-  { label: 'Naming',            formula: 'Nm',        section: 'Tools',              path: '/reference?tab=naming',                keywords: 'naming compounds ionic covalent acids nomenclature' },
-  { label: 'Nomenclature',      formula: '⚗',         section: 'Tools',              path: '/reference?tab=nomenclature-practice',  keywords: 'nomenclature naming practice compound name formula from name ionic covalent' },
+  { label: 'Naming Reference',  formula: 'Nm',        section: 'Periodic Table',     path: '/electron-config?topic=naming',                    keywords: 'naming compounds ionic covalent acids nomenclature polyatomic ions transition metals greek prefixes' },
+  { label: 'Nomenclature',      formula: '⚗',         section: 'Periodic Table',     path: '/electron-config?topic=naming&mode=problems',      keywords: 'nomenclature naming practice compound name formula from name ionic covalent' },
   { label: 'Glossary',          formula: 'A–Z',       section: 'Tools',              path: '/glossary',                            keywords: 'glossary definitions terms vocabulary chemistry' },
 ]
 
@@ -193,6 +193,7 @@ const TABLE_GROUPS: { label: string; items: { path: string; label: string; formu
       { path: '/electron-config?topic=quantum_numbers', label: 'Quantum Numbers',  formula: 'QN'  },
       { path: '/electron-config?topic=energy_levels',   label: 'Energy Levels',    formula: 'Eₙ'  },
       { path: '/electron-config?topic=multi_electron',  label: 'Multi-Electron',   formula: 'Zeff' },
+      { path: '/electron-config?topic=para_dia',        label: 'Para/Diamagnetic', formula: 'para' },
     ],
   },
   {
@@ -200,8 +201,14 @@ const TABLE_GROUPS: { label: string; items: { path: string; label: string; formu
     items: [
       { path: '/electron-config?topic=periodic_trends', label: 'Periodic Trends',  formula: '↗'   },
       { path: '/electron-config?topic=isoelectronic',   label: 'Isoelectronic',    formula: '≡'   },
-      { path: '/electron-config?topic=para_dia',        label: 'Para/Diamagnetic', formula: 'para' },
       { path: '/electron-config?topic=em_spectrum',     label: 'EM Spectrum',      formula: 'λf'  },
+      { path: '/electron-config?topic=isotopes',        label: 'Isotope Abundance', formula: 'Ā'  },
+    ],
+  },
+  {
+    label: 'Nomenclature',
+    items: [
+      { path: '/electron-config?topic=naming', label: 'Naming Rules', formula: 'Nm' },
     ],
   },
 ]
@@ -1110,7 +1117,6 @@ export default function NavSidebar({ open, onClose, theme, onToggleTheme }: Prop
               >
                 <PracticeNavItem path="/tools?tool=ketcher" icon="✎" label="Ketcher Editor" onNavigate={onClose} />
                 <PracticeNavItem path="/compound" icon="◈" label="Compound" onNavigate={onClose} />
-                <PracticeNavItem path="/reference?tab=naming" icon="Nm" label="Naming" onNavigate={onClose} />
                 <PracticeNavItem path="/glossary" icon="Az" label="Glossary" onNavigate={onClose} />
                 <button
                   onClick={onToggleTheme}
