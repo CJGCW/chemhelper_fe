@@ -15,10 +15,11 @@ import SolidTypesReference from '../components/structures/SolidTypesReference'
 import SolidTypesPractice from '../components/structures/SolidTypesPractice'
 import UnitCellTool from '../components/structures/UnitCellTool'
 import UnitCellPractice from '../components/structures/UnitCellPractice'
+import FormalChargeTool from '../components/lewis/FormalChargeTool'
 import PageShell from '../components/Layout/PageShell'
 
 
-type Tab  = 'lewis' | 'vsepr' | 'solid-types' | 'unit-cell' | 'lewis-practice' | 'lewis-draw' | 'vsepr-practice' | 'vsepr-draw' | 'sigma-pi' | 'sigma-pi-problems' | 'solid-types-practice' | 'solid-types-problems' | 'unit-cell-practice' | 'unit-cell-problems'
+type Tab  = 'lewis' | 'vsepr' | 'solid-types' | 'unit-cell' | 'lewis-practice' | 'lewis-draw' | 'vsepr-practice' | 'vsepr-draw' | 'sigma-pi' | 'sigma-pi-problems' | 'solid-types-practice' | 'solid-types-problems' | 'unit-cell-practice' | 'unit-cell-problems' | 'formal-charge' | 'formal-charge-problems'
 type Mode = 'reference' | 'practice' | 'problems'
 
 const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
@@ -29,47 +30,52 @@ const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
 ]
 
 const PRACTICE_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'lewis-practice',       label: 'Lewis',       formula: '⌬'        },
-  { id: 'vsepr-practice',       label: 'VSEPR',       formula: '⬡'        },
-  { id: 'sigma-pi',             label: 'σ / π Bonds', formula: 'σπ'       },
-  { id: 'solid-types-practice', label: 'Solid Types', formula: '4t'       },
-  { id: 'unit-cell-practice',   label: 'Unit Cell',   formula: 'SC/BCC/FCC' },
+  { id: 'lewis-practice',       label: 'Lewis',         formula: '⌬'        },
+  { id: 'vsepr-practice',       label: 'VSEPR',         formula: '⬡'        },
+  { id: 'sigma-pi',             label: 'σ / π Bonds',   formula: 'σπ'       },
+  { id: 'formal-charge',        label: 'Formal Charge', formula: 'FC'       },
+  { id: 'solid-types-practice', label: 'Solid Types',   formula: '4t'       },
+  { id: 'unit-cell-practice',   label: 'Unit Cell',     formula: 'SC/BCC/FCC' },
 ]
 
 const PROBLEMS_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'lewis-draw',           label: 'Lewis',       formula: '⌬'        },
-  { id: 'vsepr-draw',           label: 'VSEPR',       formula: '⬡'        },
-  { id: 'sigma-pi-problems',    label: 'σ / π Bonds', formula: 'σπ'       },
-  { id: 'solid-types-problems', label: 'Solid Types', formula: '4t'       },
-  { id: 'unit-cell-problems',   label: 'Unit Cell',   formula: 'SC/BCC/FCC' },
+  { id: 'lewis-draw',              label: 'Lewis',         formula: '⌬'        },
+  { id: 'vsepr-draw',              label: 'VSEPR',         formula: '⬡'        },
+  { id: 'sigma-pi-problems',       label: 'σ / π Bonds',   formula: 'σπ'       },
+  { id: 'formal-charge-problems',  label: 'Formal Charge', formula: 'FC'       },
+  { id: 'solid-types-problems',    label: 'Solid Types',   formula: '4t'       },
+  { id: 'unit-cell-problems',      label: 'Unit Cell',     formula: 'SC/BCC/FCC' },
 ]
 
-const PRACTICE_TAB_IDS = new Set<Tab>(['lewis-practice', 'vsepr-practice', 'sigma-pi', 'solid-types-practice', 'unit-cell-practice'])
-const PROBLEMS_TAB_IDS = new Set<Tab>(['lewis-draw', 'vsepr-draw', 'sigma-pi-problems', 'solid-types-problems', 'unit-cell-problems'])
+const PRACTICE_TAB_IDS = new Set<Tab>(['lewis-practice', 'vsepr-practice', 'sigma-pi', 'formal-charge', 'solid-types-practice', 'unit-cell-practice'])
+const PROBLEMS_TAB_IDS = new Set<Tab>(['lewis-draw', 'vsepr-draw', 'sigma-pi-problems', 'formal-charge-problems', 'solid-types-problems', 'unit-cell-problems'])
 
 const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
-  'lewis':                  'lewis',
-  'lewis-practice':         'lewis',
-  'lewis-draw':             'lewis',
-  'vsepr':                  'vsepr',
-  'vsepr-practice':         'vsepr',
-  'vsepr-draw':             'vsepr',
-  'sigma-pi':               'sigma-pi',
-  'sigma-pi-problems':      'sigma-pi',
-  'solid-types':            'solid-types',
-  'solid-types-practice':   'solid-types',
-  'solid-types-problems':   'solid-types',
-  'unit-cell':              'unit-cell',
-  'unit-cell-practice':     'unit-cell',
-  'unit-cell-problems':     'unit-cell',
+  'lewis':                    'lewis',
+  'lewis-practice':           'lewis',
+  'lewis-draw':               'lewis',
+  'vsepr':                    'vsepr',
+  'vsepr-practice':           'vsepr',
+  'vsepr-draw':               'vsepr',
+  'sigma-pi':                 'sigma-pi',
+  'sigma-pi-problems':        'sigma-pi',
+  'formal-charge':            'formal-charge',
+  'formal-charge-problems':   'formal-charge',
+  'solid-types':              'solid-types',
+  'solid-types-practice':     'solid-types',
+  'solid-types-problems':     'solid-types',
+  'unit-cell':                'unit-cell',
+  'unit-cell-practice':       'unit-cell',
+  'unit-cell-problems':       'unit-cell',
 }
 
 const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
-  'lewis':       { reference: 'lewis',       practice: 'lewis-practice',       problems: 'lewis-draw'           },
-  'vsepr':       { reference: 'vsepr',       practice: 'vsepr-practice',       problems: 'vsepr-draw'           },
-  'sigma-pi':    { reference: 'lewis',         practice: 'sigma-pi',              problems: 'sigma-pi-problems'    },
-  'solid-types': { reference: 'solid-types', practice: 'solid-types-practice', problems: 'solid-types-problems' },
-  'unit-cell':   { reference: 'unit-cell',   practice: 'unit-cell-practice',   problems: 'unit-cell-problems'   },
+  'lewis':         { reference: 'lewis',       practice: 'lewis-practice',       problems: 'lewis-draw'              },
+  'vsepr':         { reference: 'vsepr',       practice: 'vsepr-practice',       problems: 'vsepr-draw'              },
+  'sigma-pi':      { reference: 'lewis',       practice: 'sigma-pi',             problems: 'sigma-pi-problems'       },
+  'formal-charge': { reference: 'lewis',       practice: 'formal-charge',        problems: 'formal-charge-problems'  },
+  'solid-types':   { reference: 'solid-types', practice: 'solid-types-practice', problems: 'solid-types-problems'    },
+  'unit-cell':     { reference: 'unit-cell',   practice: 'unit-cell-practice',   problems: 'unit-cell-problems'      },
 }
 
 const MODE_DEFAULT: Record<Mode, Tab> = {
@@ -179,6 +185,29 @@ const EXPLANATIONS: Record<string, ExplanationContent> = {
         'Diamond: C atoms in infinite covalent network → network covalent solid',
       ],
       result: 'NaCl ionic · Fe metallic · CO₂ molecular · diamond network covalent',
+    },
+  },
+  'formal-charge': {
+    title: 'Formal Charge',
+    formula: 'FC = V − LP − bonds',
+    formulaVars: [
+      { symbol: 'V',    meaning: 'Valence electrons of the free atom',                           unit: 'e⁻'     },
+      { symbol: 'LP',   meaning: 'Lone pair electrons on the atom in the structure (not pairs)', unit: 'e⁻'     },
+      { symbol: 'bonds', meaning: 'Number of bonds to the atom (1 per bond, regardless of order)', unit: 'integer' },
+    ],
+    description:
+      'Formal charge is a bookkeeping tool that shows how electron distribution in a Lewis structure compares to a free atom. ' +
+      'It appears in Gen Chem when comparing resonance structures — the preferred structure minimises formal charges and places negative charges on the more electronegative atom. ' +
+      'See the Lewis Structures reference tab for how formal charge fits into the full Lewis-drawing procedure.',
+    example: {
+      scenario: 'Find the formal charge on nitrogen in NH₄⁺.',
+      steps: [
+        'N valence electrons: 5',
+        'Lone pairs on N in NH₄⁺: 0 (all lone pairs used in bonds)',
+        'Bonds to N: 4 (four N–H bonds)',
+        'FC = 5 − 0 − 4 = +1',
+      ],
+      result: 'FC on N = +1, consistent with the +1 overall charge of NH₄⁺',
     },
   },
   'unit-cell': {
@@ -385,6 +414,20 @@ export default function StructuresPage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <SigmaPiProblems />
+          </motion.div>
+        )}
+        {activeTab === 'formal-charge' && (
+          <motion.div key="formal-charge"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <FormalChargeTool allowCustom={true} />
+          </motion.div>
+        )}
+        {activeTab === 'formal-charge-problems' && (
+          <motion.div key="formal-charge-problems"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <FormalChargeTool allowCustom={false} />
           </motion.div>
         )}
         {activeTab === 'unit-cell' && (

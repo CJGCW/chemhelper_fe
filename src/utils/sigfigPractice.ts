@@ -81,17 +81,32 @@ export function makeArithProblem(forceAddSub?: boolean): SigFigProblem {
 
   if (!doAddSub) {
     const op = rnd(0, 1) === 0 ? '×' : '÷'
-    const sf1 = rnd(2, 4), sf2 = rnd(2, 3)
-    const n1 = numWithSF(sf1), n2 = numWithSF(sf2)
+    // Retry until formatSigFigs produces a string whose countSigFigs matches lim.
+    // This avoids ambiguous trailing zeros (e.g. 90 → 1 sf instead of 2).
+    for (let attempt = 0; attempt < 20; attempt++) {
+      const sf1 = rnd(2, 4), sf2 = rnd(2, 3)
+      const n1 = numWithSF(sf1), n2 = numWithSF(sf2)
+      const a = parseFloat(n1), b = parseFloat(n2)
+      const raw = op === '×' ? a * b : a / b
+      const lim = Math.min(sf1, sf2)
+      const answer = formatSigFigs(raw, lim)
+      if (countSigFigs(answer) !== lim) continue
+      const rawStr = raw.toPrecision(8).replace(/\.?0+$/, '')
+      return {
+        kind: 'arith', display: `${n1} ${op} ${n2}`,
+        correctAnswer: answer, limitingSF: lim, isAddSub: false,
+        explanation: `${n1} (${sf1} sf) ${op} ${n2} (${sf2} sf) = ${rawStr} → ${lim} sf → ${answer}`,
+      }
+    }
+    // Fallback: simple 2-sf problem that avoids the trailing-zero issue
+    const n1 = numWithSF(3), n2 = numWithSF(2)
     const a = parseFloat(n1), b = parseFloat(n2)
-    const raw = op === '×' ? a * b : a / b
-    const lim = Math.min(sf1, sf2)
-    const answer = formatSigFigs(raw, lim)
-    const rawStr = raw.toPrecision(8).replace(/\.?0+$/, '')
+    const raw = a * b
+    const answer = formatSigFigs(raw, 2)
     return {
-      kind: 'arith', display: `${n1} ${op} ${n2}`,
-      correctAnswer: answer, limitingSF: lim, isAddSub: false,
-      explanation: `${n1} (${sf1} sf) ${op} ${n2} (${sf2} sf) = ${rawStr} → ${lim} sf → ${answer}`,
+      kind: 'arith', display: `${n1} × ${n2}`,
+      correctAnswer: answer, limitingSF: 2, isAddSub: false,
+      explanation: `${n1} (3 sf) × ${n2} (2 sf) = ${raw.toPrecision(8).replace(/\.?0+$/, '')} → 2 sf → ${answer}`,
     }
   } else {
     const op = rnd(0, 1) === 0 ? '+' : '−'

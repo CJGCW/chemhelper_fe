@@ -73,6 +73,7 @@ const SEARCH_INDEX: SearchItem[] = [
   // Structures
   { label: 'Lewis Structures',  formula: '⌬',         section: 'Structures',         path: '/structures?tab=lewis',                keywords: 'lewis structure dot diagram electron pairs bonds' },
   { label: 'VSEPR',             formula: '⬡',         section: 'Structures',         path: '/structures?tab=vsepr',                keywords: 'VSEPR geometry molecular shape electron domain' },
+  { label: 'Formal Charge',     formula: 'FC',        section: 'Structures',         path: '/structures?tab=formal-charge',        keywords: 'formal charge lewis structure practice assign drill Chang 9.47 9.48 9.52' },
   { label: 'Solid Types',       formula: '4 types',   section: 'Structures',         path: '/structures?tab=solid-types',          keywords: 'solid types ionic metallic covalent molecular' },
   { label: 'Unit Cell',         formula: 'SC/BCC/FCC',section: 'Structures',         path: '/structures?tab=unit-cell',            keywords: 'unit cell simple cubic BCC FCC packing' },
   // Thermochemistry
@@ -731,8 +732,9 @@ function RedoxGroupedItems({ onNavigate }: { onNavigate: () => void }) {
 const STRUCTURE_ITEMS = [
   { path: "/structures?tab=lewis",       label: "Lewis Structures", formula: "⌬"      },
   { path: "/structures?tab=vsepr",       label: "VSEPR",            formula: "⬡"      },
-  { path: "/structures?tab=solid-types", label: "Solid Types",      formula: "4 types" },
-  { path: "/structures?tab=unit-cell",   label: "Unit Cell",        formula: "SC/BCC/FCC" },
+  { path: "/structures?tab=formal-charge", label: "Formal Charge",  formula: "FC"         },
+  { path: "/structures?tab=solid-types",   label: "Solid Types",    formula: "4 types"    },
+  { path: "/structures?tab=unit-cell",     label: "Unit Cell",      formula: "SC/BCC/FCC" },
 ]
 
 // ── Thermochemistry sub-items ─────────────────────────────────────────────────

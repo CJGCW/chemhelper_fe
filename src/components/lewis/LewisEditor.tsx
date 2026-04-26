@@ -1,6 +1,7 @@
 import React from 'react'
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import type { LewisStructure } from '../../pages/LewisPage'
+import { computeFormalCharge } from '../../chem/formalCharge'
 
 // ── Exported types ────────────────────────────────────────────────────────────
 
@@ -66,10 +67,7 @@ const VALENCE: Record<string, number> = {
 }
 
 function computeFC(atom: CanvasAtom, bonds: CanvasBond[]): number {
-  const degree = bonds
-    .filter(b => b.from === atom.id || b.to === atom.id)
-    .reduce((s, b) => s + b.order, 0)
-  return (VALENCE[atom.element] ?? 4) - atom.lonePairs * 2 - degree
+  return computeFormalCharge(atom, bonds)
 }
 
 // ── LP angle helpers (matching LewisStructureDiagram) ────────────────────────

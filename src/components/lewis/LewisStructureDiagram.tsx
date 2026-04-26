@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { LewisStructure } from "../../pages/LewisPage";
 
 // ── Layout constants ──────────────────────────────────────────────────────────
@@ -305,11 +306,13 @@ function AtomNode({
   pos,
   adj,
   positions,
+  badgeOverride,
 }: {
   atom: LewisStructure["atoms"][0];
   pos: { x: number; y: number };
   adj: Record<string, string[]>;
   positions: Record<string, { x: number; y: number }>;
+  badgeOverride?: ReactNode;
 }) {
   const color = getColor(atom.element);
   const { hw, hh, fs } = atomMetrics(atom.element);
@@ -375,26 +378,29 @@ function AtomNode({
         );
       })}
 
-      {/* Formal charge badge */}
-      {chargeLabel && (
-        <g>
-          <circle cx={chargeBx} cy={chargeBy} r={BADGE_R}
-            fill={CANVAS_BG}
-            stroke="rgba(var(--overlay),0.35)" strokeWidth="0.8"
-          />
-          <text
-            x={chargeBx} y={chargeBy}
-            textAnchor="middle" dominantBaseline="central"
-            dy="-1"
-            fill="rgba(var(--overlay),0.9)"
-            fontSize={chargeLabel.length > 1 ? 6 : 7}
-            fontWeight="bold"
-            fontFamily="system-ui, sans-serif"
-          >
-            {chargeLabel}
-          </text>
-        </g>
-      )}
+      {/* Formal charge badge — replaced by badgeOverride when provided */}
+      {badgeOverride !== undefined
+        ? badgeOverride
+        : chargeLabel && (
+          <g>
+            <circle cx={chargeBx} cy={chargeBy} r={BADGE_R}
+              fill={CANVAS_BG}
+              stroke="rgba(var(--overlay),0.35)" strokeWidth="0.8"
+            />
+            <text
+              x={chargeBx} y={chargeBy}
+              textAnchor="middle" dominantBaseline="central"
+              dy="-1"
+              fill="rgba(var(--overlay),0.9)"
+              fontSize={chargeLabel.length > 1 ? 6 : 7}
+              fontWeight="bold"
+              fontFamily="system-ui, sans-serif"
+            >
+              {chargeLabel}
+            </text>
+          </g>
+        )
+      }
     </g>
   );
 }
@@ -496,7 +502,19 @@ export function lewisToSvgString(structure: LewisStructure, width = 280, height 
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export default function LewisStructureDiagram({ structure }: { structure: LewisStructure }) {
+export default function LewisStructureDiagram({
+  structure,
+  renderAtomBadge,
+}: {
+  structure: LewisStructure
+  /** When provided, replaces the built-in FC badge for every atom.
+   *  Receives atom, atom-center position, and computed badge position. */
+  renderAtomBadge?: (
+    atom: LewisStructure["atoms"][0],
+    atomCenter: { x: number; y: number },
+    badgePos:   { x: number; y: number },
+  ) => ReactNode
+}) {
   const positions = computeLayout(structure.atoms, structure.bonds, structure.geometry);
 
   const adj: Record<string, string[]> = {};
@@ -539,8 +557,25 @@ export default function LewisStructureDiagram({ structure }: { structure: LewisS
         {structure.atoms.map(atom => {
           const pos = positions[atom.id];
           if (!pos) return null;
+          let badgeOverride: ReactNode | undefined
+          if (renderAtomBadge) {
+            const { hw, hh } = atomMetrics(atom.element);
+            const bondAngles = (adj[atom.id] ?? []).map(nid => {
+              const npos = positions[nid];
+              return npos ? Math.atan2(npos.y - pos.y, npos.x - pos.x) * (180 / Math.PI) : 0;
+            });
+            const lpAngles    = getLonePairAngles(bondAngles, atom.lone_pairs);
+            const BADGE_R     = 5;
+            const BADGE_DIST  = Math.max(hw, hh) + BADGE_R + 3;
+            const chargeAngle = bestChargeAngle([...bondAngles, ...lpAngles]);
+            const chargeRad   = chargeAngle * (Math.PI / 180);
+            const bx = pos.x + Math.cos(chargeRad) * BADGE_DIST;
+            const by = pos.y + Math.sin(chargeRad) * BADGE_DIST;
+            badgeOverride = renderAtomBadge(atom, pos, { x: bx, y: by });
+          }
           return (
-            <AtomNode key={atom.id} atom={atom} pos={pos} adj={adj} positions={positions} />
+            <AtomNode key={atom.id} atom={atom} pos={pos} adj={adj} positions={positions}
+              badgeOverride={badgeOverride} />
           );
         })}
       </svg>
