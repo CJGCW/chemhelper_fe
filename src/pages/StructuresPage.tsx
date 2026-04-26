@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchParams } from 'react-router-dom'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
@@ -17,7 +17,6 @@ import UnitCellTool from '../components/structures/UnitCellTool'
 import UnitCellPractice from '../components/structures/UnitCellPractice'
 import PageShell from '../components/Layout/PageShell'
 
-const VseprDrawChallenge = lazy(() => import('../components/vsepr/VseprDrawChallenge'))
 
 type Tab  = 'lewis' | 'vsepr' | 'solid-types' | 'unit-cell' | 'lewis-practice' | 'lewis-draw' | 'vsepr-practice' | 'vsepr-draw' | 'sigma-pi' | 'sigma-pi-problems' | 'solid-types-practice' | 'solid-types-problems' | 'unit-cell-practice' | 'unit-cell-problems'
 type Mode = 'reference' | 'practice' | 'problems'
@@ -364,9 +363,7 @@ export default function StructuresPage() {
           <motion.div key="vsepr-draw"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <Suspense fallback={<span className="font-mono text-xs text-dim animate-pulse">Loading editor…</span>}>
-              <VseprDrawChallenge />
-            </Suspense>
+            <VseprPractice />
           </motion.div>
         )}
         {activeTab === 'solid-types' && (
