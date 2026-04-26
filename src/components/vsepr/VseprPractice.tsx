@@ -2,13 +2,14 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import VseprShapeDiagram from './VseprShapeDiagram'
 import KetcherStructureEditor, { type KetcherEditorHandle, type ValidationResult } from './KetcherStructureEditor'
+import VseprVisualizer from './VseprVisualizer'
 import type { LewisStructure } from '../../pages/LewisPage'
 
 const VseprDrawChallenge = lazy(() => import('./VseprDrawChallenge'))
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
-interface VseprEntry {
+export interface VseprEntry {
   formula:   string
   central:   string
   bonds:     number
@@ -24,7 +25,7 @@ function toApiFormula(formula: string): string {
     .trim()
 }
 
-const PROBLEMS: VseprEntry[] = [
+export const PROBLEMS: VseprEntry[] = [
   // LINEAR (AB₂)
   { formula: 'CO₂',    central: 'C',  bonds: 2, lonePairs: 0, geometry: 'linear',               charge:  0 },
   { formula: 'BeCl₂',  central: 'Be', bonds: 2, lonePairs: 0, geometry: 'linear',               charge:  0 },
@@ -512,10 +513,38 @@ function nextQuestion(types: QuestionType[]): QuestionState {
   return { entryIdx: idx, qType, question: q.question, correct: q.correct, options: q.options }
 }
 
+function ShowMeModal({ entry, onClose }: { entry: VseprEntry; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.75)' }}
+      onClick={onClose}>
+      <div className="relative w-full max-w-3xl rounded-sm border border-border flex flex-col overflow-hidden"
+        style={{ background: 'rgb(var(--color-surface))' }}
+        onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-5 py-3 border-b border-border shrink-0">
+          <span className="font-mono text-xs text-secondary">VSEPR Breakdown</span>
+          <button onClick={onClose}
+            className="px-3 py-1 rounded-sm font-sans text-sm border border-border text-secondary hover:text-primary transition-colors">
+            Close
+          </button>
+        </div>
+        <div className="overflow-auto p-5">
+          <VseprVisualizer
+            formula={entry.formula} central={entry.central}
+            bonds={entry.bonds} lonePairs={entry.lonePairs}
+            geometry={entry.geometry}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function McqSection({ types }: { types: QuestionType[] }) {
   const [q, setQ]          = useState<QuestionState>(() => nextQuestion(types))
   const [selected, setSel] = useState<string | null>(null)
   const [score, setScore]  = useState({ correct: 0, total: 0 })
+  const [showMe, setShowMe] = useState(false)
 
   const entry     = PROBLEMS[q.entryIdx]
   const answered  = selected !== null
@@ -562,13 +591,19 @@ function McqSection({ types }: { types: QuestionType[] }) {
             <span className="font-mono text-xs text-dim">central atom: {entry.central}</span>
           </div>
 
-          <div className="w-44">
-            <VseprShapeDiagram
-              central={entry.central}
-              geometry={entry.geometry}
-              bonds={entry.bonds}
-              lonePairs={entry.lonePairs}
-            />
+          <div className="flex items-end gap-3">
+            <div className="w-44">
+              <VseprShapeDiagram
+                central={entry.central}
+                geometry={entry.geometry}
+                bonds={entry.bonds}
+                lonePairs={entry.lonePairs}
+              />
+            </div>
+            <button onClick={() => setShowMe(true)}
+              className="mb-1 px-3 py-1.5 rounded-sm font-sans text-xs font-medium border border-border text-secondary hover:text-primary hover:border-muted transition-colors shrink-0">
+              Show Me
+            </button>
           </div>
 
           <p className="font-sans text-base text-primary">{q.question}</p>
@@ -631,6 +666,8 @@ function McqSection({ types }: { types: QuestionType[] }) {
       <p className="font-mono text-xs text-secondary">
         electron geometry includes lone pairs · molecular geometry describes atom positions only · lone pairs compress bond angles
       </p>
+
+      {showMe && <ShowMeModal entry={entry} onClose={() => setShowMe(false)} />}
     </div>
   )
 }

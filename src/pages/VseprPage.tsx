@@ -4,6 +4,7 @@ import type { LewisStructure } from './LewisPage'
 import { looksLikeFormula, resolveToFormula } from '../utils/resolveFormula'
 import VsepDiagram from '../components/vsepr/VsepDiagram'
 import StepsPanel from '../components/shared/StepsPanel'
+import VseprVisualizer from '../components/vsepr/VseprVisualizer'
 
 // ── VSEPR derivation ──────────────────────────────────────────────────────────
 
@@ -201,6 +202,7 @@ export default function VseprPage() {
   }
 
   const vsepr = result ? deriveVseprInfo(result) : null
+  const [showVisualizer, setShowVisualizer] = useState(false)
 
   return (
     <div className="flex flex-col gap-6">
@@ -321,11 +323,53 @@ export default function VseprPage() {
               </div>
             </div>
 
-            {/* Steps */}
-            <StepsPanel steps={result.steps} />
+            {/* Steps + Visualize */}
+            <div className="flex items-start gap-3 flex-wrap">
+              <StepsPanel steps={result.steps} />
+              <button
+                onClick={() => setShowVisualizer(true)}
+                className="px-3.5 py-2 rounded-sm font-sans text-sm border transition-colors"
+                style={{
+                  color: 'var(--c-halogen)',
+                  borderColor: 'color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 8%, transparent)',
+                }}
+              >
+                Visualize
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Visualizer modal */}
+      {showVisualizer && result && vsepr && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: 'rgba(0,0,0,0.75)' }}
+          onClick={() => setShowVisualizer(false)}>
+          <div className="relative w-full max-w-3xl rounded-sm border border-border flex flex-col overflow-hidden"
+            style={{ background: 'rgb(var(--color-surface))' }}
+            onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-5 py-3 border-b border-border shrink-0">
+              <span className="font-mono text-xs text-secondary">VSEPR Breakdown</span>
+              <button onClick={() => setShowVisualizer(false)}
+                className="px-3 py-1 rounded-sm font-sans text-sm border border-border text-secondary hover:text-primary transition-colors">
+                Close
+              </button>
+            </div>
+            <div className="overflow-auto p-5">
+              <VseprVisualizer
+                formula={result.name}
+                central={vsepr.center}
+                bonds={vsepr.bondingPairs}
+                lonePairs={vsepr.lonePairs}
+                geometry={vsepr.molecularGeometry}
+                valenceElectrons={result.total_valence_electrons}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
