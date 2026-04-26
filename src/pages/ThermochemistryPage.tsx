@@ -32,6 +32,7 @@ import VaporPressureTool from '../components/thermo/VaporPressureTool'
 import ReactionProfilePractice from '../components/thermo/ReactionProfilePractice'
 import ReactionProfileTool from '../components/thermo/ReactionProfileTool'
 import ExpansionWorkTool from '../components/thermo/ExpansionWorkTool'
+import EnergyBalanceTool from '../components/thermo/EnergyBalanceTool'
 import PageShell from '../components/Layout/PageShell'
 
 type Tab =
@@ -65,6 +66,8 @@ type Tab =
   | 'heattransfer-practice'
   | 'heattransfer-reference'
   | 'expansion-work'
+  | 'energy-balance'
+  | 'energy-balance-problems'
 
 type Section = { heading: string; tabs: { id: Tab; label: string }[] }
 type Group   = { id: string; label: string; sections: Section[] }
@@ -140,6 +143,13 @@ const GROUPS: Group[] = [
           { id: 'heating-curve-reference' as Tab, label: 'Reference' },
           { id: 'heating-curve'           as Tab, label: 'Practice'  },
           { id: 'heating-curve-problems'  as Tab, label: 'Problems'  },
+        ],
+      },
+      {
+        heading: 'Energy Balance',
+        tabs: [
+          { id: 'energy-balance'          as Tab, label: 'Practice'  },
+          { id: 'energy-balance-problems' as Tab, label: 'Problems'  },
         ],
       },
     ],
@@ -485,6 +495,8 @@ export default function ThermochemistryPage() {
           {tab === 'cc-practice'            && <ClausiusClapeyronPractice />}
           {tab === 'cc-reference'           && <ClausiusClapeyronReference />}
           {tab === 'expansion-work'         && <ExpansionWorkTool />}
+          {tab === 'energy-balance'          && <EnergyBalanceTool allowCustom={true} />}
+          {tab === 'energy-balance-problems' && <EnergyBalanceTool allowCustom={false} />}
         </motion.div>
       </AnimatePresence>
 

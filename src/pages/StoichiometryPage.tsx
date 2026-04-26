@@ -15,6 +15,7 @@ import SolutionStoichPractice from '../components/stoichiometry/SolutionStoichPr
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 import AdvancedPercentYieldTool from '../components/stoichiometry/AdvancedPercentYieldTool'
 import ChainedYieldTool from '../components/stoichiometry/ChainedYieldTool'
+import MolecularDiagramLRTool from '../components/stoichiometry/MolecularDiagramLRTool'
 import PageShell from '../components/Layout/PageShell'
 
 type Tab =
@@ -25,6 +26,7 @@ type Tab =
   | 'limiting-problems' | 'theoretical-problems' | 'percent-problems'
   | 'adv-percent' | 'adv-percent-problems'
   | 'chained-yield' | 'chained-yield-problems'
+  | 'mol-diagram' | 'mol-diagram-problems'
   | 'ref-stoich' | 'ref-limiting' | 'ref-theoretical' | 'ref-percent'
   | 'ref-balance' | 'ref-solution' | 'ref-gas-stoich'
 
@@ -78,6 +80,7 @@ const PRACTICE_GROUPS: TabGroup[] = [
       { id: 'stoich',      label: 'Stoichiometry',     formula: 'g ↔ mol' },
       { id: 'limiting',    label: 'Limiting Reagent',  formula: 'LR'      },
       { id: 'theoretical', label: 'Theoretical Yield', formula: 'T.Y.'    },
+      { id: 'mol-diagram', label: 'Molecular Diagrams', formula: '●○'     },
     ],
   },
   {
@@ -105,9 +108,10 @@ const PROBLEMS_GROUPS: TabGroup[] = [
     id: 'stoich',
     label: 'Stoichiometry',
     pills: [
-      { id: 'practice',             label: 'Stoichiometry',     formula: '✎'    },
-      { id: 'limiting-problems',    label: 'Limiting Reagent',  formula: 'LR'   },
-      { id: 'theoretical-problems', label: 'Theoretical Yield', formula: 'T.Y.' },
+      { id: 'practice',              label: 'Stoichiometry',     formula: '✎'    },
+      { id: 'limiting-problems',     label: 'Limiting Reagent',  formula: 'LR'   },
+      { id: 'theoretical-problems',  label: 'Theoretical Yield', formula: 'T.Y.' },
+      { id: 'mol-diagram-problems',  label: 'Molecular Diagrams', formula: '●○'  },
     ],
   },
   {
@@ -162,6 +166,8 @@ const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
   'adv-percent-problems':  'adv-percent',
   'chained-yield':         'chained-yield',
   'chained-yield-problems':'chained-yield',
+  'mol-diagram':           'mol-diagram',
+  'mol-diagram-problems':  'mol-diagram',
 }
 
 const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
@@ -174,6 +180,7 @@ const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
   'gas-stoich':  { reference: 'ref-gas-stoich',  practice: 'gas-stoich-practice',  problems: 'gas-stoich'                },
   'adv-percent':   {                               practice: 'adv-percent',           problems: 'adv-percent-problems'   },
   'chained-yield': {                               practice: 'chained-yield',         problems: 'chained-yield-problems' },
+  'mol-diagram':   {                               practice: 'mol-diagram',           problems: 'mol-diagram-problems'   },
 }
 
 const MODE_DEFAULT: Record<Mode, Tab> = {
@@ -579,6 +586,20 @@ export default function StoichiometryPage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <ChainedYieldTool allowCustom={false} />
+          </motion.div>
+        )}
+        {activeTab === 'mol-diagram' && (
+          <motion.div key="mol-diagram"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <MolecularDiagramLRTool />
+          </motion.div>
+        )}
+        {activeTab === 'mol-diagram-problems' && (
+          <motion.div key="mol-diagram-problems"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <MolecularDiagramLRTool allowCustom={false} />
           </motion.div>
         )}
       </AnimatePresence>

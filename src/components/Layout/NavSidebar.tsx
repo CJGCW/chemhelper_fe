@@ -55,7 +55,8 @@ const SEARCH_INDEX: SearchItem[] = [
   { label: 'Electrolyte',       formula: '⚡',         section: 'Reactions / Redox',  path: '/redox?tab=electrolyte',               keywords: 'electrolyte strong weak nonelectrolyte' },
   { label: 'Redox',             formula: 'e⁻',        section: 'Reactions / Redox',  path: '/redox?tab=redox-practice',            keywords: 'redox oxidation reduction electron transfer oxidation state' },
   { label: 'E°cell / Nernst',   formula: 'E°',        section: 'Reactions / Redox',  path: '/redox?tab=ecell',                     keywords: 'cell potential Nernst equation reduction potential electrochemistry' },
-  { label: 'Titration',         formula: 'MₐVₐ=MᵦVᵦ', section: 'Reactions / Redox', path: '/redox?tab=titration',                  keywords: 'acid base redox titration neutralization equivalence point molarity volume' },
+  { label: 'Titration',         formula: 'MₐVₐ=MᵦVᵦ', section: 'Reactions / Redox', path: '/redox?tab=titration',          keywords: 'acid base redox titration neutralization equivalence point molarity volume' },
+  { label: 'Titration Problems', formula: '✎',          section: 'Reactions / Redox', path: '/redox?tab=titration-problems', keywords: 'titration practice problems acid base redox neutralization volume molarity' },
   // Solubility
   { label: 'Solubility',        formula: 'S/I',       section: 'Reference',          path: '/reference?tab=solubility',            keywords: 'solubility rules soluble insoluble precipitate' },
   // Stoichiometry
@@ -66,8 +67,9 @@ const SEARCH_INDEX: SearchItem[] = [
   { label: 'Solution Stoich',   formula: 'M·V',       section: 'Stoichiometry',      path: '/stoichiometry?tab=solution',          keywords: 'solution stoichiometry molarity volume' },
   { label: 'Gas Stoich',        formula: 'PV',        section: 'Stoichiometry',      path: '/stoichiometry?tab=gas-stoich-practice',keywords: 'gas stoichiometry PV=nRT' },
   { label: 'Adv Percent Yield', formula: 'TY→%',      section: 'Stoichiometry',      path: '/stoichiometry?tab=adv-percent',        keywords: 'advanced percent yield theoretical actual limiting' },
-  { label: 'Chained Yield',     formula: 'm→%Y',      section: 'Stoichiometry',      path: '/stoichiometry?tab=chained-yield',      keywords: 'chained yield industrial mass to percent yield step by step' },
-  { label: 'Balance',           formula: '_□_',       section: 'Stoichiometry',      path: '/stoichiometry?tab=balance-practice',  keywords: 'balance equations balancing coefficients' },
+  { label: 'Chained Yield',     formula: 'm→%Y',      section: 'Stoichiometry',      path: '/stoichiometry?tab=chained-yield',       keywords: 'chained yield industrial mass to percent yield step by step' },
+  { label: 'Balance',           formula: '_□_',       section: 'Stoichiometry',      path: '/stoichiometry?tab=balance-practice',   keywords: 'balance equations balancing coefficients' },
+  { label: 'Molecular Diagrams', formula: '●○',       section: 'Stoichiometry',      path: '/stoichiometry?tab=mol-diagram',        keywords: 'molecular diagram limiting reagent particle box conceptual spheres pictorial Chang 3.81 3.82' },
   // Structures
   { label: 'Lewis Structures',  formula: '⌬',         section: 'Structures',         path: '/structures?tab=lewis',                keywords: 'lewis structure dot diagram electron pairs bonds' },
   { label: 'VSEPR',             formula: '⬡',         section: 'Structures',         path: '/structures?tab=vsepr',                keywords: 'VSEPR geometry molecular shape electron domain' },
@@ -86,6 +88,7 @@ const SEARCH_INDEX: SearchItem[] = [
   { label: 'Clausius-Clap.',    formula: 'ln P',      section: 'Thermochemistry',    path: '/thermochemistry?tab=cc-reference',           keywords: 'clausius clapeyron vapor pressure temperature enthalpy vaporization' },
   { label: 'Vapor Pressure',    formula: 'P_vap',    section: 'Thermochemistry',    path: '/thermochemistry?tab=vapor-pressure',         keywords: 'vapor pressure temperature boiling liquid clausius clapeyron' },
   { label: 'Expansion Work',    formula: 'w=−PΔV',   section: 'Thermochemistry',    path: '/thermochemistry?tab=expansion-work',         keywords: 'expansion work PV irreversible compression w=-PextDeltaV surroundings' },
+  { label: 'Energy Balance',    formula: 'q₁+q₂=0', section: 'Thermochemistry',    path: '/thermochemistry?tab=energy-balance',         keywords: 'energy balance partial melting ice drink evaporative cooling sweat Chang 6.126 6.141 heat of fusion vaporization' },
   // Practice
   { label: 'Test Generator',    formula: '✎',         section: 'Practice',           path: '/test',                                keywords: 'test generator practice problems worksheet' },
   { label: 'Print Reference',   formula: '⎙',         section: 'Practice',           path: '/print',                               keywords: 'print reference sheet cheat sheet' },
@@ -529,9 +532,10 @@ const STOICH_GROUPS: { label: string; items: StoichItem[] }[] = [
   {
     label: 'Stoichiometry',
     items: [
-      { tab: 'stoich',      label: 'Stoichiometry',     formula: 'g↔mol' },
-      { tab: 'limiting',    label: 'Limiting Reagent',  formula: 'LR'    },
-      { tab: 'theoretical', label: 'Theoretical Yield', formula: 'T.Y.'  },
+      { tab: 'stoich',      label: 'Stoichiometry',      formula: 'g↔mol' },
+      { tab: 'limiting',    label: 'Limiting Reagent',   formula: 'LR'    },
+      { tab: 'theoretical', label: 'Theoretical Yield',  formula: 'T.Y.'  },
+      { tab: 'mol-diagram', label: 'Molecular Diagrams', formula: '●○'    },
     ],
   },
   {
@@ -640,6 +644,13 @@ const REDOX_GROUPS: { label: string; items: RedoxItem[] }[] = [
       { tab: 'ecell',          label: 'E°cell / Nernst', formula: 'E°' },
     ],
   },
+  {
+    label: 'Titrations',
+    items: [
+      { tab: 'titration',          label: 'Titration',          formula: 'MₐVₐ=MᵦVᵦ' },
+      { tab: 'titration-problems', label: 'Titration Problems',  formula: '✎' },
+    ],
+  },
 ]
 
 function RedoxSubItem({ item, onNavigate }: { item: RedoxItem; onNavigate: () => void }) {
@@ -742,6 +753,7 @@ const THERMO_GROUPS: { label: string; items: { tab: string; label: string; formu
       { tab: 'profile',                   label: 'Reaction Profiles', formula: '⇀'    },
       { tab: 'heattransfer-reference',    label: 'Heat Transfer',     formula: 'q₁=−q₂' },
       { tab: 'heating-curve-reference',   label: 'Heating Curves',    formula: 'q/T'  },
+      { tab: 'energy-balance',            label: 'Energy Balance',    formula: 'q+q=0' },
     ],
   },
   {

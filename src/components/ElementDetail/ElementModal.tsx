@@ -11,13 +11,13 @@ import {
 } from '../atomic/electronConfigUtils'
 import type { Element } from '../../types'
 
-// ── Animation variants ────────────────────────────────────────────────────────
+// ── Animation variants (hero only — tab content uses simple fade) ─────────────
 
-const contentVariants = {
+const heroVariants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.04, delayChildren: 0.18 } },
 }
-const rowVariants = {
+const heroRowVariants = {
   hidden: { opacity: 0, y: 6 },
   show:   { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 380, damping: 30 } },
 }
@@ -26,16 +26,13 @@ const rowVariants = {
 
 function StatRow({ label, value, unit }: { label: string; value: string; unit?: string }) {
   return (
-    <motion.div
-      variants={rowVariants}
-      className="flex items-baseline justify-between py-2 border-b border-border"
-    >
+    <div className="flex items-baseline justify-between py-2 border-b border-border">
       <span className="font-sans text-xs text-secondary">{label}</span>
       <span className="font-mono text-sm text-primary">
         {value}
         {unit && <span className="text-dim text-xs ml-1">{unit}</span>}
       </span>
-    </motion.div>
+    </div>
   )
 }
 
@@ -43,7 +40,7 @@ function StatRow({ label, value, unit }: { label: string; value: string; unit?: 
 
 function PropertiesTab({ el, color }: { el: NonNullable<Element>; color: string }) {
   return (
-    <motion.div variants={contentVariants} initial="hidden" animate="show" className="flex flex-col">
+    <div className="flex flex-col">
       <StatRow label="Atomic Weight"        value={el.atomicWeight}                                              unit="g/mol"   />
       <StatRow label="Period"               value={String(el.period)}                                                           />
       <StatRow label="Group"                value={String(el.group)}                                                            />
@@ -51,7 +48,7 @@ function PropertiesTab({ el, color }: { el: NonNullable<Element>; color: string 
       <StatRow label="Van der Waals Radius" value={el.vanDerWaalsRadiusPm > 0 ? String(el.vanDerWaalsRadiusPm) : '—'}  unit={el.vanDerWaalsRadiusPm > 0 ? 'pm'      : undefined} />
 
       {el.electronegativity > 0 && (
-        <motion.div variants={rowVariants} className="mt-4">
+        <div className="mt-4">
           <div className="flex justify-between items-center mb-1">
             <span className="font-sans text-[12px] text-secondary">Electronegativity</span>
             <span className="font-mono text-[12px] text-dim">0 – 4 Pauling</span>
@@ -62,14 +59,14 @@ function PropertiesTab({ el, color }: { el: NonNullable<Element>; color: string 
               style={{ background: color }}
               initial={{ width: 0 }}
               animate={{ width: `${(el.electronegativity / 4) * 100}%` }}
-              transition={{ delay: 0.35, duration: 0.5, ease: 'easeOut' }}
+              transition={{ duration: 0.2, ease: 'easeOut', delay: 0.05 }}
             />
           </div>
-        </motion.div>
+        </div>
       )}
 
       {el.vanDerWaalsRadiusPm > 0 && (
-        <motion.div variants={rowVariants} className="mt-3">
+        <div className="mt-3">
           <div className="flex justify-between items-center mb-1">
             <span className="font-sans text-[12px] text-secondary">Van der Waals Radius</span>
             <span className="font-mono text-[12px] text-dim">0 – 400 pm</span>
@@ -80,12 +77,12 @@ function PropertiesTab({ el, color }: { el: NonNullable<Element>; color: string 
               style={{ background: color, opacity: 0.7 }}
               initial={{ width: 0 }}
               animate={{ width: `${(el.vanDerWaalsRadiusPm / 400) * 100}%` }}
-              transition={{ delay: 0.4, duration: 0.5, ease: 'easeOut' }}
+              transition={{ duration: 0.2, ease: 'easeOut', delay: 0.05 }}
             />
           </div>
-        </motion.div>
+        </div>
       )}
-    </motion.div>
+    </div>
   )
 }
 
@@ -114,29 +111,29 @@ function IonsTab({ el, color }: { el: NonNullable<Element>; color: string }) {
   const anions  = ions.filter(i => i.charge < 0)
 
   return (
-    <motion.div variants={contentVariants} initial="hidden" animate="show" className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1">
       {cations.length > 0 && (
-        <motion.div variants={rowVariants} className="mb-1">
+        <div className="mb-1">
           <p className="font-mono text-[10px] tracking-wider text-dim mb-2">CATIONS (positive)</p>
           <div className="flex flex-col gap-2">
             {cations.map(ion => (
               <IonRow key={ion.charge} symbol={el.symbol} ion={ion} color={color} valenceColor="#f97316" />
             ))}
           </div>
-        </motion.div>
+        </div>
       )}
 
       {anions.length > 0 && (
-        <motion.div variants={rowVariants} className={cations.length > 0 ? 'mt-3' : ''}>
+        <div className={cations.length > 0 ? 'mt-3' : ''}>
           <p className="font-mono text-[10px] tracking-wider text-dim mb-2">ANIONS (negative)</p>
           <div className="flex flex-col gap-2">
             {anions.map(ion => (
               <IonRow key={ion.charge} symbol={el.symbol} ion={ion} color={color} valenceColor="#38bdf8" />
             ))}
           </div>
-        </motion.div>
+        </div>
       )}
-    </motion.div>
+    </div>
   )
 }
 
@@ -224,7 +221,7 @@ function IsotopesTab({ el, color }: { el: NonNullable<Element>; color: string })
   const maxAbundance = Math.max(...isotopes.map(i => i.abundance ?? 0), 1)
 
   return (
-    <motion.div variants={contentVariants} initial="hidden" animate="show" className="flex flex-col">
+    <div className="flex flex-col">
       {/* Header row */}
       <div className="flex items-center pb-1.5 mb-1 border-b border-border">
         <span className="font-mono text-xs text-secondary tracking-wider w-16">ISOTOPE</span>
@@ -232,12 +229,12 @@ function IsotopesTab({ el, color }: { el: NonNullable<Element>; color: string })
         <span className="font-mono text-xs text-secondary tracking-wider text-right w-20">NOTES</span>
       </div>
 
-      {isotopes.map((iso, i) => {
+      {isotopes.map((iso) => {
         const hasAbundance = iso.abundance != null
         const barWidth = hasAbundance ? (iso.abundance! / maxAbundance) * 100 : 0
 
         return (
-          <motion.div key={iso.A} variants={rowVariants}
+          <div key={iso.A}
             className="flex items-center gap-2 py-2 border-b border-border last:border-0">
 
             {/* Isotope label */}
@@ -266,7 +263,7 @@ function IsotopesTab({ el, color }: { el: NonNullable<Element>; color: string })
                         style={{ background: iso.radioactive ? '#f87171' : color, opacity: 0.75 }}
                         initial={{ width: 0 }}
                         animate={{ width: `${barWidth}%` }}
-                        transition={{ delay: i * 0.03, duration: 0.4, ease: 'easeOut' }}
+                        transition={{ duration: 0.2, ease: 'easeOut', delay: 0.05 }}
                       />
                     </div>
                     <span className="font-mono text-[11px] text-primary w-16 text-right shrink-0">
@@ -292,10 +289,10 @@ function IsotopesTab({ el, color }: { el: NonNullable<Element>; color: string })
                 <span className="font-mono text-xs text-secondary">stable</span>
               )}
             </div>
-          </motion.div>
+          </div>
         )
       })}
-    </motion.div>
+    </div>
   )
 }
 
@@ -341,10 +338,10 @@ function ElectronConfigTab({ el, color }: { el: Element; color: string }) {
   const valence          = valenceElectrons(fullSubshells)
 
   return (
-    <motion.div variants={contentVariants} initial="hidden" animate="show" className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
 
       {/* Valence count + controls */}
-      <motion.div variants={rowVariants} className="flex items-center justify-between">
+      <div className="flex items-center justify-between">
         <div className="flex items-baseline gap-1.5">
           <span className="font-mono text-2xl font-bold" style={{ color }}>
             {valence}
@@ -376,11 +373,10 @@ function ElectronConfigTab({ el, color }: { el: Element; color: string }) {
             full
           </button>
         </div>
-      </motion.div>
+      </div>
 
       {/* Written notation */}
-      <motion.div variants={rowVariants}
-        className="p-3 rounded-sm border border-border flex flex-wrap gap-x-1 gap-y-0.5"
+      <div className="p-3 rounded-sm border border-border flex flex-wrap gap-x-1 gap-y-0.5"
         style={{ background: 'rgb(var(--color-surface))' }}>
         {displayCore && (
           <span className="font-mono text-sm text-dim">{displayCore} </span>
@@ -391,23 +387,22 @@ function ElectronConfigTab({ el, color }: { el: Element; color: string }) {
             {s.label}<sup style={{ fontSize: '0.65em' }}>{s.electrons}</sup>
           </span>
         ))}
-      </motion.div>
+      </div>
 
       {/* Exception note */}
       {exception && (
-        <motion.div variants={rowVariants}
-          className="p-3 rounded-sm"
+        <div className="p-3 rounded-sm"
           style={{
             background: 'color-mix(in srgb, #f59e0b 8%, transparent)',
             border: '1px solid color-mix(in srgb, #f59e0b 25%, transparent)',
           }}>
           <p className="font-mono text-[9px] tracking-wider mb-1" style={{ color: '#f59e0b' }}>AUFBAU EXCEPTION</p>
           <p className="font-sans text-[11px]" style={{ color: 'rgba(245,158,11,0.8)' }}>{exception.note}</p>
-        </motion.div>
+        </div>
       )}
 
       {/* Orbital box diagram */}
-      <motion.div variants={rowVariants} className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1">
         <p className="font-mono text-xs tracking-widest text-secondary uppercase mb-1">Orbital Box Diagram</p>
         {shellRows.map(([n, subs]) => (
           <div key={n} className="flex items-end gap-3 p-2.5 rounded-sm border border-border"
@@ -418,9 +413,9 @@ function ElectronConfigTab({ el, color }: { el: Element; color: string }) {
             </div>
           </div>
         ))}
-      </motion.div>
+      </div>
 
-    </motion.div>
+    </div>
   )
 }
 
@@ -495,26 +490,26 @@ export default function ElementModal() {
                 }}
               >
                 <motion.div
-                  variants={contentVariants}
+                  variants={heroVariants}
                   initial="hidden"
                   animate="show"
                   className="flex flex-col items-start"
                 >
-                  <motion.span variants={rowVariants} className="font-mono text-xs mb-1"
+                  <motion.span variants={heroRowVariants} className="font-mono text-xs mb-1"
                     style={{ color: `color-mix(in srgb, ${color} 70%, white)` }}>
                     {el.atomicNumber}
                   </motion.span>
 
-                  <motion.div variants={rowVariants} className="font-mono font-semibold leading-none"
+                  <motion.div variants={heroRowVariants} className="font-mono font-semibold leading-none"
                     style={{ color, fontSize: '4.5rem', lineHeight: 1 }}>
                     {el.symbol}
                   </motion.div>
 
-                  <motion.div variants={rowVariants} className="mt-2 font-sans font-medium text-primary text-xl">
+                  <motion.div variants={heroRowVariants} className="mt-2 font-sans font-medium text-primary text-xl">
                     {el.name}
                   </motion.div>
 
-                  <motion.div variants={rowVariants}
+                  <motion.div variants={heroRowVariants}
                     className="mt-2 px-2 py-0.5 rounded-sm font-mono text-[11px] tracking-wider"
                     style={{
                       background: `color-mix(in srgb, ${color} 18%, transparent)`,
@@ -543,7 +538,7 @@ export default function ElementModal() {
                   className="absolute bottom-0 left-0 h-px pointer-events-none"
                   style={{ background: color, width: `${100 / TABS.length}%` }}
                   animate={{ x: `${TABS.indexOf(tab) * 100}%` }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                  transition={{ type: 'tween', duration: 0.15, ease: 'easeInOut' }}
                 />
               </div>
 

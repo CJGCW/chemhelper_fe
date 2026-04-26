@@ -5,6 +5,7 @@ import {
   calcCoffeeCupQrxn, calcBombQrxn,
   calcMixtureFinalTemp, calcEnthalpyOfReaction,
   heatOfSolution, heatOfNeutralization, deltaUtoDeltaH, expansionWork,
+  solvePartialMelting, solveEvaporativeCooling,
 } from '../thermo'
 
 describe('q = mcΔT', () => {
@@ -153,5 +154,87 @@ describe('expansionWork', () => {
 
   it('unit check: 1 atm × 1 L expansion = -101.325 J', () => {
     expect(expansionWork(1, 0, 1)).toBeCloseTo(-101.325, 2)
+  })
+})
+
+describe('solvePartialMelting', () => {
+  // Chang 6.126 shape: 361 g drink at 23°C + 150 g ice at 0°C
+  // qWarm = 361 × 4.184 × 23 = 34,773.5 J
+  // qToMeltAll = 150 × 334 = 50,100 J
+  // qWarm < qToMeltAll → partial melting; massIceMelted = 34773.5 / 334 ≈ 104.1 g; T_f = 0°C
+  it('Chang 6.126: 361g at 23°C + 150g ice → partial melting, T_f = 0°C', () => {
+    const sol = solvePartialMelting({ iceMass: 150, iceStartTemp: 0, warmMass: 361, warmStartTemp: 23 })
+    expect(sol.allIceMelts).toBe(false)
+    expect(sol.finalTemp).toBeCloseTo(0, 5)
+    expect(sol.massIceMelted).toBeCloseTo(34773.5 / 334, 0)
+    expect(sol.massIceRemaining).toBeCloseTo(150 - 34773.5 / 334, 0)
+  })
+
+  it('all ice melts: small ice mass in hot water → T_f > 0°C', () => {
+    const sol = solvePartialMelting({ iceMass: 10, iceStartTemp: 0, warmMass: 500, warmStartTemp: 60 })
+    expect(sol.allIceMelts).toBe(true)
+    expect(sol.finalTemp).toBeGreaterThan(0)
+    expect(sol.massIceMelted).toBe(10)
+    expect(sol.massIceRemaining).toBe(0)
+  })
+
+  it('ice below 0°C: warmup step reduces available heat', () => {
+    const solAt0   = solvePartialMelting({ iceMass: 100, iceStartTemp:   0, warmMass: 300, warmStartTemp: 20 })
+    const solBelow = solvePartialMelting({ iceMass: 100, iceStartTemp: -10, warmMass: 300, warmStartTemp: 20 })
+    // Less heat available for melting when ice must first warm to 0°C
+    expect(solBelow.massIceMelted).toBeLessThan(solAt0.massIceMelted)
+    expect(solBelow.qIceWarmup).toBeGreaterThan(0)
+  })
+
+  it('no melting: drink barely reaches mp → T_f between ice start and mp', () => {
+    // Very large ice mass: drink cools to near 0°C without melting anything
+    const sol = solvePartialMelting({ iceMass: 5000, iceStartTemp: -20, warmMass: 50, warmStartTemp: 5 })
+    expect(sol.allIceMelts).toBe(false)
+    expect(sol.massIceMelted).toBe(0)
+    expect(sol.finalTemp).toBeLessThan(0)  // ends below mp since drink can't warm all ice to 0
+  })
+
+  it('throws if warmStartTemp ≤ meltingPoint', () => {
+    expect(() =>
+      solvePartialMelting({ iceMass: 100, iceStartTemp: 0, warmMass: 200, warmStartTemp: 0 })
+    ).toThrow()
+  })
+
+  it('qWarmReleased + qIceWarmup intermediate values are self-consistent', () => {
+    const sol = solvePartialMelting({ iceMass: 80, iceStartTemp: 0, warmMass: 250, warmStartTemp: 25 })
+    const expected = 250 * 4.184 * 25
+    expect(sol.qWarmReleased).toBeCloseTo(expected, 0)
+    expect(sol.qIceWarmup).toBeCloseTo(0, 10)
+    expect(sol.qAvailableForMelt).toBeCloseTo(expected, 0)
+  })
+
+  it('steps array is non-empty', () => {
+    const sol = solvePartialMelting({ iceMass: 100, iceStartTemp: 0, warmMass: 300, warmStartTemp: 20 })
+    expect(sol.steps.length).toBeGreaterThan(0)
+  })
+})
+
+describe('solveEvaporativeCooling', () => {
+  // Chang 6.141: 1×10⁴ kJ/day = 10,000,000 J; ΔH_vap = 2410 J/g (body temp)
+  // massEvaporated = 10,000,000 / 2410 ≈ 4149 g
+  it('Chang 6.141: 10⁴ kJ at ΔH_vap = 2410 J/g → ≈ 4149 g evaporated', () => {
+    const sol = solveEvaporativeCooling({ heatInputJ: 10_000_000, bodyMass: 70_000, bodyTemp: 37, heatOfVaporization: 2410 })
+    expect(sol.massEvaporated).toBeCloseTo(4149, 0)
+  })
+
+  it('default ΔH_vap = 2260 J/g when not provided', () => {
+    const sol = solveEvaporativeCooling({ heatInputJ: 226_000, bodyMass: 0, bodyTemp: 37 })
+    expect(sol.massEvaporated).toBeCloseTo(100, 3)
+  })
+
+  it('larger heat → more evaporation (linear proportionality)', () => {
+    const s1 = solveEvaporativeCooling({ heatInputJ: 1_000_000, bodyMass: 0, bodyTemp: 37 })
+    const s2 = solveEvaporativeCooling({ heatInputJ: 2_000_000, bodyMass: 0, bodyTemp: 37 })
+    expect(s2.massEvaporated).toBeCloseTo(s1.massEvaporated * 2, 5)
+  })
+
+  it('steps array has exactly 3 entries', () => {
+    const sol = solveEvaporativeCooling({ heatInputJ: 5_000_000, bodyMass: 0, bodyTemp: 37 })
+    expect(sol.steps).toHaveLength(3)
   })
 })
