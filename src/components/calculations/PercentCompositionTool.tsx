@@ -1,5 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import WorkedExample, { pick } from '../shared/WorkedExample'
+import NumberField from '../shared/NumberField'
+import ResultDisplay from '../shared/ResultDisplay'
+import type { VerifyState } from '../../utils/calcHelpers'
 import { motion, AnimatePresence } from 'framer-motion'
 import { resolveFormula, resolveSmiles } from '../../api/calculations'
 import { useElementStore } from '../../stores/elementStore'
@@ -116,6 +119,15 @@ export default function PercentCompositionTool() {
   const [rows, setRows]       = useState<ElementRow[] | null>(null)
   const [totalMW, setTotalMW] = useState(0)
   const [displayFormula, setDisplayFormula] = useState('')
+  const [answerMW, setAnswerMW] = useState('')
+
+  const mwVerify: VerifyState = useMemo(() => {
+    if (!answerMW.trim() || !rows) return null
+    const userVal = parseFloat(answerMW)
+    if (isNaN(userVal) || userVal <= 0) return 'incorrect'
+    const relErr = Math.abs(userVal - totalMW) / totalMW
+    return relErr <= 0.01 ? 'correct' : 'incorrect'
+  }, [answerMW, rows, totalMW])
 
   const { elements, loadElements } = useElementStore()
   useEffect(() => { loadElements() }, [loadElements])
@@ -156,7 +168,7 @@ export default function PercentCompositionTool() {
     if (err) { setInputError(err); return }
     if (!v) return
 
-    setLoading(true); setError(null); setRows(null)
+    setLoading(true); setError(null); setRows(null); setAnswerMW('')
 
     try {
       if (mode === 'formula') {
@@ -290,6 +302,25 @@ export default function PercentCompositionTool() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {rows && (
+        <div className="flex flex-col gap-4 max-w-2xl">
+          <NumberField
+            label="Your molar mass — optional, enter to check"
+            value={answerMW}
+            onChange={setAnswerMW}
+            placeholder="g/mol"
+            unit={<span className="font-mono text-sm text-secondary px-2">g/mol</span>}
+          />
+          <ResultDisplay
+            label="Molar mass"
+            value={totalMW.toFixed(4)}
+            unit="g/mol"
+            verified={mwVerify}
+          />
+        </div>
+      )}
+
       <p className="font-mono text-xs text-secondary">% = (element contribution / M) × 100 · all element percents sum to 100%</p>
     </div>
   )

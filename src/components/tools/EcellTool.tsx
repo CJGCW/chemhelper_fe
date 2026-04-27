@@ -4,6 +4,7 @@ import { HALF_REACTIONS } from '../../data/reductionPotentials'
 import type { HalfReaction } from '../../data/reductionPotentials'
 import { genEcellProblem } from '../../utils/ecellPractice'
 import StepsPanel from '../shared/StepsPanel'
+import type { VerifyState } from '../../utils/calcHelpers'
 
 const ECELL_EMPTY: string[] = []
 
@@ -186,6 +187,7 @@ export default function EcellTool() {
   // Nernst inputs
   const [qRaw, setQRaw] = useState('')
   const [nOvr, setNOvr] = useState('')   // optional n override
+  const [answerEcell, setAnswerEcell] = useState('')
 
   // E°cell
   const e0cell = useMemo(() => {
@@ -210,6 +212,16 @@ export default function EcellTool() {
 
   const spontaneous = e0cell !== null ? e0cell > 0 : null
 
+  const ecellVerify: VerifyState = useMemo(() => {
+    if (!answerEcell.trim() || e0cell === null) return null
+    const userVal = parseFloat(answerEcell)
+    if (isNaN(userVal)) return 'incorrect'
+    const relErr = Math.abs(e0cell) < 0.001
+      ? Math.abs(userVal - e0cell)
+      : Math.abs(userVal - e0cell) / Math.abs(e0cell)
+    return relErr <= 0.01 ? 'correct' : 'incorrect'
+  }, [answerEcell, e0cell])
+
   // Quick examples
   const EXAMPLES: { label: string; catId: string; anoId: string }[] = [
     { label: 'Zn-Cu cell',      catId: 'Cu2a', anoId: 'Zn' },
@@ -221,7 +233,7 @@ export default function EcellTool() {
   function loadExample(catId: string, anoId: string) {
     const c = HALF_REACTIONS.find(r => r.id === catId) ?? null
     const a = HALF_REACTIONS.find(r => r.id === anoId) ?? null
-    setCathode(c); setAnode(a)
+    setCathode(c); setAnode(a); setAnswerEcell('')
   }
 
   return (
@@ -335,6 +347,28 @@ export default function EcellTool() {
                       ΔG° = −nFE°cell
                       {nEff !== null && (
                         <> = −{nEff} × (96 485) × {fmt(e0cell)} = {fmt(-nEff * 96485 * e0cell / 1000, 1)} kJ/mol</>
+                      )}
+                    </div>
+
+                    {/* Optional verify */}
+                    <div className="flex items-center gap-3 pt-2 border-t border-border/40">
+                      <div className="flex flex-col gap-1">
+                        <label className="font-mono text-[10px] text-secondary">Your E°cell — optional</label>
+                        <input
+                          type="text"
+                          inputMode="decimal"
+                          value={answerEcell}
+                          onChange={e => setAnswerEcell(e.target.value)}
+                          placeholder="e.g. +1.100"
+                          className="w-28 font-mono text-sm bg-raised border border-border rounded-sm px-3 py-1.5
+                                     text-primary placeholder-dim focus:outline-none"
+                        />
+                      </div>
+                      {ecellVerify !== null && (
+                        <span className="font-mono text-sm font-medium self-end mb-1.5"
+                          style={{ color: ecellVerify === 'correct' ? '#4ade80' : '#f87171' }}>
+                          {ecellVerify === 'correct' ? '✓ Correct' : '✗ Incorrect'}
+                        </span>
                       )}
                     </div>
                   </div>

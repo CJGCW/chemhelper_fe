@@ -56,7 +56,7 @@ function GasVolumePanel({ onUse }: { onUse: (moles: string, note: string) => voi
             style={{ overflow: 'hidden' }}>
             <div className="mt-2 p-3 rounded-sm border border-border bg-surface flex flex-col gap-3">
               <div className="flex flex-wrap items-center gap-2">
-                <input type="number" inputMode="decimal" min="0" value={volume}
+                <input type="text" inputMode="decimal" value={volume}
                   onChange={e => setVolume(e.target.value)}
                   placeholder="volume"
                   className="w-28 bg-raised border border-border rounded-sm px-3 py-1.5
@@ -125,7 +125,7 @@ export function NumInput({ value, onChange, placeholder = 'value' }: {
   value: string; onChange: (v: string) => void; placeholder?: string
 }) {
   return (
-    <input type="number" inputMode="decimal" min="0" value={value}
+    <input type="text" inputMode="decimal" value={value}
       onChange={e => onChange(e.target.value)} placeholder={placeholder}
       className="w-28 bg-raised border border-border rounded-sm px-3 py-1.5
                  font-mono text-sm text-bright placeholder-dim focus:outline-none focus:border-muted" />

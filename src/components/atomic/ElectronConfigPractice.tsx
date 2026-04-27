@@ -2,8 +2,9 @@ import { useState, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   ELEMENTS, EXCEPTIONS,
-  computeConfig, getAbbrConfig,
+  computeConfig, getNobleGasCore,
   groupByShell, parseWrittenConfig, checkWrittenConfig, checkBoxDiagram,
+  configForSpecies, unpairedForSpecies, chargeLabel, VALID_CHARGES,
   type SubshellFill,
 } from './electronConfigUtils'
 
@@ -26,9 +27,29 @@ function shuffle<T>(arr: T[]): T[] {
   return a
 }
 
-function generateProblems(min: number, max: number, count: number): number[] {
-  const pool = Array.from({ length: max - min + 1 }, (_, i) => i + min)
+interface Problem { z: number; charge: number }
+
+function generateProblems(min: number, max: number, count: number, includeIons: boolean): Problem[] {
+  const pool: Problem[] = []
+  for (let z = min; z <= max; z++) {
+    pool.push({ z, charge: 0 })
+    if (includeIons) {
+      for (const c of (VALID_CHARGES[z] ?? [])) {
+        const eCount = z - c
+        if (eCount >= 1 && eCount <= 118) pool.push({ z, charge: c })
+      }
+    }
+  }
   return shuffle(pool).slice(0, Math.min(count, pool.length))
+}
+
+// Returns the abbreviated ionic config ({coreLabel, subshells}) for a species.
+function getIonicAbbrConfig(z: number, charge: number) {
+  const full = configForSpecies(z, charge)
+  const core = getNobleGasCore(z)
+  if (!core) return { coreLabel: null, subshells: full }
+  const coreLabels = new Set(computeConfig(core.coreZ, true).map(s => s.label))
+  return { coreLabel: `[${core.symbol}]`, subshells: full.filter(s => !coreLabels.has(s.label)) }
 }
 
 // ── Clickable orbital box ─────────────────────────────────────────────────────
@@ -151,11 +172,15 @@ function BoxDiagramInput({
 // ── Main component ────────────────────────────────────────────────────────────
 
 type PracticePhase = 'settings' | 'active' | 'done'
+type ProblemPhase  = 'config' | 'magnetic' | 'reviewed'
 
 interface ProblemResult {
   z: number
+  charge: number
   writtenCorrect: boolean
   boxCorrect: boolean
+  magneticCorrect: boolean | null   // null = magnetic phase skipped
+  unpairedCorrect: boolean | null
 }
 
 export default function ElectronConfigPractice() {
@@ -163,29 +188,44 @@ export default function ElectronConfigPractice() {
   const [presetIdx, setPresetIdx] = useState(1)          // Periods 1–3 default
   const [count, setCount] = useState(5)
   const [nobleHint, setNobleHint] = useState(true)
+  const [includeIons, setIncludeIons] = useState(false)
 
-  const [problems, setProblems] = useState<number[]>([])
+  const [problems, setProblems] = useState<Problem[]>([])
   const [idx, setIdx] = useState(0)
   const [results, setResults] = useState<ProblemResult[]>([])
 
-  // Per-problem state
+  // Per-problem phase
+  const [problemPhase, setProblemPhase] = useState<ProblemPhase>('config')
+
+  // Config phase state
   const [writtenInput, setWrittenInput] = useState('')
   const [boxes, setBoxes] = useState<Record<string, (0|1|2)[]>>({})
-  const [checked, setChecked] = useState(false)
   const [writtenResult, setWrittenResult] = useState<ReturnType<typeof checkWrittenConfig> | null>(null)
   const [boxResults, setBoxResults] = useState<ReturnType<typeof checkBoxDiagram>>([])
 
+  // Magnetic phase state
+  const [magneticAnswer, setMagneticAnswer] = useState<'para' | 'dia' | null>(null)
+  const [unpairedAnswer, setUnpairedAnswer] = useState('')
+
   // ── Derived ─────────────────────────────────────────────────────────────────
 
-  const currentZ = problems[idx] ?? 1
-  const element  = ELEMENTS[currentZ]
-  const exception = EXCEPTIONS[currentZ]
-  const fullConfig  = computeConfig(currentZ)
-  const { coreLabel, subshells: abbrSubshells } = getAbbrConfig(currentZ)
+  const currentProblem = problems[idx] ?? { z: 1, charge: 0 }
+  const currentZ      = currentProblem.z
+  const currentCharge = currentProblem.charge
+  const electronCount = currentZ - currentCharge
+  const element       = ELEMENTS[currentZ]
+  const exception     = EXCEPTIONS[currentZ]
+  const fullConfig    = configForSpecies(currentZ, currentCharge)
+  const { coreLabel, subshells: abbrSubshells } = getIonicAbbrConfig(currentZ, currentCharge)
 
   // Subshells the user must fill (abbr if hint on, full if hint off)
   const practiceSubshells = nobleHint ? abbrSubshells : fullConfig
   const practiceCoreLabel = nobleHint ? coreLabel : null
+
+  // Display label for the species
+  const speciesLabel = currentCharge !== 0
+    ? `${element.symbol}${chargeLabel(currentCharge)}`
+    : element.symbol
 
   // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -196,7 +236,7 @@ export default function ElectronConfigPractice() {
   }, [])
 
   function startPractice() {
-    const ps = generateProblems(PRESETS[presetIdx].min, PRESETS[presetIdx].max, count)
+    const ps = generateProblems(PRESETS[presetIdx].min, PRESETS[presetIdx].max, count, includeIons)
     setProblems(ps)
     setIdx(0)
     setResults([])
@@ -204,12 +244,16 @@ export default function ElectronConfigPractice() {
     resetProblem(ps[0])
   }
 
-  function resetProblem(z: number) {
+  function resetProblem(problem: Problem) {
     setWrittenInput('')
-    setChecked(false)
+    setProblemPhase('config')
     setWrittenResult(null)
     setBoxResults([])
-    const { subshells } = nobleHint ? getAbbrConfig(z) : { subshells: computeConfig(z) }
+    setMagneticAnswer(null)
+    setUnpairedAnswer('')
+    const { subshells } = nobleHint
+      ? getIonicAbbrConfig(problem.z, problem.charge)
+      : { subshells: configForSpecies(problem.z, problem.charge) }
     initBoxes(subshells)
   }
 
@@ -234,8 +278,31 @@ export default function ElectronConfigPractice() {
     setBoxResults(bResult)
 
     const allBoxCorrect = bResult.every(r => r.electronCountCorrect && r.hundCorrect)
-    setResults(prev => [...prev, { z: currentZ, writtenCorrect: wResult.correct, boxCorrect: allBoxCorrect }])
-    setChecked(true)
+    setResults(prev => [...prev, {
+      z: currentZ,
+      charge: currentCharge,
+      writtenCorrect: wResult.correct,
+      boxCorrect: allBoxCorrect,
+      magneticCorrect: null,
+      unpairedCorrect: null,
+    }])
+
+    if (allBoxCorrect) {
+      setProblemPhase('magnetic')
+    } else {
+      setProblemPhase('reviewed')
+    }
+  }
+
+  function checkMagnetic() {
+    const correct = unpairedForSpecies(currentZ, currentCharge)
+    const isPara = correct > 0
+    const magCorrect = magneticAnswer === (isPara ? 'para' : 'dia')
+    const unpCorrect = parseInt(unpairedAnswer) === correct
+    setResults(prev => prev.map((r, i) =>
+      i === prev.length - 1 ? { ...r, magneticCorrect: magCorrect, unpairedCorrect: unpCorrect } : r
+    ))
+    setProblemPhase('reviewed')
   }
 
   function nextProblem() {
@@ -251,7 +318,7 @@ export default function ElectronConfigPractice() {
   // ── Box status map for highlighting ──────────────────────────────────────────
 
   const boxStatuses: Record<string, BoxStatus> = {}
-  if (checked) {
+  if (problemPhase !== 'config') {
     for (const r of boxResults) {
       if (!r.electronCountCorrect) boxStatuses[r.label] = 'wrong-count'
       else if (!r.hundCorrect)     boxStatuses[r.label] = 'wrong-hund'
@@ -320,6 +387,19 @@ export default function ElectronConfigPractice() {
           </div>
         </div>
 
+        <div className="flex flex-col gap-3 p-4 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
+          <p className="font-mono text-xs tracking-widest text-secondary uppercase">Include Ions</p>
+          <button onClick={() => setIncludeIons(h => !h)}
+            className="py-1.5 rounded-sm border font-sans text-sm transition-colors"
+            style={{
+              border: includeIons ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '1px solid rgba(var(--overlay),0.1)',
+              background: includeIons ? 'color-mix(in srgb, var(--c-halogen) 10%, transparent)' : 'transparent',
+              color: includeIons ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
+            }}>
+            {includeIons ? 'Ions included (harder)' : 'Neutral atoms only'}
+          </button>
+        </div>
+
         <button onClick={startPractice}
           className="py-2.5 rounded-sm font-sans font-medium text-sm transition-all"
           style={{
@@ -336,9 +416,10 @@ export default function ElectronConfigPractice() {
   // ── Render: Done ─────────────────────────────────────────────────────────────
 
   if (phase === 'done') {
-    const total  = results.length
+    const total = results.length
     const bothCorrect = results.filter(r => r.writtenCorrect && r.boxCorrect).length
     const pct = Math.round((bothCorrect / total) * 100)
+    const hasMagnetic = results.some(r => r.magneticCorrect !== null)
     return (
       <div className="flex flex-col gap-6 max-w-lg">
         <div className="flex flex-col gap-4 p-6 rounded-sm border border-border items-center text-center"
@@ -353,18 +434,28 @@ export default function ElectronConfigPractice() {
         <div className="flex flex-col gap-1">
           {results.map((r, i) => {
             const el = ELEMENTS[r.z]
+            const cl = chargeLabel(r.charge)
+            const label = cl ? `${el.symbol}${cl}` : el.symbol
             return (
               <div key={i} className="flex items-center gap-3 px-3 py-2 rounded-sm border border-border"
                 style={{ background: 'rgb(var(--color-surface))' }}>
-                <span className="font-mono text-sm font-semibold w-8 shrink-0"
-                  style={{ color: 'var(--c-halogen)' }}>{el.symbol}</span>
+                <span className="font-mono text-sm font-semibold w-12 shrink-0"
+                  style={{ color: 'var(--c-halogen)' }}>{label}</span>
                 <span className="font-sans text-xs text-secondary flex-1">{el.name}</span>
                 <span className="font-mono text-xs" style={{ color: r.writtenCorrect ? '#22c55e' : '#ef4444' }}>
-                  config {r.writtenCorrect ? '✓' : '✗'}
+                  cfg {r.writtenCorrect ? '✓' : '✗'}
                 </span>
                 <span className="font-mono text-xs" style={{ color: r.boxCorrect ? '#22c55e' : '#ef4444' }}>
-                  boxes {r.boxCorrect ? '✓' : '✗'}
+                  box {r.boxCorrect ? '✓' : '✗'}
                 </span>
+                {hasMagnetic && (
+                  <span className="font-mono text-xs" style={{
+                    color: r.magneticCorrect === null ? 'rgba(var(--overlay),0.3)'
+                         : r.magneticCorrect ? '#22c55e' : '#ef4444',
+                  }}>
+                    mag {r.magneticCorrect === null ? '—' : r.magneticCorrect ? '✓' : '✗'}
+                  </span>
+                )}
               </div>
             )
           })}
@@ -384,6 +475,8 @@ export default function ElectronConfigPractice() {
   }
 
   // ── Render: Active problem ────────────────────────────────────────────────────
+
+  const checked = problemPhase !== 'config'
 
   return (
     <div className="flex flex-col gap-5">
@@ -406,13 +499,21 @@ export default function ElectronConfigPractice() {
           <span className="font-mono text-5xl font-bold leading-none" style={{ color: 'var(--c-halogen)' }}>
             {element.symbol}
           </span>
+          {currentCharge !== 0 && (
+            <span className="font-mono text-sm font-semibold" style={{ color: 'var(--c-halogen)' }}>
+              {chargeLabel(currentCharge)}
+            </span>
+          )}
           <span className="font-mono text-xs text-dim mt-1">{currentZ}</span>
         </div>
         <div className="flex flex-col gap-0.5">
           <span className="font-sans text-base font-semibold text-bright">{element.name}</span>
-          <span className="font-mono text-xs text-dim">Z = {currentZ} · {currentZ} electrons</span>
+          <span className="font-mono text-xs text-dim">
+            Z = {currentZ}
+            {currentCharge !== 0 ? ` · ${electronCount} electrons` : ` · ${currentZ} electrons`}
+          </span>
         </div>
-        {exception && (
+        {exception && currentCharge === 0 && (
           <span className="font-mono text-[10px] px-1.5 py-0.5 rounded-sm ml-auto self-start"
             style={{
               background: 'color-mix(in srgb, #f59e0b 12%, transparent)',
@@ -427,7 +528,7 @@ export default function ElectronConfigPractice() {
       {/* Written config input */}
       <div className="flex flex-col gap-2">
         <p className="font-mono text-xs tracking-widest text-secondary uppercase">
-          Written Configuration
+          Written Configuration{currentCharge !== 0 ? ` for ${speciesLabel}` : ''}
         </p>
         <input
           type="text"
@@ -515,7 +616,7 @@ export default function ElectronConfigPractice() {
         </AnimatePresence>
 
         {/* Exception reveal */}
-        {checked && exception && (
+        {checked && exception && currentCharge === 0 && (
           <div className="flex flex-col gap-1 p-3 rounded-sm"
             style={{
               background: 'color-mix(in srgb, #f59e0b 8%, transparent)',
@@ -527,9 +628,100 @@ export default function ElectronConfigPractice() {
         )}
       </div>
 
+      {/* Magnetic phase — shown when boxes are correct */}
+      <AnimatePresence>
+        {problemPhase === 'magnetic' && (
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            className="flex flex-col gap-4 p-4 rounded-sm border"
+            style={{
+              background: 'color-mix(in srgb, #f59e0b 5%, rgb(var(--color-surface)))',
+              borderColor: 'color-mix(in srgb, #f59e0b 30%, transparent)',
+            }}>
+            <p className="font-mono text-xs tracking-widest uppercase" style={{ color: '#f59e0b' }}>
+              Magnetism — {speciesLabel}
+            </p>
+            <p className="font-sans text-sm text-secondary">
+              Based on the orbital diagram above, is {speciesLabel} paramagnetic or diamagnetic?
+            </p>
+
+            {/* Para / Dia buttons */}
+            <div className="flex gap-3">
+              {(['para', 'dia'] as const).map(opt => (
+                <button key={opt} onClick={() => setMagneticAnswer(opt)}
+                  className="flex-1 py-2 rounded-sm border font-sans text-sm font-medium transition-colors capitalize"
+                  style={{
+                    border: magneticAnswer === opt
+                      ? `1px solid ${opt === 'para' ? 'rgba(245,158,11,0.6)' : 'rgba(52,211,153,0.6)'}`
+                      : '1px solid rgba(var(--overlay),0.1)',
+                    background: magneticAnswer === opt
+                      ? opt === 'para' ? 'rgba(245,158,11,0.1)' : 'rgba(52,211,153,0.1)'
+                      : 'transparent',
+                    color: magneticAnswer === opt
+                      ? opt === 'para' ? '#f59e0b' : '#34d399'
+                      : 'rgba(var(--overlay),0.5)',
+                  }}>
+                  {opt === 'para' ? 'Paramagnetic' : 'Diamagnetic'}
+                </button>
+              ))}
+            </div>
+
+            {/* Unpaired electron count */}
+            <div className="flex flex-col gap-1">
+              <label className="font-mono text-xs text-secondary">Number of unpaired electrons</label>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={unpairedAnswer}
+                onChange={e => setUnpairedAnswer(e.target.value.replace(/\D/, ''))}
+                placeholder="0"
+                className="w-24 font-mono text-sm bg-raised border rounded-sm px-3 py-2 text-primary
+                           placeholder-dim focus:outline-none transition-colors border-border"
+              />
+            </div>
+
+            <button onClick={checkMagnetic} disabled={magneticAnswer === null}
+              className="py-2.5 rounded-sm font-sans font-medium text-sm transition-all disabled:opacity-40"
+              style={{
+                background: 'color-mix(in srgb, #f59e0b 18%, rgb(var(--color-surface)))',
+                border: '1px solid color-mix(in srgb, #f59e0b 40%, transparent)',
+                color: '#f59e0b',
+              }}>
+              Check Magnetic
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Magnetic result — shown in reviewed phase when magnetic was attempted */}
+      <AnimatePresence>
+        {problemPhase === 'reviewed' && results[results.length - 1]?.magneticCorrect !== null && results[results.length - 1]?.magneticCorrect !== undefined && (() => {
+          const last = results[results.length - 1]
+          const correctUnpaired = unpairedForSpecies(currentZ, currentCharge)
+          const isPara = correctUnpaired > 0
+          return (
+            <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+              className="flex flex-col gap-2 p-4 rounded-sm border"
+              style={{
+                background: (last.magneticCorrect && last.unpairedCorrect)
+                  ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)',
+                borderColor: (last.magneticCorrect && last.unpairedCorrect)
+                  ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)',
+              }}>
+              <p className="font-mono text-xs tracking-widest uppercase text-secondary">Magnetic Result</p>
+              <p className="font-mono text-xs" style={{ color: last.magneticCorrect ? '#22c55e' : '#ef4444' }}>
+                {isPara ? 'Paramagnetic' : 'Diamagnetic'} — {last.magneticCorrect ? '✓' : '✗'}
+              </p>
+              <p className="font-mono text-xs" style={{ color: last.unpairedCorrect ? '#22c55e' : '#ef4444' }}>
+                {correctUnpaired} unpaired electron{correctUnpaired !== 1 ? 's' : ''} — {last.unpairedCorrect ? '✓' : '✗'}
+              </p>
+            </motion.div>
+          )
+        })()}
+      </AnimatePresence>
+
       {/* Action buttons */}
       <div className="flex gap-3">
-        {!checked ? (
+        {problemPhase === 'config' ? (
           <button onClick={checkAnswers}
             className="flex-1 py-2.5 rounded-sm font-sans font-medium text-sm transition-all"
             style={{
@@ -539,7 +731,7 @@ export default function ElectronConfigPractice() {
             }}>
             Check Answer
           </button>
-        ) : (
+        ) : problemPhase === 'reviewed' ? (
           <button onClick={nextProblem}
             className="flex-1 py-2.5 rounded-sm font-sans font-medium text-sm transition-all"
             style={{
@@ -549,7 +741,7 @@ export default function ElectronConfigPractice() {
             }}>
             {idx + 1 < problems.length ? 'Next Problem →' : 'See Results'}
           </button>
-        )}
+        ) : null}
       </div>
       <p className="font-mono text-xs text-secondary">Aufbau: fill lowest energy first · Hund's rule: maximize unpaired spins · order: 1s 2s 2p 3s 3p 4s 3d 4p…</p>
     </div>

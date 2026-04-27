@@ -9,6 +9,9 @@ import {
   parseWrittenConfig,
   checkWrittenConfig,
   checkBoxDiagram,
+  unpairedForSpecies,
+  configForSpecies,
+  chargeLabel,
 } from './electronConfigUtils'
 
 // ── computeConfig ─────────────────────────────────────────────────────────────
@@ -384,5 +387,116 @@ describe('checkBoxDiagram', () => {
     expect(results[0].electronCountCorrect).toBe(false)
     expect(results[0].gotElectrons).toBe(0)
     expect(results[0].expectedElectrons).toBe(2)
+  })
+})
+
+// ── chargeLabel ───────────────────────────────────────────────────────────────
+
+describe('chargeLabel', () => {
+  it('neutral atom returns empty string', () => {
+    expect(chargeLabel(0)).toBe('')
+  })
+
+  it('positive charge: 2 → "2+"', () => {
+    expect(chargeLabel(2)).toBe('2+')
+  })
+
+  it('positive charge: 1 → "1+"', () => {
+    expect(chargeLabel(1)).toBe('1+')
+  })
+
+  it('negative charge: -1 → "1−"', () => {
+    expect(chargeLabel(-1)).toBe('1−')
+  })
+
+  it('negative charge: -2 → "2−"', () => {
+    expect(chargeLabel(-2)).toBe('2−')
+  })
+})
+
+// ── configForSpecies ──────────────────────────────────────────────────────────
+
+describe('configForSpecies', () => {
+  it('neutral Fe (Z=26): same as computeConfig(26)', () => {
+    const cfg = configForSpecies(26, 0)
+    expect(cfg.find(s => s.label === '3d')?.electrons).toBe(6)
+    expect(cfg.find(s => s.label === '4s')?.electrons).toBe(2)
+  })
+
+  it('Fe²⁺ (Z=26, charge=2): removes 4s first → [Ar] 3d⁶', () => {
+    const cfg = configForSpecies(26, 2)
+    expect(cfg.find(s => s.label === '4s')).toBeUndefined()  // 4s fully removed
+    expect(cfg.find(s => s.label === '3d')?.electrons).toBe(6)
+  })
+
+  it('Cu⁺ (Z=29, charge=1): removes from 4s¹ (exception) → [Ar] 3d¹⁰', () => {
+    const cfg = configForSpecies(29, 1)
+    expect(cfg.find(s => s.label === '4s')).toBeUndefined()
+    expect(cfg.find(s => s.label === '3d')?.electrons).toBe(10)
+  })
+
+  it('O²⁻ (Z=8, charge=-2): adds 2 electrons → 10 total (Ne config)', () => {
+    const cfg = configForSpecies(8, -2)
+    const total = cfg.reduce((s, sub) => s + sub.electrons, 0)
+    expect(total).toBe(10)
+    expect(cfg.find(s => s.label === '2p')?.electrons).toBe(6)
+  })
+
+  it('Cr neutral (Z=24): exception 3d⁵ 4s¹ unchanged', () => {
+    const cfg = configForSpecies(24, 0)
+    expect(cfg.find(s => s.label === '3d')?.electrons).toBe(5)
+    expect(cfg.find(s => s.label === '4s')?.electrons).toBe(1)
+  })
+})
+
+// ── unpairedForSpecies ────────────────────────────────────────────────────────
+
+describe('unpairedForSpecies', () => {
+  it('He (Z=2, neutral) → 0 unpaired', () => {
+    expect(unpairedForSpecies(2, 0)).toBe(0)
+  })
+
+  it('N (Z=7, neutral) → 3 unpaired', () => {
+    expect(unpairedForSpecies(7, 0)).toBe(3)
+  })
+
+  it('Fe (Z=26, neutral) → 4 unpaired', () => {
+    expect(unpairedForSpecies(26, 0)).toBe(4)
+  })
+
+  it('Fe²⁺ (Z=26, charge=2) → 4 unpaired ([Ar] 3d⁶)', () => {
+    expect(unpairedForSpecies(26, 2)).toBe(4)
+  })
+
+  it('Fe³⁺ (Z=26, charge=3) → 5 unpaired ([Ar] 3d⁵)', () => {
+    expect(unpairedForSpecies(26, 3)).toBe(5)
+  })
+
+  it('Cu⁺ (Z=29, charge=1) → 0 unpaired (d¹⁰, full shell)', () => {
+    expect(unpairedForSpecies(29, 1)).toBe(0)
+  })
+
+  it('Cr (Z=24, neutral, exception 3d⁵4s¹) → 6 unpaired', () => {
+    expect(unpairedForSpecies(24, 0)).toBe(6)
+  })
+
+  it('Cr³⁺ (Z=24, charge=3) → 3 unpaired ([Ar] 3d³)', () => {
+    // Cr neutral: [Ar] 3d⁵ 4s¹ (exception). Remove 3: 4s¹→0, then 2 from 3d⁵→3d³
+    expect(unpairedForSpecies(24, 3)).toBe(3)
+  })
+
+  it('Zn (Z=30, neutral) → 0 unpaired (3d¹⁰ 4s²)', () => {
+    expect(unpairedForSpecies(30, 0)).toBe(0)
+  })
+
+  it('O²⁻ (Z=8, charge=-2) → 0 unpaired (isoelectronic with Ne)', () => {
+    expect(unpairedForSpecies(8, -2)).toBe(0)
+  })
+
+  it('does not confuse Cr exception with Fe²⁺ (24 electrons each)', () => {
+    // Fe²⁺ has 24 electrons but should have 4 unpaired, not 6 (Cr's exception value)
+    expect(unpairedForSpecies(26, 2)).toBe(4)
+    expect(unpairedForSpecies(24, 0)).toBe(6)
+    expect(unpairedForSpecies(26, 2)).not.toBe(unpairedForSpecies(24, 0))
   })
 })

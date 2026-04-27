@@ -3,6 +3,7 @@ import NumberField from '../shared/NumberField'
 import ResultDisplay from '../shared/ResultDisplay'
 import { hasValue } from '../../utils/calcHelpers'
 import type { VerifyState } from '../../utils/calcHelpers'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
 
 const R = 8.314
 
@@ -48,6 +49,31 @@ function fmtP(Pa: number, u: PUnit) {
   return `${sig(v, 4)} ${u}`
 }
 
+// ── Worked-example generator ───────────────────────────────────────────────────
+
+function generateVaporPressureExample() {
+  const sub = SUBSTANCES[Math.floor(Math.random() * SUBSTANCES.length)]
+  const T1_K = sub.bp + 273.15
+  const T2_C = sub.bp - 20
+  const T2_K = T2_C + 273.15
+  const dH_J = sub.dHvap * 1e3
+  const P2_Pa = 101325 * Math.exp((-dH_J / R) * (1 / T2_K - 1 / T1_K))
+  const P2_kPa = (P2_Pa / 1e3).toPrecision(4)
+  const exponent = ((-dH_J / R) * (1 / T2_K - 1 / T1_K)).toFixed(4)
+  return {
+    scenario: `What is the vapor pressure of ${sub.name} (${sub.formula}) at ${T2_C.toFixed(1)} °C? (ΔH_vap = ${sub.dHvap} kJ/mol, normal bp = ${sub.bp.toFixed(1)} °C)`,
+    steps: [
+      `Reference point: T₁ = ${T1_K.toFixed(2)} K, P₁ = 101.325 kPa (normal bp at 1 atm)`,
+      `Target: T₂ = ${T2_K.toFixed(2)} K`,
+      `Formula: ln(P₂/P₁) = −(ΔH_vap/R) × (1/T₂ − 1/T₁)`,
+      `1/T₂ − 1/T₁ = 1/${T2_K.toFixed(2)} − 1/${T1_K.toFixed(2)} = ${(1/T2_K - 1/T1_K).toExponential(4)} K⁻¹`,
+      `Exponent = −(${sub.dHvap * 1000} / 8.314) × ${(1/T2_K - 1/T1_K).toExponential(4)} = ${exponent}`,
+      `P₂ = 101.325 kPa × e^(${exponent}) = ${P2_kPa} kPa`,
+    ],
+    result: `P₂ = ${P2_kPa} kPa`,
+  }
+}
+
 // ── Component ──────────────────────────────────────────────────────────────────
 
 export default function VaporPressureTool() {
@@ -61,6 +87,9 @@ export default function VaporPressureTool() {
   const [showSteps, setShowSteps] = useState(false)
   const [answerVal, setAnswerVal] = useState('')
   const [pUnit,     setPUnit]     = useState<PUnit>('kPa')
+
+  const [noSteps] = useState<string[]>([])
+  const stepsState = useStepsPanelState(noSteps, generateVaporPressureExample)
 
   const isCustom = substanceId === CUSTOM_ID
   const substance = SUBSTANCES.find(s => s.name === substanceId) ?? null
@@ -113,6 +142,11 @@ export default function VaporPressureTool() {
 
   return (
     <div className="flex flex-col gap-8 max-w-2xl">
+
+      <div className="flex items-stretch gap-2">
+        <StepsTrigger {...stepsState} />
+      </div>
+      <StepsContent {...stepsState} />
 
       {/* Substance selector */}
       <div className="flex flex-col gap-2">
@@ -180,7 +214,7 @@ export default function VaporPressureTool() {
             {/* Custom T1 */}
             <div className="flex flex-col gap-1">
               <span className="font-mono text-xs text-secondary">T₁ (°C)</span>
-              <input type="number" value={customT1} onChange={e => setCustomT1(e.target.value)}
+              <input type="text" inputMode="decimal" value={customT1} onChange={e => setCustomT1(e.target.value)}
                 className="h-9 rounded-sm border border-border bg-raised px-3 font-mono text-sm
                            text-bright focus:outline-none focus:border-muted" />
             </div>
@@ -188,7 +222,7 @@ export default function VaporPressureTool() {
             <div className="flex flex-col gap-1">
               <span className="font-mono text-xs text-secondary">P₁</span>
               <div className="flex">
-                <input type="number" value={customP1} onChange={e => setCustomP1(e.target.value)}
+                <input type="text" inputMode="decimal" value={customP1} onChange={e => setCustomP1(e.target.value)}
                   className="flex-1 min-w-0 h-9 rounded-l-sm border border-border bg-raised px-3 font-mono text-sm
                              text-bright focus:outline-none focus:border-muted" />
                 <select value={customPu1} onChange={e => setCustomPu1(e.target.value as PUnit)}
@@ -201,7 +235,7 @@ export default function VaporPressureTool() {
             {/* Custom dHvap */}
             <div className="flex flex-col gap-1">
               <span className="font-mono text-xs text-secondary">ΔH_vap (kJ/mol)</span>
-              <input type="number" value={customDh} onChange={e => setCustomDh(e.target.value)}
+              <input type="text" inputMode="decimal" value={customDh} onChange={e => setCustomDh(e.target.value)}
                 className="h-9 rounded-sm border border-border bg-raised px-3 font-mono text-sm
                            text-bright focus:outline-none focus:border-muted" />
             </div>
@@ -213,7 +247,7 @@ export default function VaporPressureTool() {
       <div className="flex flex-col gap-2">
         <span className="font-mono text-xs text-secondary tracking-widest uppercase">Target Temperature (T₂)</span>
         <div className="flex items-center gap-2 max-w-xs">
-          <input type="number" value={t2} onChange={e => setT2(e.target.value)}
+          <input type="text" inputMode="decimal" value={t2} onChange={e => setT2(e.target.value)}
             className="flex-1 h-9 rounded-l-sm border border-border bg-raised px-3 font-mono text-sm
                        text-bright focus:outline-none focus:border-muted" />
           <select value={tu2} onChange={e => setTu2(e.target.value as TUnit)}

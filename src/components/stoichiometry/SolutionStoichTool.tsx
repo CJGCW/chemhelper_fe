@@ -25,7 +25,7 @@ function NumInput({ value, onChange, placeholder = 'value', width = 'w-24' }: {
   value: string; onChange: (v: string) => void; placeholder?: string; width?: string
 }) {
   return (
-    <input type="number" inputMode="decimal" min="0" value={value}
+    <input type="text" inputMode="decimal" value={value}
       onChange={e => onChange(e.target.value)} placeholder={placeholder}
       className={`${width} bg-raised border border-border rounded-sm px-3 py-1.5
                  font-mono text-sm text-bright placeholder-dim focus:outline-none focus:border-muted`} />

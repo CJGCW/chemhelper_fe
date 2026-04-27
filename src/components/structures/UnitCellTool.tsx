@@ -1,5 +1,7 @@
 import React from 'react'
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
+import type { VerifyState } from '../../utils/calcHelpers'
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
@@ -380,6 +382,29 @@ function fromPm(val: number, unit: EdgeUnit): number {
   return val / 1000
 }
 
+// ── Worked-example generator ───────────────────────────────────────────────────
+
+function generateUnitCellExample() {
+  const metal = METALS[Math.floor(Math.random() * METALS.length)]
+  const s = STRUCTURES[metal.structure]
+  const edgePm = metal.a
+  const radius = s.calcRadius(edgePm)
+  const density = (s.Z * metal.M) / (NA * Math.pow(edgePm * 1e-10, 3))
+  return {
+    scenario: `${metal.name} (${metal.symbol}) crystallizes in a ${s.label} unit cell with a = ${edgePm} pm. Find the atomic radius and density (M = ${metal.M} g/mol).`,
+    steps: [
+      `Structure: ${s.label} · Z = ${s.Z} atoms/cell · CN = ${s.cn}`,
+      `Contact direction: ${s.contactDir}`,
+      `Radius: ${s.radiusEq}  →  r = ${radius.toFixed(2)} pm`,
+      `Density formula: ρ = Z·M / (Nₐ·a³)`,
+      `a in cm: ${edgePm} pm × 10⁻¹⁰ = ${(edgePm * 1e-10).toExponential(4)} cm`,
+      `a³ = ${Math.pow(edgePm * 1e-10, 3).toExponential(4)} cm³`,
+      `ρ = (${s.Z} × ${metal.M}) / (6.022×10²³ × ${Math.pow(edgePm * 1e-10, 3).toExponential(3)})`,
+    ],
+    result: `r = ${radius.toFixed(2)} pm,  ρ = ${density.toFixed(3)} g/cm³`,
+  }
+}
+
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export default function UnitCellTool() {
@@ -389,6 +414,10 @@ export default function UnitCellTool() {
   const [molarStr,    setMolarStr]    = useState('63.546')
   const [showSteps,   setShowSteps]   = useState(false)
   const [show3D,      setShow3D]      = useState(false)
+  const [answerDensity, setAnswerDensity] = useState('')
+
+  const [noSteps] = useState<string[]>([])
+  const stepsState = useStepsPanelState(noSteps, generateUnitCellExample)
 
   const s = STRUCTURES[structureId]
 
@@ -404,6 +433,13 @@ export default function UnitCellTool() {
     ? (s.Z * molar) / (NA * Math.pow(edgePm * 1e-10, 3))
     : null
 
+  const densityVerify: VerifyState = (() => {
+    if (!answerDensity.trim() || density === null) return null
+    const userVal = parseFloat(answerDensity)
+    if (isNaN(userVal) || userVal <= 0) return 'incorrect'
+    return Math.abs(userVal - density) / density <= 0.01 ? 'correct' : 'incorrect'
+  })()
+
   function loadPreset(m: MetalPreset) {
     setStructureId(m.structure); setEdgeUnit('pm')
     setEdgeStr(m.a.toString()); setMolarStr(m.M.toString())
@@ -417,6 +453,11 @@ export default function UnitCellTool() {
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
+
+      <div className="flex items-stretch gap-2">
+        <StepsTrigger {...stepsState} />
+      </div>
+      <StepsContent {...stepsState} />
 
       {/* Structure selector */}
       <div className="flex flex-col gap-2">
@@ -448,7 +489,7 @@ export default function UnitCellTool() {
       <div className="flex flex-col gap-2">
         <span className="font-mono text-xs text-secondary tracking-widest uppercase">Edge Length (a)</span>
         <div className="flex gap-2 items-center flex-wrap">
-          <input type="number" value={edgeStr} onChange={e => setEdgeStr(e.target.value)}
+          <input type="text" inputMode="decimal" value={edgeStr} onChange={e => setEdgeStr(e.target.value)}
             className="w-36 px-3 py-2 rounded-sm border border-border bg-surface font-mono text-sm text-primary
                        focus:outline-none focus:border-muted"
             placeholder="e.g. 361.5" />
@@ -486,7 +527,7 @@ export default function UnitCellTool() {
           Molar Mass <span className="normal-case tracking-normal opacity-60">(needed for density)</span>
         </span>
         <div className="flex items-center gap-2">
-          <input type="number" value={molarStr} onChange={e => setMolarStr(e.target.value)}
+          <input type="text" inputMode="decimal" value={molarStr} onChange={e => setMolarStr(e.target.value)}
             className="w-36 px-3 py-2 rounded-sm border border-border bg-surface font-mono text-sm text-primary
                        focus:outline-none focus:border-muted"
             placeholder="g/mol" />
@@ -538,6 +579,29 @@ export default function UnitCellTool() {
               </div>
             )}
           </div>
+
+          {density !== null && (
+            <div className="flex items-center gap-3">
+              <div className="flex flex-col gap-1">
+                <label className="font-mono text-xs text-secondary">Your density — optional, enter to check</label>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={answerDensity}
+                  onChange={e => setAnswerDensity(e.target.value)}
+                  placeholder="g/cm³"
+                  className="w-32 font-mono text-sm bg-raised border border-border rounded-sm px-3 py-1.5
+                             text-primary placeholder-dim focus:outline-none focus:border-accent/40 transition-colors"
+                />
+              </div>
+              {densityVerify !== null && (
+                <span className="font-mono text-sm font-medium self-end mb-1.5"
+                  style={{ color: densityVerify === 'correct' ? '#4ade80' : '#f87171' }}>
+                  {densityVerify === 'correct' ? '✓ Correct' : '✗ Incorrect'}
+                </span>
+              )}
+            </div>
+          )}
 
           {/* Step-by-step toggle */}
           <button onClick={() => setShowSteps(v=>!v)}

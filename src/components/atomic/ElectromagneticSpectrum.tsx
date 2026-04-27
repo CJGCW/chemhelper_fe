@@ -163,6 +163,8 @@ export default function ElectromagneticSpectrum() {
           {label}
         </span>
         <input
+          type="text"
+          inputMode="decimal"
           readOnly={!active}
           value={active ? raw : ''}
           placeholder={active ? placeholder : '—'}

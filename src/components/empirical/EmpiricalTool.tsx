@@ -4,6 +4,7 @@ import { useElementStore } from '../../stores/elementStore'
 import {
   buildMolarMasses,
   solveEmpiricalFormula,
+  formulasMatch,
   type SolverResult,
 } from '../../utils/empiricalFormula'
 import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
@@ -115,6 +116,7 @@ export default function EmpiricalTool() {
   const [rows, setRows] = useState<Row[]>([newRow(), newRow(), newRow()])
   const [mode, setMode] = useState<'percent' | 'mass'>('percent')
   const [molecularMass, setMolecularMass] = useState('')
+  const [answerFormula, setAnswerFormula] = useState('')
 
   function updateRow(id: number, field: 'symbol' | 'value', val: string) {
     setRows(rs => rs.map(r => r.id === id ? { ...r, [field]: val } : r))
@@ -134,6 +136,12 @@ export default function EmpiricalTool() {
     if (inputs.length < 2) return null
     return solveEmpiricalFormula(inputs, molarMasses, parseFloat(molecularMass) || undefined)
   }, [inputs, molarMasses, molecularMass])
+
+  const formulaVerify = useMemo<'none' | 'correct' | 'incorrect'>(() => {
+    if (!answerFormula.trim() || !result) return 'none'
+    const empASCII = result.rows.map(r => r.subscript === 1 ? r.symbol : `${r.symbol}${r.subscript}`).join('')
+    return formulasMatch(answerFormula.trim(), empASCII) ? 'correct' : 'incorrect'
+  }, [answerFormula, result])
 
   const hasUnknown = inputs.some(i => !molarMasses[i.symbol])
   const unknownSymbols = inputs.filter(i => !molarMasses[i.symbol]).map(i => i.symbol)
@@ -314,6 +322,27 @@ export default function EmpiricalTool() {
                     <span className="text-primary">{pct((r.subscript * r.molarMass) / result.empiricalMolarMass)}</span>
                   </span>
                 ))}
+              </div>
+            </div>
+
+            {/* Optional verify */}
+            <div className="flex flex-col gap-1.5 border-t border-border pt-3">
+              <label className="font-mono text-xs text-secondary">Your empirical formula — optional, enter to check</label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="text"
+                  value={answerFormula}
+                  onChange={e => setAnswerFormula(e.target.value)}
+                  placeholder="e.g. CH2O"
+                  className="w-32 font-mono text-sm bg-raised border border-border rounded-sm px-3 py-1.5
+                             text-primary placeholder-dim focus:outline-none focus:border-accent/40 transition-colors"
+                />
+                {formulaVerify !== 'none' && (
+                  <span className="font-mono text-sm font-medium"
+                    style={{ color: formulaVerify === 'correct' ? '#4ade80' : '#f87171' }}>
+                    {formulaVerify === 'correct' ? '✓ Correct' : '✗ Incorrect'}
+                  </span>
+                )}
               </div>
             </div>
           </motion.div>

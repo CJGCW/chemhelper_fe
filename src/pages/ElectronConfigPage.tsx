@@ -11,7 +11,6 @@ import ElectronConfig from '../components/atomic/ElectronConfig'
 import ElectronConfigPractice from '../components/atomic/ElectronConfigPractice'
 import ElectromagneticSpectrum from '../components/atomic/ElectromagneticSpectrum'
 import ParaDiaMagnetic from '../components/atomic/ParaDiaMagnetic'
-import ParaDiaMagneticPractice from '../components/atomic/ParaDiaMagneticPractice'
 import MultiElectronAtoms from '../components/atomic/MultiElectronAtoms'
 import PeriodicTrendsReference from '../components/atomic/PeriodicTrendsReference'
 import PeriodicTrendsPractice from '../components/atomic/PeriodicTrendsPractice'
@@ -23,7 +22,7 @@ import NomenclatureTool from '../components/reference/NomenclatureTool'
 import PageShell from '../components/Layout/PageShell'
 
 type Topic = 'electron_config' | 'quantum_numbers' | 'energy_levels' | 'isoelectronic'
-           | 'em_spectrum' | 'para_dia' | 'multi_electron' | 'periodic_trends' | 'isotopes'
+           | 'em_spectrum' | 'multi_electron' | 'periodic_trends' | 'isotopes'
            | 'naming'
 type Mode  = 'reference' | 'practice' | 'problems'
 
@@ -32,7 +31,6 @@ const TOPIC_MODES: Partial<Record<Topic, Mode[]>> = {
   electron_config:  ['reference', 'practice', 'problems'],
   quantum_numbers:  ['reference', 'problems'],
   energy_levels:    ['reference', 'problems'],
-  para_dia:         ['reference', 'problems'],
   periodic_trends:  ['reference', 'practice'],
   isotopes:         ['reference', 'practice', 'problems'],
   naming:           ['reference', 'problems'],
@@ -46,7 +44,6 @@ const TOPIC_GROUPS: { label: string; topics: { id: Topic; label: string; subtitl
       { id: 'quantum_numbers', label: 'Quantum Numbers', subtitle: 'n, l, mₗ, ms rules'                    },
       { id: 'energy_levels',   label: 'Energy Levels',   subtitle: 'Bohr model, transitions'               },
       { id: 'multi_electron',  label: 'Multi-Electron',  subtitle: 'Shielding, Zeff, Slater rules'         },
-      { id: 'para_dia',        label: 'Para/Diamagnetic', subtitle: 'Unpaired electrons, magnetism'        },
     ],
   },
   {
@@ -143,23 +140,6 @@ const EXPLANATIONS: Partial<Record<Topic, ExplanationContent>> = {
       scenario: 'Rank O²⁻, F⁻, Na⁺, Mg²⁺ by size (all have 10 electrons).',
       steps: ['Z values: O(8), F(9), Na(11), Mg(12)', 'Higher Z = stronger pull on same electrons = smaller radius'],
       result: 'O²⁻ > F⁻ > Na⁺ > Mg²⁺',
-    },
-  },
-  para_dia: {
-    title: 'Para- and Diamagnetism',
-    formula: 'unpaired e⁻ → paramagnetic · all paired → diamagnetic',
-    formulaVars: [
-      { symbol: 'unpaired', meaning: 'Electrons without a partner in their orbital', unit: 'count' },
-      { symbol: 'μ',        meaning: 'Magnetic moment ∝ √(n(n+2))',                 unit: 'Bohr magnetons' },
-    ],
-    description:
-      'Paramagnetic species have one or more unpaired electrons and are attracted to a magnetic field. ' +
-      'Diamagnetic species have all electrons paired and are weakly repelled. ' +
-      'Apply Hund\'s rule when filling degenerate orbitals to count unpaired electrons.',
-    example: {
-      scenario: 'Is Fe²⁺ paramagnetic or diamagnetic?  (Fe: [Ar] 3d⁶ 4s², Fe²⁺ loses 4s² first → [Ar] 3d⁶)',
-      steps: ['3d has 5 orbitals: fill with 6 electrons using Hund\'s rule', '↑↓ | ↑ | ↑ | ↑ | ↑  → 4 unpaired electrons'],
-      result: 'Paramagnetic (4 unpaired electrons)',
     },
   },
   em_spectrum: {
@@ -328,7 +308,17 @@ export default function ElectronConfigPage() {
         <motion.div key={`${topic}-${mode}`}
           initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-          {topic === 'electron_config' && mode === 'reference' && <OrbitalBoxDiagram />}
+          {topic === 'electron_config' && mode === 'reference' && (
+            <div className="flex flex-col gap-12">
+              <OrbitalBoxDiagram />
+              <div className="flex flex-col gap-4">
+                <div className="border-t border-border pt-8">
+                  <p className="font-mono text-xs text-secondary tracking-widest uppercase mb-6">Para- and Diamagnetism</p>
+                  <ParaDiaMagnetic />
+                </div>
+              </div>
+            </div>
+          )}
           {topic === 'electron_config' && mode === 'practice'  && <ElectronConfig />}
           {topic === 'electron_config' && mode === 'problems'  && <ElectronConfigPractice />}
           {topic === 'quantum_numbers' && mode === 'reference' && <QuantumNumbersReference />}
@@ -337,8 +327,6 @@ export default function ElectronConfigPage() {
           {topic === 'energy_levels'   && mode === 'problems'  && <AtomicPractice subtopic="energy_levels" />}
           {topic === 'isoelectronic'   && <IsoelectronicSeries />}
           {topic === 'em_spectrum'     && <ElectromagneticSpectrum />}
-          {topic === 'para_dia' && mode === 'reference' && <ParaDiaMagnetic />}
-          {topic === 'para_dia' && mode === 'problems'  && <ParaDiaMagneticPractice />}
           {topic === 'multi_electron'   && <MultiElectronAtoms />}
           {topic === 'periodic_trends' && mode === 'reference' && <PeriodicTrendsReference />}
           {topic === 'periodic_trends' && mode === 'practice'  && <PeriodicTrendsPractice />}

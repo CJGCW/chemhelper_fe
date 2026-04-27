@@ -36,13 +36,12 @@ const SEARCH_INDEX: SearchItem[] = [
   { label: 'FP Depression',     formula: 'ΔTf',       section: 'Molar Calculations', path: '/calculations?tab=ref-colligative-fpd',keywords: 'freezing point depression colligative kf' },
   // Periodic Table
   { label: 'Periodic Table',    formula: '⬡',         section: 'Periodic Table',     path: '/table',                               keywords: 'periodic table elements' },
-  { label: 'Electron Config',   formula: 'e⁻',        section: 'Periodic Table',     path: '/electron-config?topic=electron_config',keywords: 'electron configuration orbital spdf' },
+  { label: 'Electron Config',   formula: 'e⁻',        section: 'Periodic Table',     path: '/electron-config?topic=electron_config',keywords: 'electron configuration orbital spdf paramagnetic diamagnetic unpaired electrons magnetism magnetic' },
   { label: 'Quantum Numbers',   formula: 'QN',        section: 'Periodic Table',     path: '/electron-config?topic=quantum_numbers',keywords: 'quantum numbers n l ml ms spin' },
   { label: 'Energy Levels',     formula: 'Eₙ',        section: 'Periodic Table',     path: '/electron-config?topic=energy_levels',  keywords: 'energy levels hydrogen Bohr Rydberg' },
   { label: 'Multi-Electron',    formula: 'Zeff',      section: 'Periodic Table',     path: '/electron-config?topic=multi_electron', keywords: 'multi electron effective nuclear charge shielding zeff' },
   { label: 'Periodic Trends',   formula: '↗',         section: 'Periodic Table',     path: '/electron-config?topic=periodic_trends',keywords: 'periodic trends atomic radius ionization energy electronegativity electron affinity heatmap' },
   { label: 'Isoelectronic',     formula: '≡',         section: 'Periodic Table',     path: '/electron-config?topic=isoelectronic',  keywords: 'isoelectronic same electrons ions' },
-  { label: 'Para/Diamagnetic',  formula: 'para',      section: 'Periodic Table',     path: '/electron-config?topic=para_dia',       keywords: 'paramagnetic diamagnetic unpaired electrons' },
   { label: 'EM Spectrum',       formula: 'λf',        section: 'Periodic Table',     path: '/electron-config?topic=em_spectrum',    keywords: 'electromagnetic spectrum wavelength frequency light' },
   { label: 'Isotope Abundance', formula: 'Ā=Σmf',    section: 'Periodic Table',     path: '/electron-config?topic=isotopes',               keywords: 'isotope abundance weighted average atomic mass natural percent' },
   { label: 'Reverse Isotope',   formula: 'f=?',      section: 'Periodic Table',     path: '/electron-config?topic=isotopes&mode=practice', keywords: 'reverse isotope find abundance from atomic mass two isotopes' },
@@ -197,7 +196,6 @@ const TABLE_GROUPS: { label: string; items: { path: string; label: string; formu
       { path: '/electron-config?topic=quantum_numbers', label: 'Quantum Numbers',  formula: 'QN'  },
       { path: '/electron-config?topic=energy_levels',   label: 'Energy Levels',    formula: 'Eₙ'  },
       { path: '/electron-config?topic=multi_electron',  label: 'Multi-Electron',   formula: 'Zeff' },
-      { path: '/electron-config?topic=para_dia',        label: 'Para/Diamagnetic', formula: 'para' },
     ],
   },
   {

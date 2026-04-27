@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -621,12 +622,54 @@ const SPLIT_RULES = [
   { label: 'Insoluble solids / metals', examples: 'Fe(s), Zn(s), Cu(s), …',    split: false },
 ]
 
+// ── Verify helpers ────────────────────────────────────────────────────────────
+
+const SUPER_MAP: Record<string, string> = { '⁺':'+','⁻':'-','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6' }
+const SUB_MAP:   Record<string, string> = { '₀':'0','₁':'1','₂':'2','₃':'3','₄':'4','₅':'5','₆':'6','₇':'7','₈':'8','₉':'9' }
+
+function normalizeNI(s: string): string {
+  return s
+    .split('').map(c => SUPER_MAP[c] ?? SUB_MAP[c] ?? c).join('')
+    .replace(/→/g, '->').replace(/\s+/g, '').toLowerCase()
+}
+
+// ── Worked-example generator ───────────────────────────────────────────────────
+
+function generateNetIonicExample() {
+  const rxn = REACTIONS[Math.floor(Math.random() * REACTIONS.length)]
+  const completeIonic =
+    rxn.reactantChunks.map(c => c.text).join(' + ') + ' → ' +
+    rxn.productChunks.map(c => c.text).join(' + ')
+  const spectatorNote = rxn.spectatorIons.length > 0
+    ? `Spectator ions (cancel both sides): ${rxn.spectatorIons.join(', ')}`
+    : 'No spectator ions — molecular and net ionic are identical'
+  return {
+    scenario: `Write the net ionic equation for: ${rxn.molecular}`,
+    steps: [
+      `Step 1 — Molecular: ${rxn.molecular}`,
+      `Step 2 — Complete ionic: ${completeIonic}`,
+      `Step 3 — ${spectatorNote}`,
+      'Remove spectator ions from both sides.',
+    ],
+    result: `Net ionic: ${rxn.netIonic}`,
+  }
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function NetIonicTool() {
   const [filter, setFilter]       = useState<Filter>('all')
   const [selected, setSelected]   = useState<Reaction | null>(null)
   const [showRules, setShowRules] = useState(false)
+  const [answerNI, setAnswerNI]   = useState('')
+
+  const [noSteps] = useState<string[]>([])
+  const stepsState = useStepsPanelState(noSteps, generateNetIonicExample)
+
+  const niVerify: 'none' | 'correct' | 'incorrect' = useMemo(() => {
+    if (!answerNI.trim() || !selected) return 'none'
+    return normalizeNI(answerNI) === normalizeNI(selected.netIonic) ? 'correct' : 'incorrect'
+  }, [answerNI, selected])
 
   const visible = filter === 'all'
     ? REACTIONS
@@ -644,6 +687,11 @@ export default function NetIonicTool() {
           Select a reaction to see the full molecular → complete ionic → net ionic step-by-step.
         </p>
       </div>
+
+      <div className="flex items-stretch gap-2">
+        <StepsTrigger {...stepsState} />
+      </div>
+      <StepsContent {...stepsState} />
 
       {/* Filter pills */}
       <div className="flex flex-wrap gap-1 p-1 rounded-sm self-start"
@@ -679,7 +727,7 @@ export default function NetIonicTool() {
             const meta = CATEGORY_META[rxn.category]
             const isSelected = selected?.id === rxn.id
             return (
-              <button key={rxn.id} onClick={() => setSelected(isSelected ? null : rxn)}
+              <button key={rxn.id} onClick={() => { setSelected(isSelected ? null : rxn); setAnswerNI('') }}
                 className="flex flex-col gap-0.5 px-3 py-2.5 rounded-sm text-left transition-colors"
                 style={isSelected ? {
                   background: `color-mix(in srgb, ${meta.color} 10%, rgb(var(--color-raised)))`,
@@ -780,6 +828,27 @@ export default function NetIonicTool() {
                     <span className="font-mono text-sm text-secondary">No spectator ions — molecular and net ionic equations are identical.</span>
                   </div>
                 )}
+
+                {/* Optional verify */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="font-mono text-xs text-secondary">Your net ionic equation — optional, enter to check</label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="text"
+                      value={answerNI}
+                      onChange={e => setAnswerNI(e.target.value)}
+                      placeholder="e.g. Ag+(aq) + Cl-(aq) → AgCl(s)"
+                      className="flex-1 font-mono text-sm bg-raised border border-border rounded-sm px-3 py-1.5
+                                 text-primary placeholder-dim focus:outline-none focus:border-accent/40 transition-colors"
+                    />
+                    {niVerify !== 'none' && (
+                      <span className="font-mono text-sm font-medium shrink-0"
+                        style={{ color: niVerify === 'correct' ? '#4ade80' : '#f87171' }}>
+                        {niVerify === 'correct' ? '✓ Correct' : '✗ Incorrect'}
+                      </span>
+                    )}
+                  </div>
+                </div>
 
                 {/* Step 3 */}
                 <div className="flex flex-col gap-1.5">

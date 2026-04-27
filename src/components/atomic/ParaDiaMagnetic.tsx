@@ -1,89 +1,8 @@
 import { useState } from 'react'
-import { ELEMENTS, SYMBOL_TO_Z, computeConfig, EXCEPTIONS } from './electronConfigUtils'
-
-// ── Common oxidation states by Z ─────────────────────────────────────────────
-// Only non-zero charges listed; 0 (neutral) is always available.
-
-const VALID_CHARGES: Partial<Record<number, number[]>> = {
-  1:  [-1, 1],           // H
-  3:  [1],               // Li
-  4:  [2],               // Be
-  5:  [3],               // B
-  6:  [-4, 2, 4],        // C
-  7:  [-3, 3, 5],        // N
-  8:  [-2, -1],          // O
-  9:  [-1],              // F
-  11: [1],               // Na
-  12: [2],               // Mg
-  13: [3],               // Al
-  14: [-4, 4],           // Si
-  15: [-3, 3, 5],        // P
-  16: [-2, 2, 4, 6],     // S
-  17: [-1, 1, 3, 5, 7],  // Cl
-  19: [1],               // K
-  20: [2],               // Ca
-  21: [3],               // Sc
-  22: [2, 3, 4],         // Ti
-  23: [2, 3, 4, 5],      // V
-  24: [2, 3, 6],         // Cr
-  25: [2, 3, 4, 6, 7],   // Mn
-  26: [2, 3],            // Fe
-  27: [2, 3],            // Co
-  28: [2, 3],            // Ni
-  29: [1, 2],            // Cu
-  30: [2],               // Zn
-  31: [1, 3],            // Ga
-  32: [2, 4],            // Ge
-  33: [-3, 3, 5],        // As
-  34: [-2, 4, 6],        // Se
-  35: [-1, 1, 3, 5],     // Br
-  37: [1],               // Rb
-  38: [2],               // Sr
-  39: [3],               // Y
-  40: [4],               // Zr
-  42: [3, 4, 6],         // Mo
-  44: [2, 3, 4, 6, 8],   // Ru
-  45: [3],               // Rh
-  46: [2, 4],            // Pd
-  47: [1, 2],            // Ag
-  48: [2],               // Cd
-  49: [1, 3],            // In
-  50: [2, 4],            // Sn
-  51: [-3, 3, 5],        // Sb
-  52: [-2, 4, 6],        // Te
-  53: [-1, 1, 3, 5, 7],  // I
-  55: [1],               // Cs
-  56: [2],               // Ba
-  57: [3],               // La
-  58: [3, 4],            // Ce
-  74: [4, 6],            // W
-  76: [4, 6, 8],         // Os
-  77: [3, 4],            // Ir
-  78: [2, 4],            // Pt
-  79: [1, 3],            // Au
-  80: [1, 2],            // Hg
-  81: [1, 3],            // Tl
-  82: [2, 4],            // Pb
-  83: [3, 5],            // Bi
-}
-
-function availableCharges(z: number): number[] {
-  const extras = VALID_CHARGES[z] ?? []
-  return [...extras.filter(c => c < 0).sort((a, b) => a - b),
-          0,
-          ...extras.filter(c => c > 0).sort((a, b) => a - b)]
-}
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function countUnpaired(z: number): number {
-  const config = computeConfig(z)
-  return config.reduce((sum, sub) => {
-    const up   = Math.min(sub.electrons, sub.orbitals)
-    const down = Math.max(0, sub.electrons - sub.orbitals)
-    return sum + (up - down)
-  }, 0)
-}
+import {
+  ELEMENTS, SYMBOL_TO_Z, computeConfig, EXCEPTIONS,
+  availableCharges, unpairedForSpecies,
+} from './electronConfigUtils'
 
 // ── Element selector ──────────────────────────────────────────────────────────
 
@@ -219,8 +138,8 @@ export default function ParaDiaMagnetic() {
   const electronCount = z - charge
   const validIon = electronCount >= 1 && electronCount <= 118
 
-  const neutralUnpaired = countUnpaired(z)
-  const ionUnpaired     = validIon ? countUnpaired(electronCount) : null
+  const neutralUnpaired = unpairedForSpecies(z, 0)
+  const ionUnpaired     = validIon ? unpairedForSpecies(z, charge) : null
 
   const config = computeConfig(z)
 
@@ -347,7 +266,7 @@ export default function ParaDiaMagnetic() {
                 return item.charges.map(c => {
                   const eCount = baseZ - c
                   if (eCount < 1 || eCount > 118) return null
-                  const u = countUnpaired(eCount)
+                  const u = unpairedForSpecies(baseZ, c)
                   const label = `${item.symbol}${c > 0 ? `${c}+` : `${Math.abs(c)}−`}`
                   const cfgShort = computeConfig(eCount).filter(s => s.electrons > 0).map(s => `${s.label}${s.electrons}`).join(' ')
                   const isActive = ELEMENTS[baseZ].symbol === el.symbol && charge === c
