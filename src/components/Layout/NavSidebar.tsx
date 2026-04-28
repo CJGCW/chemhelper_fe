@@ -17,7 +17,7 @@ const SEARCH_INDEX: SearchItem[] = [
   { label: 'Sig Figs',          formula: 'sf',        section: 'Base Calculations',  path: '/base-calculations?tab=sig-figs',     keywords: 'significant figures precision' },
   { label: 'Sci Notation',      formula: '×10ⁿ',      section: 'Base Calculations',  path: '/base-calculations?tab=sci-notation', keywords: 'scientific notation powers of ten' },
   { label: 'Unit Conversions',  formula: '↔',         section: 'Base Calculations',  path: '/base-calculations?tab=conversions',  keywords: 'unit conversion factor label' },
-  { label: 'Empirical Formula', formula: '⌬',         section: 'Base Calculations',  path: '/empirical',                           keywords: 'empirical molecular formula percent composition' },
+  { label: 'Empirical Formula', formula: '⌬',         section: 'Base Calculations',  path: '/empirical',                           keywords: 'empirical molecular formula percent composition combustion analysis burn CO2 H2O' },
   { label: 'Hydrate Analysis',  formula: '·nH₂O',    section: 'Base Calculations',  path: '/empirical?tab=hydrate',               keywords: 'hydrate water crystallization formula empirical anhydrous' },
   // Ideal Gas
   { label: 'Combined Gas Law',  formula: 'P₁V₁/T₁',  section: 'Ideal Gas Law',      path: '/ideal-gas?tab=ref-combined',          keywords: 'boyles charles gay-lussac combined gas law PVT' },
