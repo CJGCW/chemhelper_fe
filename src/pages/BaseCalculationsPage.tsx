@@ -6,6 +6,8 @@ import SigFigPractice from '../components/calculations/SigFigPractice'
 import UnitConversions from '../components/calculations/UnitConversions'
 import { ScientificNotationReference, ScientificNotationPracticeConverter } from '../components/calculations/ScientificNotation'
 import ScientificNotationPractice from '../components/calculations/ScientificNotationPractice'
+import PercentErrorTool from '../components/calculations/PercentErrorTool'
+import PercentErrorPractice from '../components/calculations/PercentErrorPractice'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 import PageShell from '../components/Layout/PageShell'
 
@@ -209,6 +211,26 @@ const EXPLANATIONS: Record<string, ExplanationContent> = {
       result: '3.42 × 10⁻⁴',
     },
   },
+  'percent-error': {
+    title: 'Percent Error',
+    formula: '% error = |exp − accepted| / |accepted| × 100',
+    formulaVars: [
+      { symbol: 'exp',      meaning: 'Experimentally measured value', unit: 'any' },
+      { symbol: 'accepted', meaning: 'Accepted (literature) value',   unit: 'same' },
+    ],
+    description:
+      'Percent error quantifies how accurate an experimental measurement is compared to a known accepted value. ' +
+      'The absolute value ensures the result is always positive regardless of whether the measured value is above or below the accepted value. ' +
+      'It appears in lab reports when comparing measured quantities (density, specific heat, ΔH) to literature values.',
+    example: {
+      scenario: 'A student measures the density of aluminum as 2.85 g/cm³. The accepted value is 2.70 g/cm³.',
+      steps: [
+        'Error = |2.85 − 2.70| = 0.15',
+        '% error = (0.15 / 2.70) × 100 = 5.56%',
+      ],
+      result: '5.56%',
+    },
+  },
   'conversions': {
     title: 'Unit Conversions',
     formula: 'value × (desired unit / given unit)',
@@ -254,9 +276,10 @@ export default function BaseCalculationsPage() {
 
   // Available modes per tab
   const availableModes =
-    pageTab === 'sig-figs'      ? ['reference', 'practice', 'problems'] :
-    pageTab === 'conversions'   ? ['reference', 'practice'] :
-    pageTab === 'sci-notation'  ? ['reference', 'practice', 'problems'] :
+    pageTab === 'sig-figs'       ? ['reference', 'practice', 'problems'] :
+    pageTab === 'conversions'    ? ['reference', 'practice'] :
+    pageTab === 'sci-notation'   ? ['reference', 'practice', 'problems'] :
+    pageTab === 'percent-error'  ? ['reference', 'practice', 'problems'] :
     []
 
   function setMode(m: string) {
@@ -314,7 +337,10 @@ export default function BaseCalculationsPage() {
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-3 print:hidden">
           <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">
-            {pageTab === 'conversions' ? 'Unit Conversions' : pageTab === 'sci-notation' ? 'Scientific Notation' : 'Sig Figs'}
+            {pageTab === 'conversions'   ? 'Unit Conversions'  :
+             pageTab === 'sci-notation'  ? 'Scientific Notation' :
+             pageTab === 'percent-error' ? 'Percent Error' :
+             'Sig Figs'}
           </h2>
           {(pageTab === 'sig-figs' || pageTab === 'sci-notation' || pageTab === 'conversions') && mode === 'reference' && (
             <button
@@ -751,6 +777,38 @@ export default function BaseCalculationsPage() {
               </div>
             </div>
 
+          </motion.div>
+        )}
+
+        {/* Percent Error — Reference */}
+        {pageTab === 'percent-error' && (mode === 'reference' || !availableModes.includes(mode)) && (
+          <motion.div key="pe-reference"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18 }}
+          >
+            <PercentErrorTool />
+          </motion.div>
+        )}
+
+        {/* Percent Error — Practice */}
+        {pageTab === 'percent-error' && mode === 'practice' && (
+          <motion.div key="pe-practice"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18 }}
+            className="print:hidden"
+          >
+            <PercentErrorTool />
+          </motion.div>
+        )}
+
+        {/* Percent Error — Problems */}
+        {pageTab === 'percent-error' && mode === 'problems' && (
+          <motion.div key="pe-problems"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18 }}
+            className="print:hidden"
+          >
+            <PercentErrorPractice />
           </motion.div>
         )}
 

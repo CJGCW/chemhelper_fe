@@ -14,9 +14,10 @@ interface SearchItem {
 
 const SEARCH_INDEX: SearchItem[] = [
   // Base Calculations
-  { label: 'Sig Figs',          formula: 'sf',        section: 'Base Calculations',  path: '/base-calculations?tab=sig-figs',     keywords: 'significant figures precision' },
-  { label: 'Sci Notation',      formula: '×10ⁿ',      section: 'Base Calculations',  path: '/base-calculations?tab=sci-notation', keywords: 'scientific notation powers of ten' },
-  { label: 'Unit Conversions',  formula: '↔',         section: 'Base Calculations',  path: '/base-calculations?tab=conversions',  keywords: 'unit conversion factor label' },
+  { label: 'Sig Figs',          formula: 'sf',        section: 'Base Calculations',  path: '/base-calculations?tab=sig-figs',      keywords: 'significant figures precision' },
+  { label: 'Sci Notation',      formula: '×10ⁿ',      section: 'Base Calculations',  path: '/base-calculations?tab=sci-notation',  keywords: 'scientific notation powers of ten' },
+  { label: 'Unit Conversions',  formula: '↔',         section: 'Base Calculations',  path: '/base-calculations?tab=conversions',   keywords: 'unit conversion factor label' },
+  { label: 'Percent Error',     formula: '%err',       section: 'Base Calculations',  path: '/base-calculations?tab=percent-error', keywords: 'percent error experimental error lab error accuracy literature value' },
   { label: 'Empirical Formula', formula: '⌬',         section: 'Base Calculations',  path: '/empirical',                           keywords: 'empirical molecular formula percent composition combustion analysis burn CO2 H2O' },
   { label: 'Hydrate Analysis',  formula: '·nH₂O',    section: 'Base Calculations',  path: '/empirical?tab=hydrate',               keywords: 'hydrate water crystallization formula empirical anhydrous' },
   // Ideal Gas
@@ -298,9 +299,10 @@ function TableGroupedItems({ onNavigate }: { onNavigate: () => void }) {
 // ── Base Calculations sub-items ───────────────────────────────────────────────
 
 const BASE_CALC_ITEMS: { tab?: string; label: string; formula: string }[] = [
-  { tab: "sig-figs",     label: "Sig Figs",        formula: "sf"   },
-  { tab: "sci-notation", label: "Sci Notation",     formula: "×10ⁿ" },
-  { tab: "conversions",  label: "Unit Conversions", formula: "↔"    },
+  { tab: "sig-figs",      label: "Sig Figs",        formula: "sf"    },
+  { tab: "sci-notation",  label: "Sci Notation",     formula: "×10ⁿ"  },
+  { tab: "conversions",   label: "Unit Conversions", formula: "↔"     },
+  { tab: "percent-error", label: "Percent Error",    formula: "%err"  },
 ]
 
 function BaseCalcSubItem({ item, onNavigate }: { item: typeof BASE_CALC_ITEMS[0]; onNavigate: () => void }) {
