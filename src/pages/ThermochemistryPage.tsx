@@ -29,9 +29,12 @@ import ClausiusClapeyronTool from '../components/thermo/ClausiusClapeyronTool'
 import ClausiusClapeyronPractice from '../components/thermo/ClausiusClapeyronPractice'
 import ClausiusClapeyronReference from '../components/thermo/ClausiusClapeyronReference'
 import VaporPressureTool from '../components/thermo/VaporPressureTool'
+import VaporPressureReference from '../components/thermo/VaporPressureReference'
 import ReactionProfilePractice from '../components/thermo/ReactionProfilePractice'
 import ReactionProfileTool from '../components/thermo/ReactionProfileTool'
+import ReactionProfileReference from '../components/thermo/ReactionProfileReference'
 import ExpansionWorkTool from '../components/thermo/ExpansionWorkTool'
+import ExpansionWorkReference from '../components/thermo/ExpansionWorkReference'
 import EnergyBalanceTool from '../components/thermo/EnergyBalanceTool'
 import PageShell from '../components/Layout/PageShell'
 
@@ -57,15 +60,18 @@ type Tab =
   | 'cc-practice'
   | 'cc-reference'
   | 'vapor-pressure'
+  | 'vapor-pressure-reference'
   | 'bond-practice'
   | 'bond-reference'
   | 'profile'
+  | 'profile-reference'
   | 'profile-practice'
   | 'profile-problems'
   | 'heattransfer'
   | 'heattransfer-practice'
   | 'heattransfer-reference'
   | 'expansion-work'
+  | 'expansion-work-reference'
   | 'energy-balance'
   | 'energy-balance-problems'
 
@@ -112,7 +118,8 @@ const GROUPS: Group[] = [
       {
         heading: 'Expansion Work',
         tabs: [
-          { id: 'expansion-work' as Tab, label: 'Calculator' },
+          { id: 'expansion-work-reference' as Tab, label: 'Reference'   },
+          { id: 'expansion-work'           as Tab, label: 'Calculator'  },
         ],
       },
     ],
@@ -124,9 +131,10 @@ const GROUPS: Group[] = [
       {
         heading: 'Reaction Profiles',
         tabs: [
-          { id: 'profile'          as Tab, label: 'Visualizer' },
-          { id: 'profile-practice' as Tab, label: 'Practice'   },
-          { id: 'profile-problems' as Tab, label: 'Problems'   },
+          { id: 'profile-reference' as Tab, label: 'Reference'  },
+          { id: 'profile'           as Tab, label: 'Visualizer' },
+          { id: 'profile-practice'  as Tab, label: 'Practice'   },
+          { id: 'profile-problems'  as Tab, label: 'Problems'   },
         ],
       },
       {
@@ -175,7 +183,8 @@ const GROUPS: Group[] = [
       {
         heading: 'Vapor Pressure',
         tabs: [
-          { id: 'vapor-pressure' as Tab, label: 'Calculator' },
+          { id: 'vapor-pressure-reference' as Tab, label: 'Reference'  },
+          { id: 'vapor-pressure'           as Tab, label: 'Calculator' },
         ],
       },
       {
@@ -477,6 +486,7 @@ export default function ThermochemistryPage() {
           {tab === 'bond'                  && <BondEnthalpyTool />}
           {tab === 'bond-practice'         && <BondEnthalpyPractice />}
           {tab === 'bond-reference'        && <BondEnthalpyReference />}
+          {tab === 'profile-reference'     && <ReactionProfileReference />}
           {tab === 'profile'               && <EnergyDiagram />}
           {tab === 'profile-practice'      && <ReactionProfileTool />}
           {tab === 'profile-problems'      && <ReactionProfilePractice />}
@@ -489,12 +499,14 @@ export default function ThermochemistryPage() {
           {tab === 'phase-diagram'           && <PhaseDiagram />}
           {tab === 'phase-diagram-problems'  && <PhaseDiagramProblems />}
           {tab === 'phase-diagram-reference' && <PhaseDiagramReference />}
-          {tab === 'liquid-props'           && <LiquidProperties />}
-          {tab === 'cc'                     && <ClausiusClapeyronTool />}
-          {tab === 'vapor-pressure'         && <VaporPressureTool />}
+          {tab === 'liquid-props'              && <LiquidProperties />}
+          {tab === 'cc'                        && <ClausiusClapeyronTool />}
+          {tab === 'vapor-pressure-reference'  && <VaporPressureReference />}
+          {tab === 'vapor-pressure'            && <VaporPressureTool />}
           {tab === 'cc-practice'            && <ClausiusClapeyronPractice />}
           {tab === 'cc-reference'           && <ClausiusClapeyronReference />}
-          {tab === 'expansion-work'         && <ExpansionWorkTool />}
+          {tab === 'expansion-work-reference' && <ExpansionWorkReference />}
+          {tab === 'expansion-work'           && <ExpansionWorkTool />}
           {tab === 'energy-balance'          && <EnergyBalanceTool allowCustom={true} />}
           {tab === 'energy-balance-problems' && <EnergyBalanceTool allowCustom={false} />}
         </motion.div>

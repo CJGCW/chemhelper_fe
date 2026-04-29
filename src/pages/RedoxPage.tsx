@@ -18,19 +18,24 @@ import ElectrolyteProblems from '../components/tools/ElectrolyteProblems'
 import NetIonicProblems from '../components/tools/NetIonicProblems'
 import ActivitySeriesProblems from '../components/tools/ActivitySeriesProblems'
 import TitrationArithmeticTool from '../components/redox/TitrationArithmeticTool'
+import EcellReference from '../components/redox/EcellReference'
+import TitrationReference from '../components/redox/TitrationReference'
 import PageShell from '../components/Layout/PageShell'
 
 type Tab = 'practice' | 'rxn-practice' | 'ecell-practice' | 'classifier' | 'electrolyte' | 'net-ionic' | 'activity' | 'predictor' | 'ecell' | 'reference' | 'redox-practice' | 'classifier-problems' | 'electrolyte-problems' | 'net-ionic-problems' | 'activity-problems'
   | 'ref-oxidation' | 'ref-reaction-types' | 'ref-activity' | 'ref-acids-bases' | 'ref-redox-concepts'
+  | 'ref-ecell' | 'ref-titration'
   | 'titration' | 'titration-problems'
 type Mode = 'reference' | 'practice' | 'problems'
 
 const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'ref-oxidation',     label: 'Oxidation States', formula: 'ox'  },
-  { id: 'ref-reaction-types', label: 'Rxn Types',       formula: '⇄'  },
-  { id: 'ref-activity',      label: 'Activity Series',  formula: '↕'  },
-  { id: 'ref-acids-bases',   label: 'Acids & Bases',    formula: 'pH' },
-  { id: 'ref-redox-concepts', label: 'Redox',           formula: 'e⁻' },
+  { id: 'ref-oxidation',      label: 'Oxidation States', formula: 'ox'  },
+  { id: 'ref-reaction-types', label: 'Rxn Types',        formula: '⇄'  },
+  { id: 'ref-activity',       label: 'Activity Series',  formula: '↕'  },
+  { id: 'ref-acids-bases',    label: 'Acids & Bases',    formula: 'pH' },
+  { id: 'ref-redox-concepts', label: 'Redox',            formula: 'e⁻' },
+  { id: 'ref-ecell',          label: 'E°cell',           formula: 'E°' },
+  { id: 'ref-titration',      label: 'Titration',        formula: 'MV' },
 ]
 
 const REF_TOPIC_MAP: Partial<Record<Tab, RefTopic>> = {
@@ -127,14 +132,14 @@ const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
 }
 
 const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
-  'rxn-predictor': { practice: 'predictor',     problems: 'rxn-practice'          },
-  'ecell':         { practice: 'ecell',          problems: 'ecell-practice'        },
-  'redox':         { practice: 'redox-practice', problems: 'practice'              },
-  'classifier':    { practice: 'classifier',     problems: 'classifier-problems'   },
-  'electrolyte':   { practice: 'electrolyte',    problems: 'electrolyte-problems'  },
-  'net-ionic':     { practice: 'net-ionic',       problems: 'net-ionic-problems'    },
-  'activity':      { practice: 'activity',        problems: 'activity-problems'     },
-  'titration':     { practice: 'titration',       problems: 'titration-problems'    },
+  'rxn-predictor': { reference: 'ref-reaction-types', practice: 'predictor',     problems: 'rxn-practice'          },
+  'ecell':         { reference: 'ref-ecell',            practice: 'ecell',          problems: 'ecell-practice'        },
+  'redox':         { reference: 'ref-oxidation',       practice: 'redox-practice', problems: 'practice'              },
+  'classifier':    { reference: 'ref-reaction-types',  practice: 'classifier',     problems: 'classifier-problems'   },
+  'electrolyte':   { reference: 'ref-acids-bases',     practice: 'electrolyte',    problems: 'electrolyte-problems'  },
+  'net-ionic':     { reference: 'ref-reaction-types',  practice: 'net-ionic',      problems: 'net-ionic-problems'    },
+  'activity':      { reference: 'ref-activity',        practice: 'activity',       problems: 'activity-problems'     },
+  'titration':     { reference: 'ref-titration',        practice: 'titration',      problems: 'titration-problems'    },
 }
 
 const MODE_DEFAULT: Record<Mode, Tab> = {
@@ -505,6 +510,20 @@ export default function RedoxPage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <EcellPractice />
+          </motion.div>
+        )}
+        {activeTab === 'ref-ecell' && !printingAll && (
+          <motion.div key="ref-ecell"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <EcellReference />
+          </motion.div>
+        )}
+        {activeTab === 'ref-titration' && !printingAll && (
+          <motion.div key="ref-titration"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <TitrationReference />
           </motion.div>
         )}
         {REF_TOPIC_MAP[activeTab] && !printingAll && (

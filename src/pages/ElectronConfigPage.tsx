@@ -31,7 +31,7 @@ const TOPIC_MODES: Partial<Record<Topic, Mode[]>> = {
   electron_config:  ['reference', 'practice', 'problems'],
   quantum_numbers:  ['reference', 'problems'],
   energy_levels:    ['reference', 'problems'],
-  periodic_trends:  ['reference', 'practice'],
+  periodic_trends:  ['reference', 'practice', 'problems'],
   isotopes:         ['reference', 'practice', 'problems'],
   naming:           ['reference', 'problems'],
 }
@@ -330,6 +330,7 @@ export default function ElectronConfigPage() {
           {topic === 'multi_electron'   && <MultiElectronAtoms />}
           {topic === 'periodic_trends' && mode === 'reference' && <PeriodicTrendsReference />}
           {topic === 'periodic_trends' && mode === 'practice'  && <PeriodicTrendsPractice />}
+          {topic === 'periodic_trends' && mode === 'problems'  && <PeriodicTrendsPractice />}
           {topic === 'isotopes' && mode === 'reference' && <IsotopeAbundanceReference />}
           {topic === 'isotopes' && mode === 'practice'  && <ReverseIsotopeTool />}
           {topic === 'isotopes' && mode === 'problems'  && <IsotopeAbundancePractice />}

@@ -8,6 +8,7 @@ import { ScientificNotationReference, ScientificNotationPracticeConverter } from
 import ScientificNotationPractice from '../components/calculations/ScientificNotationPractice'
 import PercentErrorTool from '../components/calculations/PercentErrorTool'
 import PercentErrorPractice from '../components/calculations/PercentErrorPractice'
+import ConversionPractice from '../components/calculations/ConversionPractice'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 import PageShell from '../components/Layout/PageShell'
 
@@ -277,7 +278,7 @@ export default function BaseCalculationsPage() {
   // Available modes per tab
   const availableModes =
     pageTab === 'sig-figs'       ? ['reference', 'practice', 'problems'] :
-    pageTab === 'conversions'    ? ['reference', 'practice'] :
+    pageTab === 'conversions'    ? ['reference', 'practice', 'problems'] :
     pageTab === 'sci-notation'   ? ['reference', 'practice', 'problems'] :
     pageTab === 'percent-error'  ? ['reference', 'practice', 'problems'] :
     []
@@ -397,6 +398,17 @@ export default function BaseCalculationsPage() {
             transition={{ duration: 0.18 }}
           >
             <UnitConversions tab="converter" />
+          </motion.div>
+        )}
+
+        {/* Conversions — Problems */}
+        {pageTab === 'conversions' && mode === 'problems' && (
+          <motion.div key="conversions-problems"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18 }}
+            className="print:hidden"
+          >
+            <ConversionPractice allowCustom={false} />
           </motion.div>
         )}
 

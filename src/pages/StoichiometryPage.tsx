@@ -14,7 +14,9 @@ import SolutionStoichTool from '../components/stoichiometry/SolutionStoichTool'
 import SolutionStoichPractice from '../components/stoichiometry/SolutionStoichPractice'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 import AdvancedPercentYieldTool from '../components/stoichiometry/AdvancedPercentYieldTool'
+import AdvPercentYieldReference from '../components/stoichiometry/AdvPercentYieldReference'
 import ChainedYieldTool from '../components/stoichiometry/ChainedYieldTool'
+import ChainedYieldReference from '../components/stoichiometry/ChainedYieldReference'
 import MolecularDiagramLRTool from '../components/stoichiometry/MolecularDiagramLRTool'
 import PageShell from '../components/Layout/PageShell'
 
@@ -24,8 +26,8 @@ type Tab =
   | 'gas-stoich' | 'solution'
   | 'solution-practice' | 'balance-practice' | 'gas-stoich-practice'
   | 'limiting-problems' | 'theoretical-problems' | 'percent-problems'
-  | 'adv-percent' | 'adv-percent-problems'
-  | 'chained-yield' | 'chained-yield-problems'
+  | 'adv-percent' | 'adv-percent-problems' | 'ref-adv-percent'
+  | 'chained-yield' | 'chained-yield-problems' | 'ref-chained-yield'
   | 'mol-diagram' | 'mol-diagram-problems'
   | 'ref-stoich' | 'ref-limiting' | 'ref-theoretical' | 'ref-percent'
   | 'ref-balance' | 'ref-solution' | 'ref-gas-stoich'
@@ -58,8 +60,10 @@ const REFERENCE_GROUPS: TabGroup[] = [
     id: 'advanced-ref',
     label: 'Advanced',
     pills: [
-      { id: 'ref-solution',   label: 'Solution Stoich',   formula: 'M·V' },
-      { id: 'ref-gas-stoich', label: 'Gas Stoichiometry', formula: 'PV'  },
+      { id: 'ref-solution',     label: 'Solution Stoich',  formula: 'M·V'  },
+      { id: 'ref-gas-stoich',   label: 'Gas Stoichiometry', formula: 'PV'  },
+      { id: 'ref-adv-percent',  label: 'Adv. %Yield',      formula: 'TY→%' },
+      { id: 'ref-chained-yield', label: 'Chained Yield',   formula: 'm→%Y' },
     ],
   },
 ]
@@ -164,8 +168,10 @@ const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
   'ref-gas-stoich':       'gas-stoich',
   'adv-percent':           'adv-percent',
   'adv-percent-problems':  'adv-percent',
+  'ref-adv-percent':       'adv-percent',
   'chained-yield':         'chained-yield',
   'chained-yield-problems':'chained-yield',
+  'ref-chained-yield':     'chained-yield',
   'mol-diagram':           'mol-diagram',
   'mol-diagram-problems':  'mol-diagram',
 }
@@ -178,8 +184,8 @@ const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
   'percent':     { reference: 'ref-percent',     practice: 'percent',              problems: 'percent-problems'     },
   'balance':     { reference: 'ref-balance',     practice: 'balance-practice',     problems: 'balance'              },
   'gas-stoich':  { reference: 'ref-gas-stoich',  practice: 'gas-stoich-practice',  problems: 'gas-stoich'                },
-  'adv-percent':   {                               practice: 'adv-percent',           problems: 'adv-percent-problems'   },
-  'chained-yield': {                               practice: 'chained-yield',         problems: 'chained-yield-problems' },
+  'adv-percent':   { reference: 'ref-adv-percent',  practice: 'adv-percent',           problems: 'adv-percent-problems'   },
+  'chained-yield': { reference: 'ref-chained-yield', practice: 'chained-yield',        problems: 'chained-yield-problems' },
   'mol-diagram':   {                               practice: 'mol-diagram',           problems: 'mol-diagram-problems'   },
 }
 
@@ -551,6 +557,20 @@ export default function StoichiometryPage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <PercentYieldTool />
+          </motion.div>
+        )}
+        {activeTab === 'ref-adv-percent' && (
+          <motion.div key="ref-adv-percent"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <AdvPercentYieldReference />
+          </motion.div>
+        )}
+        {activeTab === 'ref-chained-yield' && (
+          <motion.div key="ref-chained-yield"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <ChainedYieldReference />
           </motion.div>
         )}
         {activeTab === 'adv-percent' && (

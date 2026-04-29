@@ -13,20 +13,22 @@ import LewisDrawChallenge from '../components/lewis/LewisDrawChallenge'
 import VseprPractice from '../components/vsepr/VseprPractice'
 import SolidTypesReference from '../components/structures/SolidTypesReference'
 import SolidTypesPractice from '../components/structures/SolidTypesPractice'
-import UnitCellTool from '../components/structures/UnitCellTool'
+import UnitCellReference from '../components/structures/UnitCellReference'
 import UnitCellPractice from '../components/structures/UnitCellPractice'
+import SigmaPiReference from '../components/lewis/SigmaPiReference'
 import FormalChargeTool from '../components/lewis/FormalChargeTool'
 import PageShell from '../components/Layout/PageShell'
 
 
-type Tab  = 'lewis' | 'vsepr' | 'solid-types' | 'unit-cell' | 'lewis-practice' | 'lewis-draw' | 'vsepr-practice' | 'vsepr-draw' | 'sigma-pi' | 'sigma-pi-problems' | 'solid-types-practice' | 'solid-types-problems' | 'unit-cell-practice' | 'unit-cell-problems' | 'formal-charge' | 'formal-charge-problems'
+type Tab  = 'lewis' | 'vsepr' | 'solid-types' | 'unit-cell' | 'sigma-pi-ref' | 'lewis-practice' | 'lewis-draw' | 'vsepr-practice' | 'vsepr-draw' | 'sigma-pi' | 'sigma-pi-problems' | 'solid-types-practice' | 'solid-types-problems' | 'unit-cell-practice' | 'unit-cell-problems' | 'formal-charge' | 'formal-charge-problems'
 type Mode = 'reference' | 'practice' | 'problems'
 
 const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'lewis',       label: 'Lewis Structures', formula: '⌬'        },
-  { id: 'vsepr',       label: 'VSEPR',            formula: '⬡'        },
-  { id: 'solid-types', label: 'Solid Types',      formula: '4t'       },
-  { id: 'unit-cell',   label: 'Unit Cell',        formula: 'SC/BCC/FCC' },
+  { id: 'lewis',       label: 'Lewis Structures', formula: '⌬'          },
+  { id: 'vsepr',       label: 'VSEPR',            formula: '⬡'          },
+  { id: 'sigma-pi-ref', label: 'σ / π Bonds',    formula: 'σπ'          },
+  { id: 'solid-types', label: 'Solid Types',      formula: '4t'          },
+  { id: 'unit-cell',   label: 'Unit Cell',        formula: 'SC/BCC/FCC'  },
 ]
 
 const PRACTICE_TABS: { id: Tab; label: string; formula: string }[] = [
@@ -57,6 +59,7 @@ const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
   'vsepr':                    'vsepr',
   'vsepr-practice':           'vsepr',
   'vsepr-draw':               'vsepr',
+  'sigma-pi-ref':             'sigma-pi',
   'sigma-pi':                 'sigma-pi',
   'sigma-pi-problems':        'sigma-pi',
   'formal-charge':            'formal-charge',
@@ -72,7 +75,7 @@ const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
 const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
   'lewis':         { reference: 'lewis',       practice: 'lewis-practice',       problems: 'lewis-draw'              },
   'vsepr':         { reference: 'vsepr',       practice: 'vsepr-practice',       problems: 'vsepr-draw'              },
-  'sigma-pi':      { reference: 'lewis',       practice: 'sigma-pi',             problems: 'sigma-pi-problems'       },
+  'sigma-pi':      { reference: 'sigma-pi-ref', practice: 'sigma-pi',             problems: 'sigma-pi-problems'       },
   'formal-charge': { reference: 'lewis',       practice: 'formal-charge',        problems: 'formal-charge-problems'  },
   'solid-types':   { reference: 'solid-types', practice: 'solid-types-practice', problems: 'solid-types-problems'    },
   'unit-cell':     { reference: 'unit-cell',   practice: 'unit-cell-practice',   problems: 'unit-cell-problems'      },
@@ -402,6 +405,13 @@ export default function StructuresPage() {
             <SolidTypesReference />
           </motion.div>
         )}
+        {activeTab === 'sigma-pi-ref' && (
+          <motion.div key="sigma-pi-ref"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <SigmaPiReference />
+          </motion.div>
+        )}
         {activeTab === 'sigma-pi' && (
           <motion.div key="sigma-pi"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
@@ -434,7 +444,7 @@ export default function StructuresPage() {
           <motion.div key="unit-cell"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <UnitCellTool />
+            <UnitCellReference />
           </motion.div>
         )}
         {(activeTab === 'solid-types-practice' || activeTab === 'solid-types-problems') && (
