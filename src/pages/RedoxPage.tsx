@@ -453,7 +453,7 @@ export default function RedoxPage() {
           <motion.div key="practice"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <RedoxPractice />
+            <RedoxPractice allowCustom={false} />
           </motion.div>
         )}
         {activeTab === 'classifier' && (
@@ -502,14 +502,14 @@ export default function RedoxPage() {
           <motion.div key="rxn-practice"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <ReactionPredictorPractice />
+            <ReactionPredictorPractice allowCustom={false} />
           </motion.div>
         )}
         {activeTab === 'ecell-practice' && (
           <motion.div key="ecell-practice"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <EcellPractice />
+            <EcellPractice allowCustom={false} />
           </motion.div>
         )}
         {activeTab === 'ref-ecell' && !printingAll && (

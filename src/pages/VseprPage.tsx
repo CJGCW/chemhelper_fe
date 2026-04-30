@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { LewisStructure } from './LewisPage'
+import { fetchLewisStructure } from '../api/calculations'
 import { looksLikeFormula, resolveToFormula } from '../utils/resolveFormula'
 import VsepDiagram from '../components/vsepr/VsepDiagram'
 import StepsPanel from '../components/shared/StepsPanel'
@@ -147,21 +148,11 @@ export default function VseprPage() {
     setError(null)
     setResult(null)
     try {
-      const body: Record<string, unknown> = { input: trimmed }
-      if (charge !== 0) body.charge = charge
-      const resp = await fetch('/api/structure/lewis', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      })
-      const data = await resp.json()
-      if (!resp.ok) {
-        setError(data.error ?? 'An error occurred.')
-        return
-      }
-      setResult(data as LewisStructure)
-    } catch {
-      setError('Failed to connect to the server.')
+      const data = await fetchLewisStructure(trimmed, charge)
+      setResult(data)
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error
+      setError(msg ?? 'Failed to connect to the server.')
     } finally {
       setLoading(false)
     }

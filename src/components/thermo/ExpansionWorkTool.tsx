@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { pick, randBetween, roundTo, sig } from '../shared/WorkedExample'
 import NumberField from '../shared/NumberField'
 import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
 import ResultDisplay from '../shared/ResultDisplay'
 import { sanitize } from '../../utils/calcHelpers'
+import type { VerifyState } from '../../utils/calcHelpers'
+import { countSigFigs, lowestSigFigs } from '../../utils/sigfigs'
 import { expansionWork } from '../../chem/thermo'
 
 // ── Unit helpers ──────────────────────────────────────────────────────────────
@@ -73,13 +75,28 @@ export default function ExpansionWorkTool() {
   const [vUnit,  setVUnit]  = useState<VUnit>('L')
   const [wUnit,  setWUnit]  = useState<'J' | 'kJ'>('J')
 
-  const [steps,  setSteps]  = useState<string[]>([])
-  const [result, setResult] = useState<string | null>(null)
-  const [error,  setError]  = useState('')
+  const [steps,   setSteps]   = useState<string[]>([])
+  const [result,  setResult]  = useState<string | null>(null)
+  const [rawJ,    setRawJ]    = useState<number | null>(null)
+  const [error,   setError]   = useState('')
+  const [answerW, setAnswerW] = useState('')
 
   const stepsState = useStepsPanelState(steps, generateExpansionExample)
 
-  function reset() { setSteps([]); setResult(null); setError('') }
+  function reset() { setSteps([]); setResult(null); setRawJ(null); setError(''); setAnswerW('') }
+
+  const wVerify: VerifyState = useMemo(() => {
+    if (!answerW.trim() || rawJ === null) return null
+    const expected = wUnit === 'kJ' ? rawJ / 1000 : rawJ
+    const userVal  = parseFloat(answerW)
+    if (isNaN(userVal)) return 'incorrect'
+    const relErr = Math.abs(expected) < 0.001
+      ? Math.abs(userVal - expected)
+      : Math.abs(userVal - expected) / Math.abs(expected)
+    if (relErr > 0.02) return 'incorrect'
+    const expectedSF = lowestSigFigs([pVal, viVal, vfVal])
+    return countSigFigs(answerW) >= expectedSF ? 'correct' : 'sig_fig_warning'
+  }, [answerW, rawJ, wUnit, pVal, viVal, vfVal])
 
   function handleCalc() {
     reset()
@@ -108,6 +125,7 @@ export default function ExpansionWorkTool() {
 
     setSteps(s)
     setResult(fmt(out))
+    setRawJ(wJ)
   }
 
   const UnitBtn = ({ u, cur, set }: { u: string; cur: string; set: (v: string) => void }) => (
@@ -137,19 +155,12 @@ export default function ExpansionWorkTool() {
       </p>
 
       {/* Pressure */}
-      <div className="flex flex-col gap-1.5">
-        <label className="font-sans text-sm font-medium text-primary">External pressure (P_ext)</label>
-        <div className="flex items-stretch gap-1.5">
-          <input type="text" inputMode="decimal" value={pVal}
-            onChange={e => { setPVal(sanitize(e.target.value)); reset() }}
-            placeholder="e.g. 1.00"
-            className="flex-1 min-w-0 font-mono text-sm bg-raised border border-border rounded-sm
-                       px-3 py-2 text-primary placeholder-dim focus:outline-none focus:border-accent/40" />
-          <div className="flex items-center gap-0.5">
-            {P_UNITS.map(u => <UnitBtn key={u} u={u} cur={pUnit} set={v => setPUnit(v as PUnit)} />)}
-          </div>
-        </div>
-      </div>
+      <NumberField label="External pressure (P_ext)" value={pVal}
+        onChange={v => { setPVal(v); reset() }}
+        placeholder="e.g. 1.00"
+        unit={<div className="flex items-center gap-0.5">
+          {P_UNITS.map(u => <UnitBtn key={u} u={u} cur={pUnit} set={v => setPUnit(v as PUnit)} />)}
+        </div>} />
 
       {/* Volumes */}
       <div className="flex flex-col gap-1.5">
@@ -195,7 +206,15 @@ export default function ExpansionWorkTool() {
 
       <StepsContent {...stepsState} />
 
-      {result && <ResultDisplay label="Work (w)" value={result} unit={wUnit} />}
+      {result && (
+        <div className="flex flex-col gap-3">
+          <NumberField label="Your answer (optional — enter to check)" value={answerW}
+            onChange={setAnswerW} placeholder={`e.g. ${result}`}
+            unit={<span className="font-mono text-sm text-secondary px-2">{wUnit}</span>}
+          />
+          <ResultDisplay label="Work (w)" value={result} unit={wUnit} verified={wVerify} />
+        </div>
+      )}
 
       <p className="font-mono text-xs text-secondary">
         w = −P_ext·ΔV · negative w = expansion (system does work) · positive w = compression

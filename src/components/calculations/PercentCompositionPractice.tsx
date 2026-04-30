@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   generatePercCompProblem,
@@ -16,13 +16,18 @@ const FILTERS: { value: Filter; label: string }[] = [
 ]
 
 
-export default function PercentCompositionPractice() {
+interface Props { allowCustom?: boolean }
+
+export default function PercentCompositionPractice({ allowCustom = true }: Props) {
   const [filter,     setFilter]     = useState<Filter>('all')
   const [problem,    setProblem]    = useState<PercCompProblem>(() => generatePercCompProblem())
   const [answer,     setAnswer]     = useState('')
   const [checkState, setCheckState] = useState<CheckState>('idle')
   const [showSteps,  setShowSteps]  = useState(false)
   const [score,      setScore]      = useState({ correct: 0, total: 0 })
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (!allowCustom) newProblem() }, [allowCustom])
 
   function newProblem(f: Filter = filter) {
     setProblem(generatePercCompProblem(f === 'all' ? undefined : f))
@@ -47,7 +52,7 @@ export default function PercentCompositionPractice() {
     <div className="flex flex-col gap-6 max-w-2xl">
 
       {/* Score + filters */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      {allowCustom && <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex gap-1">
           {FILTERS.map(f => (
             <button key={f.value} onClick={() => handleFilter(f.value)}
@@ -71,7 +76,7 @@ export default function PercentCompositionPractice() {
             {score.correct}/{score.total} correct
           </span>
         )}
-      </div>
+      </div>}
 
       {/* Problem card */}
       <AnimatePresence mode="wait">

@@ -1,5 +1,5 @@
 import React from 'react'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genDilutionProblem, checkDilutionAnswer } from '../../utils/dilutionPractice'
 import { genConcProblem, checkConcAnswer } from '../../utils/concentrationPractice'
@@ -67,7 +67,9 @@ const SUBTYPE_LABELS: Record<DilutionSubtype | ConcSubtype, string> = {
 // ── Main component ────────────────────────────────────────────────────────────
 
 
-export default function DilutionConcPractice() {
+interface Props { allowCustom?: boolean }
+
+export default function DilutionConcPractice({ allowCustom = true }: Props) {
   const [filter, setFilter] = useState<FilterType>('all')
   const [problem, setProblem] = useState<Problem>(() => pickAndGenerate('all'))
   const [answer, setAnswer]   = useState('')
@@ -81,6 +83,8 @@ export default function DilutionConcPractice() {
     setSubmitted(false)
     setShowSteps(false)
   }, [])
+
+  useEffect(() => { if (!allowCustom) nextProblem(filter) }, [allowCustom, nextProblem, filter])
 
   function handleFilter(f: FilterType) {
     setFilter(f)
@@ -111,7 +115,7 @@ export default function DilutionConcPractice() {
     <div className="flex flex-col gap-6">
 
       {/* Controls row */}
-      <div className="flex flex-wrap items-center gap-4">
+      {allowCustom && <div className="flex flex-wrap items-center gap-4">
         <div className="flex items-center gap-1 p-1 rounded-sm"
           style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
           {FILTER_OPTIONS.map(opt => {
@@ -145,7 +149,7 @@ export default function DilutionConcPractice() {
             <span className="text-dim">0 / 0</span>
           )}
         </div>
-      </div>
+      </div>}
 
       {/* Problem card */}
       <AnimatePresence mode="wait">

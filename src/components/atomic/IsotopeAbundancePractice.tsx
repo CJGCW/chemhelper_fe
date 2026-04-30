@@ -1,15 +1,19 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generateIsotopeProblem, checkIsotopeAnswer } from '../../utils/isotopePractice'
 import type { IsotopeProblem } from '../../utils/isotopePractice'
 
-export default function IsotopeAbundancePractice() {
+interface Props { allowCustom?: boolean }
+
+export default function IsotopeAbundancePractice({ allowCustom = true }: Props) {
   const [problem,   setProblem]   = useState<IsotopeProblem>(() => generateIsotopeProblem())
   const [answer,    setAnswer]    = useState('')
   const [checked,   setChecked]   = useState(false)
   const [correct,   setCorrect]   = useState(false)
   const [showSteps, setShowSteps] = useState(false)
   const [score,     setScore]     = useState({ right: 0, total: 0 })
+
+    useEffect(() => { if (!allowCustom) handleNext() }, [allowCustom])
 
   function handleCheck() {
     if (!answer.trim()) return

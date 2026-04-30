@@ -1,6 +1,12 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import PageShell from '../components/Layout/PageShell'
+import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
+
+const EXPLANATION: ExplanationContent = {
+  title: 'Compound Converter',
+  description: 'Look up any chemical compound by name, SMILES string, InChI, InChIKey, molecular formula, or PubChem CID. The tool resolves your input against PubChem and returns the molecular formula, molecular weight, IUPAC name, and identifier cross-references. Use it when you need to convert between identifiers or quickly look up a compound\'s properties.',
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -63,6 +69,7 @@ export default function CompoundPage() {
   const [result, setResult]   = useState<CompoundResult | null>(null)
   const [error, setError]     = useState<string | null>(null)
   const [copied, setCopied]   = useState<string | null>(null)
+  const [showExplanation, setShowExplanation] = useState(false)
 
   const detectedType = detectInputType(input)
   const canSubmit = input.trim().length > 0 && !loading
@@ -114,7 +121,17 @@ export default function CompoundPage() {
   return (
     <PageShell>
 
-      <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Compound Converter</h2>
+      <div className="flex items-center gap-3">
+        <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Compound Converter</h2>
+        <button
+          onClick={() => setShowExplanation(true)}
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm border border-border
+                     font-sans text-xs text-secondary hover:text-primary hover:border-muted transition-colors"
+        >
+          <span className="font-mono">?</span>
+          <span>What is this</span>
+        </button>
+      </div>
 
       {/* Input */}
       <div className="flex flex-col gap-2">
@@ -214,6 +231,12 @@ export default function CompoundPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ExplanationModal
+        content={EXPLANATION}
+        open={showExplanation}
+        onClose={() => setShowExplanation(false)}
+      />
     </PageShell>
   )
 }

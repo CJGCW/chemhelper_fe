@@ -81,7 +81,9 @@ function borderColor(r: SigFigCheckResult | undefined): string {
 // Result type for the explicit precision input (sig figs or decimal places)
 type PrecResult = 'correct' | 'wrong' | null
 
-export default function SigFigPractice() {
+interface Props { allowCustom?: boolean }
+
+export default function SigFigPractice({ allowCustom: _allowCustom = true }: Props) {
   const [count, setCount] = useState(5)
   const [inclCount, setInclCount] = useState(true)
   const [inclMultDiv, setInclMultDiv] = useState(true)

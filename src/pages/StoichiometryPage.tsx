@@ -507,7 +507,7 @@ export default function StoichiometryPage() {
           <motion.div key="practice"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <StoichiometryPractice />
+            <StoichiometryPractice allowCustom={false} />
           </motion.div>
         )}
         {activeTab === 'solution' && (
@@ -521,7 +521,7 @@ export default function StoichiometryPage() {
           <motion.div key={activeTab}
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <BalancingPractice />
+            <BalancingPractice allowCustom={activeTab === 'balance-practice'} />
           </motion.div>
         )}
         {activeTab === 'gas-stoich-practice' && (
@@ -535,7 +535,7 @@ export default function StoichiometryPage() {
           <motion.div key="gas-stoich"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <GasStoichPractice />
+            <GasStoichPractice allowCustom={false} />
           </motion.div>
         )}
         {activeTab === 'limiting-problems' && (
@@ -591,7 +591,7 @@ export default function StoichiometryPage() {
           <motion.div key="solution-practice"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <SolutionStoichPractice />
+            <SolutionStoichPractice allowCustom={false} />
           </motion.div>
         )}
         {activeTab === 'chained-yield' && (

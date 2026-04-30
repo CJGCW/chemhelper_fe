@@ -33,7 +33,7 @@ export default function VaporPressureReference() {
             },
             {
               title: 'Temperature dependence',
-              body: 'Vapor pressure rises exponentially with temperature. Described quantitatively by the Clausius–Clapeyron equation (see Clausius–Clapeyron tab).',
+              body: 'Vapor pressure rises exponentially with temperature — described by the Clausius–Clapeyron equation below.',
             },
             {
               title: 'Intermolecular forces',
@@ -50,6 +50,40 @@ export default function VaporPressureReference() {
               <p className="font-sans text-xs text-secondary leading-relaxed">{c.body}</p>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Clausius-Clapeyron */}
+      <div className="flex flex-col gap-3">
+        <p className="font-mono text-xs text-secondary tracking-widest uppercase">Clausius–Clapeyron Equation</p>
+        <div className="rounded-sm border border-border px-4 py-3 flex flex-col gap-2"
+          style={{ background: 'rgb(var(--color-base))' }}>
+          <p className="font-mono text-sm text-primary">ln(P₂ / P₁) = −ΔH_vap / R × (1/T₂ − 1/T₁)</p>
+          <div className="flex flex-col gap-1 mt-1">
+            <p className="font-mono text-xs text-secondary">R = 8.314 J/(mol·K)</p>
+            <p className="font-mono text-xs text-secondary">T in Kelvin; P in any consistent units (ratio cancels)</p>
+            <p className="font-mono text-xs text-secondary">Solve for P₂, T₂, or ΔH_vap depending on what is given</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Worked example */}
+      <div className="flex flex-col gap-3">
+        <p className="font-mono text-xs text-secondary tracking-widest uppercase">Worked Example — Water Vapor Pressure at 80 °C</p>
+        <div className="rounded-sm border border-border px-4 py-3 flex flex-col gap-2"
+          style={{ background: 'rgb(var(--color-base))' }}>
+          <p className="font-sans text-sm text-primary">
+            Given: P₁ = 23.8 mmHg at T₁ = 298 K; ΔH_vap = 40.79 kJ/mol. Find P₂ at T₂ = 353 K (80 °C).
+          </p>
+          <div className="flex flex-col gap-1 pl-3 border-l-2 border-border mt-1">
+            <p className="font-mono text-xs text-secondary">ln(P₂/23.8) = −(40790/8.314)(1/353 − 1/298)</p>
+            <p className="font-mono text-xs text-secondary">ln(P₂/23.8) = −4906 × (−5.24 × 10⁻⁴) = +2.57</p>
+            <p className="font-mono text-xs text-secondary">P₂/23.8 = e^2.57 = 13.1</p>
+            <p className="font-mono text-xs text-primary font-semibold">P₂ = 23.8 × 13.1 ≈ 312 mmHg</p>
+          </div>
+          <p className="font-sans text-xs text-dim mt-1">
+            Lit. value: ~355 mmHg at 80 °C. Small discrepancy because ΔH_vap varies slightly with temperature.
+          </p>
         </div>
       </div>
 

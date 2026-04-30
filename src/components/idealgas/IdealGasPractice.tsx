@@ -1,16 +1,19 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genGasProblem, checkGasAnswer, gasSolutionSteps, type GasProblem } from '../../utils/idealGasPractice'
 import StepsPanel from '../shared/StepsPanel'
 
+interface Props { allowCustom?: boolean }
 
-export default function IdealGasPractice() {
+export default function IdealGasPractice({ allowCustom = true }: Props) {
   const [problem, setProblem]     = useState<GasProblem>(() => genGasProblem())
   const [input, setInput]         = useState('')
   const [checked, setChecked]     = useState(false)
   const [correct, setCorrect]     = useState(false)
   const [steps, setSteps]         = useState<string[]>([])
   const [score, setScore]         = useState({ correct: 0, total: 0 })
+
+    useEffect(() => { if (!allowCustom) handleNext() }, [allowCustom])
 
   function handleCheck() {
     if (!input.trim() || checked) return

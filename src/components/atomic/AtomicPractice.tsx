@@ -1,17 +1,19 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { AtomicSubtopic } from '../../utils/atomicPractice'
 import { generateAtomicProblem, checkAtomicAnswer } from '../../utils/atomicPractice'
 
-interface Props { subtopic: AtomicSubtopic }
+interface Props { subtopic: AtomicSubtopic; allowCustom?: boolean }
 
-export default function AtomicPractice({ subtopic }: Props) {
+export default function AtomicPractice({ subtopic, allowCustom = true }: Props) {
   const [problem,   setProblem]   = useState(() => generateAtomicProblem(subtopic))
   const [answer,    setAnswer]    = useState('')
   const [checked,   setChecked]   = useState(false)
   const [correct,   setCorrect]   = useState(false)
   const [showSteps, setShowSteps] = useState(false)
   const [score,     setScore]     = useState({ right: 0, total: 0 })
+
+    useEffect(() => { if (!allowCustom) handleNext() }, [allowCustom])
 
   function handleCheck() {
     if (!answer.trim()) return

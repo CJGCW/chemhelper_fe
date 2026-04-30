@@ -83,8 +83,8 @@ export default function SigmaPiReference() {
           <div className="flex flex-col gap-1 pl-3 border-l-2 border-border mt-1">
             <p className="font-mono text-xs text-secondary">C=C  double bond → 1σ + 1π</p>
             <p className="font-mono text-xs text-secondary">C–C  single bond  → 1σ</p>
-            <p className="font-mono text-xs text-secondary">5 C–H single bonds → 5σ</p>
-            <p className="font-mono text-xs text-primary font-semibold mt-1">Total: 7σ + 1π</p>
+            <p className="font-mono text-xs text-secondary">6 C–H single bonds → 6σ  (2 on CH₂, 1 on CH, 3 on CH₃)</p>
+            <p className="font-mono text-xs text-primary font-semibold mt-1">Total: 8σ + 1π</p>
           </div>
         </div>
       </div>

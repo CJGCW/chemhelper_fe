@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import type { EcellSubtype } from '../../utils/ecellPractice'
 import { genEcellProblem, checkEcellAnswer } from '../../utils/ecellPractice'
@@ -21,7 +21,9 @@ function freshProblem(sel: Selection) {
   return genEcellProblem(sub)
 }
 
-export default function EcellPractice() {
+interface Props { allowCustom?: boolean }
+
+export default function EcellPractice({ allowCustom = true }: Props) {
   const [selected,  setSelected]  = useState<Selection>('random')
   const [problem,   setProblem]   = useState(() => freshProblem('random'))
   const [answer,    setAnswer]    = useState('')
@@ -29,6 +31,9 @@ export default function EcellPractice() {
   const [correct,   setCorrect]   = useState(false)
   const [steps,     setSteps]     = useState<string[]>([])
   const [score,     setScore]     = useState({ correct: 0, total: 0 })
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (!allowCustom) nextProblem() }, [allowCustom])
 
   function nextProblem(sel: Selection = selected) {
     setProblem(freshProblem(sel))
@@ -66,7 +71,7 @@ export default function EcellPractice() {
     <div className="flex flex-col gap-5 max-w-2xl">
 
       {/* Type selector */}
-      <div className="flex flex-wrap gap-1.5">
+      {allowCustom && <div className="flex flex-wrap gap-1.5">
         {TYPES.map(t => {
           const isActive = selected === t.id
           return (
@@ -85,7 +90,7 @@ export default function EcellPractice() {
             </button>
           )
         })}
-      </div>
+      </div>}
 
       {/* Score bar */}
       {score.total > 0 && (

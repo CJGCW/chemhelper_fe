@@ -351,20 +351,16 @@ function McDeltaT() {
 
       {/* c with preset selector */}
       <div className="flex flex-col gap-1.5">
-        <label className="font-sans text-sm font-medium text-primary">Specific Heat Capacity (c)</label>
-        <div className="flex items-stretch gap-1.5 flex-wrap">
-          <select value={cPreset} onChange={e => handlePreset(e.target.value)}
-            className="font-mono text-xs bg-raised border border-border rounded-sm px-2 py-1.5
-                       text-primary focus:outline-none cursor-pointer">
-            {SPECIFIC_HEATS.map(s => <option key={s.label}>{s.label}</option>)}
-          </select>
-          <input type="text" inputMode="decimal" value={cVal}
-            onChange={e => { setCVal(sanitize(e.target.value)); setCPreset('Custom'); reset() }}
-            placeholder="leave empty to solve"
-            className="flex-1 min-w-0 font-mono text-sm bg-raised border border-border rounded-sm
-                       px-3 py-2 text-primary placeholder-dim focus:outline-none focus:border-accent/40" />
-          <span className="font-mono text-sm text-secondary px-2 flex items-center">J/(g·°C)</span>
-        </div>
+        <select value={cPreset} onChange={e => handlePreset(e.target.value)}
+          className="self-start font-mono text-xs bg-raised border border-border rounded-sm px-2 py-1.5
+                     text-primary focus:outline-none cursor-pointer">
+          {SPECIFIC_HEATS.map(s => <option key={s.label}>{s.label}</option>)}
+        </select>
+        <NumberField label="Specific Heat Capacity (c)" value={cVal}
+          onChange={v => { setCVal(sanitize(v)); setCPreset('Custom'); reset() }}
+          placeholder="leave empty to solve"
+          unit={<span className="font-mono text-sm text-secondary px-2">J/(g·°C)</span>}
+        />
       </div>
 
       {/* ΔT — toggle between direct and T_i/T_f */}
@@ -573,22 +569,16 @@ function CDeltaT() {
         unit={<EnergyUnitSelect value={qUnit} onChange={u => { setQUnit(u); reset() }} />}
       />
 
-      <div className="flex flex-col gap-1.5">
-        <label className="font-sans text-sm font-medium text-primary">Heat Capacity (C)</label>
-        <div className="flex items-stretch gap-1.5">
-          <input type="text" inputMode="decimal" value={cVal}
-            onChange={e => { setCVal(sanitize(e.target.value)); reset() }}
-            placeholder="leave empty to solve"
-            className="flex-1 min-w-0 font-mono text-sm bg-raised border border-border rounded-sm
-                       px-3 py-2 text-primary placeholder-dim focus:outline-none focus:border-accent/40" />
-          <select value={cUnit} onChange={e => { setCUnit(e.target.value); reset() }}
-            className="font-mono text-xs bg-raised border border-border rounded-sm px-2 py-1.5
-                       text-primary focus:outline-none cursor-pointer">
-            <option>J/°C</option>
-            <option>kJ/°C</option>
-          </select>
-        </div>
-      </div>
+      <NumberField label="Heat Capacity (C)" value={cVal}
+        onChange={v => { setCVal(sanitize(v)); reset() }}
+        placeholder="leave empty to solve"
+        unit={<select value={cUnit} onChange={e => { setCUnit(e.target.value); reset() }}
+          className="font-mono text-xs bg-raised border border-border rounded-sm px-2 py-1.5
+                     text-primary focus:outline-none cursor-pointer">
+          <option>J/°C</option>
+          <option>kJ/°C</option>
+        </select>}
+      />
 
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
@@ -747,22 +737,16 @@ function CoffeeCup() {
       />
 
       <div className="flex flex-col gap-1.5">
-        <label className="font-sans text-sm font-medium text-primary">
-          Specific Heat of solution (c)
-        </label>
-        <div className="flex items-stretch gap-1.5 flex-wrap">
-          <select value={cPreset} onChange={e => handlePreset(e.target.value)}
-            className="font-mono text-xs bg-raised border border-border rounded-sm px-2 py-1.5
-                       text-primary focus:outline-none cursor-pointer">
-            {SPECIFIC_HEATS.map(s => <option key={s.label}>{s.label}</option>)}
-          </select>
-          <input type="text" inputMode="decimal" value={cVal}
-            onChange={e => { setCVal(sanitize(e.target.value)); setCPreset('Custom'); reset() }}
-            placeholder="4.184"
-            className="flex-1 min-w-0 font-mono text-sm bg-raised border border-border rounded-sm
-                       px-3 py-2 text-primary placeholder-dim focus:outline-none focus:border-accent/40" />
-          <span className="font-mono text-sm text-secondary px-2 flex items-center">J/(g·°C)</span>
-        </div>
+        <select value={cPreset} onChange={e => handlePreset(e.target.value)}
+          className="self-start font-mono text-xs bg-raised border border-border rounded-sm px-2 py-1.5
+                     text-primary focus:outline-none cursor-pointer">
+          {SPECIFIC_HEATS.map(s => <option key={s.label}>{s.label}</option>)}
+        </select>
+        <NumberField label="Specific Heat of solution (c)" value={cVal}
+          onChange={v => { setCVal(sanitize(v)); setCPreset('Custom'); reset() }}
+          placeholder="4.184"
+          unit={<span className="font-mono text-sm text-secondary px-2">J/(g·°C)</span>}
+        />
       </div>
 
       <div className="flex gap-2">
@@ -782,19 +766,11 @@ function CoffeeCup() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <label className="font-sans text-sm font-medium text-primary">
-          Moles of reactant (optional — for ΔH)
-        </label>
-        <div className="flex items-stretch gap-1.5">
-          <input type="text" inputMode="decimal" value={nVal}
-            onChange={e => { setNVal(sanitize(e.target.value)); reset() }}
-            placeholder="optional"
-            className="flex-1 min-w-0 font-mono text-sm bg-raised border border-border rounded-sm
-                       px-3 py-2 text-primary placeholder-dim focus:outline-none focus:border-accent/40" />
-          <span className="font-mono text-sm text-secondary px-2 flex items-center">mol</span>
-        </div>
-      </div>
+      <NumberField label="Moles of reactant (optional — for ΔH)" value={nVal}
+        onChange={v => { setNVal(sanitize(v)); reset() }}
+        placeholder="optional"
+        unit={<span className="font-mono text-sm text-secondary px-2">mol</span>}
+      />
 
       <div className="flex items-center gap-2">
         <span className="font-sans text-sm font-medium text-primary">Output unit:</span>
@@ -915,24 +891,16 @@ function BombCalorimeter() {
         <br />Sign: negative q_rxn = exothermic; positive = endothermic
       </InfoBox>
 
-      <div className="flex flex-col gap-1.5">
-        <label className="font-sans text-sm font-medium text-primary">
-          Heat Capacity of Calorimeter (C_cal)
-        </label>
-        <div className="flex items-stretch gap-1.5">
-          <input type="text" inputMode="decimal" value={ccalVal}
-            onChange={e => { setCcalVal(sanitize(e.target.value)); reset() }}
-            placeholder="e.g. 5.21"
-            className="flex-1 min-w-0 font-mono text-sm bg-raised border border-border rounded-sm
-                       px-3 py-2 text-primary placeholder-dim focus:outline-none focus:border-accent/40" />
-          <select value={ccalUnit} onChange={e => { setCcalUnit(e.target.value); reset() }}
-            className="font-mono text-xs bg-raised border border-border rounded-sm px-2 py-1.5
-                       text-primary focus:outline-none cursor-pointer">
-            <option>kJ/°C</option>
-            <option>J/°C</option>
-          </select>
-        </div>
-      </div>
+      <NumberField label="Heat Capacity of Calorimeter (C_cal)" value={ccalVal}
+        onChange={v => { setCcalVal(sanitize(v)); reset() }}
+        placeholder="e.g. 5.21"
+        unit={<select value={ccalUnit} onChange={e => { setCcalUnit(e.target.value); reset() }}
+          className="font-mono text-xs bg-raised border border-border rounded-sm px-2 py-1.5
+                     text-primary focus:outline-none cursor-pointer">
+          <option>kJ/°C</option>
+          <option>J/°C</option>
+        </select>}
+      />
 
       <div className="flex gap-2">
         <div className="flex-1">
@@ -951,19 +919,11 @@ function BombCalorimeter() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <label className="font-sans text-sm font-medium text-primary">
-          Moles of substance (optional — for ΔE)
-        </label>
-        <div className="flex items-stretch gap-1.5">
-          <input type="text" inputMode="decimal" value={nVal}
-            onChange={e => { setNVal(sanitize(e.target.value)); reset() }}
-            placeholder="optional"
-            className="flex-1 min-w-0 font-mono text-sm bg-raised border border-border rounded-sm
-                       px-3 py-2 text-primary placeholder-dim focus:outline-none focus:border-accent/40" />
-          <span className="font-mono text-sm text-secondary px-2 flex items-center">mol</span>
-        </div>
-      </div>
+      <NumberField label="Moles of substance (optional — for ΔE)" value={nVal}
+        onChange={v => { setNVal(sanitize(v)); reset() }}
+        placeholder="optional"
+        unit={<span className="font-mono text-sm text-secondary px-2">mol</span>}
+      />
 
       <div className="flex items-center gap-2">
         <span className="font-sans text-sm font-medium text-primary">Output unit:</span>

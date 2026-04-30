@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   generateGasStoichProblem,
@@ -22,13 +22,18 @@ export function generateGasStoichExample() {
   return { scenario: p.question, steps: p.steps.slice(0, last), result: p.steps[last] }
 }
 
-export default function GasStoichPractice() {
+interface Props { allowCustom?: boolean }
+
+export default function GasStoichPractice({ allowCustom = true }: Props) {
   const [filter,     setFilter]     = useState<Filter>('all')
   const [problem,    setProblem]    = useState<GasStoichProblem>(() => generateGasStoichProblem())
   const [answer,     setAnswer]     = useState('')
   const [checkState, setCheckState] = useState<CheckState>('idle')
   const [showSteps,  setShowSteps]  = useState(false)
   const [score,      setScore]      = useState({ correct: 0, total: 0 })
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (!allowCustom) newProblem() }, [allowCustom])
 
   function newProblem(f: Filter = filter) {
     // 'all' randomly picks STP or SATP (not custom — custom must be explicitly selected)
@@ -63,7 +68,7 @@ export default function GasStoichPractice() {
       </p>
 
       {/* Filter + score */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      {allowCustom && <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex gap-1">
           {FILTERS.map(f => (
             <button key={f.value} onClick={() => handleFilter(f.value)}
@@ -88,7 +93,7 @@ export default function GasStoichPractice() {
             {score.correct}/{score.total} correct
           </span>
         )}
-      </div>
+      </div>}
 
       {/* Problem card */}
       <AnimatePresence mode="wait">

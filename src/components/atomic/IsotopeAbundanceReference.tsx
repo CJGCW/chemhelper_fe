@@ -40,7 +40,7 @@ function toSuperscript(n: number): string {
 
 export default function IsotopeAbundanceReference() {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       {/* Formula box */}
       <div className="p-4 rounded-sm max-w-lg"

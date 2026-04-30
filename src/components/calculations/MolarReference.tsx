@@ -690,15 +690,18 @@ export default function MolarReference({ section = 'guide', topic, view = 'refer
     )
   }
 
-  if (topic === 'moles')       return <MolesTopic />
-  if (topic === 'molarity')    return <MolarityTopic />
-  if (topic === 'molality')    return <MolalityTopic />
-  if (topic === 'colligative')     return <ColligativeTopic />
-  if (topic === 'colligative-bpe') return <ColligativeBPETopic />
-  if (topic === 'colligative-fpd') return <ColligativeFPDTopic />
-  if (topic === 'molar-volume') return <MolarVolumeTopic />
-  if (topic === 'dilution')    return <DilutionTopic />
-  if (topic === 'other')       return <OtherTopic />
+  const content = (() => {
+    if (topic === 'moles')           return <MolesTopic />
+    if (topic === 'molarity')        return <MolarityTopic />
+    if (topic === 'molality')        return <MolalityTopic />
+    if (topic === 'colligative')     return <ColligativeTopic />
+    if (topic === 'colligative-bpe') return <ColligativeBPETopic />
+    if (topic === 'colligative-fpd') return <ColligativeFPDTopic />
+    if (topic === 'molar-volume')    return <MolarVolumeTopic />
+    if (topic === 'dilution')        return <DilutionTopic />
+    if (topic === 'other')           return <OtherTopic />
+    return <FullGuide />
+  })()
 
-  return <FullGuide />
+  return <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">{content}</div>
 }

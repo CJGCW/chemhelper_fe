@@ -320,20 +320,20 @@ export default function ElectronConfigPage() {
             </div>
           )}
           {topic === 'electron_config' && mode === 'practice'  && <ElectronConfig />}
-          {topic === 'electron_config' && mode === 'problems'  && <ElectronConfigPractice />}
+          {topic === 'electron_config' && mode === 'problems'  && <ElectronConfigPractice allowCustom={false} />}
           {topic === 'quantum_numbers' && mode === 'reference' && <QuantumNumbersReference />}
-          {topic === 'quantum_numbers' && mode === 'problems'  && <AtomicPractice subtopic="quantum_numbers" />}
+          {topic === 'quantum_numbers' && mode === 'problems'  && <AtomicPractice subtopic="quantum_numbers" allowCustom={false} />}
           {topic === 'energy_levels'   && mode === 'reference' && <EnergyLevelsReference />}
-          {topic === 'energy_levels'   && mode === 'problems'  && <AtomicPractice subtopic="energy_levels" />}
+          {topic === 'energy_levels'   && mode === 'problems'  && <AtomicPractice subtopic="energy_levels" allowCustom={false} />}
           {topic === 'isoelectronic'   && <IsoelectronicSeries />}
           {topic === 'em_spectrum'     && <ElectromagneticSpectrum />}
           {topic === 'multi_electron'   && <MultiElectronAtoms />}
           {topic === 'periodic_trends' && mode === 'reference' && <PeriodicTrendsReference />}
           {topic === 'periodic_trends' && mode === 'practice'  && <PeriodicTrendsPractice />}
-          {topic === 'periodic_trends' && mode === 'problems'  && <PeriodicTrendsPractice />}
+          {topic === 'periodic_trends' && mode === 'problems'  && <PeriodicTrendsPractice allowCustom={false} />}
           {topic === 'isotopes' && mode === 'reference' && <IsotopeAbundanceReference />}
           {topic === 'isotopes' && mode === 'practice'  && <ReverseIsotopeTool />}
-          {topic === 'isotopes' && mode === 'problems'  && <IsotopeAbundancePractice />}
+          {topic === 'isotopes' && mode === 'problems'  && <IsotopeAbundancePractice allowCustom={false} />}
           {topic === 'naming'   && mode === 'reference' && <NamingReference />}
           {topic === 'naming'   && mode === 'problems'  && <NomenclatureTool />}
         </motion.div>

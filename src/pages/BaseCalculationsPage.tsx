@@ -451,7 +451,7 @@ export default function BaseCalculationsPage() {
             transition={{ duration: 0.18 }}
             className="print:hidden"
           >
-            <ScientificNotationPractice />
+            <ScientificNotationPractice allowCustom={false} />
           </motion.div>
         )}
 
@@ -462,7 +462,7 @@ export default function BaseCalculationsPage() {
             transition={{ duration: 0.18 }}
             className="print:hidden"
           >
-            <SigFigPractice />
+            <SigFigPractice allowCustom={false} />
           </motion.div>
         )}
 
@@ -820,7 +820,7 @@ export default function BaseCalculationsPage() {
             transition={{ duration: 0.18 }}
             className="print:hidden"
           >
-            <PercentErrorPractice />
+            <PercentErrorPractice allowCustom={false} />
           </motion.div>
         )}
 

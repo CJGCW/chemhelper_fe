@@ -475,23 +475,23 @@ export default function ThermochemistryPage() {
           initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
           {tab === 'calorimetry'           && <CalorimetryTool />}
-          {tab === 'calorimetry-practice'  && <CalorimetryPractice />}
+          {tab === 'calorimetry-practice'  && <CalorimetryPractice allowCustom={false} />}
           {tab === 'calorimetry-reference' && <CalorimetryReference />}
           {tab === 'enthalpy'              && <EnthalpyTool />}
-          {tab === 'enthalpy-practice'     && <EnthalpyPractice />}
+          {tab === 'enthalpy-practice'     && <EnthalpyPractice allowCustom={false} />}
           {tab === 'enthalpy-reference'    && <EnthalpyReference />}
           {tab === 'hess'                  && <HessTool />}
-          {tab === 'hess-practice'         && <HessPractice />}
+          {tab === 'hess-practice'         && <HessPractice allowCustom={false} />}
           {tab === 'hess-reference'        && <HessReference />}
           {tab === 'bond'                  && <BondEnthalpyTool />}
-          {tab === 'bond-practice'         && <BondEnthalpyPractice />}
+          {tab === 'bond-practice'         && <BondEnthalpyPractice allowCustom={false} />}
           {tab === 'bond-reference'        && <BondEnthalpyReference />}
           {tab === 'profile-reference'     && <ReactionProfileReference />}
           {tab === 'profile'               && <EnergyDiagram />}
           {tab === 'profile-practice'      && <ReactionProfileTool />}
-          {tab === 'profile-problems'      && <ReactionProfilePractice />}
+          {tab === 'profile-problems'      && <ReactionProfilePractice allowCustom={false} />}
           {tab === 'heattransfer'           && <HeatTransferTool />}
-          {tab === 'heattransfer-practice'  && <HeatTransferPractice />}
+          {tab === 'heattransfer-practice'  && <HeatTransferPractice allowCustom={false} />}
           {tab === 'heattransfer-reference' && <HeatTransferReference />}
           {tab === 'heating-curve'           && <HeatingCurveTool />}
           {tab === 'heating-curve-problems'  && <HeatingCurveProblems />}
@@ -503,7 +503,7 @@ export default function ThermochemistryPage() {
           {tab === 'cc'                        && <ClausiusClapeyronTool />}
           {tab === 'vapor-pressure-reference'  && <VaporPressureReference />}
           {tab === 'vapor-pressure'            && <VaporPressureTool />}
-          {tab === 'cc-practice'            && <ClausiusClapeyronPractice />}
+          {tab === 'cc-practice'            && <ClausiusClapeyronPractice allowCustom={false} />}
           {tab === 'cc-reference'           && <ClausiusClapeyronReference />}
           {tab === 'expansion-work-reference' && <ExpansionWorkReference />}
           {tab === 'expansion-work'           && <ExpansionWorkTool />}

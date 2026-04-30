@@ -82,7 +82,9 @@ export function generateSciNotationExample() {
   return SCI_EXAMPLES[Math.floor(Math.random() * SCI_EXAMPLES.length)]
 }
 
-export default function ScientificNotationPractice() {
+interface Props { allowCustom?: boolean }
+
+export default function ScientificNotationPractice({ allowCustom: _allowCustom = true }: Props) {
   const [states, setStates] = useState<ProblemState[]>(() => makeStates(genSciNotationProblems(8)))
   const [submitted, setSubmitted] = useState(false)
 

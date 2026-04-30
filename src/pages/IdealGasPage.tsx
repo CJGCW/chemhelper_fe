@@ -536,42 +536,42 @@ export default function IdealGasPage() {
           <motion.div key="pvnrt-problems"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <IdealGasPractice />
+            <IdealGasPractice allowCustom={false} />
           </motion.div>
         )}
         {activeTab === 'gas-stoich' && (
           <motion.div key="gas-stoich"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <GasStoichPractice />
+            <GasStoichPractice allowCustom={false} />
           </motion.div>
         )}
         {activeTab === 'daltons-problems' && (
           <motion.div key="daltons-problems"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <DaltonsPractice />
+            <DaltonsPractice allowCustom={false} />
           </motion.div>
         )}
         {activeTab === 'grahams-problems' && (
           <motion.div key="grahams-problems"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <GrahamsPractice />
+            <GrahamsPractice allowCustom={false} />
           </motion.div>
         )}
         {activeTab === 'density-problems' && (
           <motion.div key="density-problems"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <GasDensityPractice />
+            <GasDensityPractice allowCustom={false} />
           </motion.div>
         )}
         {activeTab === 'vdw-problems' && (
           <motion.div key="vdw-problems"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <VanDerWaalsPractice />
+            <VanDerWaalsPractice allowCustom={false} />
           </motion.div>
         )}
       </AnimatePresence>

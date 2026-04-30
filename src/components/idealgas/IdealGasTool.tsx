@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { randBetween, roundTo } from '../shared/WorkedExample'
+import NumberField from '../shared/NumberField'
 import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
 import { SigFigTrigger, SigFigContent } from '../shared/SigFigPanel'
 import ResultDisplay from '../shared/ResultDisplay'
@@ -224,61 +225,35 @@ export default function IdealGasTool() {
       <div className="flex flex-col gap-3">
 
         {/* Pressure */}
-        <div className="flex flex-col gap-1.5">
-          <div className="flex items-center justify-between">
-            <label className="font-sans text-sm font-medium text-primary">Pressure (P)</label>
-            <UnitPill options={P_UNITS} active={pUnit} onChange={v => { setPUnit(v as PUnit); reset() }} />
-          </div>
-          <input type="text" inputMode="decimal" value={P}
-            onChange={e => { setP(e.target.value); reset() }}
-            placeholder="leave blank to solve"
-            className="w-full font-mono text-sm bg-raised border border-border rounded-sm px-3 py-2 text-primary placeholder-dim focus:outline-none focus:border-accent/40 transition-colors"
-          />
-        </div>
+        <NumberField label="Pressure (P)" value={P}
+          onChange={v => { setP(v); reset() }}
+          placeholder="leave blank to solve"
+          unit={<UnitPill options={P_UNITS} active={pUnit} onChange={v => { setPUnit(v as PUnit); reset() }} />}
+        />
 
         {/* Volume */}
-        <div className="flex flex-col gap-1.5">
-          <label className="font-sans text-sm font-medium text-primary">Volume (V)</label>
-          <div className="flex items-stretch gap-1.5">
-            <input type="text" inputMode="decimal" value={V}
-              onChange={e => { setV(e.target.value); reset() }}
-              placeholder="leave blank to solve"
-              className="flex-1 font-mono text-sm bg-raised border border-border rounded-sm px-3 py-2 text-primary placeholder-dim focus:outline-none focus:border-accent/40 transition-colors"
-            />
-            <span className="font-mono text-sm text-secondary px-2 flex items-center">L</span>
-          </div>
-        </div>
+        <NumberField label="Volume (V)" value={V}
+          onChange={v => { setV(v); reset() }}
+          placeholder="leave blank to solve"
+          unit={<span className="font-mono text-sm text-secondary px-2">L</span>}
+        />
 
         {/* Moles */}
-        <div className="flex flex-col gap-1.5">
-          <label className="font-sans text-sm font-medium text-primary">Amount (n)</label>
-          <div className="flex items-stretch gap-1.5">
-            <input type="text" inputMode="decimal" value={N}
-              onChange={e => { setN(e.target.value); reset() }}
-              placeholder="leave blank to solve"
-              className="flex-1 font-mono text-sm bg-raised border border-border rounded-sm px-3 py-2 text-primary placeholder-dim focus:outline-none focus:border-accent/40 transition-colors"
-            />
-            <span className="font-mono text-sm text-secondary px-2 flex items-center">mol</span>
-          </div>
-        </div>
+        <NumberField label="Amount (n)" value={N}
+          onChange={v => { setN(v); reset() }}
+          placeholder="leave blank to solve"
+          unit={<span className="font-mono text-sm text-secondary px-2">mol</span>}
+        />
 
         {/* Temperature */}
-        <div className="flex flex-col gap-1.5">
-          <div className="flex items-center justify-between">
-            <label className="font-sans text-sm font-medium text-primary">Temperature (T)</label>
+        <NumberField label="Temperature (T)" value={T}
+          onChange={v => { setT(v); reset() }}
+          placeholder="leave blank to solve"
+          unit={<div className="flex items-center gap-1">
             <UnitPill options={['K', 'C']} active={tUnit} onChange={v => { setTUnit(v as TUnit); reset() }} />
-          </div>
-          <div className="flex items-stretch gap-1.5">
-            <input type="text" inputMode="decimal" value={T}
-              onChange={e => { setT(e.target.value); reset() }}
-              placeholder="leave blank to solve"
-              className="flex-1 font-mono text-sm bg-raised border border-border rounded-sm px-3 py-2 text-primary placeholder-dim focus:outline-none focus:border-accent/40 transition-colors"
-            />
-            <span className="font-mono text-sm text-secondary px-2 flex items-center">
-              {tUnit === 'C' ? '°C' : 'K'}
-            </span>
-          </div>
-        </div>
+            <span className="font-mono text-sm text-secondary px-1">{tUnit === 'C' ? '°C' : 'K'}</span>
+          </div>}
+        />
       </div>
 
       {error && <p className="font-mono text-xs text-red-400">{error}</p>}

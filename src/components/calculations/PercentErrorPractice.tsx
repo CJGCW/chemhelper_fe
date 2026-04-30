@@ -2,7 +2,9 @@ import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generatePercentErrorProblem, type PercentErrorProblem } from '../../utils/percentErrorPractice'
 
-export default function PercentErrorPractice() {
+interface Props { allowCustom?: boolean }
+
+export default function PercentErrorPractice({ allowCustom: _allowCustom = true }: Props) {
   const [problem, setProblem] = useState<PercentErrorProblem>(() => generatePercentErrorProblem())
   const [studentAnswer, setStudentAnswer] = useState('')
   const [checked, setChecked] = useState(false)

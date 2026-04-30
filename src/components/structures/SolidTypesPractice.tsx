@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 // ── Types & data ───────────────────────────────────────────────────────────────
@@ -167,7 +167,9 @@ function pick(excludeIdx?: number): { q: Question; idx: number } {
 
 // ── Component ──────────────────────────────────────────────────────────────────
 
-export default function SolidTypesPractice() {
+interface Props { allowCustom?: boolean }
+
+export default function SolidTypesPractice({ allowCustom = true }: Props) {
   const [{ q, idx }, setQState] = useState(() => pick())
   const [selected, setSelected] = useState<SolidId | null>(null)
   const [score,    setScore]    = useState(0)
@@ -180,6 +182,8 @@ export default function SolidTypesPractice() {
     setQState(s => pick(s.idx))
     setSelected(null)
   }, [])
+
+  useEffect(() => { if (!allowCustom) next() }, [allowCustom, next])
 
   function choose(id: SolidId) {
     if (answered) return

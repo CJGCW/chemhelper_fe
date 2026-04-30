@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generateVdWProblem, checkVdWAnswer, type VdWProblem } from '../../utils/vanDerWaalsPractice'
 import StepsPanel from '../shared/StepsPanel'
@@ -7,13 +7,16 @@ type CheckState = 'idle' | 'correct' | 'wrong'
 
 function freshProblem(): VdWProblem { return generateVdWProblem() }
 
+interface Props { allowCustom?: boolean }
 
-export default function VanDerWaalsPractice() {
+export default function VanDerWaalsPractice({ allowCustom = true }: Props) {
   const [problem,    setProblem]    = useState<VdWProblem>(freshProblem)
   const [answer,     setAnswer]     = useState('')
   const [checkState, setCheckState] = useState<CheckState>('idle')
   const [steps,      setSteps]      = useState<string[]>([])
   const [score,      setScore]      = useState({ correct: 0, total: 0 })
+
+    useEffect(() => { if (!allowCustom) nextProblem() }, [allowCustom])
 
   function nextProblem() {
     setProblem(freshProblem())

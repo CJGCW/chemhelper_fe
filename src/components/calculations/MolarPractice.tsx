@@ -1,5 +1,5 @@
 import React from 'react'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generateMolarProblem } from '../../utils/molarPractice'
 import type { MolarCalcType, ProblemStyle, MolarProblem } from '../../utils/molarPractice'
@@ -47,7 +47,9 @@ interface Score { correct: number; total: number }
 // ── Main component ────────────────────────────────────────────────────────────
 
 
-export default function MolarPractice() {
+interface Props { allowCustom?: boolean }
+
+export default function MolarPractice({ allowCustom = true }: Props) {
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
   const [style, setStyle] = useState<ProblemStyle>('word')
 
@@ -66,6 +68,8 @@ export default function MolarPractice() {
     setSubmitted(false)
     setShowSteps(false)
   }, [])
+
+  useEffect(() => { if (!allowCustom) nextProblem(typeFilter, style) }, [allowCustom, nextProblem, typeFilter, style])
 
   function handleTypeFilter(f: TypeFilter) {
     setTypeFilter(f)
@@ -105,7 +109,7 @@ export default function MolarPractice() {
     <div className="flex flex-col gap-6">
 
       {/* Controls row */}
-      <div className="flex flex-wrap items-center gap-4">
+      {allowCustom && <div className="flex flex-wrap items-center gap-4">
 
         {/* Type filter pills */}
         <div className="flex items-center gap-1 p-1 rounded-sm"
@@ -177,7 +181,7 @@ export default function MolarPractice() {
             <span className="text-dim">0 / 0</span>
           )}
         </div>
-      </div>
+      </div>}
 
       {/* Problem card */}
       <AnimatePresence mode="wait">

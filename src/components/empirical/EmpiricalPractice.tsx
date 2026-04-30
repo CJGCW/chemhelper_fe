@@ -128,7 +128,9 @@ export function generateEmpiricalExample() {
   return { scenario, steps: p.steps.slice(0, last), result: p.steps[last] }
 }
 
-export default function EmpiricalPractice() {
+interface Props { allowCustom?: boolean }
+
+export default function EmpiricalPractice({ allowCustom = true }: Props) {
   const elements = useElementStore(s => s.elements)
   const molarMasses = useMemo(() => buildMolarMasses(elements), [elements])
 
@@ -210,7 +212,7 @@ export default function EmpiricalPractice() {
       )}
 
       {/* Difficulty filter */}
-      <div className="flex items-center gap-2 flex-wrap">
+      {allowCustom && <div className="flex items-center gap-2 flex-wrap">
         <span className="font-sans text-xs text-secondary">Difficulty</span>
         <div className="flex items-center gap-1 p-1 rounded-sm"
           style={{ background: 'rgb(var(--color-base))', border: '1px solid rgb(var(--color-border))' }}>
@@ -235,7 +237,7 @@ export default function EmpiricalPractice() {
         <span className="font-mono text-xs text-secondary">
           {COMPOUND_POOL.filter(c => difficulty === 'all' || c.difficulty === difficulty).length} compounds
         </span>
-      </div>
+      </div>}
 
       {/* Problem card */}
       <AnimatePresence mode="wait">

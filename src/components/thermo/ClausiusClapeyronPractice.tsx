@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import WorkedExample from '../shared/WorkedExample'
 
 const R = 8.314  // J/(mol·K)
@@ -296,7 +296,9 @@ export function generateClausiusClapeyronExample() {
   return { scenario: p.question, steps: p.steps.slice(0, last), result: p.steps[last] }
 }
 
-export default function ClausiusClapeyronPractice() {
+interface Props { allowCustom?: boolean }
+
+export default function ClausiusClapeyronPractice({ allowCustom = true }: Props) {
   const [problem,     setProblem]     = useState<Problem>(() => generateProblem())
   const [showAnswer,  setShowAnswer]  = useState(false)
   const [showSteps,   setShowSteps]   = useState(false)
@@ -308,6 +310,8 @@ export default function ClausiusClapeyronPractice() {
     setShowSteps(false)
     setCount(n => n + 1)
   }, [])
+
+  useEffect(() => { if (!allowCustom) next() }, [allowCustom, next])
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">

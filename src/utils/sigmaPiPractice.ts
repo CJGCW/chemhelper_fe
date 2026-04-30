@@ -1,4 +1,5 @@
 import type { LewisStructure } from '../pages/LewisPage'
+import { fetchLewisStructure } from '../api/calculations'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -88,15 +89,7 @@ function pickFromPool(): typeof COMPOUND_POOL[0] {
 
 async function fetchStructure(formula: string, charge: number): Promise<LewisStructure | null> {
   try {
-    const body: Record<string, unknown> = { input: formula }
-    if (charge !== 0) body.charge = charge
-    const resp = await fetch('/api/structure/lewis', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-    if (!resp.ok) return null
-    return resp.json()
+    return await fetchLewisStructure(formula, charge)
   } catch {
     return null
   }

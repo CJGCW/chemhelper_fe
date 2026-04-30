@@ -5,33 +5,12 @@ import LewisStructureDiagram from '../components/lewis/LewisStructureDiagram'
 import StepsPanel from '../components/shared/StepsPanel'
 import LewisEditor from '../components/lewis/LewisEditor'
 import { looksLikeFormula, resolveToFormula } from '../utils/resolveFormula'
+import { fetchLewisStructure } from '../api/calculations'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-export interface LewisAtom {
-  id: string
-  element: string
-  lone_pairs: number
-  formal_charge: number
-}
-
-export interface LewisBond {
-  from: string
-  to: string
-  order: number
-}
-
-export interface LewisStructure {
-  name: string
-  formula: string
-  charge: number
-  total_valence_electrons: number
-  geometry: string
-  atoms: LewisAtom[]
-  bonds: LewisBond[]
-  steps: string[]
-  notes: string
-}
+export type { LewisAtom, LewisBond, LewisStructure } from '../api/calculations'
+import type { LewisStructure } from '../api/calculations'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -134,21 +113,11 @@ export default function LewisPage({ embedded = false }: { embedded?: boolean }) 
     setError(null)
     setResult(null)
     try {
-      const body: Record<string, unknown> = { input: trimmed }
-      if (charge !== 0) body.charge = charge
-      const resp = await fetch('/api/structure/lewis', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      })
-      const data = await resp.json()
-      if (!resp.ok) {
-        setError(data.error ?? 'An error occurred.')
-        return
-      }
-      setResult(data as LewisStructure)
-    } catch {
-      setError('Failed to connect to the server.')
+      const data = await fetchLewisStructure(trimmed, charge)
+      setResult(data)
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error
+      setError(msg ?? 'Failed to connect to the server.')
     } finally {
       setLoading(false)
     }

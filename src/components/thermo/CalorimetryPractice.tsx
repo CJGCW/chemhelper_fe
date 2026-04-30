@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genCalorimetryProblem, checkCalorimetryAnswer, type CalorimetryProblem } from '../../utils/calorimetryPractice'
 import StepsPanel from '../shared/StepsPanel'
@@ -11,13 +11,18 @@ const MODE_LABELS: Record<string, string> = {
 }
 
 
-export default function CalorimetryPractice() {
+interface Props { allowCustom?: boolean }
+
+export default function CalorimetryPractice({ allowCustom = true }: Props) {
   const [problem, setProblem]     = useState<CalorimetryProblem>(() => genCalorimetryProblem())
   const [input, setInput]         = useState('')
   const [checked, setChecked]     = useState(false)
   const [correct, setCorrect]     = useState(false)
   const [steps, setSteps]         = useState<string[]>([])
   const [score, setScore]         = useState({ correct: 0, total: 0 })
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (!allowCustom) handleNext() }, [allowCustom])
 
   function handleCheck() {
     if (!input.trim() || checked) return

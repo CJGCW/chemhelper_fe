@@ -1,17 +1,20 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generateGasDensityProblem, checkGasDensityAnswer, type GasDensityProblem } from '../../utils/gasDensityPractice'
 import StepsPanel from '../shared/StepsPanel'
 
 type CheckState = 'idle' | 'correct' | 'wrong'
 
+interface Props { allowCustom?: boolean }
 
-export default function GasDensityPractice() {
+export default function GasDensityPractice({ allowCustom = true }: Props) {
   const [problem,    setProblem]    = useState<GasDensityProblem>(generateGasDensityProblem)
   const [answer,     setAnswer]     = useState('')
   const [checkState, setCheckState] = useState<CheckState>('idle')
   const [steps,      setSteps]      = useState<string[]>([])
   const [score,      setScore]      = useState({ correct: 0, total: 0 })
+
+    useEffect(() => { if (!allowCustom) nextProblem() }, [allowCustom])
 
   function nextProblem() {
     setProblem(generateGasDensityProblem())

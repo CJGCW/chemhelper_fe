@@ -1,5 +1,11 @@
 import { useState, useMemo } from 'react'
 import PageShell from '../components/Layout/PageShell'
+import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
+
+const EXPLANATION: ExplanationContent = {
+  title: 'Chemistry Glossary',
+  description: 'A searchable reference of key chemistry terms organized by topic, covering atomic structure, bonding, stoichiometry, solutions, thermochemistry, equilibrium, and more. Use it when you encounter an unfamiliar term in lecture or homework. Filter by category to browse a topic area, or search by name, formula, or keyword.',
+}
 
 interface Term {
   term: string
@@ -117,6 +123,7 @@ const CATEGORIES = Array.from(new Set(TERMS.map(t => t.category))).sort()
 export default function GlossaryPage() {
   const [query, setQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
+  const [showExplanation, setShowExplanation] = useState(false)
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim()
@@ -142,7 +149,17 @@ export default function GlossaryPage() {
   return (
     <PageShell>
       <div>
-        <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Chemistry Glossary</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Chemistry Glossary</h2>
+          <button
+            onClick={() => setShowExplanation(true)}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm border border-border
+                       font-sans text-xs text-secondary hover:text-primary hover:border-muted transition-colors"
+          >
+            <span className="font-mono">?</span>
+            <span>What is this</span>
+          </button>
+        </div>
         <p className="font-mono text-xs text-secondary mt-0.5">{TERMS.length} terms across {CATEGORIES.length} categories</p>
       </div>
 
@@ -201,6 +218,12 @@ export default function GlossaryPage() {
       )}
 
       <p className="font-mono text-xs text-secondary">{filtered.length} term{filtered.length !== 1 ? 's' : ''} shown</p>
+
+      <ExplanationModal
+        content={EXPLANATION}
+        open={showExplanation}
+        onClose={() => setShowExplanation(false)}
+      />
     </PageShell>
   )
 }

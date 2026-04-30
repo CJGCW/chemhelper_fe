@@ -16,10 +16,6 @@ function fmtFC(n: number): string {
   return n > 0 ? `+${n}` : String(n)
 }
 
-function pickRandom(exercises: FormalChargeExercise[]): FormalChargeExercise {
-  return exercises[Math.floor(Math.random() * exercises.length)]
-}
-
 // Weight toward exercises with at least one non-zero FC (2× weight vs all-zero)
 function weightedPick(exercises: FormalChargeExercise[]): FormalChargeExercise {
   const hasNonZero = exercises.filter(e => e.structure.atoms.some(a => a.formal_charge !== 0))
@@ -30,7 +26,9 @@ function weightedPick(exercises: FormalChargeExercise[]): FormalChargeExercise {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export default function FormalChargeTool() {
+interface Props { allowCustom?: boolean }
+
+export default function FormalChargeTool({ allowCustom = true }: Props) {
   const [difficulty,   setDifficulty]   = useState<Difficulty>('all')
   const [exercise,     setExercise]     = useState<FormalChargeExercise>(() =>
     weightedPick(FORMAL_CHARGE_EXERCISES)
@@ -184,7 +182,7 @@ export default function FormalChargeTool() {
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-mono text-xs text-secondary tracking-widest uppercase">Formal Charge</span>
           {/* Difficulty filter */}
-          <div className="flex items-center gap-1 p-0.5 rounded-full"
+          {allowCustom && <div className="flex items-center gap-1 p-0.5 rounded-full"
             style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
             {(['all', 'basic', 'intermediate', 'advanced'] as Difficulty[]).map(d => {
               const active = difficulty === d
@@ -204,7 +202,7 @@ export default function FormalChargeTool() {
                 </button>
               )
             })}
-          </div>
+          </div>}
           {score.total > 0 && (
             <span className="font-mono text-xs" style={{ color: 'var(--c-halogen)' }}>
               {score.correct}/{score.total}

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 // ── Types & data ───────────────────────────────────────────────────────────────
@@ -170,7 +170,9 @@ const STRUCTURE_COLORS: Record<string, string> = {
   SC: '#fb923c', BCC: '#60a5fa', FCC: '#34d399',
 }
 
-export default function UnitCellPractice() {
+interface Props { allowCustom?: boolean }
+
+export default function UnitCellPractice({ allowCustom = true }: Props) {
   const [{ q, idx }, setQState] = useState(() => pick())
   const [selected, setSelected] = useState<number | null>(null)
   const [score,    setScore]    = useState(0)
@@ -183,6 +185,8 @@ export default function UnitCellPractice() {
     setQState(s => pick(s.idx))
     setSelected(null)
   }, [])
+
+  useEffect(() => { if (!allowCustom) next() }, [allowCustom, next])
 
   function choose(i: number) {
     if (answered) return

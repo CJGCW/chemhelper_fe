@@ -7,6 +7,7 @@ import ResultDisplay from '../shared/ResultDisplay'
 import NumberField from '../shared/NumberField'
 import CustomReactionForm from './CustomReactionForm'
 import { buildSigFigBreakdown, lowestSigFigs, formatSigFigs, countSigFigs, type SigFigBreakdown } from '../../utils/sigfigs'
+import { sanitize } from '../../utils/calcHelpers'
 import type { VerifyState } from '../../utils/calcHelpers'
 import { calcStoich, type StoichSolution } from '../../chem/stoich'
 import type { Unit } from '../../chem/amount'
@@ -57,7 +58,7 @@ function GasVolumePanel({ onUse }: { onUse: (moles: string, note: string) => voi
             <div className="mt-2 p-3 rounded-sm border border-border bg-surface flex flex-col gap-3">
               <div className="flex flex-wrap items-center gap-2">
                 <input type="text" inputMode="decimal" value={volume}
-                  onChange={e => setVolume(e.target.value)}
+                  onChange={e => setVolume(sanitize(e.target.value))}
                   placeholder="volume"
                   className="w-28 bg-raised border border-border rounded-sm px-3 py-1.5
                              font-mono text-sm text-bright placeholder-dim focus:outline-none focus:border-muted" />
@@ -126,7 +127,7 @@ export function NumInput({ value, onChange, placeholder = 'value' }: {
 }) {
   return (
     <input type="text" inputMode="decimal" value={value}
-      onChange={e => onChange(e.target.value)} placeholder={placeholder}
+      onChange={e => onChange(sanitize(e.target.value))} placeholder={placeholder}
       className="w-28 bg-raised border border-border rounded-sm px-3 py-1.5
                  font-mono text-sm text-bright placeholder-dim focus:outline-none focus:border-muted" />
   )

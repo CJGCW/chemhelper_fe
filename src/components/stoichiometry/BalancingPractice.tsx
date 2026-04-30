@@ -208,7 +208,9 @@ function AtomTable({ elements }: { elements: { element: string; left: number; ri
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export default function BalancingPractice() {
+interface Props { allowCustom?: boolean }
+
+export default function BalancingPractice({ allowCustom: _allowCustom = true }: Props) {
   const [difficulty, setDifficulty] = useState<Difficulty | 'all'>('all')
   const [eq,         setEq]         = useState<BalancingEquation>(() => pickEquation())
   const [rCoeffs,    setRCoeffs]    = useState<string[]>(() => eq.reactants.map(() => ''))

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import LewisEditor from './LewisEditor'
 import type { LewisStructure } from '../../pages/LewisPage'
+import { fetchLewisStructure } from '../../api/calculations'
 import { countSigmaPi, buildExplanation, type SigmaPiResult } from '../../utils/sigmaPiPractice'
 
 // ── Practice problem pool ─────────────────────────────────────────────────────
@@ -24,7 +25,9 @@ const PROBLEMS = [
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function LewisStructurePractice() {
+interface Props { allowCustom?: boolean }
+
+export default function LewisStructurePractice({ allowCustom = true }: Props) {
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [correctStructure, setCorrectStructure] = useState<LewisStructure | null>(null)
   const [fetching, setFetching] = useState(false)
@@ -67,17 +70,13 @@ export default function LewisStructurePractice() {
     const f = otherFormula.trim(); if (!f) return
     const c = Number(otherCharge) || 0
     setFetching(true); setFetchError(null); setOtherError(null); setCorrectStructure(null)
-    const body: Record<string, unknown> = { input: f }
-    if (c !== 0) body.charge = c
     try {
-      const resp = await fetch('/api/structure/lewis', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
-      })
-      const d = await resp.json()
-      if (resp.ok) setCorrectStructure(d as LewisStructure)
-      else setOtherError(d.error ?? 'Failed to load.')
-    } catch { setOtherError('Failed to connect.') }
-    finally { setFetching(false) }
+      const d = await fetchLewisStructure(f, c)
+      setCorrectStructure(d)
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error
+      setOtherError(msg ?? 'Failed to connect.')
+    } finally { setFetching(false) }
   }
 
   const problem = PROBLEMS[selectedIdx]
@@ -95,21 +94,13 @@ export default function LewisStructurePractice() {
     resetBonds()
 
 
-    const body: Record<string, unknown> = { input: problem.formula }
-    if (problem.charge !== 0) body.charge = problem.charge
-
-    fetch('/api/structure/lewis', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-      .then(r => r.json().then(d => ({ ok: r.ok, d })))
-      .then(({ ok, d }) => {
+    fetchLewisStructure(problem.formula, problem.charge)
+      .then(d => { if (!cancelled) setCorrectStructure(d) })
+      .catch((err: unknown) => {
         if (cancelled) return
-        if (ok) setCorrectStructure(d as LewisStructure)
-        else setFetchError(d.error ?? 'Failed to load problem.')
+        const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error
+        setFetchError(msg ?? 'Failed to connect to server.')
       })
-      .catch(() => { if (!cancelled) setFetchError('Failed to connect to server.') })
       .finally(() => { if (!cancelled) setFetching(false) })
 
     return () => { cancelled = true }
@@ -136,7 +127,7 @@ export default function LewisStructurePractice() {
           </button>
         ))}
         {/* Other — custom molecule inline with molecule buttons */}
-        <button
+        {allowCustom && <button
           onClick={() => setShowOther(v => !v)}
           className="font-mono text-[11px] px-2 py-0.5 rounded-sm border transition-colors"
           style={{
@@ -146,8 +137,8 @@ export default function LewisStructurePractice() {
           }}
         >
           Other {showOther ? '▴' : '▾'}
-        </button>
-        {showOther && (
+        </button>}
+        {allowCustom && showOther && (
           <>
             <input
               type="text" value={otherFormula} onChange={e => setOtherFormula(e.target.value)}

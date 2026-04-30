@@ -59,7 +59,9 @@ function pickPool(exclude?: number): number {
   return idx
 }
 
-export default function PeriodicTrendsPractice() {
+interface Props { allowCustom?: boolean }
+
+export default function PeriodicTrendsPractice({ allowCustom: _allowCustom = true }: Props) {
   const { elements, loadElements } = useElementStore()
   useEffect(() => { loadElements() }, [loadElements])
 
@@ -158,7 +160,6 @@ export default function PeriodicTrendsPractice() {
           const val = getValue(el, pool.prop)
 
           // Feedback colors when checked
-          let cardStyle: React.CSSProperties = {}
           let borderColor = 'rgb(var(--color-border))'
           let bgColor = 'rgb(var(--color-surface))'
 
@@ -177,7 +178,7 @@ export default function PeriodicTrendsPractice() {
             bgColor = 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))'
           }
 
-          cardStyle = {
+          const cardStyle = {
             border: `1px solid ${borderColor}`,
             background: bgColor,
             cursor: checked ? 'default' : 'pointer',

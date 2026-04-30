@@ -4,6 +4,7 @@ import VseprShapeDiagram from './VseprShapeDiagram'
 import KetcherStructureEditor, { type KetcherEditorHandle, type ValidationResult } from './KetcherStructureEditor'
 import VseprVisualizer from './VseprVisualizer'
 import type { LewisStructure } from '../../pages/LewisPage'
+import { fetchLewisStructure } from '../../api/calculations'
 import {
   PROBLEMS, GEO_DISPLAY,
   molGeo, elecGeo, hybrid, bondAngles,
@@ -122,15 +123,8 @@ function CombinedSection() {
   useEffect(() => {
     let cancelled = false
     setStructure(null)
-    const body: Record<string, unknown> = { input: toApiFormula(entry.formula) }
-    if (entry.charge !== 0) body.charge = entry.charge
-    fetch('/api/structure/lewis', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-      .then(r => r.json().then(d => ({ ok: r.ok, d })))
-      .then(({ ok, d }) => { if (!cancelled && ok) setStructure(d as LewisStructure) })
+    fetchLewisStructure(toApiFormula(entry.formula), entry.charge)
+      .then(d => { if (!cancelled) setStructure(d) })
       .catch(() => {})
     return () => { cancelled = true }
   }, [entry]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -545,14 +539,16 @@ function McqSection({ types }: { types: QuestionType[] }) {
 
 // ── Root component ────────────────────────────────────────────────────────────
 
-export default function VseprPractice() {
+interface Props { allowCustom?: boolean }
+
+export default function VseprPractice({ allowCustom = true }: Props) {
   const [subtab, setSubtab] = useState<Subtab>('geometry')
 
   return (
     <div className="flex flex-col gap-5">
 
       {/* Subtab pills */}
-      <div className="flex flex-wrap gap-1.5 print:hidden">
+      {allowCustom && <div className="flex flex-wrap gap-1.5 print:hidden">
         {SUBTABS.map(st => {
           const active = subtab === st.id
           return (
@@ -572,7 +568,7 @@ export default function VseprPractice() {
             </button>
           )
         })}
-      </div>
+      </div>}
 
       {/* Content */}
       <AnimatePresence mode="wait">

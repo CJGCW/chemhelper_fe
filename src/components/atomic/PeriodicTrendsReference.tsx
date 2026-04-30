@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from 'react'
+import { useState, useMemo, useEffect, useCallback, type CSSProperties } from 'react'
 import { useElementStore } from '../../stores/elementStore'
 import { IE1, EA } from '../../data/periodicTrends'
 import type { Element } from '../../types'
@@ -116,7 +116,7 @@ export default function PeriodicTrendsReference() {
     return max === min ? 0.5 : (v - min) / (max - min)
   }
 
-  function cellStyle(z: number): React.CSSProperties {
+  function cellStyle(z: number): CSSProperties {
     const n = normalize(z)
     if (n === null) {
       return {
@@ -156,7 +156,7 @@ export default function PeriodicTrendsReference() {
   const fBlockOffset = 2 * (CW + G)  // align f-block under column 3
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
       <style>{PRINT_STYLES}</style>
 
       {/* Print-only heading */}

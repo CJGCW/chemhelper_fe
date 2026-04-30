@@ -413,7 +413,8 @@ export default function NamingReference() {
   const [active, setActive] = useState<Section>('ions')
 
   return (
-    <div className="flex flex-col gap-5 max-w-4xl">
+    // max-w-4xl: wider than standard max-w-3xl — naming tables have many columns and clip awkwardly at 48rem
+    <div className="flex flex-col gap-5 max-w-4xl print:max-w-none">
 
       {/* Pill bar */}
       <div className="flex items-center gap-1 p-1 rounded-sm self-start flex-wrap print:hidden"

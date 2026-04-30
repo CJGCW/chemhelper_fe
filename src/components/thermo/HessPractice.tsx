@@ -1,16 +1,20 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genHessProblem, checkHessAnswer, type HessProblem } from '../../utils/hessLawPractice'
 import StepsPanel from '../shared/StepsPanel'
 
+interface Props { allowCustom?: boolean }
 
-export default function HessPractice() {
+export default function HessPractice({ allowCustom = true }: Props) {
   const [problem, setProblem]     = useState<HessProblem>(() => genHessProblem())
   const [input, setInput]         = useState('')
   const [checked, setChecked]     = useState(false)
   const [correct, setCorrect]     = useState(false)
   const [steps, setSteps]         = useState<string[]>([])
   const [score, setScore]         = useState({ correct: 0, total: 0 })
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (!allowCustom) handleNext() }, [allowCustom])
 
   function handleCheck() {
     if (!input.trim() || checked) return

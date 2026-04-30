@@ -20,8 +20,8 @@ export default function NumberField({
 }: Props) {
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="flex items-center justify-between">
-        <label className="font-sans text-sm font-medium text-primary">{label}</label>
+      {(label || solveFor) && <div className="flex items-center justify-between">
+        {label && <label className="font-sans text-sm font-medium text-primary">{label}</label>}
         {solveFor && (
           <span
             className="font-mono text-[9px] px-1.5 py-0.5 rounded-sm tracking-wider"
@@ -34,7 +34,7 @@ export default function NumberField({
             SOLVING FOR
           </span>
         )}
-      </div>
+      </div>}
       <div className="flex items-stretch gap-1.5">
         <input
           type="text"

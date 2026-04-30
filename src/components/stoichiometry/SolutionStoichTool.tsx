@@ -7,6 +7,7 @@ import { calcVolToMass, calcMassToVol, calcVolToVol } from '../../chem/solutions
 import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
 import ResultDisplay from '../shared/ResultDisplay'
 import NumberField from '../shared/NumberField'
+import { sanitize } from '../../utils/calcHelpers'
 import type { VerifyState } from '../../utils/calcHelpers'
 
 type Mode = 'vol_to_mass' | 'mass_to_vol' | 'vol_to_vol'
@@ -26,7 +27,7 @@ function NumInput({ value, onChange, placeholder = 'value', width = 'w-24' }: {
 }) {
   return (
     <input type="text" inputMode="decimal" value={value}
-      onChange={e => onChange(e.target.value)} placeholder={placeholder}
+      onChange={e => onChange(sanitize(e.target.value))} placeholder={placeholder}
       className={`${width} bg-raised border border-border rounded-sm px-3 py-1.5
                  font-mono text-sm text-bright placeholder-dim focus:outline-none focus:border-muted`} />
   )

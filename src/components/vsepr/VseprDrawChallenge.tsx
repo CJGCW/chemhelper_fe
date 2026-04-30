@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { LewisStructure } from '../../pages/LewisPage'
+import { fetchLewisStructure } from '../../api/calculations'
 import KetcherStructureEditor from './KetcherStructureEditor'
 import KetcherGuide from './KetcherGuide'
 
@@ -89,21 +90,13 @@ export default function VseprDrawChallenge() {
     setFetching(true)
     setLastResult(null)
 
-    const body: Record<string, unknown> = { input: compound.formula }
-    if (compound.charge !== 0) body.charge = compound.charge
-
-    fetch('/api/structure/lewis', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-      .then(r => r.json().then(d => ({ ok: r.ok, d })))
-      .then(({ ok, d }) => {
+    fetchLewisStructure(compound.formula, compound.charge)
+      .then(d => { if (!cancelled) setStructure(d) })
+      .catch((err: unknown) => {
         if (cancelled) return
-        if (ok) setStructure(d as LewisStructure)
-        else setFetchError(d.error ?? 'Failed to load problem.')
+        const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error
+        setFetchError(msg ?? 'Failed to connect to server.')
       })
-      .catch(() => { if (!cancelled) setFetchError('Failed to connect to server.') })
       .finally(() => { if (!cancelled) setFetching(false) })
 
     return () => { cancelled = true }

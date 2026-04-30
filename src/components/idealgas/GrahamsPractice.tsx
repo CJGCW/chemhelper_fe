@@ -1,17 +1,20 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generateGrahamsProblem, checkGrahamsAnswer, type GrahamsProblem } from '../../utils/grahamsPractice'
 import StepsPanel from '../shared/StepsPanel'
 
 type CheckState = 'idle' | 'correct' | 'wrong'
 
+interface Props { allowCustom?: boolean }
 
-export default function GrahamsPractice() {
+export default function GrahamsPractice({ allowCustom = true }: Props) {
   const [problem,    setProblem]    = useState<GrahamsProblem>(generateGrahamsProblem)
   const [answer,     setAnswer]     = useState('')
   const [checkState, setCheckState] = useState<CheckState>('idle')
   const [steps,      setSteps]      = useState<string[]>([])
   const [score,      setScore]      = useState({ correct: 0, total: 0 })
+
+    useEffect(() => { if (!allowCustom) nextProblem() }, [allowCustom])
 
   function nextProblem() {
     setProblem(generateGrahamsProblem())

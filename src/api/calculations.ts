@@ -1,5 +1,32 @@
 import client from './client'
 
+// ---------- Lewis structure ----------
+
+export interface LewisAtom {
+  id: string
+  element: string
+  lone_pairs: number
+  formal_charge: number
+}
+
+export interface LewisBond {
+  from: string
+  to: string
+  order: number
+}
+
+export interface LewisStructure {
+  name: string
+  formula: string
+  charge: number
+  total_valence_electrons: number
+  geometry: string
+  atoms: LewisAtom[]
+  bonds: LewisBond[]
+  steps: string[]
+  notes: string
+}
+
 export interface CalcResult {
   value: string
   unit: string
@@ -112,5 +139,15 @@ export async function findFPD(
     molality,
     vant_hoff_factor: vantHoffFactor,
   })
+  return data
+}
+
+export async function fetchLewisStructure(
+  formula: string,
+  charge?: number,
+): Promise<LewisStructure> {
+  const body: Record<string, unknown> = { input: formula }
+  if (charge !== undefined && charge !== 0) body.charge = charge
+  const { data } = await client.post<LewisStructure>('/structure/lewis', body)
   return data
 }

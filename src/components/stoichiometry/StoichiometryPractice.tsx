@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { StoichProblemType } from '../../utils/stoichiometryPractice'
 import { generateStoichProblem, checkStoichAnswer } from '../../utils/stoichiometryPractice'
@@ -12,7 +12,9 @@ const TYPES: { id: StoichProblemType | 'random'; label: string; formula: string 
 ]
 
 
-export default function StoichiometryPractice() {
+interface Props { allowCustom?: boolean }
+
+export default function StoichiometryPractice({ allowCustom = true }: Props) {
   const [selectedType, setSelectedType] = useState<StoichProblemType | 'random'>('random')
   const [problem,   setProblem]   = useState(() => generateStoichProblem())
   const [answer,    setAnswer]    = useState('')
@@ -20,6 +22,9 @@ export default function StoichiometryPractice() {
   const [correct,   setCorrect]   = useState(false)
   const [showSteps, setShowSteps] = useState(false)
   const [score,     setScore]     = useState({ right: 0, total: 0 })
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (!allowCustom) nextProblem() }, [allowCustom])
 
   function nextProblem(type: StoichProblemType | 'random' = selectedType) {
     const t = type === 'random' ? undefined : type
@@ -70,7 +75,7 @@ export default function StoichiometryPractice() {
     <div className="flex flex-col gap-5 max-w-2xl">
 
       {/* Type selector */}
-      <div className="flex flex-wrap gap-1.5">
+      {allowCustom && <div className="flex flex-wrap gap-1.5">
         {TYPES.map(t => {
           const isActive = selectedType === t.id
           return (
@@ -94,7 +99,7 @@ export default function StoichiometryPractice() {
             </button>
           )
         })}
-      </div>
+      </div>}
 
       {/* Score bar */}
       {score.total > 0 && (

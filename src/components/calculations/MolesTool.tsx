@@ -178,14 +178,11 @@ export default function MolesTool() {
         <div className="flex flex-col gap-1.5">
           <label className="font-sans text-sm font-medium text-primary">Molar Mass (M)</label>
           <CompoundInput onResolved={(mw, fmt) => { setMolarMassValue(mw); setFormula(fmt) }} />
-          <div className="flex items-stretch gap-1.5">
-            <input type="text" inputMode="decimal" value={molarMassValue}
-              onChange={e => { setMolarMassValue(sanitize(e.target.value)); setResult(null) }}
-              placeholder="e.g. 58.44"
-              className="flex-1 font-mono text-sm bg-raised border border-border rounded-sm px-3 py-2 text-primary placeholder-dim focus:outline-none focus:border-accent/40 transition-colors"
-            />
-            <span className="font-mono text-sm text-secondary px-2 flex items-center">g/mol</span>
-          </div>
+          <NumberField label="" value={molarMassValue}
+            onChange={v => { setMolarMassValue(v); setResult(null) }}
+            placeholder="e.g. 58.44"
+            unit={<span className="font-mono text-sm text-secondary px-2 flex items-center">g/mol</span>}
+          />
         </div>
 
         <NumberField label="Moles (n)" value={molesValue}

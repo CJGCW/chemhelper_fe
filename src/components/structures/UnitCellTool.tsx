@@ -1,7 +1,9 @@
 import React from 'react'
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
+import { sanitize } from '../../utils/calcHelpers'
 import type { VerifyState } from '../../utils/calcHelpers'
+import { countSigFigs, lowestSigFigs } from '../../utils/sigfigs'
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
@@ -437,7 +439,9 @@ export default function UnitCellTool() {
     if (!answerDensity.trim() || density === null) return null
     const userVal = parseFloat(answerDensity)
     if (isNaN(userVal) || userVal <= 0) return 'incorrect'
-    return Math.abs(userVal - density) / density <= 0.01 ? 'correct' : 'incorrect'
+    if (Math.abs(userVal - density) / density > 0.02) return 'incorrect'
+    const expectedSF = lowestSigFigs([edgeStr, molarStr])
+    return countSigFigs(answerDensity) >= expectedSF ? 'correct' : 'sig_fig_warning'
   })()
 
   function loadPreset(m: MetalPreset) {
@@ -489,7 +493,7 @@ export default function UnitCellTool() {
       <div className="flex flex-col gap-2">
         <span className="font-mono text-xs text-secondary tracking-widest uppercase">Edge Length (a)</span>
         <div className="flex gap-2 items-center flex-wrap">
-          <input type="text" inputMode="decimal" value={edgeStr} onChange={e => setEdgeStr(e.target.value)}
+          <input type="text" inputMode="decimal" value={edgeStr} onChange={e => setEdgeStr(sanitize(e.target.value))}
             className="w-36 px-3 py-2 rounded-sm border border-border bg-surface font-mono text-sm text-primary
                        focus:outline-none focus:border-muted"
             placeholder="e.g. 361.5" />
@@ -527,7 +531,7 @@ export default function UnitCellTool() {
           Molar Mass <span className="normal-case tracking-normal opacity-60">(needed for density)</span>
         </span>
         <div className="flex items-center gap-2">
-          <input type="text" inputMode="decimal" value={molarStr} onChange={e => setMolarStr(e.target.value)}
+          <input type="text" inputMode="decimal" value={molarStr} onChange={e => setMolarStr(sanitize(e.target.value))}
             className="w-36 px-3 py-2 rounded-sm border border-border bg-surface font-mono text-sm text-primary
                        focus:outline-none focus:border-muted"
             placeholder="g/mol" />
@@ -588,7 +592,7 @@ export default function UnitCellTool() {
                   type="text"
                   inputMode="decimal"
                   value={answerDensity}
-                  onChange={e => setAnswerDensity(e.target.value)}
+                  onChange={e => setAnswerDensity(sanitize(e.target.value))}
                   placeholder="g/cm³"
                   className="w-32 font-mono text-sm bg-raised border border-border rounded-sm px-3 py-1.5
                              text-primary placeholder-dim focus:outline-none focus:border-accent/40 transition-colors"
@@ -596,8 +600,8 @@ export default function UnitCellTool() {
               </div>
               {densityVerify !== null && (
                 <span className="font-mono text-sm font-medium self-end mb-1.5"
-                  style={{ color: densityVerify === 'correct' ? '#4ade80' : '#f87171' }}>
-                  {densityVerify === 'correct' ? '✓ Correct' : '✗ Incorrect'}
+                  style={{ color: densityVerify === 'correct' ? '#4ade80' : densityVerify === 'sig_fig_warning' ? '#fbbf24' : '#f87171' }}>
+                  {densityVerify === 'correct' ? '✓ Correct' : densityVerify === 'sig_fig_warning' ? '~ Check sig figs' : '✗ Incorrect'}
                 </span>
               )}
             </div>

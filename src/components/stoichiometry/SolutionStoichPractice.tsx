@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   generateSolStoichProblem, checkSolStoichAnswer,
@@ -12,7 +12,9 @@ const FILTERS: { id: SolStoichType | 'all'; label: string; subtitle: string }[] 
 ]
 
 
-export default function SolutionStoichPractice() {
+interface Props { allowCustom?: boolean }
+
+export default function SolutionStoichPractice({ allowCustom = true }: Props) {
   const [filter,   setFilter]   = useState<SolStoichType | 'all'>('all')
   const [problem,  setProblem]  = useState<SolStoichProblem>(() => generateSolStoichProblem())
   const [input,    setInput]    = useState('')
@@ -20,6 +22,9 @@ export default function SolutionStoichPractice() {
   const [correct,  setCorrect]  = useState(false)
   const [revealed, setRevealed] = useState(false)
   const [score,    setScore]    = useState({ right: 0, total: 0 })
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (!allowCustom) next() }, [allowCustom])
 
   function next(f: SolStoichType | 'all' = filter) {
     setProblem(generateSolStoichProblem(f === 'all' ? undefined : f))
@@ -52,7 +57,7 @@ export default function SolutionStoichPractice() {
     <div className="flex flex-col gap-5 max-w-2xl">
 
       {/* Filter pills */}
-      <div className="flex flex-wrap gap-1.5">
+      {allowCustom && <div className="flex flex-wrap gap-1.5">
         {FILTERS.map(f => {
           const isActive = filter === f.id
           return (
@@ -72,7 +77,7 @@ export default function SolutionStoichPractice() {
             </button>
           )
         })}
-      </div>
+      </div>}
 
       {/* Score */}
       {score.total > 0 && (

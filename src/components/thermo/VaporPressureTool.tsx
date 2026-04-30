@@ -211,52 +211,27 @@ export default function VaporPressureTool() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {/* Custom T1 */}
-            <div className="flex flex-col gap-1">
-              <span className="font-mono text-xs text-secondary">T₁ (°C)</span>
-              <input type="text" inputMode="decimal" value={customT1} onChange={e => setCustomT1(e.target.value)}
-                className="h-9 rounded-sm border border-border bg-raised px-3 font-mono text-sm
-                           text-bright focus:outline-none focus:border-muted" />
-            </div>
-            {/* Custom P1 */}
-            <div className="flex flex-col gap-1">
-              <span className="font-mono text-xs text-secondary">P₁</span>
-              <div className="flex">
-                <input type="text" inputMode="decimal" value={customP1} onChange={e => setCustomP1(e.target.value)}
-                  className="flex-1 min-w-0 h-9 rounded-l-sm border border-border bg-raised px-3 font-mono text-sm
-                             text-bright focus:outline-none focus:border-muted" />
-                <select value={customPu1} onChange={e => setCustomPu1(e.target.value as PUnit)}
-                  className="h-9 px-2 rounded-r-sm border border-l-0 border-border bg-surface
-                             font-mono text-xs text-secondary focus:outline-none cursor-pointer">
-                  {P_LABELS.map(u => <option key={u} value={u}>{u}</option>)}
-                </select>
-              </div>
-            </div>
-            {/* Custom dHvap */}
-            <div className="flex flex-col gap-1">
-              <span className="font-mono text-xs text-secondary">ΔH_vap (kJ/mol)</span>
-              <input type="text" inputMode="decimal" value={customDh} onChange={e => setCustomDh(e.target.value)}
-                className="h-9 rounded-sm border border-border bg-raised px-3 font-mono text-sm
-                           text-bright focus:outline-none focus:border-muted" />
-            </div>
+            <NumberField label="T₁ (°C)" value={customT1} onChange={setCustomT1} placeholder="e.g. 100" />
+            <NumberField label="P₁" value={customP1} onChange={setCustomP1} placeholder="e.g. 1.000"
+              unit={<select value={customPu1} onChange={e => setCustomPu1(e.target.value as PUnit)}
+                className="h-full px-2 rounded-r-sm border border-l-0 border-border bg-surface
+                           font-mono text-xs text-secondary focus:outline-none cursor-pointer">
+                {P_LABELS.map(u => <option key={u} value={u}>{u}</option>)}
+              </select>} />
+            <NumberField label="ΔH_vap (kJ/mol)" value={customDh} onChange={setCustomDh} placeholder="e.g. 40.7" />
           </div>
         )}
       </div>
 
       {/* Target temperature */}
-      <div className="flex flex-col gap-2">
-        <span className="font-mono text-xs text-secondary tracking-widest uppercase">Target Temperature (T₂)</span>
-        <div className="flex items-center gap-2 max-w-xs">
-          <input type="text" inputMode="decimal" value={t2} onChange={e => setT2(e.target.value)}
-            className="flex-1 h-9 rounded-l-sm border border-border bg-raised px-3 font-mono text-sm
-                       text-bright focus:outline-none focus:border-muted" />
-          <select value={tu2} onChange={e => setTu2(e.target.value as TUnit)}
-            className="h-9 px-3 rounded-r-sm border border-l-0 border-border bg-surface
+      <div className="flex flex-col gap-2 max-w-xs">
+        <NumberField label="Target Temperature (T₂)" value={t2} onChange={setT2} placeholder="e.g. 120"
+          unit={<select value={tu2} onChange={e => setTu2(e.target.value as TUnit)}
+            className="h-full px-3 rounded-r-sm border border-l-0 border-border bg-surface
                        font-mono text-xs text-secondary focus:outline-none cursor-pointer">
             <option value="°C">°C</option>
             <option value="K">K</option>
-          </select>
-        </div>
+          </select>} />
         {isFinite(T2_K) && T2_K > 0 && (
           <span className="font-mono text-xs text-secondary px-0.5">
             = {T2_K.toFixed(2)} K

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, type KeyboardEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   generateProblem,
@@ -7,6 +7,65 @@ import {
   type ProblemMode,
   type CompoundType,
 } from '../../chem/nomenclature'
+import { useStepsPanelState, StepsTrigger, StepsContent } from '../shared/StepsPanel'
+
+const NOM_EXAMPLES = [
+  {
+    scenario: 'Name the compound NaCl (ionic, Group IA cation + Group VIIA anion).',
+    steps: [
+      'Identify the cation: Na⁺ (sodium, Group IA — charge is always +1)',
+      'Identify the anion: Cl⁻ (chloride, Group VIIA — charge is always −1)',
+      'Name the cation using the element name: sodium',
+      'Name the anion by replacing the ending with -ide: chlor + ide = chloride',
+    ],
+    result: 'NaCl = sodium chloride',
+  },
+  {
+    scenario: 'Name the compound FeCl₃ (ionic, transition metal cation).',
+    steps: [
+      'Identify the anion: Cl⁻ (charge = −1). Three Cl⁻ gives total anion charge = −3',
+      'Determine the cation charge: Fe must be +3 to balance (3 × −1 = −3)',
+      'Name the cation using Roman numeral for the charge: iron(III)',
+      'Name the anion: chloride',
+    ],
+    result: 'FeCl₃ = iron(III) chloride',
+  },
+  {
+    scenario: 'Name the compound Ca(NO₃)₂ (ionic, polyatomic anion).',
+    steps: [
+      'Identify the cation: Ca²⁺ (calcium, Group IIA — charge is always +2)',
+      'Identify the anion: NO₃⁻ — this is the nitrate polyatomic ion (memorized)',
+      'Name the cation: calcium',
+      'Name the anion using the polyatomic ion name: nitrate',
+    ],
+    result: 'Ca(NO₃)₂ = calcium nitrate',
+  },
+  {
+    scenario: 'Name the compound SO₂ (binary covalent, non-metal + non-metal).',
+    steps: [
+      'Both elements are non-metals → use Greek prefix naming (no ions)',
+      'First element (S): 1 atom → no prefix for the first element when count = 1',
+      'Second element (O): 2 atoms → di + ox + ide = dioxide',
+      'Combine: sulfur dioxide',
+    ],
+    result: 'SO₂ = sulfur dioxide',
+  },
+  {
+    scenario: 'Name the compound N₂O₄ (binary covalent).',
+    steps: [
+      'Both elements are non-metals → use Greek prefix naming',
+      'First element (N): 2 atoms → di + nitrogen = dinitrogen',
+      'Second element (O): 4 atoms → tetr + ox + ide = tetroxide',
+      'Combine: dinitrogen tetroxide',
+    ],
+    result: 'N₂O₄ = dinitrogen tetroxide',
+  },
+]
+
+function generateNomenclatureExample() {
+  const ex = NOM_EXAMPLES[Math.floor(Math.random() * NOM_EXAMPLES.length)]
+  return ex
+}
 
 type VerifyState = 'none' | 'correct' | 'incorrect'
 
@@ -28,6 +87,9 @@ export default function NomenclatureTool() {
   const [showAnswer,   setShowAnswer]   = useState(false)
   const [stats,        setStats]        = useState({ correct: 0, total: 0 })
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const [noSteps] = useState<string[]>([])
+  const stepsState = useStepsPanelState(noSteps, generateNomenclatureExample)
 
   function newProblem(m?: ProblemMode, types?: Set<CompoundType>) {
     const activeModes  = m     ?? mode
@@ -52,7 +114,7 @@ export default function NomenclatureTool() {
     setStats(s => ({ correct: s.correct + (result === 'correct' ? 1 : 0), total: s.total + 1 }))
   }
 
-  function handleKeyDown(e: React.KeyboardEvent) {
+  function handleKeyDown(e: KeyboardEvent<HTMLElement>) {
     if (e.key !== 'Enter') return
     if (verify === 'none') { handleCheck() }
     else { newProblem() }
@@ -142,6 +204,12 @@ export default function NomenclatureTool() {
           )
         })}
       </div>
+
+      {/* Worked example */}
+      <div className="flex items-stretch gap-2">
+        <StepsTrigger {...stepsState} />
+      </div>
+      <StepsContent {...stepsState} />
 
       {/* Problem card */}
       <AnimatePresence mode="wait">

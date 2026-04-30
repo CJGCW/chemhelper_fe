@@ -1,7 +1,14 @@
+import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import KetcherGuide from '../components/vsepr/KetcherGuide'
 import PageShell from '../components/Layout/PageShell'
+import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
+
+const EXPLANATION: ExplanationContent = {
+  title: 'Tools & References',
+  description: 'Standalone interactive chemistry tools. The Ketcher Editor lets you draw, view, and explore chemical structures using a professional-grade molecular editor. Use it to visualize molecules for bonding and geometry work, or to explore structures referenced in other tools.',
+}
 
 type Tool = 'ketcher'
 
@@ -12,6 +19,7 @@ const TOOLS: { id: Tool; label: string; formula: string }[] = [
 export default function ToolsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const activeTool = (searchParams.get('tool') as Tool) ?? 'ketcher'
+  const [showExplanation, setShowExplanation] = useState(false)
 
   function setTool(tool: Tool) {
     setSearchParams(prev => {
@@ -26,7 +34,17 @@ export default function ToolsPage() {
 
       {/* Header */}
       <div className="flex flex-col gap-3">
-        <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Tools & References</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Tools & References</h2>
+          <button
+            onClick={() => setShowExplanation(true)}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm border border-border
+                       font-sans text-xs text-secondary hover:text-primary hover:border-muted transition-colors"
+          >
+            <span className="font-mono">?</span>
+            <span>What is this</span>
+          </button>
+        </div>
 
         {/* Tool tabs */}
         <div className="flex items-center gap-1 p-1 rounded-sm self-start flex-wrap"
@@ -64,6 +82,11 @@ export default function ToolsPage() {
         )}
       </AnimatePresence>
 
+      <ExplanationModal
+        content={EXPLANATION}
+        open={showExplanation}
+        onClose={() => setShowExplanation(false)}
+      />
     </PageShell>
   )
 }

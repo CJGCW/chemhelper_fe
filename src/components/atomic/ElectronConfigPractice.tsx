@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   ELEMENTS, EXCEPTIONS,
@@ -183,7 +183,9 @@ interface ProblemResult {
   unpairedCorrect: boolean | null
 }
 
-export default function ElectronConfigPractice() {
+interface Props { allowCustom?: boolean }
+
+export default function ElectronConfigPractice({ allowCustom = true }: Props) {
   const [phase, setPhase] = useState<PracticePhase>('settings')
   const [presetIdx, setPresetIdx] = useState(1)          // Periods 1–3 default
   const [count, setCount] = useState(5)
@@ -243,6 +245,9 @@ export default function ElectronConfigPractice() {
     setPhase('active')
     resetProblem(ps[0])
   }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (!allowCustom) startPractice() }, [allowCustom])
 
   function resetProblem(problem: Problem) {
     setWrittenInput('')

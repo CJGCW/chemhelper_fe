@@ -395,7 +395,7 @@ export default function StructuresPage() {
           <motion.div key="vsepr-draw"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <VseprPractice />
+            <VseprPractice allowCustom={false} />
           </motion.div>
         )}
         {activeTab === 'solid-types' && (
@@ -451,14 +451,14 @@ export default function StructuresPage() {
           <motion.div key={activeTab}
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <SolidTypesPractice />
+            <SolidTypesPractice allowCustom={activeTab === 'solid-types-practice'} />
           </motion.div>
         )}
         {(activeTab === 'unit-cell-practice' || activeTab === 'unit-cell-problems') && (
           <motion.div key={activeTab}
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <UnitCellPractice />
+            <UnitCellPractice allowCustom={activeTab === 'unit-cell-practice'} />
           </motion.div>
         )}
       </AnimatePresence>

@@ -8,7 +8,9 @@ import LewisStructureDiagram from './LewisStructureDiagram'
 
 type Status = 'idle' | SigmaPiResult
 
-export default function SigmaPiPractice() {
+interface Props { allowCustom?: boolean }
+
+export default function SigmaPiPractice({ allowCustom: _allowCustom = true }: Props) {
   const [problem,  setProblem]  = useState<SigmaPiProblem | null>(null)
   const [loading,  setLoading]  = useState(true)
   const [sigmaStr, setSigmaStr] = useState('')
