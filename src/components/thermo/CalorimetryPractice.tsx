@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genCalorimetryProblem, checkCalorimetryAnswer, type CalorimetryProblem } from '../../utils/calorimetryPractice'
 import StepsPanel from '../shared/StepsPanel'
+import { useShowAnswers } from '../../stores/preferencesStore'
 
 const MODE_LABELS: Record<string, string> = {
   mcdt:   'q = mcΔT',
@@ -20,6 +21,7 @@ export default function CalorimetryPractice({ allowCustom = true }: Props) {
   const [correct, setCorrect]     = useState(false)
   const [steps, setSteps]         = useState<string[]>([])
   const [score, setScore]         = useState({ correct: 0, total: 0 })
+  const showAnswers = useShowAnswers()
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { if (!allowCustom) handleNext() }, [allowCustom])
@@ -133,7 +135,7 @@ export default function CalorimetryPractice({ allowCustom = true }: Props) {
               <span className="font-mono text-sm font-semibold">
                 {correct
                   ? '✓ Correct!'
-                  : `✗ Answer: ${problem.answer.toPrecision(3)} ${problem.answerUnit}`}
+                  : showAnswers ? `✗ Answer: ${problem.answer.toPrecision(3)} ${problem.answerUnit}` : '✗ Incorrect — try again'}
               </span>
             </motion.div>
           )}

@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
+import { useTopicFilter } from '../utils/topicFilter'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 import LewisPage from './LewisPage'
 import VseprPage from './VseprPage'
@@ -48,9 +49,6 @@ const PROBLEMS_TABS: { id: Tab; label: string; formula: string }[] = [
   { id: 'solid-types-problems',    label: 'Solid Types',   formula: '4t'       },
   { id: 'unit-cell-problems',      label: 'Unit Cell',     formula: 'SC/BCC/FCC' },
 ]
-
-const PRACTICE_TAB_IDS = new Set<Tab>(['lewis-practice', 'vsepr-practice', 'sigma-pi', 'formal-charge', 'solid-types-practice', 'unit-cell-practice'])
-const PROBLEMS_TAB_IDS = new Set<Tab>(['lewis-draw', 'vsepr-draw', 'sigma-pi-problems', 'formal-charge-problems', 'solid-types-problems', 'unit-cell-problems'])
 
 const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
   'lewis':                    'lewis',
@@ -243,9 +241,6 @@ export default function StructuresPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [showExplanation, setShowExplanation] = useState(false)
   const activeTab = (searchParams.get('tab') as Tab) ?? 'lewis'
-  const activeMode: Mode = PROBLEMS_TAB_IDS.has(activeTab) ? 'problems'
-    : PRACTICE_TAB_IDS.has(activeTab) ? 'practice'
-    : 'reference'
 
   function setTab(tab: Tab) {
     setSearchParams(prev => {
@@ -255,6 +250,31 @@ export default function StructuresPage() {
     })
   }
 
+  const { isTabVisible } = useTopicFilter()
+
+  const visibleReferenceTabs = REFERENCE_TABS.filter(t => isTabVisible(t.id))
+  const visiblePracticeTabs  = PRACTICE_TABS.filter(t => isTabVisible(t.id))
+  const visibleProblemsTabs  = PROBLEMS_TABS.filter(t => isTabVisible(t.id))
+
+  const visiblePracticeTabIds = new Set<Tab>(visiblePracticeTabs.map(t => t.id))
+  const visibleProblemsTabIds = new Set<Tab>(visibleProblemsTabs.map(t => t.id))
+
+  const allVisibleTabIds = [
+    ...visibleReferenceTabs.map(t => t.id),
+    ...visiblePracticeTabIds,
+    ...visibleProblemsTabIds,
+  ]
+  const firstVisibleTab = allVisibleTabIds[0] as Tab | undefined
+  const tabIsVisible = isTabVisible(activeTab)
+
+  useEffect(() => {
+    if (!tabIsVisible && firstVisibleTab !== undefined) setTab(firstVisibleTab)
+  }, [tabIsVisible, firstVisibleTab])
+
+  const activeMode: Mode = visibleProblemsTabIds.has(activeTab) ? 'problems'
+    : visiblePracticeTabIds.has(activeTab) ? 'practice'
+    : 'reference'
+
   function setMode(mode: Mode) {
     if (mode === activeMode) return
     const topic = TAB_TO_TOPIC[activeTab]
@@ -262,9 +282,9 @@ export default function StructuresPage() {
     setTab(next)
   }
 
-  const visibleTabs = activeMode === 'problems' ? PROBLEMS_TABS
-    : activeMode === 'practice' ? PRACTICE_TABS
-    : REFERENCE_TABS
+  const visibleTabs = activeMode === 'problems' ? visibleProblemsTabs
+    : activeMode === 'practice' ? visiblePracticeTabs
+    : visibleReferenceTabs
 
   const activeTopic = TAB_TO_TOPIC[activeTab]
   const activeExplanation = activeTopic ? EXPLANATIONS[activeTopic] : undefined
@@ -345,6 +365,13 @@ export default function StructuresPage() {
           })}
         </div>
       </div>
+
+      {allVisibleTabIds.length === 0 && (
+        <p className="font-sans text-sm text-dim py-8 text-center">
+          No topics enabled —{' '}
+          <Link to="/settings" className="text-secondary underline">visit Settings to configure</Link>.
+        </p>
+      )}
 
       {/* Content */}
       <AnimatePresence mode="wait">

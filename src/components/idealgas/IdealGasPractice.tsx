@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genGasProblem, checkGasAnswer, gasSolutionSteps, type GasProblem } from '../../utils/idealGasPractice'
 import StepsPanel from '../shared/StepsPanel'
+import { useShowAnswers } from '../../stores/preferencesStore'
 
 interface Props { allowCustom?: boolean }
 
@@ -12,6 +13,7 @@ export default function IdealGasPractice({ allowCustom = true }: Props) {
   const [correct, setCorrect]     = useState(false)
   const [steps, setSteps]         = useState<string[]>([])
   const [score, setScore]         = useState({ correct: 0, total: 0 })
+  const showAnswers = useShowAnswers()
 
     useEffect(() => { if (!allowCustom) handleNext() }, [allowCustom])
 
@@ -122,7 +124,7 @@ export default function IdealGasPractice({ allowCustom = true }: Props) {
               }`}
             >
               <span className="font-mono text-sm font-semibold">
-                {correct ? '✓ Correct!' : `✗ Answer: ${problem.answer.toPrecision(3)} ${problem.answerUnit}`}
+                {correct ? '✓ Correct!' : showAnswers ? `✗ Answer: ${problem.answer.toPrecision(3)} ${problem.answerUnit}` : '✗ Incorrect — try again'}
               </span>
             </motion.div>
           )}

@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { useSearchParams } from 'react-router-dom'
-import { useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useTopicFilter } from '../utils/topicFilter'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 import IdealGasReference from '../components/idealgas/IdealGasReference'
 import IdealGasTool from '../components/idealgas/IdealGasTool'
@@ -95,9 +96,6 @@ const PROBLEMS_GROUPS: TabGroup[] = [
     ],
   },
 ]
-
-const PRACTICE_TAB_IDS = new Set<Tab>(PRACTICE_GROUPS.flatMap(g => g.pills.map(p => p.id)))
-const PROBLEMS_TAB_IDS = new Set<Tab>(PROBLEMS_GROUPS.flatMap(g => g.pills.map(p => p.id)))
 
 const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
   'ref-combined': 'pvnrt', 'solver':          'pvnrt', 'pvnrt-problems':   'pvnrt',
@@ -345,10 +343,6 @@ export default function IdealGasPage() {
 
   const activeTab = (searchParams.get('tab') as Tab) ?? 'ref-combined'
 
-  const activeMode: Mode = PROBLEMS_TAB_IDS.has(activeTab) ? 'problems'
-    : PRACTICE_TAB_IDS.has(activeTab) ? 'practice'
-    : 'reference'
-
   function setTab(tab: Tab) {
     setSearchParams(prev => {
       const next = new URLSearchParams(prev)
@@ -357,6 +351,37 @@ export default function IdealGasPage() {
     })
   }
 
+  const { isTabVisible } = useTopicFilter()
+
+  const visibleReferenceGroups = REFERENCE_GROUPS
+    .map(g => ({ ...g, pills: g.pills.filter(p => isTabVisible(p.id)) }))
+    .filter(g => g.pills.length > 0)
+  const visiblePracticeGroups = PRACTICE_GROUPS
+    .map(g => ({ ...g, pills: g.pills.filter(p => isTabVisible(p.id)) }))
+    .filter(g => g.pills.length > 0)
+  const visibleProblemsGroups = PROBLEMS_GROUPS
+    .map(g => ({ ...g, pills: g.pills.filter(p => isTabVisible(p.id)) }))
+    .filter(g => g.pills.length > 0)
+
+  const visiblePracticeTabIds = new Set<Tab>(visiblePracticeGroups.flatMap(g => g.pills.map(p => p.id)))
+  const visibleProblemsTabIds = new Set<Tab>(visibleProblemsGroups.flatMap(g => g.pills.map(p => p.id)))
+
+  const allVisibleTabIds = [
+    ...visibleReferenceGroups.flatMap(g => g.pills.map(p => p.id)),
+    ...visiblePracticeTabIds,
+    ...visibleProblemsTabIds,
+  ]
+  const firstVisibleTab = allVisibleTabIds[0] as Tab | undefined
+  const tabIsVisible = isTabVisible(activeTab)
+
+  useEffect(() => {
+    if (!tabIsVisible && firstVisibleTab !== undefined) setTab(firstVisibleTab)
+  }, [tabIsVisible, firstVisibleTab])
+
+  const activeMode: Mode = visibleProblemsTabIds.has(activeTab) ? 'problems'
+    : visiblePracticeTabIds.has(activeTab) ? 'practice'
+    : 'reference'
+
   function setMode(mode: Mode) {
     if (mode === activeMode) return
     const topic = TAB_TO_TOPIC[activeTab]
@@ -364,9 +389,9 @@ export default function IdealGasPage() {
     setTab(next)
   }
 
-  const activeGroups = activeMode === 'problems' ? PROBLEMS_GROUPS
-    : activeMode === 'practice' ? PRACTICE_GROUPS
-    : REFERENCE_GROUPS
+  const activeGroups = activeMode === 'problems' ? visibleProblemsGroups
+    : activeMode === 'practice' ? visiblePracticeGroups
+    : visibleReferenceGroups
 
   return (
     <PageShell>
@@ -453,6 +478,13 @@ export default function IdealGasPage() {
           ))}
         </div>
       </div>
+
+      {allVisibleTabIds.length === 0 && (
+        <p className="font-sans text-sm text-dim py-8 text-center">
+          No topics enabled —{' '}
+          <Link to="/settings" className="text-secondary underline">visit Settings to configure</Link>.
+        </p>
+      )}
 
       <AnimatePresence mode="wait">
         {activeTab === 'ref-combined' && (

@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import { useTopicFilter } from '../utils/topicFilter'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 import RedoxPractice from '../components/redox/RedoxPractice'
 import RedoxTool from '../components/redox/RedoxTool'
@@ -45,8 +46,6 @@ const REF_TOPIC_MAP: Partial<Record<Tab, RefTopic>> = {
   'ref-acids-bases':    'acids-bases',
   'ref-redox-concepts': 'redox-concepts',
 }
-
-const REFERENCE_TAB_IDS = new Set<Tab>(REFERENCE_TABS.map(t => t.id))
 
 type TabPill = { id: Tab; label: string; formula: string }
 type TabGroup = { id: string; label: string; pills: TabPill[] }
@@ -108,9 +107,6 @@ const PROBLEMS_GROUPS: TabGroup[] = [
     ],
   },
 ]
-
-const PRACTICE_TAB_IDS = new Set<Tab>(PRACTICE_GROUPS.flatMap(g => g.pills.map(p => p.id)))
-const PROBLEMS_TAB_IDS = new Set<Tab>(PROBLEMS_GROUPS.flatMap(g => g.pills.map(p => p.id)))
 
 const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
   'predictor':             'rxn-predictor',
@@ -284,13 +280,39 @@ export default function RedoxPage() {
 
   const activeTab = (searchParams.get('tab') as Tab) ?? 'classifier'
 
-  const activeMode: Mode = PROBLEMS_TAB_IDS.has(activeTab) ? 'problems'
-    : PRACTICE_TAB_IDS.has(activeTab) ? 'practice'
-    : REFERENCE_TAB_IDS.has(activeTab) ? 'reference'
+  const { isTabVisible } = useTopicFilter()
+
+  const visibleReferenceTabs = REFERENCE_TABS.filter(t => isTabVisible(t.id))
+  const visiblePracticeGroups = PRACTICE_GROUPS
+    .map(g => ({ ...g, pills: g.pills.filter(p => isTabVisible(p.id)) }))
+    .filter(g => g.pills.length > 0)
+  const visibleProblemsGroups = PROBLEMS_GROUPS
+    .map(g => ({ ...g, pills: g.pills.filter(p => isTabVisible(p.id)) }))
+    .filter(g => g.pills.length > 0)
+
+  const visibleRefTabIds      = new Set<Tab>(visibleReferenceTabs.map(t => t.id))
+  const visiblePracticeTabIds = new Set<Tab>(visiblePracticeGroups.flatMap(g => g.pills.map(p => p.id)))
+  const visibleProblemsTabIds = new Set<Tab>(visibleProblemsGroups.flatMap(g => g.pills.map(p => p.id)))
+
+  const allVisibleTabIds = [
+    ...visibleRefTabIds,
+    ...visiblePracticeTabIds,
+    ...visibleProblemsTabIds,
+  ]
+  const firstVisibleTab = allVisibleTabIds[0] as Tab | undefined
+  const tabIsVisible = isTabVisible(activeTab)
+
+  useEffect(() => {
+    if (!tabIsVisible && firstVisibleTab !== undefined) setTab(firstVisibleTab)
+  }, [tabIsVisible, firstVisibleTab])
+
+  const activeMode: Mode = visibleProblemsTabIds.has(activeTab) ? 'problems'
+    : visiblePracticeTabIds.has(activeTab) ? 'practice'
+    : visibleRefTabIds.has(activeTab) ? 'reference'
     : activeTab === 'reference' ? 'reference'
     : 'practice'
 
-  const activeGroups = activeMode === 'problems' ? PROBLEMS_GROUPS : PRACTICE_GROUPS
+  const activeGroups = activeMode === 'problems' ? visibleProblemsGroups : visiblePracticeGroups
 
   useEffect(() => {
     if (!printingAll) return
@@ -383,7 +405,7 @@ export default function RedoxPage() {
         {activeMode === 'reference' && (
           <div className="flex items-center gap-1 p-1 rounded-sm self-start flex-wrap print:hidden"
             style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
-            {REFERENCE_TABS.map(tab => {
+            {visibleReferenceTabs.map(tab => {
               const isActive = activeTab === tab.id
               return (
                 <button key={tab.id} onClick={() => setTab(tab.id)}
@@ -438,6 +460,13 @@ export default function RedoxPage() {
           </div>
         )}
       </div>
+
+      {allVisibleTabIds.length === 0 && (
+        <p className="font-sans text-sm text-dim py-8 text-center">
+          No topics enabled —{' '}
+          <Link to="/settings" className="text-secondary underline">visit Settings to configure</Link>.
+        </p>
+      )}
 
       {/* Content */}
       {printingAll && <RedoxReference />}

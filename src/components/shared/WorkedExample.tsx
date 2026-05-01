@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useShowAnswers } from '../../stores/preferencesStore'
 
 export interface ExampleData {
   scenario: string
@@ -13,6 +14,7 @@ export function roundTo(x: number, dp: number) { return +x.toFixed(dp) }
 export function sig(x: number, sf: number) { return +x.toPrecision(sf) }
 
 export default function WorkedExample({ generate }: { generate: () => ExampleData }) {
+  const showAnswers = useShowAnswers()
   const [data, setData] = useState<ExampleData | null>(null)
   const [revealed, setRevealed] = useState(0)
 
@@ -57,29 +59,33 @@ export default function WorkedExample({ generate }: { generate: () => ExampleDat
           >
             <div className="rounded-sm border border-border bg-raised px-4 py-3 flex flex-col gap-3">
               <p className="font-sans text-sm text-secondary leading-relaxed">{data.scenario}</p>
-              <div className="flex flex-col gap-1 pl-3 border-l-2 border-border">
-                {data.steps.slice(0, revealed).map((step, i) => (
-                  <motion.p
-                    key={i}
-                    initial={{ opacity: 0, x: -6 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="font-mono text-sm text-primary"
-                  >
-                    {step}
-                  </motion.p>
-                ))}
-                {revealed > data.steps.length && (
-                  <motion.p
-                    initial={{ opacity: 0, x: -6 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="font-mono text-sm font-semibold text-emerald-400 mt-1"
-                  >
-                    ∴ {data.result}
-                  </motion.p>
-                )}
-              </div>
+              {showAnswers ? (
+                <div className="flex flex-col gap-1 pl-3 border-l-2 border-border">
+                  {data.steps.slice(0, revealed).map((step, i) => (
+                    <motion.p
+                      key={i}
+                      initial={{ opacity: 0, x: -6 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="font-mono text-sm text-primary"
+                    >
+                      {step}
+                    </motion.p>
+                  ))}
+                  {revealed > data.steps.length && (
+                    <motion.p
+                      initial={{ opacity: 0, x: -6 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="font-mono text-sm font-semibold text-emerald-400 mt-1"
+                    >
+                      ∴ {data.result}
+                    </motion.p>
+                  )}
+                </div>
+              ) : (
+                <p className="font-sans text-sm text-dim italic">Step-by-step solution hidden.</p>
+              )}
             </div>
           </motion.div>
         )}

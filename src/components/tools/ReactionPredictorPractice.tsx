@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { RxnSubtype } from '../../utils/reactionPredictorPractice'
 import { genRxnPracticeProblem, checkRxnPracticeAnswer } from '../../utils/reactionPredictorPractice'
+import { useShowAnswers } from '../../stores/preferencesStore'
 
 type Selection = RxnSubtype | 'random'
 
@@ -29,6 +30,7 @@ export default function ReactionPredictorPractice({ allowCustom = true }: Props)
   const [correct,   setCorrect]   = useState(false)
   const [showSteps, setShowSteps] = useState(false)
   const [score,     setScore]     = useState({ right: 0, total: 0 })
+  const showAnswers = useShowAnswers()
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { if (!allowCustom) nextProblem() }, [allowCustom])
@@ -176,7 +178,7 @@ export default function ReactionPredictorPractice({ allowCustom = true }: Props)
               style={{ overflow: 'hidden' }}
             >
               <div className="flex flex-col gap-2 pt-2 border-t border-border">
-                {!correct && (
+                {!correct && showAnswers && (
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-xs text-dim">Answer:</span>
                     <span className="font-mono text-sm text-bright">{problem.answer}</span>

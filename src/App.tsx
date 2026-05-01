@@ -16,6 +16,7 @@ import RedoxPage from './pages/RedoxPage'
 import IdealGasPage from './pages/IdealGasPage'
 import ThermochemistryPage from './pages/ThermochemistryPage'
 import GlossaryPage from './pages/GlossaryPage'
+import SettingsPage from './pages/SettingsPage'
 
 export default function App() {
   return (
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="/electron-config" element={<ElectronConfigPage />} />
         <Route path="/reference"       element={<ReferencePage />} />
         <Route path="/glossary"        element={<GlossaryPage />} />
+        <Route path="/settings"        element={<SettingsPage />} />
         <Route path="/test"            element={<TestPage />} />
         <Route path="/print"           element={<PrintPage />} />
         <Route path="*" element={<Navigate to="/table" replace />} />

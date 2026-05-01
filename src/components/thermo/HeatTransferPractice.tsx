@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genHeatTransferProblem, checkHeatTransferAnswer, type HeatTransferProblem } from '../../utils/heatTransferPractice'
 import StepsPanel from '../shared/StepsPanel'
+import { useShowAnswers } from '../../stores/preferencesStore'
 
 interface Props { allowCustom?: boolean }
 
@@ -12,6 +13,7 @@ export default function HeatTransferPractice({ allowCustom = true }: Props) {
   const [correct, setCorrect]     = useState(false)
   const [steps, setSteps]         = useState<string[]>([])
   const [score, setScore]         = useState({ correct: 0, total: 0 })
+  const showAnswers = useShowAnswers()
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { if (!allowCustom) handleNext() }, [allowCustom])
@@ -158,7 +160,7 @@ export default function HeatTransferPractice({ allowCustom = true }: Props) {
               style={{ color: correct ? '#34d399' : '#f87171' }}>
               {correct
                 ? `✓ Correct! ${problem.solveFor} = ${problem.answer} ${problem.answerUnit}`
-                : `✗ Incorrect. Answer: ${problem.answer} ${problem.answerUnit}`}
+                : showAnswers ? `✗ Incorrect. Answer: ${problem.answer} ${problem.answerUnit}` : '✗ Incorrect — try again'}
             </motion.p>
           )}
 

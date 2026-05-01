@@ -1,5 +1,6 @@
-import { useSearchParams } from 'react-router-dom'
-import { useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useTopicFilter } from '../utils/topicFilter'
 import { motion, AnimatePresence } from 'framer-motion'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 import CalorimetryTool from '../components/thermo/CalorimetryTool'
@@ -199,7 +200,6 @@ const GROUPS: Group[] = [
   },
 ]
 
-const ALL_SECTIONS = GROUPS.flatMap(g => g.sections)
 const DEFAULT_TAB: Tab = 'calorimetry-reference'
 
 const _EXP: Record<string, ExplanationContent> = {
@@ -382,7 +382,27 @@ export default function ThermochemistryPage() {
     setSearchParams({ tab: t }, { replace: true })
   }
 
-  const currentSection = ALL_SECTIONS.find(s => s.tabs.some(t => t.id === tab))
+  const { isTabVisible } = useTopicFilter()
+
+  const visibleGroups = GROUPS
+    .map(g => ({
+      ...g,
+      sections: g.sections
+        .map(s => ({ ...s, tabs: s.tabs.filter(t => isTabVisible(t.id)) }))
+        .filter(s => s.tabs.length > 0),
+    }))
+    .filter(g => g.sections.length > 0)
+
+  const visibleAllSections = visibleGroups.flatMap(g => g.sections)
+  const allVisibleTabIds = visibleAllSections.flatMap(s => s.tabs).map(t => t.id)
+  const firstVisibleTab = allVisibleTabIds[0] as Tab | undefined
+  const tabIsVisible = isTabVisible(tab)
+
+  useEffect(() => {
+    if (!tabIsVisible && firstVisibleTab !== undefined) setTab(firstVisibleTab)
+  }, [tabIsVisible, firstVisibleTab])
+
+  const currentSection = visibleAllSections.find(s => s.tabs.some(t => t.id === tab))
   const currentModeIdx = currentSection ? Math.max(0, currentSection.tabs.findIndex(t => t.id === tab)) : 0
 
   return (
@@ -440,7 +460,7 @@ export default function ThermochemistryPage() {
         )}
 
         <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:gap-x-6 md:gap-y-3 print:hidden">
-          {GROUPS.map(group => (
+          {visibleGroups.map(group => (
             <div key={group.id} className="flex flex-col gap-2 px-3 py-2 rounded-sm"
               style={{ background: 'rgb(var(--color-base))', border: '1px solid rgb(var(--color-border))' }}>
               <p className="font-mono text-xs text-secondary tracking-widest uppercase">{group.label}</p>
@@ -469,6 +489,13 @@ export default function ThermochemistryPage() {
           ))}
         </div>
       </div>
+
+      {allVisibleTabIds.length === 0 && (
+        <p className="font-sans text-sm text-dim py-8 text-center">
+          No topics enabled —{' '}
+          <Link to="/settings" className="text-secondary underline">visit Settings to configure</Link>.
+        </p>
+      )}
 
       <AnimatePresence mode="wait">
         <motion.div key={tab}

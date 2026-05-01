@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { ExampleData } from './WorkedExample'
+import { useShowAnswers } from '../../stores/preferencesStore'
 
 // ── Shared state hook ──────────────────────────────────────────────────────────
 
@@ -84,6 +85,7 @@ export function StepsTrigger({ open, toggle, hasCalcSteps, hasContent }: Pick<St
 // ── Expanded content ───────────────────────────────────────────────────────────
 
 export function StepsContent({ open, hasCalcSteps, exampleData, activeSteps, revealed }: Omit<StepsPanelState, 'toggle' | 'hasContent'>) {
+  const showAnswers = useShowAnswers()
   return (
     <AnimatePresence>
       {open && (
@@ -99,18 +101,22 @@ export function StepsContent({ open, hasCalcSteps, exampleData, activeSteps, rev
             {!hasCalcSteps && exampleData && (
               <p className="font-sans text-sm text-secondary leading-relaxed">{exampleData.scenario}</p>
             )}
-            <div className="flex flex-col gap-1 pl-3 border-l-2 border-border">
-              {activeSteps.slice(0, revealed).map((step, i) => (
-                <motion.p key={i} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.2 }} className="font-mono text-sm text-primary">
-                  {step}
-                </motion.p>
-              ))}
-              {!hasCalcSteps && exampleData && revealed > exampleData.steps.length && (
-                <motion.p initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.2 }} className="font-mono text-sm font-semibold text-emerald-400 mt-1">
-                  ∴ {exampleData.result}
-                </motion.p>
-              )}
-            </div>
+            {showAnswers ? (
+              <div className="flex flex-col gap-1 pl-3 border-l-2 border-border">
+                {activeSteps.slice(0, revealed).map((step, i) => (
+                  <motion.p key={i} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.2 }} className="font-mono text-sm text-primary">
+                    {step}
+                  </motion.p>
+                ))}
+                {!hasCalcSteps && exampleData && revealed > exampleData.steps.length && (
+                  <motion.p initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.2 }} className="font-mono text-sm font-semibold text-emerald-400 mt-1">
+                    ∴ {exampleData.result}
+                  </motion.p>
+                )}
+              </div>
+            ) : (
+              <p className="font-sans text-sm text-dim italic">Step-by-step solution hidden.</p>
+            )}
           </div>
         </motion.div>
       )}

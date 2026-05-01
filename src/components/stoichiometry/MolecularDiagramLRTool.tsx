@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ParticleBox, { type Particle, type SpeciesColor } from '../shared/ParticleBox'
 import { generateMolecularDiagramProblem, type MolecularDiagramProblem } from '../../utils/molecularDiagramPractice'
+import { useShowAnswers } from '../../stores/preferencesStore'
 
 const COLOR_A: SpeciesColor = { fill: '#38bdf8', text: '#0c4a6e' }
 const COLOR_B: SpeciesColor = { fill: '#fb923c', text: '#7c2d12' }
@@ -48,6 +49,7 @@ export default function MolecularDiagramLRTool({ allowCustom: _a = true }: Props
   const [countAns,  setCountAns]  = useState('')
   const [checked,   setChecked]   = useState(false)
   const [showAfter, setShowAfter] = useState(false)
+  const showAnswers = useShowAnswers()
 
   const lrCorrect  = checked ? lrChoice === problem.limiting : null
   const cntCorrect = checked ? parseInt(countAns, 10) === problem.productCount : null
@@ -139,7 +141,7 @@ export default function MolecularDiagramLRTool({ allowCustom: _a = true }: Props
           ))}
           {checked && lrCorrect !== null && (
             <span className={`font-mono text-xs ${lrCorrect ? 'text-green-400' : 'text-red-400'}`}>
-              {lrCorrect ? '✓ Correct' : `✗ Answer: ${problem.limiting}`}
+              {lrCorrect ? '✓ Correct' : showAnswers ? `✗ Answer: ${problem.limiting}` : '✗ Incorrect — try again'}
             </span>
           )}
         </div>
@@ -169,7 +171,7 @@ export default function MolecularDiagramLRTool({ allowCustom: _a = true }: Props
           />
           {checked && cntCorrect !== null && (
             <span className={`font-mono text-xs ${cntCorrect ? 'text-green-400' : 'text-red-400'}`}>
-              {cntCorrect ? '✓ Correct' : `✗ Answer: ${problem.productCount}`}
+              {cntCorrect ? '✓ Correct' : showAnswers ? `✗ Answer: ${problem.productCount}` : '✗ Incorrect — try again'}
             </span>
           )}
         </div>

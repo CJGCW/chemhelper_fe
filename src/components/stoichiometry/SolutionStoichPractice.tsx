@@ -4,6 +4,7 @@ import {
   generateSolStoichProblem, checkSolStoichAnswer,
   type SolStoichType, type SolStoichProblem,
 } from '../../utils/solutionStoichPractice'
+import { useShowAnswers } from '../../stores/preferencesStore'
 const FILTERS: { id: SolStoichType | 'all'; label: string; subtitle: string }[] = [
   { id: 'all',          label: 'All',         subtitle: 'mixed types'    },
   { id: 'vol_to_mass',  label: 'Vol → Mass',  subtitle: 'V, C → g'      },
@@ -22,6 +23,7 @@ export default function SolutionStoichPractice({ allowCustom = true }: Props) {
   const [correct,  setCorrect]  = useState(false)
   const [revealed, setRevealed] = useState(false)
   const [score,    setScore]    = useState({ right: 0, total: 0 })
+  const showAnswers = useShowAnswers()
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { if (!allowCustom) next() }, [allowCustom])
@@ -157,12 +159,14 @@ export default function SolutionStoichPractice({ allowCustom = true }: Props) {
               exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.15 }}
               style={{ overflow: 'hidden' }}>
               <div className="flex flex-col gap-2 pt-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs text-dim">Answer:</span>
-                  <span className="font-mono text-sm text-bright">
-                    {problem.answer.toPrecision(4)} {problem.answerUnit}
-                  </span>
-                </div>
+                {showAnswers && (
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs text-dim">Answer:</span>
+                    <span className="font-mono text-sm text-bright">
+                      {problem.answer.toPrecision(4)} {problem.answerUnit}
+                    </span>
+                  </div>
+                )}
                 <div className="flex flex-col gap-1.5 pl-3 border-l border-border">
                   {problem.steps.map((step, i) => (
                     <p key={i} className="font-mono text-sm text-primary">{step}</p>

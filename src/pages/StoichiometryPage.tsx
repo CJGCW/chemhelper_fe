@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
+import { useTopicFilter } from '../utils/topicFilter'
 import StoichiometryTool from '../components/stoichiometry/StoichiometryTool'
 import LimitingReagentTool from '../components/stoichiometry/LimitingReagentTool'
 import TheoreticalYieldTool from '../components/stoichiometry/TheoreticalYieldTool'
@@ -131,8 +132,6 @@ const PROBLEMS_GROUPS: TabGroup[] = [
 ]
 
 const REFERENCE_TAB_IDS = new Set<Tab>(REFERENCE_GROUPS.flatMap(g => g.pills.map(p => p.id)))
-const PRACTICE_TAB_IDS  = new Set<Tab>(PRACTICE_GROUPS.flatMap(g => g.pills.map(p => p.id)))
-const PROBLEMS_TAB_IDS  = new Set<Tab>(PROBLEMS_GROUPS.flatMap(g => g.pills.map(p => p.id)))
 
 const REF_TOPIC_MAP: Partial<Record<Tab, RefTopic>> = {
   'ref-stoich':      'stoich',
@@ -288,13 +287,41 @@ export default function StoichiometryPage() {
 
   const activeTab = (searchParams.get('tab') as Tab) ?? 'ref-stoich'
 
+  const { isTabVisible } = useTopicFilter()
+
+  const visibleReferenceGroups = REFERENCE_GROUPS
+    .map(g => ({ ...g, pills: g.pills.filter(p => isTabVisible(p.id)) }))
+    .filter(g => g.pills.length > 0)
+  const visiblePracticeGroups = PRACTICE_GROUPS
+    .map(g => ({ ...g, pills: g.pills.filter(p => isTabVisible(p.id)) }))
+    .filter(g => g.pills.length > 0)
+  const visibleProblemsGroups = PROBLEMS_GROUPS
+    .map(g => ({ ...g, pills: g.pills.filter(p => isTabVisible(p.id)) }))
+    .filter(g => g.pills.length > 0)
+
+  const visibleRefTabIds    = new Set<Tab>(visibleReferenceGroups.flatMap(g => g.pills.map(p => p.id)))
+  const visiblePracticeTabIds = new Set<Tab>(visiblePracticeGroups.flatMap(g => g.pills.map(p => p.id)))
+  const visibleProblemsTabIds = new Set<Tab>(visibleProblemsGroups.flatMap(g => g.pills.map(p => p.id)))
+
+  const allVisibleTabIds = [
+    ...visibleRefTabIds,
+    ...visiblePracticeTabIds,
+    ...visibleProblemsTabIds,
+  ]
+  const firstVisibleTab = allVisibleTabIds[0] as Tab | undefined
+  const tabIsVisible = isTabVisible(activeTab)
+
+  useEffect(() => {
+    if (!tabIsVisible && firstVisibleTab !== undefined) setTab(firstVisibleTab)
+  }, [tabIsVisible, firstVisibleTab])
+
   const activeMode: Mode =
-    REFERENCE_TAB_IDS.has(activeTab) || activeTab === 'visual' || activeTab === 'reference' ? 'reference'
-    : PROBLEMS_TAB_IDS.has(activeTab) ? 'problems'
-    : PRACTICE_TAB_IDS.has(activeTab) ? 'practice'
+    visibleRefTabIds.has(activeTab) || activeTab === 'visual' || activeTab === 'reference' ? 'reference'
+    : visibleProblemsTabIds.has(activeTab) ? 'problems'
+    : visiblePracticeTabIds.has(activeTab) ? 'practice'
     : 'reference'
 
-  const activeGroups = activeMode === 'problems' ? PROBLEMS_GROUPS : PRACTICE_GROUPS
+  const activeGroups = activeMode === 'problems' ? visibleProblemsGroups : visiblePracticeGroups
 
   useEffect(() => {
     if (!printingAll) return
@@ -434,7 +461,7 @@ export default function StoichiometryPage() {
         {/* Tab pills / groups for active mode */}
         {activeMode === 'reference' ? (
           <div className="flex flex-col gap-3 print:hidden">
-            {renderGroups(REFERENCE_GROUPS, 'ref')}
+            {renderGroups(visibleReferenceGroups, 'ref')}
 
             {/* Visual | Guide secondary toggle */}
             <div className="flex items-center gap-1 p-1 rounded-sm self-start"
@@ -466,9 +493,16 @@ export default function StoichiometryPage() {
         )}
       </div>
 
+      {allVisibleTabIds.length === 0 && (
+        <p className="font-sans text-sm text-dim py-8 text-center">
+          No topics enabled —{' '}
+          <Link to="/settings" className="text-secondary underline">visit Settings to configure</Link>.
+        </p>
+      )}
+
       {/* Content */}
       <AnimatePresence mode="wait">
-        {activeMode === 'reference' && REFERENCE_TAB_IDS.has(activeTab) && (
+        {activeMode === 'reference' && visibleRefTabIds.has(activeTab) && (
           <motion.div key={activeTab}
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>

@@ -1,5 +1,6 @@
-import { useSearchParams } from 'react-router-dom'
-import { useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useTopicFilter } from '../utils/topicFilter'
 import { motion, AnimatePresence } from 'framer-motion'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 import QuantumNumbersReference from '../components/atomic/QuantumNumbersReference'
@@ -197,6 +198,20 @@ export default function ElectronConfigPage() {
   const topic = (params.get('topic') ?? 'electron_config') as Topic
   const mode  = (params.get('mode')  ?? 'reference') as Mode
 
+  const { isTabVisible } = useTopicFilter()
+
+  const visibleTopicGroups = TOPIC_GROUPS
+    .map(g => ({ ...g, topics: g.topics.filter(t => isTabVisible(t.id)) }))
+    .filter(g => g.topics.length > 0)
+
+  const allVisibleTopicIds = visibleTopicGroups.flatMap(g => g.topics.map(t => t.id))
+  const firstVisibleTopic  = allVisibleTopicIds[0] as Topic | undefined
+  const topicIsVisible     = isTabVisible(topic)
+
+  useEffect(() => {
+    if (!topicIsVisible && firstVisibleTopic !== undefined) setTopic(firstVisibleTopic)
+  }, [topicIsVisible, firstVisibleTopic])
+
   const topicModes = TOPIC_MODES[topic]
 
   function setTopic(t: Topic) {
@@ -269,7 +284,7 @@ export default function ElectronConfigPage() {
 
         {/* Grouped topic pills */}
         <div className="flex flex-col gap-4 md:flex-row md:flex-wrap md:gap-x-6 md:gap-y-4">
-          {TOPIC_GROUPS.map(group => (
+          {visibleTopicGroups.map(group => (
             <div key={group.label} className="flex flex-col gap-2 px-3 py-2 rounded-sm"
               style={{ background: 'rgb(var(--color-base))', border: '1px solid rgb(var(--color-border))' }}>
               <p className="font-mono text-xs text-secondary tracking-widest uppercase">{group.label}</p>
@@ -302,6 +317,13 @@ export default function ElectronConfigPage() {
           ))}
         </div>
       </div>
+
+      {allVisibleTopicIds.length === 0 && (
+        <p className="font-sans text-sm text-dim py-8 text-center">
+          No topics enabled —{' '}
+          <Link to="/settings" className="text-secondary underline">visit Settings to configure</Link>.
+        </p>
+      )}
 
       {/* Topic content */}
       <AnimatePresence mode="wait">

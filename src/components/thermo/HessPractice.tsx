@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genHessProblem, checkHessAnswer, type HessProblem } from '../../utils/hessLawPractice'
 import StepsPanel from '../shared/StepsPanel'
+import { useShowAnswers } from '../../stores/preferencesStore'
 
 interface Props { allowCustom?: boolean }
 
@@ -12,6 +13,7 @@ export default function HessPractice({ allowCustom = true }: Props) {
   const [correct, setCorrect]     = useState(false)
   const [steps, setSteps]         = useState<string[]>([])
   const [score, setScore]         = useState({ correct: 0, total: 0 })
+  const showAnswers = useShowAnswers()
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { if (!allowCustom) handleNext() }, [allowCustom])
@@ -128,7 +130,7 @@ export default function HessPractice({ allowCustom = true }: Props) {
               }`}
             >
               <span className="font-mono text-sm font-semibold">
-                {correct ? '✓ Correct!' : `✗ Answer: ${problem.answer > 0 ? '+' : ''}${problem.answer} kJ`}
+                {correct ? '✓ Correct!' : showAnswers ? `✗ Answer: ${problem.answer > 0 ? '+' : ''}${problem.answer} kJ` : '✗ Incorrect — try again'}
               </span>
             </motion.div>
           )}

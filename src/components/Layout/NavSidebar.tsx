@@ -1,115 +1,24 @@
-import { useState, type ReactNode } from "react";
+import { useState, useMemo, type ReactNode } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { usePreferencesStore } from "../../stores/preferencesStore";
+import { TOPIC_SEARCH_ITEMS, TOOL_SEARCH_ITEMS, type SearchItem } from "../../config/searchIndex";
 
-// ── Search index ──────────────────────────────────────────────────────────────
-
-interface SearchItem {
-  label: string
-  formula: string
-  section: string
-  path: string
-  keywords?: string
-}
-
-const SEARCH_INDEX: SearchItem[] = [
-  // Base Calculations
-  { label: 'Sig Figs',          formula: 'sf',        section: 'Base Calculations',  path: '/base-calculations?tab=sig-figs',      keywords: 'significant figures precision' },
-  { label: 'Sci Notation',      formula: '×10ⁿ',      section: 'Base Calculations',  path: '/base-calculations?tab=sci-notation',  keywords: 'scientific notation powers of ten' },
-  { label: 'Unit Conversions',  formula: '↔',         section: 'Base Calculations',  path: '/base-calculations?tab=conversions',   keywords: 'unit conversion factor label' },
-  { label: 'Percent Error',     formula: '%err',       section: 'Base Calculations',  path: '/base-calculations?tab=percent-error', keywords: 'percent error experimental error lab error accuracy literature value' },
-  { label: 'Empirical Formula', formula: '⌬',         section: 'Base Calculations',  path: '/empirical',                           keywords: 'empirical molecular formula percent composition combustion analysis burn CO2 H2O' },
-  { label: 'Hydrate Analysis',  formula: '·nH₂O',    section: 'Base Calculations',  path: '/empirical?tab=hydrate',               keywords: 'hydrate water crystallization formula empirical anhydrous' },
-  // Ideal Gas
-  { label: 'Combined Gas Law',  formula: 'P₁V₁/T₁',  section: 'Ideal Gas Law',      path: '/ideal-gas?tab=ref-combined',          keywords: 'boyles charles gay-lussac combined gas law PVT' },
-  { label: "Dalton's Law",      formula: 'Ptot',      section: 'Ideal Gas Law',      path: '/ideal-gas?tab=ref-daltons',           keywords: 'dalton partial pressure mixture' },
-  { label: "Graham's Law",      formula: '√M',        section: 'Ideal Gas Law',      path: '/ideal-gas?tab=ref-grahams',           keywords: 'graham effusion diffusion molar mass rate' },
-  { label: 'Gas Density',       formula: 'ρ=MP/RT',   section: 'Ideal Gas Law',      path: '/ideal-gas?tab=ref-density',           keywords: 'gas density molar mass' },
-  { label: 'Van der Waals',     formula: 'vdW',       section: 'Ideal Gas Law',      path: '/ideal-gas?tab=ref-vdw',               keywords: 'van der waals real gas correction a b' },
-  { label: 'Maxwell-Boltzmann', formula: 'f(v)',      section: 'Ideal Gas Law',      path: '/ideal-gas?tab=ref-maxwell',           keywords: 'maxwell boltzmann speed distribution kinetic' },
-  // Molar Calculations
-  { label: 'Moles',             formula: 'n = m/M',   section: 'Molar Calculations', path: '/calculations?tab=ref-moles',          keywords: 'moles mass molar mass n m M' },
-  { label: 'Molarity',          formula: 'C = n/V',   section: 'Molar Calculations', path: '/calculations?tab=ref-molarity',       keywords: 'molarity concentration solution moles per liter' },
-  { label: 'Molality',          formula: 'b = n/m',   section: 'Molar Calculations', path: '/calculations?tab=ref-molality',       keywords: 'molality concentration moles per kg solvent' },
-  { label: 'Molar Volume',      formula: 'Vm',        section: 'Molar Calculations', path: '/calculations?tab=ref-molar-volume',   keywords: 'molar volume STP gas 22.4' },
-  { label: 'Dilution',          formula: 'C₁V₁',     section: 'Molar Calculations', path: '/calculations?tab=ref-dilution',       keywords: 'dilution C1V1 C2V2 concentration volume' },
-  { label: 'BP Elevation',      formula: 'ΔTb',       section: 'Molar Calculations', path: '/calculations?tab=ref-colligative-bpe',keywords: 'boiling point elevation colligative kb' },
-  { label: 'FP Depression',     formula: 'ΔTf',       section: 'Molar Calculations', path: '/calculations?tab=ref-colligative-fpd',keywords: 'freezing point depression colligative kf' },
-  // Periodic Table
-  { label: 'Periodic Table',    formula: '⬡',         section: 'Periodic Table',     path: '/table',                               keywords: 'periodic table elements' },
-  { label: 'Electron Config',   formula: 'e⁻',        section: 'Periodic Table',     path: '/electron-config?topic=electron_config',keywords: 'electron configuration orbital spdf paramagnetic diamagnetic unpaired electrons magnetism magnetic' },
-  { label: 'Quantum Numbers',   formula: 'QN',        section: 'Periodic Table',     path: '/electron-config?topic=quantum_numbers',keywords: 'quantum numbers n l ml ms spin' },
-  { label: 'Energy Levels',     formula: 'Eₙ',        section: 'Periodic Table',     path: '/electron-config?topic=energy_levels',  keywords: 'energy levels hydrogen Bohr Rydberg' },
-  { label: 'Multi-Electron',    formula: 'Zeff',      section: 'Periodic Table',     path: '/electron-config?topic=multi_electron', keywords: 'multi electron effective nuclear charge shielding zeff' },
-  { label: 'Periodic Trends',   formula: '↗',         section: 'Periodic Table',     path: '/electron-config?topic=periodic_trends',keywords: 'periodic trends atomic radius ionization energy electronegativity electron affinity heatmap' },
-  { label: 'Isoelectronic',     formula: '≡',         section: 'Periodic Table',     path: '/electron-config?topic=isoelectronic',  keywords: 'isoelectronic same electrons ions' },
-  { label: 'EM Spectrum',       formula: 'λf',        section: 'Periodic Table',     path: '/electron-config?topic=em_spectrum',    keywords: 'electromagnetic spectrum wavelength frequency light' },
-  { label: 'Isotope Abundance', formula: 'Ā=Σmf',    section: 'Periodic Table',     path: '/electron-config?topic=isotopes',               keywords: 'isotope abundance weighted average atomic mass natural percent' },
-  { label: 'Reverse Isotope',   formula: 'f=?',      section: 'Periodic Table',     path: '/electron-config?topic=isotopes&mode=practice', keywords: 'reverse isotope find abundance from atomic mass two isotopes' },
-  { label: 'Isotope Problems',  formula: '✎',        section: 'Periodic Table',     path: '/electron-config?topic=isotopes&mode=problems', keywords: 'isotope abundance practice problems weighted average mass forward reverse' },
-  // Reactions / Redox
-  { label: 'Rxn Classifier',    formula: '⇄',         section: 'Reactions / Redox',  path: '/redox?tab=classifier',                keywords: 'reaction classifier type synthesis decomposition single double displacement combustion' },
-  { label: 'Net Ionic',         formula: '⇌',         section: 'Reactions / Redox',  path: '/redox?tab=net-ionic',                 keywords: 'net ionic equation spectator ions' },
-  { label: 'Rxn Predictor',     formula: '→',         section: 'Reactions / Redox',  path: '/redox?tab=predictor',                 keywords: 'reaction predictor precipitation solubility product' },
-  { label: 'Activity Series',   formula: '↕',         section: 'Reactions / Redox',  path: '/redox?tab=activity',                  keywords: 'activity series reactivity metals displacement' },
-  { label: 'Electrolyte',       formula: '⚡',         section: 'Reactions / Redox',  path: '/redox?tab=electrolyte',               keywords: 'electrolyte strong weak nonelectrolyte' },
-  { label: 'Redox',             formula: 'e⁻',        section: 'Reactions / Redox',  path: '/redox?tab=redox-practice',            keywords: 'redox oxidation reduction electron transfer oxidation state' },
-  { label: 'E°cell / Nernst',   formula: 'E°',        section: 'Reactions / Redox',  path: '/redox?tab=ecell',                     keywords: 'cell potential Nernst equation reduction potential electrochemistry' },
-  { label: 'Titration',         formula: 'MₐVₐ=MᵦVᵦ', section: 'Reactions / Redox', path: '/redox?tab=titration',          keywords: 'acid base redox titration neutralization equivalence point molarity volume' },
-  { label: 'Titration Problems', formula: '✎',          section: 'Reactions / Redox', path: '/redox?tab=titration-problems', keywords: 'titration practice problems acid base redox neutralization volume molarity' },
-  // Solubility
-  { label: 'Solubility',        formula: 'S/I',       section: 'Reference',          path: '/reference?tab=solubility',            keywords: 'solubility rules soluble insoluble precipitate' },
-  // Stoichiometry
-  { label: 'Stoichiometry',     formula: 'g↔mol',     section: 'Stoichiometry',      path: '/stoichiometry?tab=stoich',            keywords: 'stoichiometry mole ratio conversion grams moles' },
-  { label: 'Limiting Reagent',  formula: 'LR',        section: 'Stoichiometry',      path: '/stoichiometry?tab=limiting',          keywords: 'limiting reagent reactant excess' },
-  { label: 'Theoretical Yield', formula: 'T.Y.',      section: 'Stoichiometry',      path: '/stoichiometry?tab=theoretical',       keywords: 'theoretical yield maximum product' },
-  { label: 'Percent Yield',     formula: '%Y',        section: 'Stoichiometry',      path: '/stoichiometry?tab=percent',           keywords: 'percent yield actual theoretical' },
-  { label: 'Solution Stoich',   formula: 'M·V',       section: 'Stoichiometry',      path: '/stoichiometry?tab=solution',          keywords: 'solution stoichiometry molarity volume' },
-  { label: 'Gas Stoich',        formula: 'PV',        section: 'Stoichiometry',      path: '/stoichiometry?tab=gas-stoich-practice',keywords: 'gas stoichiometry PV=nRT' },
-  { label: 'Adv Percent Yield', formula: 'TY→%',      section: 'Stoichiometry',      path: '/stoichiometry?tab=adv-percent',        keywords: 'advanced percent yield theoretical actual limiting' },
-  { label: 'Chained Yield',     formula: 'm→%Y',      section: 'Stoichiometry',      path: '/stoichiometry?tab=chained-yield',       keywords: 'chained yield industrial mass to percent yield step by step' },
-  { label: 'Balance',           formula: '_□_',       section: 'Stoichiometry',      path: '/stoichiometry?tab=balance-practice',   keywords: 'balance equations balancing coefficients' },
-  { label: 'Molecular Diagrams', formula: '●○',       section: 'Stoichiometry',      path: '/stoichiometry?tab=mol-diagram',        keywords: 'molecular diagram limiting reagent particle box conceptual spheres pictorial Chang 3.81 3.82' },
-  // Structures
-  { label: 'Lewis Structures',  formula: '⌬',         section: 'Structures',         path: '/structures?tab=lewis',                keywords: 'lewis structure dot diagram electron pairs bonds' },
-  { label: 'VSEPR',             formula: '⬡',         section: 'Structures',         path: '/structures?tab=vsepr',                keywords: 'VSEPR geometry molecular shape electron domain' },
-  { label: 'Formal Charge',     formula: 'FC',        section: 'Structures',         path: '/structures?tab=formal-charge',        keywords: 'formal charge lewis structure practice assign drill Chang 9.47 9.48 9.52' },
-  { label: 'Solid Types',       formula: '4 types',   section: 'Structures',         path: '/structures?tab=solid-types',          keywords: 'solid types ionic metallic covalent molecular' },
-  { label: 'Unit Cell',         formula: 'SC/BCC/FCC',section: 'Structures',         path: '/structures?tab=unit-cell',            keywords: 'unit cell simple cubic BCC FCC packing' },
-  // Thermochemistry
-  { label: 'Calorimetry',       formula: 'q',         section: 'Thermochemistry',    path: '/thermochemistry?tab=calorimetry-reference', keywords: 'calorimetry q=mcΔT heat capacity specific heat' },
-  { label: 'Enthalpy ΔHrxn',    formula: 'ΔH',        section: 'Thermochemistry',    path: '/thermochemistry?tab=enthalpy-reference',    keywords: 'enthalpy delta H reaction standard formation' },
-  { label: "Hess's Law",        formula: 'ΣΔH',       section: 'Thermochemistry',    path: '/thermochemistry?tab=hess-reference',        keywords: 'hess law enthalpy path independent sum' },
-  { label: 'Bond Enthalpy',     formula: 'BE',        section: 'Thermochemistry',    path: '/thermochemistry?tab=bond-reference',        keywords: 'bond enthalpy energy dissociation broken formed' },
-  { label: 'Reaction Profiles', formula: '⇀',         section: 'Thermochemistry',    path: '/thermochemistry?tab=profile',               keywords: 'reaction profile energy diagram activation energy Ea exothermic endothermic' },
-  { label: 'Heat Transfer',     formula: 'q₁=−q₂',   section: 'Thermochemistry',    path: '/thermochemistry?tab=heattransfer-reference', keywords: 'heat transfer calorimetry q1 q2' },
-  { label: 'Heating Curves',    formula: 'q/T',       section: 'Thermochemistry',    path: '/thermochemistry?tab=heating-curve-reference',keywords: 'heating curve phase change melting boiling temperature' },
-  { label: 'Phase Diagrams',    formula: 'P-T',       section: 'Thermochemistry',    path: '/thermochemistry?tab=phase-diagram-reference',keywords: 'phase diagram solid liquid gas triple critical point' },
-  { label: 'Liquid Props',      formula: 'γ/η',       section: 'Thermochemistry',    path: '/thermochemistry?tab=liquid-props',           keywords: 'liquid properties surface tension viscosity vapor pressure' },
-  { label: 'Clausius-Clap.',    formula: 'ln P',      section: 'Thermochemistry',    path: '/thermochemistry?tab=cc-reference',           keywords: 'clausius clapeyron vapor pressure temperature enthalpy vaporization' },
-  { label: 'Vapor Pressure',    formula: 'P_vap',    section: 'Thermochemistry',    path: '/thermochemistry?tab=vapor-pressure',         keywords: 'vapor pressure temperature boiling liquid clausius clapeyron' },
-  { label: 'Expansion Work',    formula: 'w=−PΔV',   section: 'Thermochemistry',    path: '/thermochemistry?tab=expansion-work',         keywords: 'expansion work PV irreversible compression w=-PextDeltaV surroundings' },
-  { label: 'Energy Balance',    formula: 'q₁+q₂=0', section: 'Thermochemistry',    path: '/thermochemistry?tab=energy-balance',         keywords: 'energy balance partial melting ice drink evaporative cooling sweat Chang 6.126 6.141 heat of fusion vaporization' },
-  // Practice
-  { label: 'Test Generator',    formula: '✎',         section: 'Practice',           path: '/test',                                keywords: 'test generator practice problems worksheet' },
-  { label: 'Print Reference',   formula: '⎙',         section: 'Practice',           path: '/print',                               keywords: 'print reference sheet cheat sheet' },
-  // Tools
-  { label: 'Ketcher Editor',    formula: '✎',         section: 'Tools',              path: '/tools?tool=ketcher',                  keywords: 'ketcher structure editor draw molecule' },
-  { label: 'Compound',          formula: '◈',         section: 'Tools',              path: '/compound',                            keywords: 'compound lookup molecular weight formula' },
-  { label: 'Naming Reference',  formula: 'Nm',        section: 'Periodic Table',     path: '/electron-config?topic=naming',                    keywords: 'naming compounds ionic covalent acids nomenclature polyatomic ions transition metals greek prefixes' },
-  { label: 'Nomenclature',      formula: '⚗',         section: 'Periodic Table',     path: '/electron-config?topic=naming&mode=problems',      keywords: 'nomenclature naming practice compound name formula from name ionic covalent' },
-  { label: 'Glossary',          formula: 'A–Z',       section: 'Tools',              path: '/glossary',                            keywords: 'glossary definitions terms vocabulary chemistry' },
-]
-
-function searchItems(query: string): SearchItem[] {
-  const q = query.toLowerCase().trim()
-  if (!q) return []
-  return SEARCH_INDEX.filter(item =>
-    item.label.toLowerCase().includes(q) ||
-    item.section.toLowerCase().includes(q) ||
-    item.formula.toLowerCase().includes(q) ||
-    (item.keywords ?? '').toLowerCase().includes(q)
-  )
+function useSearchItems(query: string): SearchItem[] {
+  const isTabVisible = usePreferencesStore(s => s.isTabVisible)
+  return useMemo(() => {
+    const q = query.toLowerCase().trim()
+    if (!q) return []
+    const visibleTopicItems = TOPIC_SEARCH_ITEMS.filter(
+      item => !item.topicTabId || isTabVisible(item.topicTabId)
+    )
+    return [...visibleTopicItems, ...TOOL_SEARCH_ITEMS].filter(item =>
+      item.label.toLowerCase().includes(q) ||
+      item.section.toLowerCase().includes(q) ||
+      item.formula.toLowerCase().includes(q) ||
+      (item.keywords ?? '').toLowerCase().includes(q)
+    )
+  }, [query, isTabVisible])
 }
 
 interface Props {
@@ -183,35 +92,35 @@ function PathSubItem({ path, formula, label, onNavigate }: {
 
 // ── Periodic Table sub-items ──────────────────────────────────────────────────
 
-const TABLE_GROUPS: { label: string; items: { path: string; label: string; formula: string }[] }[] = [
+const TABLE_GROUPS: { label: string; items: { path: string; label: string; formula: string; topicTabId?: string }[] }[] = [
   {
     label: 'Elements',
     items: [
-      { path: '/table', label: 'Periodic Table', formula: '⬡' },
+      { path: '/table', label: 'Periodic Table', formula: '⬡' }, // no topicTabId = always shown
     ],
   },
   {
     label: 'Electron Config',
     items: [
-      { path: '/electron-config?topic=electron_config', label: 'Electron Config',  formula: 'e⁻'  },
-      { path: '/electron-config?topic=quantum_numbers', label: 'Quantum Numbers',  formula: 'QN'  },
-      { path: '/electron-config?topic=energy_levels',   label: 'Energy Levels',    formula: 'Eₙ'  },
-      { path: '/electron-config?topic=multi_electron',  label: 'Multi-Electron',   formula: 'Zeff' },
+      { path: '/electron-config?topic=electron_config', label: 'Electron Config',  formula: 'e⁻',  topicTabId: 'electron_config' },
+      { path: '/electron-config?topic=quantum_numbers', label: 'Quantum Numbers',  formula: 'QN',  topicTabId: 'quantum_numbers' },
+      { path: '/electron-config?topic=energy_levels',   label: 'Energy Levels',    formula: 'Eₙ',  topicTabId: 'energy_levels'   },
+      { path: '/electron-config?topic=multi_electron',  label: 'Multi-Electron',   formula: 'Zeff', topicTabId: 'multi_electron'  },
     ],
   },
   {
     label: 'Properties',
     items: [
-      { path: '/electron-config?topic=periodic_trends', label: 'Periodic Trends',  formula: '↗'   },
-      { path: '/electron-config?topic=isoelectronic',   label: 'Isoelectronic',    formula: '≡'   },
-      { path: '/electron-config?topic=em_spectrum',     label: 'EM Spectrum',      formula: 'λf'  },
-      { path: '/electron-config?topic=isotopes',        label: 'Isotope Abundance', formula: 'Ā'  },
+      { path: '/electron-config?topic=periodic_trends', label: 'Periodic Trends',   formula: '↗',  topicTabId: 'periodic_trends' },
+      { path: '/electron-config?topic=isoelectronic',   label: 'Isoelectronic',     formula: '≡',  topicTabId: 'isoelectronic'   },
+      { path: '/electron-config?topic=em_spectrum',     label: 'EM Spectrum',       formula: 'λf', topicTabId: 'em_spectrum'     },
+      { path: '/electron-config?topic=isotopes',        label: 'Isotope Abundance', formula: 'Ā',  topicTabId: 'isotopes'        },
     ],
   },
   {
     label: 'Nomenclature',
     items: [
-      { path: '/electron-config?topic=naming', label: 'Naming Rules', formula: 'Nm' },
+      { path: '/electron-config?topic=naming', label: 'Naming Rules', formula: 'Nm', topicTabId: 'naming' },
     ],
   },
 ]
@@ -220,6 +129,11 @@ function TableGroupedItems({ onNavigate }: { onNavigate: () => void }) {
   const location = useLocation()
   const navigate = useNavigate()
   const currentTopic = new URLSearchParams(location.search).get('topic') ?? 'electron_config'
+  const isTabVisible = usePreferencesStore(s => s.isTabVisible)
+
+  const visibleGroups = TABLE_GROUPS
+    .map(g => ({ ...g, items: g.items.filter(i => !i.topicTabId || isTabVisible(i.topicTabId)) }))
+    .filter(g => g.items.length > 0)
 
   const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
     const active = TABLE_GROUPS.find(g => g.items.some(i => {
@@ -240,7 +154,7 @@ function TableGroupedItems({ onNavigate }: { onNavigate: () => void }) {
 
   return (
     <>
-      {TABLE_GROUPS.map(group => {
+      {visibleGroups.map(group => {
         const isOpen = openGroups.has(group.label)
         const groupActive = group.items.some(i => {
           const [p, q] = i.path.split('?')
@@ -364,6 +278,11 @@ function CalcSubItem({ item, onNavigate }: { item: CalcItem; onNavigate: () => v
 function CalcGroupedItems({ onNavigate }: { onNavigate: () => void }) {
   const location = useLocation()
   const currentTab = new URLSearchParams(location.search).get("tab") ?? "ref-moles"
+  const isTabVisible = usePreferencesStore(s => s.isTabVisible)
+
+  const visibleGroups = CALC_GROUPS
+    .map(g => ({ ...g, items: g.items.filter(i => isTabVisible(i.tab)) }))
+    .filter(g => g.items.length > 0)
 
   const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
     const active = CALC_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
@@ -380,7 +299,7 @@ function CalcGroupedItems({ onNavigate }: { onNavigate: () => void }) {
 
   return (
     <>
-      {CALC_GROUPS.map(group => {
+      {visibleGroups.map(group => {
         const isOpen = openGroups.has(group.label)
         const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === "/calculations"
         return (
@@ -460,6 +379,11 @@ function IdealGasSubItem({ item, onNavigate }: { item: IdealGasItem; onNavigate:
 function IdealGasGroupedItems({ onNavigate }: { onNavigate: () => void }) {
   const location = useLocation()
   const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-combined'
+  const isTabVisible = usePreferencesStore(s => s.isTabVisible)
+
+  const visibleGroups = IDEAL_GAS_GROUPS
+    .map(g => ({ ...g, items: g.items.filter(i => isTabVisible(i.tab)) }))
+    .filter(g => g.items.length > 0)
 
   const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
     const active = IDEAL_GAS_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
@@ -476,7 +400,7 @@ function IdealGasGroupedItems({ onNavigate }: { onNavigate: () => void }) {
 
   return (
     <>
-      {IDEAL_GAS_GROUPS.map(group => {
+      {visibleGroups.map(group => {
         const isOpen = openGroups.has(group.label)
         const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === '/ideal-gas'
         return (
@@ -565,6 +489,11 @@ function StoichSubItem({ item, onNavigate }: { item: StoichItem; onNavigate: () 
 function StoichGroupedItems({ onNavigate }: { onNavigate: () => void }) {
   const location = useLocation()
   const currentTab = new URLSearchParams(location.search).get('tab') ?? 'stoich'
+  const isTabVisible = usePreferencesStore(s => s.isTabVisible)
+
+  const visibleGroups = STOICH_GROUPS
+    .map(g => ({ ...g, items: g.items.filter(i => isTabVisible(i.tab)) }))
+    .filter(g => g.items.length > 0)
 
   const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
     const active = STOICH_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
@@ -581,7 +510,7 @@ function StoichGroupedItems({ onNavigate }: { onNavigate: () => void }) {
 
   return (
     <>
-      {STOICH_GROUPS.map(group => {
+      {visibleGroups.map(group => {
         const isOpen = openGroups.has(group.label)
         const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === '/stoichiometry'
         return (
@@ -669,6 +598,11 @@ function RedoxSubItem({ item, onNavigate }: { item: RedoxItem; onNavigate: () =>
 function RedoxGroupedItems({ onNavigate }: { onNavigate: () => void }) {
   const location = useLocation()
   const currentTab = new URLSearchParams(location.search).get('tab') ?? 'classifier'
+  const isTabVisible = usePreferencesStore(s => s.isTabVisible)
+
+  const visibleGroups = REDOX_GROUPS
+    .map(g => ({ ...g, items: g.items.filter(i => isTabVisible(i.tab)) }))
+    .filter(g => g.items.length > 0)
 
   const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
     const active = REDOX_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
@@ -685,7 +619,7 @@ function RedoxGroupedItems({ onNavigate }: { onNavigate: () => void }) {
 
   return (
     <>
-      {REDOX_GROUPS.map(group => {
+      {visibleGroups.map(group => {
         const isOpen = openGroups.has(group.label)
         const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === '/redox'
         return (
@@ -730,11 +664,11 @@ function RedoxGroupedItems({ onNavigate }: { onNavigate: () => void }) {
 // ── Structures sub-items ──────────────────────────────────────────────────────
 
 const STRUCTURE_ITEMS = [
-  { path: "/structures?tab=lewis",       label: "Lewis Structures", formula: "⌬"      },
-  { path: "/structures?tab=vsepr",       label: "VSEPR",            formula: "⬡"      },
-  { path: "/structures?tab=formal-charge", label: "Formal Charge",  formula: "FC"         },
-  { path: "/structures?tab=solid-types",   label: "Solid Types",    formula: "4 types"    },
-  { path: "/structures?tab=unit-cell",     label: "Unit Cell",      formula: "SC/BCC/FCC" },
+  { path: "/structures?tab=lewis",         tab: "lewis",         label: "Lewis Structures", formula: "⌬"         },
+  { path: "/structures?tab=vsepr",         tab: "vsepr",         label: "VSEPR",            formula: "⬡"         },
+  { path: "/structures?tab=formal-charge", tab: "formal-charge", label: "Formal Charge",    formula: "FC"        },
+  { path: "/structures?tab=solid-types",   tab: "solid-types",   label: "Solid Types",      formula: "4 types"   },
+  { path: "/structures?tab=unit-cell",     tab: "unit-cell",     label: "Unit Cell",        formula: "SC/BCC/FCC"},
 ]
 
 // ── Thermochemistry sub-items ─────────────────────────────────────────────────
@@ -772,6 +706,11 @@ function ThermoGroupedItems({ onNavigate }: { onNavigate: () => void }) {
   const location = useLocation()
   const navigate = useNavigate()
   const currentTab = new URLSearchParams(location.search).get('tab') ?? 'calorimetry'
+  const isTabVisible = usePreferencesStore(s => s.isTabVisible)
+
+  const visibleGroups = THERMO_GROUPS
+    .map(g => ({ ...g, items: g.items.filter(i => isTabVisible(i.tab)) }))
+    .filter(g => g.items.length > 0)
 
   const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
     const active = THERMO_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
@@ -788,7 +727,7 @@ function ThermoGroupedItems({ onNavigate }: { onNavigate: () => void }) {
 
   return (
     <>
-      {THERMO_GROUPS.map(group => {
+      {visibleGroups.map(group => {
         const isOpen = openGroups.has(group.label)
         const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === '/thermochemistry'
         return (
@@ -936,11 +875,24 @@ export default function NavSidebar({ open, onClose, theme, onToggleTheme }: Prop
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
 
-  const currentPath   = location.pathname
+  const currentPath    = location.pathname
+  const isTabVisible   = usePreferencesStore(s => s.isTabVisible)
+  const searchResults  = useSearchItems(query)
+
+  // Compute whether each expandable section has at least one visible item
+  const showBaseCalc  = [...BASE_CALC_ITEMS.map(i => i.tab).filter((t): t is string => t != null), 'empirical'].some(t => isTabVisible(t))
+  const showIdealGas  = IDEAL_GAS_GROUPS.flatMap(g => g.items.map(i => i.tab)).some(t => isTabVisible(t))
+  const showMolar     = CALC_GROUPS.flatMap(g => g.items.map(i => i.tab)).some(t => isTabVisible(t))
+  // Periodic Table section always visible (the /table route has no topicTabId)
+  const showTable     = true
+  const showStoich    = STOICH_GROUPS.flatMap(g => g.items.map(i => i.tab)).some(t => isTabVisible(t))
+  const showRedox     = REDOX_GROUPS.flatMap(g => g.items.map(i => i.tab)).some(t => isTabVisible(t))
+  const showStructures = STRUCTURE_ITEMS.some(i => isTabVisible(i.tab))
+  const showThermo    = THERMO_GROUPS.flatMap(g => g.items.map(i => i.tab)).some(t => isTabVisible(t))
 
   const [refCalcOpen,        setRefCalcOpen]        = useState(true)
   const [pracSectionOpen,    setPracSectionOpen]    = useState(true)
-  const [toolsSectionOpen,   setToolsSectionOpen]   = useState(currentPath === '/tools' || currentPath === '/compound' || currentPath === '/reference')
+  const [toolsSectionOpen,   setToolsSectionOpen]   = useState(currentPath === '/tools' || currentPath === '/compound' || currentPath === '/reference' || currentPath === '/settings')
 
   // ── Reference / Calculations expandables ────────────────────────────────────
   const [tableExpanded,       setTableExpanded]       = useState(currentPath === "/table" || currentPath === "/electron-config")
@@ -998,12 +950,11 @@ export default function NavSidebar({ open, onClose, theme, onToggleTheme }: Prop
 
         {/* Search results */}
         {query.trim() && (() => {
-          const results = searchItems(query)
           return (
             <div className="flex flex-col gap-0.5 py-2">
-              {results.length === 0 ? (
+              {searchResults.length === 0 ? (
                 <p className="font-mono text-xs text-dim px-5 py-3">No results for "{query}"</p>
-              ) : results.map(item => (
+              ) : searchResults.map(item => (
                 <button
                   key={item.path}
                   onClick={() => { navigate(item.path); setQuery(''); onClose() }}
@@ -1032,74 +983,94 @@ export default function NavSidebar({ open, onClose, theme, onToggleTheme }: Prop
                 exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }}
                 style={{ overflow: 'hidden' }}
               >
-                <ExpandableSection
-                  icon="±" label="Base Calculations"
-                  isActive={isBaseCalcActive} expanded={baseCalcExpanded}
-                  onToggle={() => setBaseCalcExpanded(e => !e)}
-                >
-                  {BASE_CALC_ITEMS.map((item, i) => <BaseCalcSubItem key={i} item={item} onNavigate={onClose} />)}
-                  <PathSubItem path="/empirical" formula="⌬" label="Empirical Formula" onNavigate={onClose} />
-                </ExpandableSection>
+                {showBaseCalc && (
+                  <ExpandableSection
+                    icon="±" label="Base Calculations"
+                    isActive={isBaseCalcActive} expanded={baseCalcExpanded}
+                    onToggle={() => setBaseCalcExpanded(e => !e)}
+                  >
+                    {BASE_CALC_ITEMS.filter(i => i.tab != null && isTabVisible(i.tab)).map((item, idx) => (
+                      <BaseCalcSubItem key={idx} item={item} onNavigate={onClose} />
+                    ))}
+                    {isTabVisible('empirical') && (
+                      <PathSubItem path="/empirical" formula="⌬" label="Empirical Formula" onNavigate={onClose} />
+                    )}
+                  </ExpandableSection>
+                )}
 
-                <ExpandableSection
-                  icon="PV" label="Ideal Gas Law"
-                  isActive={isIdealGasNavActive} expanded={idealGasNavExpanded}
-                  onToggle={() => setIdealGasNavExpanded(e => !e)}
-                >
-                  <IdealGasGroupedItems onNavigate={onClose} />
-                </ExpandableSection>
+                {showIdealGas && (
+                  <ExpandableSection
+                    icon="PV" label="Ideal Gas Law"
+                    isActive={isIdealGasNavActive} expanded={idealGasNavExpanded}
+                    onToggle={() => setIdealGasNavExpanded(e => !e)}
+                  >
+                    <IdealGasGroupedItems onNavigate={onClose} />
+                  </ExpandableSection>
+                )}
 
-                <ExpandableSection
-                  icon="⚗" label="Molar Calculations"
-                  isActive={isMolarCalcActive} expanded={calcExpanded}
-                  onToggle={() => setCalcExpanded(e => !e)}
-                >
-                  <CalcGroupedItems onNavigate={onClose} />
-                </ExpandableSection>
+                {showMolar && (
+                  <ExpandableSection
+                    icon="⚗" label="Molar Calculations"
+                    isActive={isMolarCalcActive} expanded={calcExpanded}
+                    onToggle={() => setCalcExpanded(e => !e)}
+                  >
+                    <CalcGroupedItems onNavigate={onClose} />
+                  </ExpandableSection>
+                )}
 
-                <ExpandableSection
-                  icon="⬡" label="Periodic Table"
-                  isActive={isTableActive} expanded={tableExpanded}
-                  onToggle={() => setTableExpanded(e => !e)}
-                >
-                  <TableGroupedItems onNavigate={onClose} />
-                </ExpandableSection>
+                {showTable && (
+                  <ExpandableSection
+                    icon="⬡" label="Periodic Table"
+                    isActive={isTableActive} expanded={tableExpanded}
+                    onToggle={() => setTableExpanded(e => !e)}
+                  >
+                    <TableGroupedItems onNavigate={onClose} />
+                  </ExpandableSection>
+                )}
 
-                <ExpandableSection
-                  icon="⇌" label="Reactions / Redox"
-                  isActive={isRedoxActive} expanded={redoxExpanded}
-                  onToggle={() => setRedoxExpanded(e => !e)}
-                >
-                  <RedoxGroupedItems onNavigate={onClose} />
-                </ExpandableSection>
+                {showRedox && (
+                  <ExpandableSection
+                    icon="⇌" label="Reactions / Redox"
+                    isActive={isRedoxActive} expanded={redoxExpanded}
+                    onToggle={() => setRedoxExpanded(e => !e)}
+                  >
+                    <RedoxGroupedItems onNavigate={onClose} />
+                  </ExpandableSection>
+                )}
 
                 <PracticeNavItem path="/reference?tab=solubility" icon="S/I" label="Solubility" onNavigate={onClose} />
 
-                <ExpandableSection
-                  icon="⚖" label="Stoichiometry"
-                  isActive={isStoichActive} expanded={stoichExpanded}
-                  onToggle={() => setStoichExpanded(e => !e)}
-                >
-                  <StoichGroupedItems onNavigate={onClose} />
-                </ExpandableSection>
+                {showStoich && (
+                  <ExpandableSection
+                    icon="⚖" label="Stoichiometry"
+                    isActive={isStoichActive} expanded={stoichExpanded}
+                    onToggle={() => setStoichExpanded(e => !e)}
+                  >
+                    <StoichGroupedItems onNavigate={onClose} />
+                  </ExpandableSection>
+                )}
 
-                <ExpandableSection
-                  icon="⬡" label="Structures"
-                  isActive={isStructActive} expanded={structExpanded}
-                  onToggle={() => setStructExpanded(e => !e)}
-                >
-                  {STRUCTURE_ITEMS.map((item, i) => (
-                    <PathSubItem key={i} path={item.path} formula={item.formula} label={item.label} onNavigate={onClose} />
-                  ))}
-                </ExpandableSection>
+                {showStructures && (
+                  <ExpandableSection
+                    icon="⬡" label="Structures"
+                    isActive={isStructActive} expanded={structExpanded}
+                    onToggle={() => setStructExpanded(e => !e)}
+                  >
+                    {STRUCTURE_ITEMS.filter(i => isTabVisible(i.tab)).map((item, idx) => (
+                      <PathSubItem key={idx} path={item.path} formula={item.formula} label={item.label} onNavigate={onClose} />
+                    ))}
+                  </ExpandableSection>
+                )}
 
-                <ExpandableSection
-                  icon="ΔH" label="Thermochemistry"
-                  isActive={isThermoActive} expanded={thermoExpanded}
-                  onToggle={() => setThermoExpanded(e => !e)}
-                >
-                  <ThermoGroupedItems onNavigate={onClose} />
-                </ExpandableSection>
+                {showThermo && (
+                  <ExpandableSection
+                    icon="ΔH" label="Thermochemistry"
+                    isActive={isThermoActive} expanded={thermoExpanded}
+                    onToggle={() => setThermoExpanded(e => !e)}
+                  >
+                    <ThermoGroupedItems onNavigate={onClose} />
+                  </ExpandableSection>
+                )}
 
               </motion.div>
             )}
@@ -1132,6 +1103,7 @@ export default function NavSidebar({ open, onClose, theme, onToggleTheme }: Prop
                 <PracticeNavItem path="/tools?tool=ketcher" icon="✎" label="Ketcher Editor" onNavigate={onClose} />
                 <PracticeNavItem path="/compound" icon="◈" label="Compound" onNavigate={onClose} />
                 <PracticeNavItem path="/glossary" icon="Az" label="Glossary" onNavigate={onClose} />
+                <PracticeNavItem path="/settings" icon="⚙" label="Settings" onNavigate={onClose} />
                 <button
                   onClick={onToggleTheme}
                   title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}

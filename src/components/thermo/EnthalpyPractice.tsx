@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genEnthalpyProblem, checkEnthalpyAnswer, type EnthalpyProblem } from '../../utils/enthalpyPractice'
 import StepsPanel from '../shared/StepsPanel'
+import { useShowAnswers } from '../../stores/preferencesStore'
 
 interface Props { allowCustom?: boolean }
 
@@ -12,6 +13,7 @@ export default function EnthalpyPractice({ allowCustom = true }: Props) {
   const [correct, setCorrect]     = useState(false)
   const [steps, setSteps]         = useState<string[]>([])
   const [score, setScore]         = useState({ correct: 0, total: 0 })
+  const showAnswers = useShowAnswers()
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { if (!allowCustom) handleNext() }, [allowCustom])
@@ -131,7 +133,7 @@ export default function EnthalpyPractice({ allowCustom = true }: Props) {
               <span className="font-mono text-sm font-semibold">
                 {correct
                   ? '✓ Correct!'
-                  : `✗ Answer: ${problem.answer} kJ`}
+                  : showAnswers ? `✗ Answer: ${problem.answer} kJ` : '✗ Incorrect — try again'}
               </span>
             </motion.div>
           )}

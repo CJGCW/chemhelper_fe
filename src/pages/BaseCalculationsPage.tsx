@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import { useTopicFilter } from '../utils/topicFilter'
 import { motion, AnimatePresence } from 'framer-motion'
 import { countSigFigs, formatSigFigs, lowestSigFigs } from '../utils/sigfigs'
 import SigFigPractice from '../components/calculations/SigFigPractice'
@@ -264,6 +265,26 @@ export default function BaseCalculationsPage() {
   const pageTab = searchParams.get('tab') ?? 'sig-figs'
   const mode = searchParams.get('mode') ?? 'reference'
 
+  const { isTabVisible } = useTopicFilter()
+
+  const ALL_BASE_TABS = ['sig-figs', 'conversions', 'sci-notation', 'percent-error'] as const
+  const visibleBaseTabs = ALL_BASE_TABS.filter(t => isTabVisible(t))
+  const firstVisibleBaseTab = visibleBaseTabs[0]
+  const baseTabIsVisible = isTabVisible(pageTab)
+
+  function setPageTab(t: string) {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      next.set('tab', t)
+      next.delete('mode')
+      return next
+    })
+  }
+
+  useEffect(() => {
+    if (!baseTabIsVisible && firstVisibleBaseTab !== undefined) setPageTab(firstVisibleBaseTab)
+  }, [baseTabIsVisible, firstVisibleBaseTab])
+
   const [counterInput, setCounterInput] = useState('')
   const [inputA, setInputA] = useState('')
   const [inputB, setInputB] = useState('')
@@ -388,6 +409,13 @@ export default function BaseCalculationsPage() {
           </div>
         )}
       </div>
+
+      {visibleBaseTabs.length === 0 && (
+        <p className="font-sans text-sm text-dim py-8 text-center">
+          No topics enabled —{' '}
+          <Link to="/settings" className="text-secondary underline">visit Settings to configure</Link>.
+        </p>
+      )}
 
       <AnimatePresence mode="wait">
 

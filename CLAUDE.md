@@ -288,7 +288,7 @@ Example: "Values from CRC Handbook (2023). Chang Table 6.2 uses slightly differe
 
 ## Adding a New Topic or Practice Tool
 
-When a new calculator/practice topic is added, **all five** of the following must be updated:
+When a new calculator/practice topic is added, **all six** of the following must be updated:
 
 1. **Practice tab** — add the tool as a tab in the relevant `*Page.tsx` under the Practice mode group.
 2. **Problems tab** — add a corresponding auto-generated problem mode under the Problems group. Every Practice tool must have a Problems counterpart. If the tool has a `generate*Problem()` function, wire it into the Problems tab with `allowCustom={false}`.
@@ -297,8 +297,14 @@ When a new calculator/practice topic is added, **all five** of the following mus
 5. **Navigation + search** — add the new topic to `NavSidebar.tsx`:
    - Add a nav entry under the appropriate section, reflecting the page's actual tab structure.
    - Add search keywords so students can find the tool by searching natural terms (e.g. "titration", "acid base", "neutralization" should all surface a titration tool).
+6. **Topic registry** — add the new topic to `src/config/topicRegistry.ts`:
+   - Add a `Topic` entry with a stable `topicId`, the correct `sectionId`, and a `tabs` array listing every tab param value the topic uses across reference/practice/problems modes.
+   - If the topic belongs to a new section, add the `Section` entry too (with `unitId`, `paths`, etc.) and extend the `SectionId` union type.
+   - If the topic belongs to a new conceptual unit, add the `Unit` entry and extend the `UnitId` union type.
+   - The search index (`src/config/searchIndex.ts`) derives from the registry automatically — no manual update needed there.
+   - Verify the topic appears in the Settings page (`/settings`) under the correct unit and section after adding it.
 
-Skipping any one of these is a bug.
+Skipping any one of these six steps is a bug.
 
 ### NavSidebar must reflect page layout
 
@@ -454,7 +460,7 @@ The project has 9 runtime dependencies. Keep it lean.
 ## State Management
 
 - **`useState` for everything local to one component.** Calculator inputs, verify state, steps panel state, toggle booleans — all local.
-- **Zustand only for cross-component shared state.** Currently only `elementStore.ts` (periodic table data). The planned scratchpad (for sharing reactions between tools) will be a second Zustand store when it's built. Don't create new Zustand stores for tool-specific state.
+- **Zustand only for cross-component shared state.** Currently `elementStore.ts` (periodic table data) and `preferencesStore.ts` (topic visibility, show/hide answers). Don't create new Zustand stores for tool-specific state.
 - **URL params for navigation state.** Tab selection, mode selection — these go in `useSearchParams`, not in component state or Zustand. This is how deep links work.
 - **Never store derived data.** If you can compute it from other state, compute it. Don't store both `moles` and `grams` when one is derived from the other via molar mass.
 

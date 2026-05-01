@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genBondEnthalpyProblem, checkBondEnthalpyAnswer, type BondEnthalpyProblem } from '../../utils/bondEnthalpyPractice'
+import { useShowAnswers } from '../../stores/preferencesStore'
 
 interface Props { allowCustom?: boolean }
 
@@ -10,6 +11,7 @@ export default function BondEnthalpyPractice({ allowCustom = true }: Props) {
   const [checked, setChecked]     = useState(false)
   const [correct, setCorrect]     = useState(false)
   const [score, setScore]         = useState({ correct: 0, total: 0 })
+  const showAnswers = useShowAnswers()
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { if (!allowCustom) handleNext() }, [allowCustom])
@@ -147,7 +149,7 @@ export default function BondEnthalpyPractice({ allowCustom = true }: Props) {
               }`}
             >
               <span className="font-mono text-sm font-semibold">
-                {correct ? '✓ Correct!' : `✗ Answer: ${problem.answer > 0 ? '+' : ''}${problem.answer} kJ`}
+                {correct ? '✓ Correct!' : showAnswers ? `✗ Answer: ${problem.answer > 0 ? '+' : ''}${problem.answer} kJ` : '✗ Incorrect — try again'}
               </span>
             </motion.div>
           )}

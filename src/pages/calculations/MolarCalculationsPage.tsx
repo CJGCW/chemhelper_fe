@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useEffect } from 'react'
+import { useTopicFilter } from '../../utils/topicFilter'
 import ExplanationModal from '../../components/calculations/ExplanationModal'
 import type { ExplanationContent } from '../../components/calculations/ExplanationModal'
 import MolesTool from '../../components/calculations/MolesTool'
@@ -98,12 +99,6 @@ const PROBLEMS_PILLS: { value: CalcType; label: string; formula: string }[] = [
   { value: 'conc-practice',     label: 'Dilution & Conc', formula: 'C₁V₁/w%' },
   { value: 'sig-figs',          label: 'Sig Figs',        formula: 'sf'      },
 ]
-
-const PRACTICE_TAB_IDS = new Set<CalcType>([
-  ...PRACTICE_GROUPS.flatMap(g => g.pills.map(p => p.value)),
-  'colligative', // backwards compat
-])
-const PROBLEMS_TAB_IDS = new Set<CalcType>(PROBLEMS_PILLS.map(p => p.value))
 
 const TAB_TO_TOPIC: Partial<Record<CalcType, string>> = {
   'ref-moles':          'moles',        'moles':          'moles',
@@ -374,9 +369,34 @@ export default function MolarCalculationsPage() {
   const colligativeMode = (searchParams.get('mode') as ColligativeMode) ?? 'bpe'
   const refView = (searchParams.get('view') as 'reference' | 'visual') ?? 'reference'
 
-  const activeMode: Mode = PROBLEMS_TAB_IDS.has(activeTab) ? 'problems'
-    : PRACTICE_TAB_IDS.has(activeTab) ? 'practice'
+  const { isTabVisible } = useTopicFilter()
+
+  const visibleReferenceGroups = REFERENCE_GROUPS
+    .map(g => ({ ...g, pills: g.pills.filter(p => isTabVisible(p.value)) }))
+    .filter(g => g.pills.length > 0)
+  const visiblePracticeGroups = PRACTICE_GROUPS
+    .map(g => ({ ...g, pills: g.pills.filter(p => isTabVisible(p.value)) }))
+    .filter(g => g.pills.length > 0)
+  const visibleProblemsPills = PROBLEMS_PILLS.filter(p => isTabVisible(p.value))
+
+  const visiblePracticeTabIds = new Set<CalcType>(visiblePracticeGroups.flatMap(g => g.pills.map(p => p.value)))
+  const visibleProblemsTabIds = new Set<CalcType>(visibleProblemsPills.map(p => p.value))
+
+  const allVisibleTabIds = [
+    ...visibleReferenceGroups.flatMap(g => g.pills.map(p => p.value)),
+    ...visiblePracticeTabIds,
+    ...visibleProblemsTabIds,
+  ]
+  const firstVisibleTab = allVisibleTabIds[0] as CalcType | undefined
+  const tabIsVisible = isTabVisible(activeTab)
+
+  const activeMode: Mode = visibleProblemsTabIds.has(activeTab) ? 'problems'
+    : visiblePracticeTabIds.has(activeTab) ? 'practice'
     : 'reference'
+
+  useEffect(() => {
+    if (!tabIsVisible && firstVisibleTab !== undefined) setTab(firstVisibleTab)
+  }, [tabIsVisible, firstVisibleTab])
 
   useEffect(() => {
     if (!printingAll) return
@@ -483,7 +503,7 @@ export default function MolarCalculationsPage() {
         {activeMode === 'problems' ? (
           <div className="flex items-center gap-1 p-1 rounded-sm self-start flex-wrap print:hidden"
             style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
-            {PROBLEMS_PILLS.map(pill => {
+            {visibleProblemsPills.map(pill => {
               const isActive = activeTab === pill.value
               return (
                 <button
@@ -510,7 +530,7 @@ export default function MolarCalculationsPage() {
           </div>
         ) : (
           <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:gap-x-8 md:gap-y-3 print:hidden">
-            {(activeMode === 'reference' ? REFERENCE_GROUPS : PRACTICE_GROUPS).map(group => (
+            {(activeMode === 'reference' ? visibleReferenceGroups : visiblePracticeGroups).map(group => (
               <div key={group.id} className="flex flex-col gap-2 px-3 py-2 rounded-sm"
                 style={{ background: 'rgb(var(--color-base))', border: '1px solid rgb(var(--color-border))' }}>
                 <p className="font-mono text-xs text-secondary tracking-widest uppercase">{group.label}</p>
@@ -565,6 +585,13 @@ export default function MolarCalculationsPage() {
           </div>
         )}
       </div>
+
+      {allVisibleTabIds.length === 0 && (
+        <p className="font-sans text-sm text-dim py-8 text-center">
+          No topics enabled —{' '}
+          <Link to="/settings" className="text-secondary underline">visit Settings to configure</Link>.
+        </p>
+      )}
 
       {/* Active calculator */}
       <HideExamplesContext.Provider value={activeMode === 'practice'}>

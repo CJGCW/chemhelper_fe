@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generateConversionProblem, checkConversionAnswer, type ConversionProblem } from '../../utils/conversionPractice'
+import { useShowAnswers } from '../../stores/preferencesStore'
 
 interface Props { allowCustom?: boolean }
 
@@ -11,6 +12,7 @@ export default function ConversionPractice({ allowCustom: _allowCustom = true }:
   const [score, setScore] = useState({ correct: 0, total: 0 })
 
   const isCorrect = checked && checkConversionAnswer(input, problem)
+  const showAnswers = useShowAnswers()
 
   const next = useCallback(() => {
     setProblem(generateConversionProblem())
@@ -70,13 +72,15 @@ export default function ConversionPractice({ allowCustom: _allowCustom = true }:
               className="flex flex-col gap-2">
               <span className="font-sans text-sm font-medium"
                 style={{ color: isCorrect ? '#4ade80' : '#f87171' }}>
-                {isCorrect ? '✓ Correct!' : `✗ Answer: ${problem.answer} ${problem.answerUnit}`}
+                {isCorrect ? '✓ Correct!' : showAnswers ? `✗ Answer: ${problem.answer} ${problem.answerUnit}` : '✗ Incorrect — try again'}
               </span>
-              <div className="flex flex-col gap-0.5 pl-2 border-l-2 border-border">
-                {problem.steps.map((s, i) => (
-                  <p key={i} className="font-mono text-xs text-secondary">{s}</p>
-                ))}
-              </div>
+              {showAnswers && (
+                <div className="flex flex-col gap-0.5 pl-2 border-l-2 border-border">
+                  {problem.steps.map((s, i) => (
+                    <p key={i} className="font-mono text-xs text-secondary">{s}</p>
+                  ))}
+                </div>
+              )}
             </motion.div>
           )}
         </motion.div>
