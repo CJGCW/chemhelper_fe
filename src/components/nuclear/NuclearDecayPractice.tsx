@@ -1,0 +1,166 @@
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  generateDecayProblem, checkDecayAnswer, type NuclearDecayProblem,
+} from '../../utils/nuclearPractice'
+import StepsPanel from '../shared/StepsPanel'
+
+type CheckState = 'idle' | 'correct' | 'wrong'
+
+interface Props { allowCustom?: boolean }
+
+export default function NuclearDecayPractice({ allowCustom = true }: Props) {
+  const [problem, setProblem] = useState<NuclearDecayProblem>(generateDecayProblem)
+  const [userZ, setUserZ] = useState('')
+  const [userA, setUserA] = useState('')
+  const [checkState, setCheckState] = useState<CheckState>('idle')
+  const [steps, setSteps] = useState<string[]>([])
+  const [score, setScore] = useState({ correct: 0, total: 0 })
+
+  useEffect(() => { if (!allowCustom) nextProblem() }, [allowCustom])
+
+  function nextProblem() {
+    setProblem(generateDecayProblem())
+    setUserZ(''); setUserA('')
+    setCheckState('idle'); setSteps([])
+  }
+
+  function handleCheck() {
+    if ((!userZ.trim() && !userA.trim()) || checkState !== 'idle') return
+    const correct = checkDecayAnswer(userZ, userA, problem)
+    setCheckState(correct ? 'correct' : 'wrong')
+    setScore(s => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }))
+    setSteps(problem.steps)
+  }
+
+  const borderClass = checkState === 'correct'
+    ? 'border-emerald-800/50 bg-emerald-950/20'
+    : checkState === 'wrong'
+    ? 'border-rose-800/50 bg-rose-950/20'
+    : 'border-border bg-surface'
+
+  return (
+    <div className="flex flex-col gap-6 max-w-2xl">
+
+      <p className="font-sans text-sm text-secondary leading-relaxed">
+        Identify the daughter nuclide produced by radioactive decay.
+        Remember: conserve both mass number A and atomic number Z.
+      </p>
+
+      {score.total > 0 && (
+        <div className="flex items-center gap-3">
+          <span className="font-mono text-sm text-secondary">
+            Score: <span className="text-bright">{score.correct}</span>
+            <span className="text-dim"> / {score.total}</span>
+          </span>
+          <div className="flex-1 h-1 rounded-full overflow-hidden bg-raised">
+            <motion.div className="h-full rounded-full" style={{ background: 'var(--c-halogen)' }}
+              animate={{ width: `${(score.correct / score.total) * 100}%` }}
+              transition={{ duration: 0.3 }} />
+          </div>
+        </div>
+      )}
+
+      <AnimatePresence mode="wait">
+        <motion.div key={problem.question}
+          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}
+          className={`rounded-sm border p-5 flex flex-col gap-4 transition-colors ${borderClass}`}
+        >
+          <div className="font-mono text-xs text-secondary rounded-sm px-3 py-2 flex gap-4"
+            style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
+            <span>Alpha: Z−2, A−4</span>
+            <span>β⁻: Z+1</span>
+            <span>β⁺: Z−1</span>
+            <span>γ: no change</span>
+            <span>EC: Z−1</span>
+          </div>
+
+          <p className="font-sans text-base text-bright leading-relaxed">{problem.question}</p>
+
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex flex-col gap-1">
+                <label className="font-mono text-xs text-secondary">Daughter Z</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={userZ}
+                  onChange={e => setUserZ(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleCheck()}
+                  disabled={checkState !== 'idle'}
+                  placeholder="atomic number"
+                  className={`bg-raised border rounded-sm px-3 py-1.5 font-mono text-base w-36
+                              placeholder-dim focus:outline-none focus:border-muted
+                              disabled:cursor-not-allowed transition-colors
+                              ${checkState === 'correct' ? 'border-emerald-700/60 text-emerald-300'
+                              : checkState === 'wrong'   ? 'border-rose-700/60 text-rose-300'
+                              : 'border-border text-bright'}`}
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="font-mono text-xs text-secondary">Daughter A</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={userA}
+                  onChange={e => setUserA(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleCheck()}
+                  disabled={checkState !== 'idle'}
+                  placeholder="mass number"
+                  className={`bg-raised border rounded-sm px-3 py-1.5 font-mono text-base w-36
+                              placeholder-dim focus:outline-none focus:border-muted
+                              disabled:cursor-not-allowed transition-colors
+                              ${checkState === 'correct' ? 'border-emerald-700/60 text-emerald-300'
+                              : checkState === 'wrong'   ? 'border-rose-700/60 text-rose-300'
+                              : 'border-border text-bright'}`}
+                />
+              </div>
+
+              {checkState === 'idle' ? (
+                <button onClick={handleCheck}
+                  disabled={!userZ.trim() || !userA.trim()}
+                  className="mt-5 px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-30"
+                  style={{
+                    background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
+                    border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                    color: 'var(--c-halogen)',
+                  }}>
+                  Check
+                </button>
+              ) : (
+                <div className="mt-5 flex flex-col gap-1">
+                  <span className={`font-sans text-sm font-medium ${checkState === 'correct' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {checkState === 'correct' ? '✓ Correct' : '✗ Incorrect'}
+                  </span>
+                  {checkState === 'wrong' && (
+                    <span className="font-mono text-xs text-dim">
+                      Answer: Z={problem.answerZ}, A={problem.answerA} ({problem.answerSymbol}-{problem.answerA})
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+
+      <StepsPanel steps={steps} />
+
+      {checkState !== 'idle' && (
+        <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="flex gap-2">
+          {checkState === 'wrong' && (
+            <button onClick={() => { setUserZ(''); setUserA(''); setCheckState('idle'); setSteps([]) }}
+              className="px-4 py-2 rounded-sm font-sans text-sm border border-border text-dim hover:text-secondary transition-colors">
+              Try Again
+            </button>
+          )}
+          <button onClick={nextProblem}
+            className="px-4 py-2 rounded-sm font-sans text-sm border border-border text-secondary hover:text-primary hover:border-muted transition-colors">
+            Next →
+          </button>
+        </motion.div>
+      )}
+    </div>
+  )
+}

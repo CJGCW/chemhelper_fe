@@ -43,4 +43,31 @@ export const HALF_REACTIONS: HalfReaction[] = [
   { id:'Ca',    cathode:'Ca²⁺(aq) + 2e⁻ → Ca(s)',                            oxidized:'Ca²⁺',   reduced:'Ca',    e0:-2.868, n:2 },
   { id:'K',     cathode:'K⁺(aq) + e⁻ → K(s)',                                oxidized:'K⁺',     reduced:'K',     e0:-2.931, n:1 },
   { id:'Li',    cathode:'Li⁺(aq) + e⁻ → Li(s)',                              oxidized:'Li⁺',    reduced:'Li',    e0:-3.040, n:1 },
+  // Electrolysis-relevant additions
+  { id:'H2O_cath', cathode:'2H₂O(l) + 2e⁻ → H₂(g) + 2OH⁻(aq)',           oxidized:'H₂O',    reduced:'H₂',    e0:-0.828, n:2 },
+  { id:'H2O_ano',  cathode:'2H₂O(l) → O₂(g) + 4H⁺(aq) + 4e⁻ (E°=−1.23 V reverse)', oxidized:'H₂O', reduced:'O₂', e0:-1.229, n:4 },
+]
+
+// ── Electrolysis Reactions ────────────────────────────────────────────────────
+
+export interface ElectrolysisReaction {
+  id: string
+  name: string
+  cathodeReaction: string
+  anodeReaction: string
+  cathodeMetal: string
+  molarMass: number
+  n: number
+  application: string
+}
+
+export const ELECTROLYSIS_REACTIONS: ElectrolysisReaction[] = [
+  { id: 'cu-plating',        name: 'Copper Electroplating',    cathodeReaction: 'Cu²⁺ + 2e⁻ → Cu',       anodeReaction: 'Cu → Cu²⁺ + 2e⁻',          cathodeMetal: 'Cu', molarMass: 63.55,  n: 2, application: 'Copper plating, circuit boards'     },
+  { id: 'ag-plating',        name: 'Silver Plating',           cathodeReaction: 'Ag⁺ + e⁻ → Ag',          anodeReaction: 'Ag → Ag⁺ + e⁻',             cathodeMetal: 'Ag', molarMass: 107.87, n: 1, application: 'Jewelry, silverware'               },
+  { id: 'ni-plating',        name: 'Nickel Plating',           cathodeReaction: 'Ni²⁺ + 2e⁻ → Ni',        anodeReaction: '2H₂O → O₂ + 4H⁺ + 4e⁻',    cathodeMetal: 'Ni', molarMass: 58.69,  n: 2, application: 'Corrosion protection'              },
+  { id: 'cr-plating',        name: 'Chrome Plating',           cathodeReaction: 'Cr³⁺ + 3e⁻ → Cr',        anodeReaction: '2H₂O → O₂ + 4H⁺ + 4e⁻',    cathodeMetal: 'Cr', molarMass: 52.00,  n: 3, application: 'Decorative, automotive'            },
+  { id: 'water-electrolysis', name: 'Water Electrolysis',      cathodeReaction: '2H₂O + 2e⁻ → H₂ + 2OH⁻', anodeReaction: '2H₂O → O₂ + 4H⁺ + 4e⁻',   cathodeMetal: 'H',  molarMass: 2.016,  n: 2, application: 'Hydrogen production'              },
+  { id: 'al-smelting',       name: 'Aluminum Smelting',        cathodeReaction: 'Al³⁺ + 3e⁻ → Al',        anodeReaction: '2O²⁻ → O₂ + 4e⁻',           cathodeMetal: 'Al', molarMass: 26.98,  n: 3, application: 'Hall-Héroult process'             },
+  { id: 'au-plating',        name: 'Gold Plating',             cathodeReaction: 'Au³⁺ + 3e⁻ → Au',        anodeReaction: 'Au → Au³⁺ + 3e⁻',           cathodeMetal: 'Au', molarMass: 196.97, n: 3, application: 'Electronics, jewelry'             },
+  { id: 'zn-plating',        name: 'Zinc Plating (Galvanizing)', cathodeReaction: 'Zn²⁺ + 2e⁻ → Zn',    anodeReaction: 'Zn → Zn²⁺ + 2e⁻',           cathodeMetal: 'Zn', molarMass: 65.38,  n: 2, application: 'Galvanizing steel, corrosion prevention' },
 ]

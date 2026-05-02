@@ -21,22 +21,37 @@ import ActivitySeriesProblems from '../components/tools/ActivitySeriesProblems'
 import TitrationArithmeticTool from '../components/redox/TitrationArithmeticTool'
 import EcellReference from '../components/redox/EcellReference'
 import TitrationReference from '../components/redox/TitrationReference'
+import TriangleReference from '../components/redox/TriangleReference'
+import TriangleTool from '../components/redox/TriangleTool'
+import TrianglePractice from '../components/redox/TrianglePractice'
+import ElectrolysisReference from '../components/redox/ElectrolysisReference'
+import ElectrolysisTool from '../components/redox/ElectrolysisTool'
+import ElectrolysisPractice from '../components/redox/ElectrolysisPractice'
+import ConcentrationCellReference from '../components/redox/ConcentrationCellReference'
+import ConcentrationCellTool from '../components/redox/ConcentrationCellTool'
+import ConcentrationCellPractice from '../components/redox/ConcentrationCellPractice'
 import PageShell from '../components/Layout/PageShell'
 
 type Tab = 'practice' | 'rxn-practice' | 'ecell-practice' | 'classifier' | 'electrolyte' | 'net-ionic' | 'activity' | 'predictor' | 'ecell' | 'reference' | 'redox-practice' | 'classifier-problems' | 'electrolyte-problems' | 'net-ionic-problems' | 'activity-problems'
   | 'ref-oxidation' | 'ref-reaction-types' | 'ref-activity' | 'ref-acids-bases' | 'ref-redox-concepts'
   | 'ref-ecell' | 'ref-titration'
   | 'titration' | 'titration-problems'
+  | 'dg-e-k' | 'dg-e-k-practice' | 'dg-e-k-problems' | 'ref-dg-e-k'
+  | 'electrolysis' | 'electrolysis-practice' | 'electrolysis-problems' | 'ref-electrolysis'
+  | 'conc-cell' | 'conc-cell-practice' | 'ref-conc-cell'
 type Mode = 'reference' | 'practice' | 'problems'
 
 const REFERENCE_TABS: { id: Tab; label: string; formula: string }[] = [
-  { id: 'ref-oxidation',      label: 'Oxidation States', formula: 'ox'  },
-  { id: 'ref-reaction-types', label: 'Rxn Types',        formula: '⇄'  },
-  { id: 'ref-activity',       label: 'Activity Series',  formula: '↕'  },
-  { id: 'ref-acids-bases',    label: 'Acids & Bases',    formula: 'pH' },
-  { id: 'ref-redox-concepts', label: 'Redox',            formula: 'e⁻' },
-  { id: 'ref-ecell',          label: 'E°cell',           formula: 'E°' },
-  { id: 'ref-titration',      label: 'Titration',        formula: 'MV' },
+  { id: 'ref-oxidation',      label: 'Oxidation States', formula: 'ox'     },
+  { id: 'ref-reaction-types', label: 'Rxn Types',        formula: '⇄'     },
+  { id: 'ref-activity',       label: 'Activity Series',  formula: '↕'     },
+  { id: 'ref-acids-bases',    label: 'Acids & Bases',    formula: 'pH'    },
+  { id: 'ref-redox-concepts', label: 'Redox',            formula: 'e⁻'    },
+  { id: 'ref-ecell',          label: 'E°cell',           formula: 'E°'    },
+  { id: 'ref-titration',      label: 'Titration',        formula: 'MV'    },
+  { id: 'ref-dg-e-k',         label: 'ΔG°-E°-K',        formula: '-nFE°' },
+  { id: 'ref-electrolysis',   label: 'Electrolysis',     formula: 'Faraday'},
+  { id: 'ref-conc-cell',      label: 'Conc. Cell',       formula: 'ΔC'    },
 ]
 
 const REF_TOPIC_MAP: Partial<Record<Tab, RefTopic>> = {
@@ -77,6 +92,15 @@ const PRACTICE_GROUPS: TabGroup[] = [
       { id: 'titration', label: 'Titration', formula: 'MₐVₐ=MᵦVᵦ' },
     ],
   },
+  {
+    id: 'electrochem-advanced',
+    label: 'Advanced Electrochemistry',
+    pills: [
+      { id: 'dg-e-k',    label: 'ΔG°-E°-K',          formula: '-nFE°'   },
+      { id: 'electrolysis', label: 'Electrolysis',     formula: 'Faraday' },
+      { id: 'conc-cell',  label: 'Concentration Cell', formula: 'ΔC'      },
+    ],
+  },
 ]
 
 const PROBLEMS_GROUPS: TabGroup[] = [
@@ -106,6 +130,14 @@ const PROBLEMS_GROUPS: TabGroup[] = [
       { id: 'titration-problems', label: 'Titration', formula: 'e⁻ balance' },
     ],
   },
+  {
+    id: 'electrochem-advanced-problems',
+    label: 'Advanced Electrochemistry',
+    pills: [
+      { id: 'dg-e-k-problems',       label: 'ΔG°-E°-K',    formula: '-nFE°'   },
+      { id: 'electrolysis-problems',  label: 'Electrolysis', formula: 'Faraday' },
+    ],
+  },
 ]
 
 const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
@@ -125,6 +157,14 @@ const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
   'activity-problems':     'activity',
   'titration':             'titration',
   'titration-problems':    'titration',
+  'dg-e-k':               'dg-e-k',
+  'dg-e-k-practice':      'dg-e-k',
+  'dg-e-k-problems':      'dg-e-k',
+  'electrolysis':          'electrolysis',
+  'electrolysis-practice': 'electrolysis',
+  'electrolysis-problems': 'electrolysis',
+  'conc-cell':             'conc-cell',
+  'conc-cell-practice':    'conc-cell',
 }
 
 const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
@@ -135,7 +175,10 @@ const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
   'electrolyte':   { reference: 'ref-acids-bases',     practice: 'electrolyte',    problems: 'electrolyte-problems'  },
   'net-ionic':     { reference: 'ref-reaction-types',  practice: 'net-ionic',      problems: 'net-ionic-problems'    },
   'activity':      { reference: 'ref-activity',        practice: 'activity',       problems: 'activity-problems'     },
-  'titration':     { reference: 'ref-titration',        practice: 'titration',      problems: 'titration-problems'    },
+  'titration':     { reference: 'ref-titration',    practice: 'titration',      problems: 'titration-problems'    },
+  'dg-e-k':       { reference: 'ref-dg-e-k',      practice: 'dg-e-k',         problems: 'dg-e-k-problems'       },
+  'electrolysis':  { reference: 'ref-electrolysis', practice: 'electrolysis',   problems: 'electrolysis-problems' },
+  'conc-cell':     { reference: 'ref-conc-cell',    practice: 'conc-cell',      problems: 'dg-e-k-problems'       },
 }
 
 const MODE_DEFAULT: Record<Mode, Tab> = {
@@ -602,6 +645,69 @@ export default function RedoxPage() {
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <TitrationArithmeticTool allowCustom={false} />
+          </motion.div>
+        )}
+        {activeTab === 'ref-dg-e-k' && !printingAll && (
+          <motion.div key="ref-dg-e-k"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <TriangleReference />
+          </motion.div>
+        )}
+        {activeTab === 'ref-electrolysis' && !printingAll && (
+          <motion.div key="ref-electrolysis"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <ElectrolysisReference />
+          </motion.div>
+        )}
+        {activeTab === 'ref-conc-cell' && !printingAll && (
+          <motion.div key="ref-conc-cell"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <ConcentrationCellReference />
+          </motion.div>
+        )}
+        {(activeTab === 'dg-e-k' || activeTab === 'dg-e-k-practice') && (
+          <motion.div key="dg-e-k"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <TriangleTool />
+          </motion.div>
+        )}
+        {activeTab === 'dg-e-k-problems' && (
+          <motion.div key="dg-e-k-problems"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <TrianglePractice allowCustom={false} />
+          </motion.div>
+        )}
+        {(activeTab === 'electrolysis' || activeTab === 'electrolysis-practice') && (
+          <motion.div key="electrolysis"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <ElectrolysisTool />
+          </motion.div>
+        )}
+        {activeTab === 'electrolysis-problems' && (
+          <motion.div key="electrolysis-problems"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <ElectrolysisPractice allowCustom={false} />
+          </motion.div>
+        )}
+        {activeTab === 'conc-cell' && (
+          <motion.div key="conc-cell"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <ConcentrationCellTool />
+          </motion.div>
+        )}
+        {activeTab === 'conc-cell-practice' && (
+          <motion.div key="conc-cell-practice"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <ConcentrationCellPractice allowCustom={false} />
           </motion.div>
         )}
       </AnimatePresence>

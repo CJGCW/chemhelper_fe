@@ -12,6 +12,13 @@ export type UnitId =
   | 'atomic'
   | 'bonding'
   | 'redox'
+  | 'kinetics'
+  | 'equilibrium'
+  | 'acid-base'
+  | 'buffers-ksp'
+  | 'thermodynamics'
+  | 'nuclear'
+  | 'organic'
 
 export type SectionId =
   | 'math-tools'
@@ -32,6 +39,22 @@ export type SectionId =
   | 'molecular-geometry'
   | 'redox-reactions'
   | 'electrochemistry'
+  | 'rate-laws'
+  | 'integrated-rates'
+  | 'equilibrium-basics'
+  | 'equilibrium-calculations'
+  | 'ph-basics'
+  | 'weak-acid-base'
+  | 'salt-hydrolysis'
+  | 'buffer-systems'
+  | 'titration-curves'
+  | 'solubility-product'
+  | 'entropy'
+  | 'gibbs-energy'
+  | 'nuclear-reactions'
+  | 'nuclear-applications'
+  | 'hydrocarbons'
+  | 'functional-groups'
 
 export interface Unit {
   id: UnitId
@@ -112,6 +135,48 @@ export const UNITS: Unit[] = [
     route: '/redox',
     sections: ['redox-reactions', 'electrochemistry'],
   },
+  {
+    id: 'kinetics',
+    label: 'Chemical Kinetics',
+    route: '/kinetics',
+    sections: ['rate-laws', 'integrated-rates'],
+  },
+  {
+    id: 'equilibrium',
+    label: 'Chemical Equilibrium',
+    route: '/equilibrium',
+    sections: ['equilibrium-basics', 'equilibrium-calculations'],
+  },
+  {
+    id: 'acid-base',
+    label: 'Acids & Bases',
+    route: '/acid-base',
+    sections: ['ph-basics', 'weak-acid-base', 'salt-hydrolysis'],
+  },
+  {
+    id: 'buffers-ksp',
+    label: 'Buffers & Solubility',
+    route: '/buffers',
+    sections: ['buffer-systems', 'titration-curves', 'solubility-product'],
+  },
+  {
+    id: 'thermodynamics',
+    label: 'Thermodynamics',
+    route: '/thermodynamics',
+    sections: ['entropy', 'gibbs-energy'],
+  },
+  {
+    id: 'nuclear',
+    label: 'Nuclear Chemistry',
+    route: '/nuclear',
+    sections: ['nuclear-reactions', 'nuclear-applications'],
+  },
+  {
+    id: 'organic',
+    label: 'Organic Chemistry',
+    route: '/organic',
+    sections: ['hydrocarbons', 'functional-groups'],
+  },
 ]
 
 // ── Sections ──────────────────────────────────────────────────────────────────
@@ -135,6 +200,22 @@ export const SECTIONS: Section[] = [
   { id: 'molecular-geometry',   label: 'Geometry & Solids', unitId: 'bonding'       },
   { id: 'redox-reactions',      label: 'Reactions',         unitId: 'redox'         },
   { id: 'electrochemistry',     label: 'Electrochemistry',  unitId: 'redox'         },
+  { id: 'rate-laws',                label: 'Rate Laws',         unitId: 'kinetics'      },
+  { id: 'integrated-rates',        label: 'Integrated Rates',  unitId: 'kinetics'      },
+  { id: 'equilibrium-basics',       label: 'Concepts',          unitId: 'equilibrium'   },
+  { id: 'equilibrium-calculations', label: 'Calculations',      unitId: 'equilibrium'   },
+  { id: 'ph-basics',          label: 'pH Fundamentals',    unitId: 'acid-base'   },
+  { id: 'weak-acid-base',    label: 'Weak Acid / Base',   unitId: 'acid-base'   },
+  { id: 'salt-hydrolysis',   label: 'Salts & Polyprotic', unitId: 'acid-base'   },
+  { id: 'buffer-systems',     label: 'Buffers',            unitId: 'buffers-ksp' },
+  { id: 'titration-curves',   label: 'Titration Curves',   unitId: 'buffers-ksp' },
+  { id: 'solubility-product', label: 'Solubility (Ksp)',   unitId: 'buffers-ksp' },
+  { id: 'entropy',            label: 'Entropy',            unitId: 'thermodynamics' },
+  { id: 'gibbs-energy',       label: 'Gibbs Energy',       unitId: 'thermodynamics' },
+  { id: 'nuclear-reactions',    label: 'Nuclear Reactions', unitId: 'nuclear' },
+  { id: 'nuclear-applications', label: 'Applications',      unitId: 'nuclear' },
+  { id: 'hydrocarbons',         label: 'Hydrocarbons',      unitId: 'organic' },
+  { id: 'functional-groups',    label: 'Functional Groups', unitId: 'organic' },
 ]
 
 // ── Topics ────────────────────────────────────────────────────────────────────
@@ -251,10 +332,65 @@ export const TOPICS: Topic[] = [
 
   // ── Electrochemistry ─────────────────────────────────────────────────────
   // 'practice' is the redox problems-tab entry; shared across pages but non-confusable in context
-  { id: 'redox-balance', label: 'Redox (Balancing)', sectionId: 'electrochemistry', tabs: ['redox-practice', 'practice', 'ref-redox-concepts'] },
-  { id: 'ecell-nernst',  label: 'E°cell / Nernst',   sectionId: 'electrochemistry', tabs: ['ecell', 'ecell-practice', 'ref-ecell'] },
-  { id: 'electrolyte',   label: 'Electrolytes',       sectionId: 'electrochemistry', tabs: ['electrolyte', 'electrolyte-problems'] },
-  { id: 'titration',     label: 'Titration',          sectionId: 'electrochemistry', tabs: ['titration', 'titration-problems', 'ref-titration'] },
+  { id: 'redox-balance',      label: 'Redox (Balancing)',   sectionId: 'electrochemistry', tabs: ['redox-practice', 'practice', 'ref-redox-concepts'] },
+  { id: 'ecell-nernst',       label: 'E°cell / Nernst',    sectionId: 'electrochemistry', tabs: ['ecell', 'ecell-practice', 'ref-ecell'] },
+  { id: 'electrolyte',        label: 'Electrolytes',        sectionId: 'electrochemistry', tabs: ['electrolyte', 'electrolyte-problems'] },
+  { id: 'titration',          label: 'Titration',           sectionId: 'electrochemistry', tabs: ['titration', 'titration-problems', 'ref-titration'] },
+  { id: 'delta-g-ecell-k',    label: 'ΔG°-E°-K Triangle',  sectionId: 'electrochemistry', tabs: ['dg-e-k', 'dg-e-k-practice', 'dg-e-k-problems', 'ref-dg-e-k'] },
+  { id: 'electrolysis',       label: 'Electrolysis',        sectionId: 'electrochemistry', tabs: ['electrolysis', 'electrolysis-practice', 'electrolysis-problems', 'ref-electrolysis'] },
+  { id: 'concentration-cell', label: 'Concentration Cells', sectionId: 'electrochemistry', tabs: ['conc-cell', 'conc-cell-practice', 'ref-conc-cell'] },
+
+  // ── Chemical Kinetics ─────────────────────────────────────────────────────
+  { id: 'rate-law',        label: 'Rate Law (Initial Rates)', sectionId: 'rate-laws',        tabs: ['rate-law', 'rate-law-practice', 'rate-law-problems', 'ref-rate-law'] },
+  { id: 'arrhenius',       label: 'Arrhenius Equation',       sectionId: 'rate-laws',        tabs: ['arrhenius', 'arrhenius-practice', 'arrhenius-problems', 'ref-arrhenius'] },
+  { id: 'integrated-rate', label: 'Integrated Rate Laws',     sectionId: 'integrated-rates', tabs: ['integrated', 'integrated-practice', 'integrated-problems', 'ref-integrated'] },
+  { id: 'half-life',       label: 'Half-Life',                sectionId: 'integrated-rates', tabs: ['half-life', 'half-life-practice', 'half-life-problems', 'ref-half-life'] },
+  { id: 'mechanisms',      label: 'Reaction Mechanisms',      sectionId: 'integrated-rates', tabs: ['mechanisms', 'mechanisms-practice', 'ref-mechanisms'] },
+
+  // ── Chemical Equilibrium ──────────────────────────────────────────────────
+  { id: 'keq-expression', label: 'K Expression',   sectionId: 'equilibrium-basics',       tabs: ['keq-expression', 'keq-practice', 'keq-problems', 'ref-keq'] },
+  { id: 'q-vs-k',         label: 'Q vs K',          sectionId: 'equilibrium-basics',       tabs: ['q-vs-k', 'q-vs-k-practice', 'q-vs-k-problems', 'ref-q-vs-k'] },
+  { id: 'le-chatelier',   label: "Le Chatelier's",  sectionId: 'equilibrium-basics',       tabs: ['le-chatelier', 'le-chatelier-practice', 'ref-le-chatelier'] },
+  { id: 'ice-table',      label: 'ICE Table',        sectionId: 'equilibrium-calculations', tabs: ['ice-table', 'ice-table-practice', 'ice-table-problems', 'ref-ice-table'] },
+  { id: 'kp-kc',          label: 'Kp \u2194 Kc',    sectionId: 'equilibrium-calculations', tabs: ['kp-kc', 'kp-kc-practice', 'kp-kc-problems', 'ref-kp-kc'] },
+
+  // ── Acids & Bases ────────────────────────────────────────────────────────────
+  // ── Buffers & Solubility ─────────────────────────────────────────────────────
+  { id: 'buffer-ph',       label: 'Buffer pH',          sectionId: 'buffer-systems',     tabs: ['buffer', 'buffer-practice', 'buffer-problems', 'ref-buffer'] },
+  { id: 'buffer-capacity', label: 'Buffer Capacity',    sectionId: 'buffer-systems',     tabs: ['buffer-capacity', 'buffer-cap-practice', 'ref-buffer-cap'] },
+  { id: 'titration-curve', label: 'Titration Curves',   sectionId: 'titration-curves',   tabs: ['titration-curve', 'titration-curve-practice', 'ref-titration-curve'] },
+  { id: 'ksp',             label: 'Solubility Product', sectionId: 'solubility-product', tabs: ['ksp', 'ksp-practice', 'ksp-problems', 'ref-ksp'] },
+  { id: 'common-ion',      label: 'Common Ion Effect',  sectionId: 'solubility-product', tabs: ['common-ion', 'common-ion-practice', 'ref-common-ion'] },
+  { id: 'precipitation',   label: 'Precipitation',      sectionId: 'solubility-product', tabs: ['precipitation', 'precipitation-practice', 'precipitation-problems', 'ref-precipitation'] },
+
+  // ── Acids & Bases ────────────────────────────────────────────────────────────
+  // ── Thermodynamics (Entropy & Gibbs) ─────────────────────────────────────────
+  { id: 'entropy-calc',      label: 'ΔS° Calculation',   sectionId: 'entropy',      tabs: ['entropy', 'entropy-practice', 'entropy-problems', 'ref-entropy'] },
+  { id: 'spontaneity',       label: 'Spontaneity',        sectionId: 'entropy',      tabs: ['spontaneity', 'spontaneity-practice', 'ref-spontaneity'] },
+  { id: 'gibbs-calc',        label: 'ΔG° Calculation',    sectionId: 'gibbs-energy', tabs: ['gibbs', 'gibbs-practice', 'gibbs-problems', 'ref-gibbs'] },
+  { id: 'gibbs-equilibrium', label: 'ΔG° ↔ K',           sectionId: 'gibbs-energy', tabs: ['gibbs-k', 'gibbs-k-practice', 'gibbs-k-problems', 'ref-gibbs-k'] },
+  { id: 'gibbs-temperature', label: 'ΔG vs Temperature',  sectionId: 'gibbs-energy', tabs: ['gibbs-temp', 'gibbs-temp-practice', 'ref-gibbs-temp'] },
+
+  // ── Acids & Bases ────────────────────────────────────────────────────────────
+  { id: 'ph-calculator', label: 'pH Calculator',    sectionId: 'ph-basics',       tabs: ['ph-calc', 'ph-problems', 'ref-ph'] },
+  { id: 'ka-kb',         label: 'Ka / Kb',          sectionId: 'ph-basics',       tabs: ['ka-kb', 'ka-kb-problems', 'ref-ka-kb'] },
+  { id: 'weak-acid',     label: 'Weak Acid pH',     sectionId: 'weak-acid-base',  tabs: ['weak-acid', 'weak-acid-problems', 'ref-weak-acid'] },
+  { id: 'weak-base',     label: 'Weak Base pH',     sectionId: 'weak-acid-base',  tabs: ['weak-base', 'weak-base-problems', 'ref-weak-base'] },
+  { id: 'salt-ph',       label: 'Salt pH',          sectionId: 'salt-hydrolysis', tabs: ['salt-ph', 'salt-ph-problems', 'ref-salt-ph'] },
+  { id: 'polyprotic',    label: 'Polyprotic Acids', sectionId: 'salt-hydrolysis', tabs: ['polyprotic', 'ref-polyprotic'] },
+
+  // ── Nuclear Chemistry ──────────────────────────────────────────────────────
+  { id: 'nuclear-decay',     label: 'Nuclear Decay',      sectionId: 'nuclear-reactions',    tabs: ['decay', 'decay-problems', 'ref-decay']                          },
+  { id: 'nuclear-half-life', label: 'Half-Life',           sectionId: 'nuclear-reactions',    tabs: ['nuclear-half-life', 'nuclear-hl-problems', 'ref-nuclear-hl']    },
+  { id: 'binding-energy',    label: 'Binding Energy',      sectionId: 'nuclear-applications', tabs: ['binding', 'binding-problems', 'ref-binding']                    },
+  { id: 'nuclear-dating',    label: 'Radiometric Dating',  sectionId: 'nuclear-applications', tabs: ['dating', 'dating-problems', 'ref-dating']                       },
+
+  // ── Organic Chemistry ──────────────────────────────────────────────────────
+  { id: 'alkanes-alkenes',     label: 'Alkanes / Alkenes / Alkynes', sectionId: 'hydrocarbons',      tabs: ['hydrocarbons', 'hydrocarbons-problems', 'ref-hydrocarbons'] },
+  { id: 'isomers',             label: 'Isomers',                     sectionId: 'hydrocarbons',      tabs: ['isomers', 'isomers-problems', 'ref-isomers']                },
+  { id: 'organic-naming',      label: 'IUPAC Naming',                sectionId: 'hydrocarbons',      tabs: ['organic-naming', 'naming-problems', 'ref-organic-naming']  },
+  { id: 'functional-group-id', label: 'Functional Groups',           sectionId: 'functional-groups', tabs: ['func-groups', 'func-groups-problems', 'ref-func-groups']   },
+  { id: 'organic-reactions',   label: 'Common Reactions',            sectionId: 'functional-groups', tabs: ['organic-rxn', 'organic-rxn-problems', 'ref-organic-rxn']   },
 ]
 
 // ── Build-time Maps ───────────────────────────────────────────────────────────
