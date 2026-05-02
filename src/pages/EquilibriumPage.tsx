@@ -12,7 +12,6 @@ import KpKcReference from '../components/equilibrium/KpKcReference'
 
 import KExpressionTool from '../components/equilibrium/KExpressionTool'
 import QvsKTool from '../components/equilibrium/QvsKTool'
-import ICETableTool from '../components/equilibrium/ICETableTool'
 import KpKcTool from '../components/equilibrium/KpKcTool'
 
 import KExpressionPractice from '../components/equilibrium/KExpressionPractice'
@@ -320,7 +319,7 @@ export default function EquilibriumPage() {
         )}
         {activeTab === 'ice-table' && (
           <motion.div key="ice-table" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <ICETableTool />
+            <ICETablePractice allowCustom={true} />
           </motion.div>
         )}
         {activeTab === 'kp-kc' && (

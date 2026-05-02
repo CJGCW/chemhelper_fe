@@ -5,6 +5,7 @@ import {
   type SigFigProblem, type SigFigCheckResult,
 } from '../../utils/sigfigPractice'
 import WorkedExample from '../shared/WorkedExample'
+import GeneratedBadge from '../shared/GeneratedBadge'
 
 const SIGFIG_EXAMPLES = [
   {
@@ -257,12 +258,7 @@ export default function SigFigPractice({ allowCustom = true }: Props) {
                           </p>
                         )}
                       </div>
-                      {p.isDynamic && (
-                        <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm shrink-0"
-                          style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
-                          generated
-                        </span>
-                      )}
+                      {p.isDynamic && <GeneratedBadge />}
                     </div>
 
                     <div className="flex items-start gap-3 flex-wrap">

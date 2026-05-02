@@ -344,6 +344,8 @@ Every Practice tool must have a corresponding `utils/*Practice.ts` file containi
 
 **Dynamic generation:** Problems are created algorithmically at runtime, not pulled from a static list. The generator picks random values, random reactions, random compounds, and random solve-directions each time it's called. A student who clicks "Next" 20 times must see 20 meaningfully different problems.
 
+**Maximize randomization over static pools:** Prefer generating random numeric inputs (concentrations, masses, volumes, temperatures, pressures) over picking from a fixed list of pre-solved scenarios. A curated compound/reaction pool is fine and necessary for chemical realism, but the *numbers* in every problem should always be freshly randomized. The larger the combinatorial space of (compound × numeric inputs × solve direction), the more practice a student can get before seeing a repeated scenario. When a generator currently uses a fixed list of pre-written problem objects, migrate it to pick a compound/reaction from a pool and generate fresh numeric parameters each time.
+
 **Generator structure:**
 
 ```ts

@@ -755,7 +755,7 @@ export function checkRedoxAnswer(input: string, p: RedoxProblem): boolean {
 
   // E°cell: floating-point comparison with ±0.002 V tolerance
   if (p.subtype === 'ecell') {
-    const userVal = parseFloat(s.replace(/[^0-9.+\-]/g, ''))
+    const userVal = parseFloat(s.replace(/[^0-9.+-]/g, ''))
     const corrVal = parseFloat(p.answer)
     if (isNaN(userVal) || isNaN(corrVal)) return false
     return Math.abs(userVal - corrVal) <= 0.002

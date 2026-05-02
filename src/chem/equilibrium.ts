@@ -235,7 +235,7 @@ export function solveICETable(input: ICEInput): ICESolution {
 
   let x: number
   let usedQuadratic = false
-  let approximationValid = false
+  let approximationValid: boolean
 
   if (useReverseICE) {
     steps.push(`K = ${fmt(K)} >> 1 \u2192 Use reverse ICE: assume near-complete forward reaction`)

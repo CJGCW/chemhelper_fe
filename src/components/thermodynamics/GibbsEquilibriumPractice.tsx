@@ -5,6 +5,7 @@ import {
   type GibbsKProblem,
 } from '../../utils/thermodynamicsPractice'
 import { useShowAnswers } from '../../stores/preferencesStore'
+import GeneratedBadge from '../shared/GeneratedBadge'
 
 function nextGibbsKProblem(allowCustom: boolean): GibbsKProblem {
   if (!allowCustom || Math.random() < 0.6) return generateDynamicGibbsKProblem()
@@ -80,12 +81,7 @@ export default function GibbsEquilibriumPractice({ allowCustom = true }: Props) 
               ? `Given K = ${formatK(problem.K!)} at T = ${problem.T} K, find ΔG° (kJ/mol).`
               : `Given ΔG° = ${problem.deltaG_kJ} kJ/mol at T = ${problem.T} K, find K.`}
           </p>
-          {problem.isDynamic && (
-            <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
-              style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
-              generated
-            </span>
-          )}
+          {problem.isDynamic && <GeneratedBadge />}
         </div>
         <p className="font-mono text-xs text-dim">R = 8.314 J/(mol·K)</p>
       </div>

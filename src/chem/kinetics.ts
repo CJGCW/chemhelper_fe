@@ -86,10 +86,7 @@ export function solveRateLaw(input: RateLawInput): RateLawSolution {
 
   // Compute k from first trial
   const trial0 = trials[0]
-  let kDenom = trial0.rate
-  let kNumer = 1
   // k = rate / product([A]^n * [B]^m * ...)
-  // Rearranged: k = rate / (product of c^order)
   let denomProduct = 1
   for (const sp of species) {
     const c = trial0.concentrations[sp] ?? 1
@@ -119,9 +116,6 @@ export function solveRateLaw(input: RateLawInput): RateLawSolution {
   )
 
   return { orders, rateConstant: k, rateConstantUnit: kUnit, rateLawExpression, steps }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  void kNumer; void kDenom
 }
 
 // ── Integrated Rate Law Solver ────────────────────────────────────────────────

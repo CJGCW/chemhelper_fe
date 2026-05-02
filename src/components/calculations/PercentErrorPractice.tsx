@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generatePercentErrorProblem, generateDynamicPercentErrorProblem, type PercentErrorProblem } from '../../utils/percentErrorPractice'
+import GeneratedBadge from '../shared/GeneratedBadge'
 
 interface Props { allowCustom?: boolean }
 
@@ -43,12 +44,7 @@ export default function PercentErrorPractice({ allowCustom = true }: Props) {
             style={{ background: 'rgb(var(--color-base))' }}>
             <div className="flex items-center gap-2 mb-2">
               <p className="font-mono text-xs text-secondary tracking-widest uppercase">Problem</p>
-              {problem.isDynamic && (
-                <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
-                  style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
-                  generated
-                </span>
-              )}
+              {problem.isDynamic && <GeneratedBadge />}
             </div>
             <p className="font-sans text-sm text-primary leading-relaxed">{problem.scenario}</p>
           </div>

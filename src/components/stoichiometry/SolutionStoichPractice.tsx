@@ -5,6 +5,7 @@ import {
   type SolStoichType, type SolStoichProblem,
 } from '../../utils/solutionStoichPractice'
 import { useShowAnswers } from '../../stores/preferencesStore'
+import GeneratedBadge from '../shared/GeneratedBadge'
 const FILTERS: { id: SolStoichType | 'all'; label: string; subtitle: string }[] = [
   { id: 'all',          label: 'All',         subtitle: 'mixed types'    },
   { id: 'vol_to_mass',  label: 'Vol → Mass',  subtitle: 'V, C → g'      },
@@ -108,12 +109,7 @@ export default function SolutionStoichPractice({ allowCustom = true }: Props) {
         {/* Equation badge + dynamic tag */}
         <div className="flex items-center gap-2 flex-wrap">
           <p className="font-mono text-[10px] text-secondary">{problem.equation}</p>
-          {problem.isDynamic && (
-            <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
-              style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
-              generated
-            </span>
-          )}
+          {problem.isDynamic && <GeneratedBadge />}
         </div>
 
         {/* Question */}

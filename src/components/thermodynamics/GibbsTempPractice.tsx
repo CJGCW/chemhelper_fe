@@ -5,6 +5,7 @@ import {
   type CrossoverTProblem,
 } from '../../utils/thermodynamicsPractice'
 import { useShowAnswers } from '../../stores/preferencesStore'
+import GeneratedBadge from '../shared/GeneratedBadge'
 
 function nextCrossoverTProblem(allowCustom: boolean): CrossoverTProblem {
   if (!allowCustom || Math.random() < 0.6) return generateDynamicCrossoverTProblem()
@@ -53,12 +54,7 @@ export default function GibbsTempPractice({ allowCustom = true }: Props) {
           <p className="font-sans text-sm text-secondary">
             Find the crossover temperature (T in K) at which ΔG° = 0:
           </p>
-          {problem.isDynamic && (
-            <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
-              style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
-              generated
-            </span>
-          )}
+          {problem.isDynamic && <GeneratedBadge />}
         </div>
         <div className="grid grid-cols-2 gap-3 font-mono text-sm">
           <div>

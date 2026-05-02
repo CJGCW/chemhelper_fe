@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import type { EcellSubtype } from '../../utils/ecellPractice'
 import { genEcellProblem, generateDynamicEcellProblem, checkEcellAnswer } from '../../utils/ecellPractice'
 import StepsPanel from '../shared/StepsPanel'
+import GeneratedBadge from '../shared/GeneratedBadge'
 
 type Selection = EcellSubtype | 'random'
 
@@ -120,12 +121,7 @@ export default function EcellPractice({ allowCustom = true }: Props) {
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-2">
             <span className="font-mono text-xs text-secondary uppercase tracking-wider">Half-reactions</span>
-            {problem.isDynamic && (
-              <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
-                style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
-                generated
-              </span>
-            )}
+            {problem.isDynamic && <GeneratedBadge />}
           </div>
           <pre
             className="font-mono text-xs text-secondary rounded-sm px-3 py-2.5 overflow-x-auto whitespace-pre-wrap"

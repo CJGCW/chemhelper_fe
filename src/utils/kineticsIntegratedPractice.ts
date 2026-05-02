@@ -25,8 +25,6 @@ function buildQuestion(
   reaction: IntegratedRateReaction,
   solveFor: 'At' | 't' | 'halfLife',
   given: { k: number; A0: number; t?: number; At?: number },
-  answer: number,
-  answerUnit: string,
 ): string {
   const orderStr = reaction.order === 0 ? 'zero' : reaction.order === 1 ? 'first' : 'second'
   if (solveFor === 'halfLife') {
@@ -37,7 +35,6 @@ function buildQuestion(
   }
   // solveFor === 't'
   return `For the ${orderStr}-order reaction ${reaction.equation}, with k = ${sig(given.k)} ${reaction.kUnit}, [A]₀ = ${sig(given.A0)} M, how long does it take for [A] to reach ${sig(given.At ?? 0)} M?`
-  void answer; void answerUnit
 }
 
 export function generateIntegratedProblem(): IntegratedProblem {
@@ -70,7 +67,7 @@ export function generateIntegratedProblem(): IntegratedProblem {
   }
 
   const sol = solveIntegratedRate(input)
-  const question = buildQuestion(reaction, solveFor, given, sol.answer, sol.answerUnit)
+  const question = buildQuestion(reaction, solveFor, given)
 
   return {
     reaction,

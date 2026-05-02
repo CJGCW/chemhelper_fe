@@ -5,6 +5,7 @@ import {
   type EntropyProblem,
 } from '../../utils/thermodynamicsPractice'
 import { useShowAnswers } from '../../stores/preferencesStore'
+import GeneratedBadge from '../shared/GeneratedBadge'
 
 function nextEntropyProblem(allowCustom: boolean): EntropyProblem {
   // Problems mode (allowCustom=false) always dynamic; Practice mode 60% dynamic
@@ -61,12 +62,7 @@ export default function EntropyPractice({ allowCustom = true }: Props) {
       <div className="p-4 rounded-sm border border-border bg-raised">
         <div className="flex items-center gap-2 mb-1">
           <p className="font-sans text-sm text-secondary">Calculate ΔS°rxn for:</p>
-          {problem.isDynamic && (
-            <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
-              style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
-              generated
-            </span>
-          )}
+          {problem.isDynamic && <GeneratedBadge />}
         </div>
         <p className="font-mono text-sm text-primary font-medium">{problem.label}</p>
         <div className="mt-3 flex flex-col gap-1 text-xs text-dim font-mono">

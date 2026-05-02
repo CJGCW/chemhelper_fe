@@ -97,13 +97,11 @@ export function generateHalfLifeProblem(): HalfLifeProblem {
 
   // Work in the nuclide's natural time unit for clarity
   let t12Display: number
-  let tMultiplier: number
-
   switch (unit) {
-    case 'yr':   tMultiplier = 365.25 * 24 * 3600; t12Display = t12 / tMultiplier; break
-    case 'days': tMultiplier = 24 * 3600;           t12Display = t12 / tMultiplier; break
-    case 'hr':   tMultiplier = 3600;                t12Display = t12 / tMultiplier; break
-    default:     tMultiplier = 1;                   t12Display = t12; break
+    case 'yr':   t12Display = t12 / (365.25 * 24 * 3600); break
+    case 'days': t12Display = t12 / (24 * 3600); break
+    case 'hr':   t12Display = t12 / 3600; break
+    default:     t12Display = t12; break
   }
 
   const problemType = randFrom(['N', 't', 'halfLife'] as const)

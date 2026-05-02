@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import type { RedoxSubtype } from '../../utils/redoxPractice'
 import { generateRedoxProblem, generateDynamicRedoxProblem, checkRedoxAnswer } from '../../utils/redoxPractice'
 import { useShowAnswers } from '../../stores/preferencesStore'
+import GeneratedBadge from '../shared/GeneratedBadge'
 type Selection = RedoxSubtype | 'random'
 
 const TYPES: { id: Selection; label: string; formula: string }[] = [
@@ -155,12 +156,7 @@ export default function RedoxPractice({ allowCustom = true }: Props) {
         {/* Question */}
         <div className="flex items-start gap-2 flex-wrap">
           <p className="font-sans text-base text-bright leading-relaxed flex-1">{problem.question}</p>
-          {problem.isDynamic && (
-            <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm shrink-0"
-              style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
-              generated
-            </span>
-          )}
+          {problem.isDynamic && <GeneratedBadge />}
         </div>
 
         {/* Hint */}

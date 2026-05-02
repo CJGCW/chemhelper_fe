@@ -6,6 +6,7 @@ import {
   checkIsotopeAnswer,
 } from '../../utils/isotopePractice'
 import type { IsotopeProblem } from '../../utils/isotopePractice'
+import GeneratedBadge from '../shared/GeneratedBadge'
 
 interface Props { allowCustom?: boolean }
 
@@ -84,12 +85,7 @@ export default function IsotopeAbundancePractice({ allowCustom = true }: Props) 
             <p className="font-sans text-base text-bright leading-relaxed">
               {questionLines[0]}
             </p>
-            {problem.isDynamic && (
-              <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
-                style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
-                generated
-              </span>
-            )}
+            {problem.isDynamic && <GeneratedBadge />}
           </div>
           {questionLines.slice(1, -1).map((line, i) => (
             <p key={i} className="font-mono text-sm text-secondary pl-3 border-l border-border">

@@ -3,10 +3,31 @@ import {
   generateKExpressionProblem,
   generateQvsKProblem,
   generateICEProblem,
+  generateDynamicICEProblem,
   generateKpKcProblem,
   checkConcentrationAnswer,
+  ICE_REAL_IDS,
+  ICE_EXPERT_IDS,
 } from './equilibriumPractice'
+import { EQUILIBRIUM_REACTIONS } from '../data/equilibriumReactions'
+import type { EquilibriumSpecies } from '../data/equilibriumReactions'
 import { solveQvsK } from '../chem/equilibrium'
+
+// Back-calculate K from equilibrium concentrations and check it matches.
+function verifyKFromEquil(
+  products: EquilibriumSpecies[],
+  reactants: EquilibriumSpecies[],
+  eq: Record<string, number>,
+  K: number,
+  tol = 0.06,
+): void {
+  const active = (sps: EquilibriumSpecies[]) => sps.filter(s => s.state === 'g' || s.state === 'aq')
+  let Kcalc = 1
+  for (const s of active(products))  Kcalc *= Math.pow(Math.max(eq[s.formula], 1e-30), s.coefficient)
+  for (const s of active(reactants)) Kcalc /= Math.pow(Math.max(eq[s.formula], 1e-30), s.coefficient)
+  const relErr = Math.abs(Kcalc - K) / K
+  expect(relErr, `K back-check failed: Kcalc=${Kcalc.toPrecision(4)}, K=${K}, relErr=${relErr.toFixed(3)}`).toBeLessThan(tol)
+}
 
 // ── 20-iteration fuzz tests ───────────────────────────────────────────────────
 
@@ -79,6 +100,145 @@ describe('generateKpKcProblem (20 runs)', () => {
       expect(['Kp', 'Kc']).toContain(mode)
       expect(T).toBeGreaterThan(0)
       expect(reaction).toBeDefined()
+    }
+  })
+})
+
+// ── generateDynamicICEProblem — reaction pool integrity ───────────────────────
+
+describe('ICE_REAL_IDS pool integrity', () => {
+  it('every real ID exists in EQUILIBRIUM_REACTIONS', () => {
+    for (const id of ICE_REAL_IDS) {
+      const r = EQUILIBRIUM_REACTIONS.find(r => r.id === id)
+      expect(r, `reaction '${id}' not found in EQUILIBRIUM_REACTIONS`).toBeDefined()
+    }
+  })
+
+  it('every real reaction has all-gas/aq species (no solids)', () => {
+    for (const id of ICE_REAL_IDS) {
+      const r = EQUILIBRIUM_REACTIONS.find(r => r.id === id)!
+      const active = [...r.reactants, ...r.products].filter(s => s.state === 'g' || s.state === 'aq')
+      expect(active.length, `'${id}' has no active species`).toBeGreaterThan(0)
+    }
+  })
+})
+
+describe('ICE_EXPERT_IDS pool integrity', () => {
+  it('every expert ID exists in EQUILIBRIUM_REACTIONS', () => {
+    for (const id of ICE_EXPERT_IDS) {
+      const r = EQUILIBRIUM_REACTIONS.find(r => r.id === id)
+      expect(r, `reaction '${id}' not found in EQUILIBRIUM_REACTIONS`).toBeDefined()
+    }
+  })
+
+  it('every expert reaction has at least one coefficient > 1 (non-trivial balancing)', () => {
+    for (const id of ICE_EXPERT_IDS) {
+      const r = EQUILIBRIUM_REACTIONS.find(r => r.id === id)!
+      const hasNonTrivial = [...r.reactants, ...r.products].some(s => s.coefficient > 1)
+      expect(hasNonTrivial, `'${id}' has all coefficients = 1 — not useful for balancing`).toBe(true)
+    }
+  })
+
+  it('every expert reaction has K in tractable range for Gen Chem 102 (1e-4 to 1e4)', () => {
+    for (const id of ICE_EXPERT_IDS) {
+      const r = EQUILIBRIUM_REACTIONS.find(r => r.id === id)!
+      expect(r.K, `'${id}' K=${r.K} is too small`).toBeGreaterThan(1e-4)
+      expect(r.K, `'${id}' K=${r.K} is too large`).toBeLessThan(1e4)
+    }
+  })
+
+  it('expert IDs are a subset of real IDs (no expert-only reactions missing from real pool)', () => {
+    for (const id of ICE_EXPERT_IDS) {
+      expect(ICE_REAL_IDS, `expert reaction '${id}' not in ICE_REAL_IDS`).toContain(id)
+    }
+  })
+})
+
+// ── generateDynamicICEProblem — solvability across all difficulties ────────────
+
+describe('generateDynamicICEProblem difficulty 2 (20 runs)', () => {
+  it('produces positive equilibrium concentrations satisfying K', () => {
+    for (let i = 0; i < 20; i++) {
+      const p = generateDynamicICEProblem(2)
+      expect(p.K).toBeGreaterThan(0)
+      expect(p.balancingRequired).toBeFalsy()
+      for (const [sp, c] of Object.entries(p.solution.equilibriumConcentrations)) {
+        expect(c, `[${sp}] must be > 0`).toBeGreaterThan(1e-12)
+      }
+      if (p.kType === 'Kc') verifyKFromEquil(p.products, p.reactants, p.solution.equilibriumConcentrations, p.K)
+    }
+  })
+})
+
+describe('generateDynamicICEProblem difficulty 3 (20 runs)', () => {
+  it('produces positive equilibrium concentrations satisfying K', () => {
+    for (let i = 0; i < 20; i++) {
+      const p = generateDynamicICEProblem(3)
+      expect(p.K).toBeGreaterThan(0)
+      expect(p.balancingRequired).toBeFalsy()
+      for (const [sp, c] of Object.entries(p.solution.equilibriumConcentrations)) {
+        expect(c, `[${sp}] must be > 0`).toBeGreaterThan(1e-12)
+      }
+      if (p.kType === 'Kc') verifyKFromEquil(p.products, p.reactants, p.solution.equilibriumConcentrations, p.K)
+    }
+  })
+})
+
+describe('generateDynamicICEProblem difficulty 4 (20 runs)', () => {
+  it('produces positive equilibrium concentrations satisfying K', () => {
+    for (let i = 0; i < 20; i++) {
+      const p = generateDynamicICEProblem(4)
+      expect(p.K).toBeGreaterThan(0)
+      expect(p.balancingRequired).toBeFalsy()
+      for (const [sp, c] of Object.entries(p.solution.equilibriumConcentrations)) {
+        expect(c, `[${sp}] must be > 0`).toBeGreaterThan(1e-12)
+      }
+      if (p.kType === 'Kc') verifyKFromEquil(p.products, p.reactants, p.solution.equilibriumConcentrations, p.K)
+    }
+  })
+})
+
+describe('generateDynamicICEProblem difficulty 5 / Expert (20 runs)', () => {
+  it('produces valid solvable problems with balancing metadata', () => {
+    for (let i = 0; i < 20; i++) {
+      const p = generateDynamicICEProblem(5)
+
+      // Expert-tier shape
+      expect(p.balancingRequired).toBe(true)
+      expect(p.skeletonEquation).toBeDefined()
+      expect(p.skeletonEquation!.length).toBeGreaterThan(0)
+      expect(p.isTemplate).toBeFalsy()
+
+      // Skeleton contains every species formula
+      for (const s of [...p.reactants, ...p.products]) {
+        expect(p.skeletonEquation, `skeleton missing species '${s.formula}'`).toContain(s.formula)
+      }
+
+      // Skeleton contains the equilibrium arrow
+      expect(p.skeletonEquation).toContain('⇌')
+
+      // All species have positive integer coefficients
+      for (const s of [...p.reactants, ...p.products]) {
+        expect(Number.isInteger(s.coefficient), `${s.formula} coefficient not integer`).toBe(true)
+        expect(s.coefficient).toBeGreaterThan(0)
+      }
+
+      // ICE table is solvable: all equilibrium concentrations positive
+      expect(p.K).toBeGreaterThan(0)
+      for (const [sp, c] of Object.entries(p.solution.equilibriumConcentrations)) {
+        expect(c, `[${sp}] must be > 0`).toBeGreaterThan(1e-12)
+      }
+      // Kp reactions use partial pressures, not concentrations — skip Kc back-check
+      if (p.kType === 'Kc') verifyKFromEquil(p.products, p.reactants, p.solution.equilibriumConcentrations, p.K)
+    }
+  })
+
+  it('uses only reactions from ICE_EXPERT_IDS (no templates)', () => {
+    for (let i = 0; i < 20; i++) {
+      const p = generateDynamicICEProblem(5)
+      const match = EQUILIBRIUM_REACTIONS.find(r => r.equation === p.equation)
+      expect(match, `equation not found in EQUILIBRIUM_REACTIONS: ${p.equation}`).toBeDefined()
+      expect(ICE_EXPERT_IDS, `reaction '${match!.id}' not in ICE_EXPERT_IDS`).toContain(match!.id)
     }
   })
 })

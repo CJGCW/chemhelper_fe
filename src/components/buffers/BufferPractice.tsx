@@ -4,6 +4,7 @@ import { bufferPh } from '../../chem/buffers'
 import NumberField from '../shared/NumberField'
 import ResultDisplay from '../shared/ResultDisplay'
 import type { VerifyState } from '../../utils/calcHelpers'
+import GeneratedBadge from '../shared/GeneratedBadge'
 
 interface Props {
   allowCustom?: boolean
@@ -68,12 +69,7 @@ export default function BufferPractice({ allowCustom = true }: Props) {
       {/* Problem */}
       <div className="p-4 rounded-sm border border-border bg-raised">
         <div className="flex items-center gap-2 mb-1.5">
-          {problem.isDynamic && (
-            <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
-              style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
-              generated
-            </span>
-          )}
+          {problem.isDynamic && <GeneratedBadge />}
         </div>
         <p className="font-sans text-sm text-primary leading-relaxed">{problem.prompt}</p>
       </div>

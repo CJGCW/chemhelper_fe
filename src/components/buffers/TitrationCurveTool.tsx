@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { computeTitrationCurve, type TitrationCurveSolution } from '../../chem/titrationCurve'
 import NumberField from '../shared/NumberField'
 
@@ -151,51 +151,51 @@ export default function TitrationCurveTool() {
   const [kbStr,      setKbStr]      = useState('1.8e-5')
   const [error,      setError]      = useState<string | null>(null)
 
-  const solution = useMemo<TitrationCurveSolution | null>(() => {
+  const { solution, computeError } = useMemo<{ solution: TitrationCurveSolution | null; computeError: string | null }>(() => {
     const ca = parseFloat(concA)
     const va = parseFloat(volA)
     const cb = parseFloat(concB)
 
     if (!isFinite(ca) || ca <= 0 || !isFinite(va) || va <= 0 || !isFinite(cb) || cb <= 0) {
-      setError('Enter positive values for concentrations and volume.')
-      return null
+      return { solution: null, computeError: 'Enter positive values for concentrations and volume.' }
     }
 
     try {
-      setError(null)
       if (curveType === 'SA+SB') {
-        return computeTitrationCurve({
+        return { solution: computeTitrationCurve({
           analyte: { type: 'strong-acid', concentration: ca, volume: va },
           titrant: { type: 'strong-base', concentration: cb },
-        })
+        }), computeError: null }
       }
       if (curveType === 'SB+SA') {
-        return computeTitrationCurve({
+        return { solution: computeTitrationCurve({
           analyte: { type: 'strong-base', concentration: ca, volume: va },
           titrant: { type: 'strong-acid', concentration: cb },
-        })
+        }), computeError: null }
       }
       if (curveType === 'WA+SB') {
         const Ka = parseFloat(kaStr)
-        if (!isFinite(Ka) || Ka <= 0) { setError('Enter a valid Ka value.'); return null }
-        return computeTitrationCurve({
+        if (!isFinite(Ka) || Ka <= 0) return { solution: null, computeError: 'Enter a valid Ka value.' }
+        return { solution: computeTitrationCurve({
           analyte: { type: 'weak-acid', concentration: ca, volume: va, Ka },
           titrant: { type: 'strong-base', concentration: cb },
-        })
+        }), computeError: null }
       }
       if (curveType === 'WB+SA') {
         const Kb = parseFloat(kbStr)
-        if (!isFinite(Kb) || Kb <= 0) { setError('Enter a valid Kb value.'); return null }
-        return computeTitrationCurve({
+        if (!isFinite(Kb) || Kb <= 0) return { solution: null, computeError: 'Enter a valid Kb value.' }
+        return { solution: computeTitrationCurve({
           analyte: { type: 'weak-base', concentration: ca, volume: va, Kb },
           titrant: { type: 'strong-acid', concentration: cb },
-        })
+        }), computeError: null }
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Computation error')
+      return { solution: null, computeError: e instanceof Error ? e.message : 'Computation error' }
     }
-    return null
+    return { solution: null, computeError: null }
   }, [curveType, concA, volA, concB, kaStr, kbStr])
+
+  useEffect(() => { setError(computeError) }, [computeError])
 
   const maxVol = solution
     ? solution.equivalenceVolume * 2.2
