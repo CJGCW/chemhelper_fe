@@ -12,6 +12,7 @@ export interface SigFigProblem {
   limitingSF?:   number
   limitingDP?:   number
   isAddSub?:     boolean
+  isDynamic?:    boolean
 }
 
 // ── Random helpers ────────────────────────────────────────────────────────────
@@ -130,6 +131,19 @@ export function makeArithProblem(forceAddSub?: boolean): SigFigProblem {
 /** Generate one sig fig problem, randomly choosing count vs arithmetic. */
 export function generateSigFigProblem(): SigFigProblem {
   return rnd(0, 1) === 0 ? makeCountProblem() : makeArithProblem()
+}
+
+// ── Dynamic generator ─────────────────────────────────────────────────────────
+
+/**
+ * Generates a dynamic sig fig problem.  The pool-based generators already
+ * produce fully random numbers, so the "dynamic" variant simply tags the
+ * result with `isDynamic: true` to signal to the UI that a badge should appear.
+ * All math is identical — no new code path to maintain.
+ */
+export function generateDynamicSigfigProblem(): SigFigProblem {
+  const base = rnd(0, 1) === 0 ? makeCountProblem() : makeArithProblem()
+  return { ...base, isDynamic: true }
 }
 
 // ── Answer checker ────────────────────────────────────────────────────────────

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { generateBufferPhProblem } from '../../utils/bufferPractice'
+import { generateBufferPhProblem, generateDynamicBufferPhProblem } from '../../utils/bufferPractice'
 import { bufferPh } from '../../chem/buffers'
 import NumberField from '../shared/NumberField'
 import ResultDisplay from '../shared/ResultDisplay'
@@ -9,17 +9,21 @@ interface Props {
   allowCustom?: boolean
 }
 
+function nextBuffer(allowCustom: boolean) {
+  return (!allowCustom || Math.random() < 0.6) ? generateDynamicBufferPhProblem() : generateBufferPhProblem()
+}
+
 export default function BufferPractice({ allowCustom = true }: Props) {
-  const [problem, setProblem]     = useState(() => generateBufferPhProblem())
+  const [problem, setProblem]     = useState(() => nextBuffer(allowCustom))
   const [userAnswer, setAnswer]   = useState('')
   const [verified, setVerified]   = useState<VerifyState>(null)
   const [score, setScore]         = useState({ correct: 0, total: 0 })
 
   const newProblem = useCallback(() => {
-    setProblem(generateBufferPhProblem())
+    setProblem(nextBuffer(allowCustom))
     setAnswer('')
     setVerified(null)
-  }, [])
+  }, [allowCustom])
 
   function verify() {
     const val = parseFloat(userAnswer)
@@ -63,6 +67,14 @@ export default function BufferPractice({ allowCustom = true }: Props) {
 
       {/* Problem */}
       <div className="p-4 rounded-sm border border-border bg-raised">
+        <div className="flex items-center gap-2 mb-1.5">
+          {problem.isDynamic && (
+            <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
+              style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
+              generated
+            </span>
+          )}
+        </div>
         <p className="font-sans text-sm text-primary leading-relaxed">{problem.prompt}</p>
       </div>
 

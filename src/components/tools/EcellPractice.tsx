@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import type { EcellSubtype } from '../../utils/ecellPractice'
-import { genEcellProblem, checkEcellAnswer } from '../../utils/ecellPractice'
+import { genEcellProblem, generateDynamicEcellProblem, checkEcellAnswer } from '../../utils/ecellPractice'
 import StepsPanel from '../shared/StepsPanel'
 
 type Selection = EcellSubtype | 'random'
@@ -16,8 +16,9 @@ const TYPES: { id: Selection; label: string; formula: string }[] = [
 
 const SUBTYPES: EcellSubtype[] = ['calc_e0cell', 'spontaneity', 'nernst', 'delta_g']
 
-function freshProblem(sel: Selection) {
+function freshProblem(sel: Selection, forceDynamic = false) {
   const sub: EcellSubtype = sel === 'random' ? SUBTYPES[Math.floor(Math.random() * SUBTYPES.length)] : sel
+  if (forceDynamic || Math.random() < 0.6) return generateDynamicEcellProblem(sub)
   return genEcellProblem(sub)
 }
 
@@ -36,13 +37,13 @@ export default function EcellPractice({ allowCustom = true }: Props) {
   useEffect(() => { if (!allowCustom) nextProblem() }, [allowCustom])
 
   function nextProblem(sel: Selection = selected) {
-    setProblem(freshProblem(sel))
+    setProblem(freshProblem(sel, !allowCustom))
     setAnswer(''); setChecked(false); setSteps([])
   }
 
   function handleTypeChange(sel: Selection) {
     setSelected(sel)
-    setProblem(freshProblem(sel))
+    setProblem(freshProblem(sel, !allowCustom))
     setAnswer(''); setChecked(false); setSteps([])
     setScore({ correct: 0, total: 0 })
   }
@@ -116,12 +117,23 @@ export default function EcellPractice({ allowCustom = true }: Props) {
         className={`rounded-sm border p-5 flex flex-col gap-4 transition-colors ${borderClass}`}
       >
         {/* Context block — half-reactions */}
-        <pre
-          className="font-mono text-xs text-secondary rounded-sm px-3 py-2.5 overflow-x-auto whitespace-pre-wrap"
-          style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}
-        >
-          {problem.context}
-        </pre>
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-xs text-secondary uppercase tracking-wider">Half-reactions</span>
+            {problem.isDynamic && (
+              <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
+                style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
+                generated
+              </span>
+            )}
+          </div>
+          <pre
+            className="font-mono text-xs text-secondary rounded-sm px-3 py-2.5 overflow-x-auto whitespace-pre-wrap"
+            style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}
+          >
+            {problem.context}
+          </pre>
+        </div>
 
         <p className="font-sans text-base text-bright leading-relaxed">{problem.question}</p>
 

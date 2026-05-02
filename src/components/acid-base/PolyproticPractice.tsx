@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react'
 import NumberField from '../shared/NumberField'
 import PhScale from '../shared/PhScale'
 import { useShowAnswers } from '../../stores/preferencesStore'
-import { generatePolyproticProblem } from '../../utils/acidBasePractice'
+import { generatePolyproticProblem, generateDynamicPolyproticProblem } from '../../utils/acidBasePractice'
 
 interface Props {
   allowCustom?: boolean
@@ -10,20 +10,24 @@ interface Props {
 
 type VerifyState = 'correct' | 'incorrect' | null
 
+function nextPolyprotic(allowCustom: boolean) {
+  return (!allowCustom || Math.random() < 0.6) ? generateDynamicPolyproticProblem() : generatePolyproticProblem()
+}
+
 export default function PolyproticPractice({ allowCustom: _allowCustom = true }: Props) {
   const showAnswers = useShowAnswers()
-  const [problem, setProblem] = useState(() => generatePolyproticProblem())
+  const [problem, setProblem] = useState(() => nextPolyprotic(_allowCustom))
   const [answer, setAnswer] = useState('')
   const [verifyState, setVerifyState] = useState<VerifyState>(null)
   const [score, setScore] = useState({ correct: 0, total: 0 })
   const [revealed, setRevealed] = useState(false)
 
   const next = useCallback(() => {
-    setProblem(generatePolyproticProblem())
+    setProblem(nextPolyprotic(_allowCustom))
     setAnswer('')
     setVerifyState(null)
     setRevealed(false)
-  }, [])
+  }, [_allowCustom])
 
   function handleVerify() {
     const studentPh = parseFloat(answer)
@@ -53,6 +57,14 @@ export default function PolyproticPractice({ allowCustom: _allowCustom = true }:
       </div>
 
       <div className="p-4 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
+        <div className="flex items-center gap-2 mb-1.5">
+          {problem.isDynamic && (
+            <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
+              style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
+              generated
+            </span>
+          )}
+        </div>
         <p className="font-sans text-sm text-primary leading-relaxed">{problem.question}</p>
         <p className="font-mono text-xs text-secondary mt-2">
           Hint: Use Ka1 only. Ka2 contribution to [H⁺] is negligible.

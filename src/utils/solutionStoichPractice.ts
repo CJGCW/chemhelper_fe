@@ -17,6 +17,7 @@ export interface SolStoichProblem {
   answer:     number
   answerUnit: string
   steps:      string[]
+  isDynamic?: boolean
 }
 
 // ── Reaction data ─────────────────────────────────────────────────────────────
@@ -109,6 +110,11 @@ const NICE_VOLS_ML  = [10.0, 15.0, 20.0, 25.0, 30.0, 40.0, 50.0]
 const NICE_CONCS    = [0.100, 0.250, 0.500, 1.00, 1.50, 2.00]
 const NICE_MASSES_G = [2.50, 5.00, 10.0, 15.0, 20.0, 25.0]
 
+// Wider ranges used by the dynamic generator
+const DYN_VOLS_ML  = [10, 15, 20, 25, 30, 40, 50, 75, 100, 125, 150, 200, 250, 300, 400, 500]
+const DYN_CONCS    = [0.10, 0.15, 0.20, 0.25, 0.30, 0.40, 0.50, 0.75, 1.00, 1.25, 1.50, 1.75, 2.00]
+const DYN_MASSES_G = [1.00, 2.50, 5.00, 7.50, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 40.0, 50.0]
+
 // ── Generators ────────────────────────────────────────────────────────────────
 
 function genVolToMass(): SolStoichProblem {
@@ -145,6 +151,42 @@ function genVolToVol(): SolStoichProblem {
   return { type: 'vol_to_vol', equation: rxn.equation, question, answer, answerUnit: 'mL', steps }
 }
 
+// ── Dynamic generators (wider numeric ranges, same reactions) ─────────────────
+
+function genDynVolToMass(): SolStoichProblem {
+  const rxn   = pick(ACID_SOLID_RXNS)
+  const volML = pick(DYN_VOLS_ML)
+  const conc  = pick(DYN_CONCS)
+  const { steps, answer } = calcVolToMass(rxn, volML, conc)
+  const question =
+    `What mass of ${rxn.solidName} (${rxn.solidDisplay}) reacts completely with ` +
+    `${volML.toFixed(1)} mL of ${sig(conc, 3)} M ${rxn.acidName} (${rxn.acidDisplay})?`
+  return { type: 'vol_to_mass', equation: rxn.equation, question, answer, answerUnit: 'g', steps, isDynamic: true }
+}
+
+function genDynMassToVol(): SolStoichProblem {
+  const rxn  = pick(ACID_SOLID_RXNS)
+  const mass = pick(DYN_MASSES_G)
+  const conc = pick(DYN_CONCS)
+  const { steps, answer } = calcMassToVol(rxn, mass, conc)
+  const question =
+    `How many mL of ${sig(conc, 3)} M ${rxn.acidName} (${rxn.acidDisplay}) are needed to ` +
+    `react completely with ${mass.toFixed(2)} g of ${rxn.solidName} (${rxn.solidDisplay})?`
+  return { type: 'mass_to_vol', equation: rxn.equation, question, answer, answerUnit: 'mL', steps, isDynamic: true }
+}
+
+function genDynVolToVol(): SolStoichProblem {
+  const rxn   = pick(ACID_BASE_RXNS)
+  const volML = pick(DYN_VOLS_ML)
+  const concA = pick(DYN_CONCS)
+  const concB = pick(DYN_CONCS)
+  const { steps, answer } = calcVolToVol(rxn, volML, concA, concB)
+  const question =
+    `How many mL of ${sig(concB, 3)} M ${rxn.baseName} (${rxn.baseDisplay}) are needed to ` +
+    `neutralize ${volML.toFixed(1)} mL of ${sig(concA, 3)} M ${rxn.acidName} (${rxn.acidDisplay})?`
+  return { type: 'vol_to_vol', equation: rxn.equation, question, answer, answerUnit: 'mL', steps, isDynamic: true }
+}
+
 // ── Public API ────────────────────────────────────────────────────────────────
 
 export function generateSolStoichProblem(type?: SolStoichType): SolStoichProblem {
@@ -152,6 +194,17 @@ export function generateSolStoichProblem(type?: SolStoichType): SolStoichProblem
   if (t === 'vol_to_mass') return genVolToMass()
   if (t === 'mass_to_vol') return genMassToVol()
   return genVolToVol()
+}
+
+/**
+ * Dynamic generator — same reactions as the pool but with a wider spread of
+ * volumes (10–500 mL) and concentrations (0.10–2.00 M). Returns isDynamic: true.
+ */
+export function generateDynamicSolStoichProblem(type?: SolStoichType): SolStoichProblem {
+  const t = type ?? pick<SolStoichType>(['vol_to_mass', 'mass_to_vol', 'vol_to_vol'])
+  if (t === 'vol_to_mass') return genDynVolToMass()
+  if (t === 'mass_to_vol') return genDynMassToVol()
+  return genDynVolToVol()
 }
 
 export function checkSolStoichAnswer(problem: SolStoichProblem, userInput: string): boolean {

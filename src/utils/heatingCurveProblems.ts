@@ -33,10 +33,14 @@ export interface HCProblem {
 // ── Data ─────────────────────────────────────────────────────────────────────
 
 export const HC_SUBSTANCES: SubData[] = [
-  { name: 'Water',   formula: 'H₂O',    M: 18.015, mp: 0,      bp: 100,  cs: 2.090, cl: 4.184, cg: 2.010, dHfus: 6.02,  dHvap: 40.7  },
-  { name: 'Ethanol', formula: 'C₂H₅OH', M: 46.07,  mp: -114.1, bp: 78.4, cs: 2.42,  cl: 2.44,  cg: 1.42,  dHfus: 4.93,  dHvap: 38.6  },
-  { name: 'Ammonia', formula: 'NH₃',    M: 17.03,  mp: -77.7,  bp: -33.4,cs: 1.995, cl: 4.700, cg: 2.175, dHfus: 5.65,  dHvap: 23.35 },
-  { name: 'Benzene', formula: 'C₆H₆',   M: 78.11,  mp: 5.5,    bp: 80.1, cs: 1.74,  cl: 1.74,  cg: 1.06,  dHfus: 9.87,  dHvap: 30.7  },
+  { name: 'Water',          formula: 'H₂O',    M: 18.015, mp: 0,      bp: 100,   cs: 2.090, cl: 4.184, cg: 2.010, dHfus:  6.02, dHvap: 40.7  },
+  { name: 'Ethanol',        formula: 'C₂H₅OH', M: 46.07,  mp: -114.1, bp: 78.4,  cs: 2.42,  cl: 2.44,  cg: 1.42,  dHfus:  4.93, dHvap: 38.6  },
+  { name: 'Ammonia',        formula: 'NH₃',    M: 17.03,  mp: -77.7,  bp: -33.4, cs: 1.995, cl: 4.700, cg: 2.175, dHfus:  5.65, dHvap: 23.35 },
+  { name: 'Benzene',        formula: 'C₆H₆',   M: 78.11,  mp: 5.5,    bp: 80.1,  cs: 1.74,  cl: 1.74,  cg: 1.06,  dHfus:  9.87, dHvap: 30.7  },
+  // Additional substances for wider problem variety
+  { name: 'Acetone',        formula: 'C₃H₆O',  M: 58.08,  mp: -94.7,  bp: 56.1,  cs: 1.46,  cl: 2.17,  cg: 1.29,  dHfus:  5.69, dHvap: 31.3  },
+  { name: 'Acetic acid',    formula: 'CH₃COOH',M: 60.05,  mp: 16.7,   bp: 117.9, cs: 2.05,  cl: 2.04,  cg: 1.11,  dHfus: 11.73, dHvap: 23.7  },
+  { name: 'Chloroform',     formula: 'CHCl₃',  M: 119.38, mp: -63.5,  bp: 61.2,  cs: 0.955, cl: 0.968, cg: 0.628, dHfus:  9.05, dHvap: 29.2  },
 ]
 
 export const HC_QUESTION_KINDS: QKind[] = [

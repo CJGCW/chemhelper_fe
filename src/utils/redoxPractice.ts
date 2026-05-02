@@ -1,6 +1,9 @@
+import { HALF_REACTIONS } from '../data/reductionPotentials'
+import type { HalfReaction } from '../data/reductionPotentials'
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-export type RedoxSubtype = 'ox_state' | 'identify_redox' | 'ox_change' | 'charge_balance'
+export type RedoxSubtype = 'ox_state' | 'identify_redox' | 'ox_change' | 'charge_balance' | 'ecell'
 
 export interface RedoxProblem {
   subtype:      RedoxSubtype
@@ -11,6 +14,7 @@ export interface RedoxProblem {
   steps:        string[]
   hint?:        string
   reactionEq?:  string        // shown as a context block in the question
+  isDynamic?:   boolean
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -634,13 +638,111 @@ function genChargeBalance(): RedoxProblem {
   }
 }
 
+// ── 5. E°cell from half-reactions ─────────────────────────────────────────────
+
+// Filter out the confusing H2O_ano entry that has a note in the cathode string
+const CLEAN_HALF_REACTIONS = HALF_REACTIONS.filter(hr => !hr.id.includes('H2O_ano'))
+
+function fmtV(v: number, dec = 3): string {
+  return (v >= 0 ? '+' : '') + v.toFixed(dec)
+}
+
+/** Pick two distinct half-reactions ensuring cathode.e0 > anode.e0 */
+function pickCathodeAnodeForRedox(): [HalfReaction, HalfReaction] {
+  let c: HalfReaction, a: HalfReaction
+  do {
+    c = pick(CLEAN_HALF_REACTIONS)
+    a = pick(CLEAN_HALF_REACTIONS)
+  } while (c.id === a.id || c.e0 <= a.e0)
+  return [c, a]
+}
+
+/** E°cell = E°cathode − E°anode type: given both half-reactions, find E°cell */
+function genEcellFromHalfReactions(): RedoxProblem {
+  const [cathode, anode] = pickCathodeAnodeForRedox()
+  const ecell = parseFloat((cathode.e0 - anode.e0).toFixed(3))
+  const sign  = fmtV(ecell)
+
+  const context =
+    `Cathode (reduction): ${cathode.cathode}  [E° = ${fmtV(cathode.e0)} V]\n` +
+    `Anode (oxidation):   ${anode.cathode}  [reversed, E° = ${fmtV(anode.e0)} V]`
+
+  const steps = [
+    `Formula: E°cell = E°cathode − E°anode`,
+    `E°cell = ${fmtV(cathode.e0)} V − (${fmtV(anode.e0)} V)`,
+    `E°cell = ${sign} V`,
+    ecell > 0
+      ? `E°cell > 0 → spontaneous under standard conditions.`
+      : `E°cell < 0 → non-spontaneous under standard conditions.`,
+  ]
+
+  return {
+    subtype:      'ecell',
+    question:     'Calculate E°cell (in V) for the galvanic cell. Give your answer to 3 decimal places.',
+    reactionEq:   context,
+    answer:       sign,
+    answerUnit:   'V',
+    isTextAnswer: false,
+    steps,
+    hint:         'E°cell = E°cathode − E°anode. Do not reverse the sign of the anode E° — just subtract it.',
+    isDynamic:    true,
+  }
+}
+
+/** Reverse problem: given E°cell and the cathode, find E°anode */
+function genFindAnodeEcell(): RedoxProblem {
+  const [cathode, anode] = pickCathodeAnodeForRedox()
+  const ecell = parseFloat((cathode.e0 - anode.e0).toFixed(3))
+
+  const context =
+    `Cathode (reduction): ${cathode.cathode}  [E° = ${fmtV(cathode.e0)} V]\n` +
+    `E°cell = ${fmtV(ecell)} V`
+
+  const steps = [
+    `Formula: E°cell = E°cathode − E°anode  →  E°anode = E°cathode − E°cell`,
+    `E°anode = ${fmtV(cathode.e0)} − (${fmtV(ecell)})`,
+    `E°anode = ${fmtV(anode.e0)} V`,
+  ]
+
+  return {
+    subtype:      'ecell',
+    question:     `The cathode and E°cell are given. What is the standard reduction potential (E°) of the anode half-reaction? Give your answer in V to 3 decimal places.`,
+    reactionEq:   context,
+    answer:       fmtV(anode.e0),
+    answerUnit:   'V',
+    isTextAnswer: false,
+    steps,
+    hint:         'Rearrange E°cell = E°cathode − E°anode to solve for E°anode.',
+    isDynamic:    true,
+  }
+}
+
+function genEcell(): RedoxProblem {
+  return pick([genEcellFromHalfReactions, genFindAnodeEcell])()
+}
+
 // ── Public API ────────────────────────────────────────────────────────────────
 
 export function generateRedoxProblem(subtype: RedoxSubtype): RedoxProblem {
   if (subtype === 'ox_state')       return genOxState()
   if (subtype === 'identify_redox') return genIdentifyRedox()
   if (subtype === 'charge_balance') return genChargeBalance()
+  if (subtype === 'ecell')          return genEcell()
   return genOxChange()
+}
+
+/**
+ * Dynamic generator — returns the same RedoxProblem type with isDynamic: true.
+ * For ecell problems, draws from real HALF_REACTIONS data.
+ * For other subtypes, delegates to the pool-based generators (which are already
+ * randomised) and marks the result as dynamic.
+ */
+export function generateDynamicRedoxProblem(subtype: RedoxSubtype): RedoxProblem {
+  // ecell is always dynamic (data-driven)
+  if (subtype === 'ecell') return genEcell()
+  // Other subtypes are already randomised — just tag them
+  const p = generateRedoxProblem(subtype)
+  return { ...p, isDynamic: true }
 }
 
 export function checkRedoxAnswer(input: string, p: RedoxProblem): boolean {
@@ -649,6 +751,14 @@ export function checkRedoxAnswer(input: string, p: RedoxProblem): boolean {
 
   if (p.isTextAnswer) {
     return normaliseFormula(s) === normaliseFormula(p.answer)
+  }
+
+  // E°cell: floating-point comparison with ±0.002 V tolerance
+  if (p.subtype === 'ecell') {
+    const userVal = parseFloat(s.replace(/[^0-9.+\-]/g, ''))
+    const corrVal = parseFloat(p.answer)
+    if (isNaN(userVal) || isNaN(corrVal)) return false
+    return Math.abs(userVal - corrVal) <= 0.002
   }
 
   // Numeric: signed integer (ox state or change)

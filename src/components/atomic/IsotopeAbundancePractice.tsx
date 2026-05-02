@@ -1,19 +1,29 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { generateIsotopeProblem, checkIsotopeAnswer } from '../../utils/isotopePractice'
+import {
+  generateIsotopeProblem,
+  generateDynamicIsotopeProblem,
+  checkIsotopeAnswer,
+} from '../../utils/isotopePractice'
 import type { IsotopeProblem } from '../../utils/isotopePractice'
 
 interface Props { allowCustom?: boolean }
 
+function nextIsotopeProblem(allowCustom: boolean): IsotopeProblem {
+  // Problems mode (allowCustom=false) always dynamic; Practice mode 60% dynamic
+  if (!allowCustom || Math.random() < 0.6) return generateDynamicIsotopeProblem()
+  return generateIsotopeProblem()
+}
+
 export default function IsotopeAbundancePractice({ allowCustom = true }: Props) {
-  const [problem,   setProblem]   = useState<IsotopeProblem>(() => generateIsotopeProblem())
+  const [problem,   setProblem]   = useState<IsotopeProblem>(() => nextIsotopeProblem(allowCustom))
   const [answer,    setAnswer]    = useState('')
   const [checked,   setChecked]   = useState(false)
   const [correct,   setCorrect]   = useState(false)
   const [showSteps, setShowSteps] = useState(false)
   const [score,     setScore]     = useState({ right: 0, total: 0 })
 
-    useEffect(() => { if (!allowCustom) handleNext() }, [allowCustom])
+  useEffect(() => { if (!allowCustom) handleNext() }, [allowCustom]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleCheck() {
     if (!answer.trim()) return
@@ -24,7 +34,7 @@ export default function IsotopeAbundancePractice({ allowCustom = true }: Props) 
   }
 
   function handleNext() {
-    setProblem(generateIsotopeProblem())
+    setProblem(nextIsotopeProblem(allowCustom))
     setAnswer('')
     setChecked(false)
     setShowSteps(false)
@@ -70,9 +80,17 @@ export default function IsotopeAbundancePractice({ allowCustom = true }: Props) 
       >
         {/* Question text — first line is the element header, rest are data lines */}
         <div className="flex flex-col gap-1">
-          <p className="font-sans text-base text-bright leading-relaxed">
-            {questionLines[0]}
-          </p>
+          <div className="flex items-center gap-2">
+            <p className="font-sans text-base text-bright leading-relaxed">
+              {questionLines[0]}
+            </p>
+            {problem.isDynamic && (
+              <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
+                style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
+                generated
+              </span>
+            )}
+          </div>
           {questionLines.slice(1, -1).map((line, i) => (
             <p key={i} className="font-mono text-sm text-secondary pl-3 border-l border-border">
               {line}

@@ -1,11 +1,17 @@
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { generatePercentErrorProblem, type PercentErrorProblem } from '../../utils/percentErrorPractice'
+import { generatePercentErrorProblem, generateDynamicPercentErrorProblem, type PercentErrorProblem } from '../../utils/percentErrorPractice'
 
 interface Props { allowCustom?: boolean }
 
-export default function PercentErrorPractice({ allowCustom: _allowCustom = true }: Props) {
-  const [problem, setProblem] = useState<PercentErrorProblem>(() => generatePercentErrorProblem())
+function nextPercentErrorProblem(allowCustom: boolean): PercentErrorProblem {
+  // Problems mode → 100% dynamic; Practice mode → 60% dynamic
+  const useDynamic = !allowCustom || Math.random() < 0.6
+  return useDynamic ? generateDynamicPercentErrorProblem() : generatePercentErrorProblem()
+}
+
+export default function PercentErrorPractice({ allowCustom = true }: Props) {
+  const [problem, setProblem] = useState<PercentErrorProblem>(() => nextPercentErrorProblem(allowCustom))
   const [studentAnswer, setStudentAnswer] = useState('')
   const [checked, setChecked] = useState(false)
   const [showSteps, setShowSteps] = useState(false)
@@ -13,7 +19,7 @@ export default function PercentErrorPractice({ allowCustom: _allowCustom = true 
   const isCorrect = checked && Math.abs(parseFloat(studentAnswer) - problem.answer) / problem.answer < 0.005
 
   const nextProblem = useCallback(() => {
-    setProblem(generatePercentErrorProblem())
+    setProblem(nextPercentErrorProblem(allowCustom))
     setStudentAnswer('')
     setChecked(false)
     setShowSteps(false)
@@ -35,7 +41,15 @@ export default function PercentErrorPractice({ allowCustom: _allowCustom = true 
           {/* Problem */}
           <div className="rounded-sm border border-border px-4 py-3"
             style={{ background: 'rgb(var(--color-base))' }}>
-            <p className="font-mono text-xs text-secondary tracking-widest uppercase mb-2">Problem</p>
+            <div className="flex items-center gap-2 mb-2">
+              <p className="font-mono text-xs text-secondary tracking-widest uppercase">Problem</p>
+              {problem.isDynamic && (
+                <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
+                  style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
+                  generated
+                </span>
+              )}
+            </div>
             <p className="font-sans text-sm text-primary leading-relaxed">{problem.scenario}</p>
           </div>
 

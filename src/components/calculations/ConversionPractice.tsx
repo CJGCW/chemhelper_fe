@@ -1,12 +1,19 @@
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { generateConversionProblem, checkConversionAnswer, type ConversionProblem } from '../../utils/conversionPractice'
+import { generateConversionProblem, generateDynamicConversionProblem, checkConversionAnswer, type ConversionProblem } from '../../utils/conversionPractice'
 import { useShowAnswers } from '../../stores/preferencesStore'
 
 interface Props { allowCustom?: boolean }
 
-export default function ConversionPractice({ allowCustom: _allowCustom = true }: Props) {
-  const [problem, setProblem] = useState<ConversionProblem>(() => generateConversionProblem())
+function nextProblemFn(allowCustom: boolean): ConversionProblem {
+  // Problems mode (allowCustom=false) → 100% dynamic
+  // Practice mode → 60% dynamic, 40% pool
+  const useDynamic = !allowCustom || Math.random() < 0.6
+  return useDynamic ? generateDynamicConversionProblem() : generateConversionProblem()
+}
+
+export default function ConversionPractice({ allowCustom = true }: Props) {
+  const [problem, setProblem] = useState<ConversionProblem>(() => nextProblemFn(allowCustom))
   const [input, setInput] = useState('')
   const [checked, setChecked] = useState(false)
   const [score, setScore] = useState({ correct: 0, total: 0 })
@@ -15,7 +22,7 @@ export default function ConversionPractice({ allowCustom: _allowCustom = true }:
   const showAnswers = useShowAnswers()
 
   const next = useCallback(() => {
-    setProblem(generateConversionProblem())
+    setProblem(nextProblemFn(allowCustom))
     setInput('')
     setChecked(false)
   }, [])
@@ -49,7 +56,15 @@ export default function ConversionPractice({ allowCustom: _allowCustom = true }:
           className="flex flex-col gap-4 rounded-sm border border-border p-5"
           style={{ background: 'rgb(var(--color-surface))' }}
         >
-          <p className="font-sans text-sm text-primary leading-relaxed">{problem.question}</p>
+          <div className="flex items-start gap-2">
+            <p className="font-sans text-sm text-primary leading-relaxed flex-1">{problem.question}</p>
+            {problem.isDynamic && (
+              <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm shrink-0"
+                style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
+                generated
+              </span>
+            )}
+          </div>
 
           <div className="flex items-center gap-2">
             <input

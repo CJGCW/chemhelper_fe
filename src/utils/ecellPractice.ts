@@ -17,6 +17,7 @@ export interface EcellProblem {
   tolerance:  number      // absolute ± for numeric answers (0 for exact-string)
   steps:      string[]
   hint?:      string
+  isDynamic?: boolean
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -196,6 +197,15 @@ export function genEcellProblem(subtype: EcellSubtype): EcellProblem {
     case 'nernst':       return genNernst()
     case 'delta_g':      return genDeltaG()
   }
+}
+
+/**
+ * Dynamic generator — every ecell problem is already data-driven (picks randomly
+ * from HALF_REACTIONS). This wrapper tags the result with isDynamic: true so
+ * components can show the "generated" badge.
+ */
+export function generateDynamicEcellProblem(subtype: EcellSubtype): EcellProblem {
+  return { ...genEcellProblem(subtype), isDynamic: true }
 }
 
 // ── Answer checker ────────────────────────────────────────────────────────────

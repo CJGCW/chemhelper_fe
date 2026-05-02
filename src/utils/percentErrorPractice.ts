@@ -9,6 +9,7 @@ export interface PercentErrorProblem {
   accepted: number
   answer: number
   steps: string[]
+  isDynamic?: boolean
 }
 
 interface Context {
@@ -67,4 +68,47 @@ export function generatePercentErrorProblem(): PercentErrorProblem {
     `The accepted value is ${ctx.accepted} ${ctx.unit}. Calculate the percent error.`
 
   return { scenario, experimental, accepted: ctx.accepted, answer, steps }
+}
+
+// ── Dynamic generator ─────────────────────────────────────────────────────────
+
+const DYNAMIC_PROPERTIES = [
+  { property: 'boiling point of water', unit: '°C',   template: 'boiling-point measurement' },
+  { property: 'density of iron',        unit: 'g/cm³', template: 'density measurement' },
+  { property: 'molar mass of glucose',  unit: 'g/mol', template: 'molar mass determination' },
+  { property: 'specific heat of water', unit: 'J/(g·°C)', template: 'calorimetry experiment' },
+  { property: 'atomic mass of carbon',  unit: 'g/mol', template: 'mass spectrometry reading' },
+  { property: 'melting point of ice',   unit: '°C',   template: 'melting-point measurement' },
+]
+
+/**
+ * Generates a dynamic percent error problem with a random theoretical value
+ * (10–1000) and a measured value offset by 1–25% random error.
+ */
+export function generateDynamicPercentErrorProblem(): PercentErrorProblem {
+  const prop = DYNAMIC_PROPERTIES[Math.floor(Math.random() * DYNAMIC_PROPERTIES.length)]
+
+  // Theoretical value: integer in 10–1000
+  const theoretical = Math.floor(10 + Math.random() * 991)
+
+  // Error magnitude: 1–25% of theoretical, rounded to 2 dp
+  const errorPct = 1 + Math.random() * 24
+  const errorMag = round(theoretical * errorPct / 100, 2)
+  const sign = Math.random() < 0.5 ? 1 : -1
+  const measured = round(theoretical + sign * errorMag, 2)
+
+  const absDiff = round(Math.abs(measured - theoretical), 2)
+  const answer = round((absDiff / theoretical) * 100, 2)
+
+  const steps = [
+    `Error = |experimental − accepted| = |${measured} − ${theoretical}| = ${absDiff}`,
+    `% error = (${absDiff} / ${theoretical}) × 100`,
+    `% error = ${answer}%`,
+  ]
+
+  const scenario =
+    `A student performed a ${prop.template} and obtained ${measured} ${prop.unit} for the ` +
+    `${prop.property}. The accepted value is ${theoretical} ${prop.unit}. Calculate the percent error.`
+
+  return { scenario, experimental: measured, accepted: theoretical, answer, steps, isDynamic: true }
 }

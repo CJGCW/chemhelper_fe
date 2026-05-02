@@ -1,6 +1,15 @@
 import { useState, useCallback } from 'react'
-import { generateGibbsKProblem, type GibbsKProblem } from '../../utils/thermodynamicsPractice'
+import {
+  generateGibbsKProblem,
+  generateDynamicGibbsKProblem,
+  type GibbsKProblem,
+} from '../../utils/thermodynamicsPractice'
 import { useShowAnswers } from '../../stores/preferencesStore'
+
+function nextGibbsKProblem(allowCustom: boolean): GibbsKProblem {
+  if (!allowCustom || Math.random() < 0.6) return generateDynamicGibbsKProblem()
+  return generateGibbsKProblem()
+}
 
 interface Props {
   allowCustom?: boolean
@@ -14,9 +23,9 @@ function formatK(K: number): string {
   return `${mantissa.toFixed(2)} × 10^${exp}`
 }
 
-export default function GibbsEquilibriumPractice(_props: Props) {
+export default function GibbsEquilibriumPractice({ allowCustom = true }: Props) {
   const showAnswers = useShowAnswers()
-  const [problem, setProblem] = useState<GibbsKProblem>(() => generateGibbsKProblem())
+  const [problem, setProblem] = useState<GibbsKProblem>(() => nextGibbsKProblem(allowCustom))
   const [input, setInput]     = useState('')
   const [verify, setVerify]   = useState<'correct' | 'incorrect' | null>(null)
   const [score, setScore]     = useState({ correct: 0, total: 0 })
@@ -65,11 +74,19 @@ export default function GibbsEquilibriumPractice(_props: Props) {
       </div>
 
       <div className="p-4 rounded-sm border border-border bg-raised">
-        <p className="font-sans text-sm text-secondary mb-2">
-          {isKtoG
-            ? `Given K = ${formatK(problem.K!)} at T = ${problem.T} K, find ΔG° (kJ/mol).`
-            : `Given ΔG° = ${problem.deltaG_kJ} kJ/mol at T = ${problem.T} K, find K.`}
-        </p>
+        <div className="flex items-center gap-2 mb-2">
+          <p className="font-sans text-sm text-secondary">
+            {isKtoG
+              ? `Given K = ${formatK(problem.K!)} at T = ${problem.T} K, find ΔG° (kJ/mol).`
+              : `Given ΔG° = ${problem.deltaG_kJ} kJ/mol at T = ${problem.T} K, find K.`}
+          </p>
+          {problem.isDynamic && (
+            <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
+              style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
+              generated
+            </span>
+          )}
+        </div>
         <p className="font-mono text-xs text-dim">R = 8.314 J/(mol·K)</p>
       </div>
 

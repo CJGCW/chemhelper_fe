@@ -1,25 +1,34 @@
 import { useState, useCallback } from 'react'
-import { generateGibbsProblem, type GibbsProblem } from '../../utils/thermodynamicsPractice'
+import {
+  generateGibbsProblem,
+  generateDynamicGibbsProblem,
+  type GibbsProblem,
+} from '../../utils/thermodynamicsPractice'
 import { useShowAnswers } from '../../stores/preferencesStore'
+
+function nextGibbsProblem(allowCustom: boolean): GibbsProblem {
+  if (!allowCustom || Math.random() < 0.6) return generateDynamicGibbsProblem()
+  return generateGibbsProblem()
+}
 
 interface Props {
   allowCustom?: boolean
 }
 
-export default function GibbsPractice(_props: Props) {
+export default function GibbsPractice({ allowCustom = true }: Props) {
   const showAnswers = useShowAnswers()
-  const [problem, setProblem] = useState<GibbsProblem>(() => generateGibbsProblem())
+  const [problem, setProblem] = useState<GibbsProblem>(() => nextGibbsProblem(allowCustom))
   const [input, setInput]     = useState('')
   const [verify, setVerify]   = useState<'correct' | 'incorrect' | null>(null)
   const [score, setScore]     = useState({ correct: 0, total: 0 })
   const [showSteps, setShowSteps] = useState(false)
 
   const nextProblem = useCallback(() => {
-    setProblem(generateGibbsProblem())
+    setProblem(nextGibbsProblem(allowCustom))
     setInput('')
     setVerify(null)
     setShowSteps(false)
-  }, [])
+  }, [allowCustom])
 
   function handleCheck() {
     const val = parseFloat(input)
@@ -40,14 +49,40 @@ export default function GibbsPractice(_props: Props) {
       </div>
 
       <div className="p-4 rounded-sm border border-border bg-raised">
-        <p className="font-sans text-sm text-secondary mb-2">
-          Calculate ΔG° for (Method {problem.method}):
-        </p>
+        <div className="flex items-center gap-2 mb-2">
+          <p className="font-sans text-sm text-secondary">
+            Calculate ΔG° for (Method {problem.method}):
+          </p>
+          {problem.isDynamic && (
+            <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
+              style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
+              generated
+            </span>
+          )}
+        </div>
         <p className="font-mono text-sm text-primary font-medium">{problem.label}</p>
         {problem.products && (
           <div className="mt-3 text-xs text-dim font-mono flex flex-col gap-1">
             <p>Products: {problem.products.map(p => `${p.coefficient} ${p.formula}(${p.state})`).join(' + ')}</p>
             <p>Reactants: {problem.reactants!.map(r => `${r.coefficient} ${r.formula}(${r.state})`).join(' + ')}</p>
+          </div>
+        )}
+        {problem.method === 1 && problem.deltaH_kJ !== undefined && problem.deltaS_JperK !== undefined && (
+          <div className="mt-3 grid grid-cols-3 gap-3 text-xs font-mono">
+            <div>
+              <span className="text-secondary">ΔH°</span>
+              <p className="text-primary font-semibold mt-0.5">{problem.deltaH_kJ.toFixed(1)} kJ/mol</p>
+            </div>
+            <div>
+              <span className="text-secondary">ΔS°</span>
+              <p className="text-primary font-semibold mt-0.5">{problem.deltaS_JperK.toFixed(1)} J/(mol·K)</p>
+            </div>
+            {problem.T !== undefined && (
+              <div>
+                <span className="text-secondary">T</span>
+                <p className="text-primary font-semibold mt-0.5">{problem.T} K</p>
+              </div>
+            )}
           </div>
         )}
       </div>

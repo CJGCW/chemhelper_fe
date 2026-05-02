@@ -10,7 +10,7 @@ import {
   type GeneratedProblem,
   type Difficulty,
 } from '../../utils/empiricalFormula'
-import { generateEmpiricalProblem } from '../../utils/empiricalPractice'
+import { generateEmpiricalProblem, generateDynamicEmpiricalProblem } from '../../utils/empiricalPractice'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -137,6 +137,7 @@ export default function EmpiricalPractice({ allowCustom = true }: Props) {
   const [difficulty, setDifficulty] = useState<Difficulty | 'all'>('all')
   const [genTrigger, setGenTrigger] = useState(0)
   const [problem, setProblem] = useState<GeneratedProblem | null>(null)
+  const [problemIsDynamic, setProblemIsDynamic] = useState(false)
   const [empiricalAnswer, setEmpiricalAnswer] = useState('')
   const [molecularAnswer, setMolecularAnswer] = useState('')
   const [checkState, setCheckState] = useState<CheckState>('idle')
@@ -148,6 +149,30 @@ export default function EmpiricalPractice({ allowCustom = true }: Props) {
   // Regenerate whenever trigger fires or elements become available
   useEffect(() => {
     if (Object.keys(molarMasses).length === 0) return
+
+    // 60% dynamic in Practice mode; always dynamic in Problems mode
+    const useDynamic = !allowCustom || Math.random() < 0.6
+
+    if (useDynamic) {
+      const ep = generateDynamicEmpiricalProblem()
+      // Convert EmpiricalProblem (mass-based) to GeneratedProblem shape
+      const asGenerated: GeneratedProblem = {
+        compoundName: ep.compoundName,
+        difficulty: 'medium',
+        elements: ep.elements,
+        empiricalDisplay: ep.empiricalDisplay,
+        empiricalASCII: ep.empiricalASCII,
+        hint: ep.hint,
+      }
+      prevNameRef.current = ep.compoundName
+      setProblem(asGenerated)
+      setProblemIsDynamic(true)
+      setEmpiricalAnswer('')
+      setMolecularAnswer('')
+      setCheckState('idle')
+      setShowSolution(false)
+      return
+    }
 
     const pool = COMPOUND_POOL.filter(c => difficulty === 'all' || c.difficulty === difficulty)
     if (pool.length === 0) return
@@ -162,6 +187,7 @@ export default function EmpiricalPractice({ allowCustom = true }: Props) {
       if (generated) {
         prevNameRef.current = generated.compoundName
         setProblem(generated)
+        setProblemIsDynamic(false)
         setEmpiricalAnswer('')
         setMolecularAnswer('')
         setCheckState('idle')
@@ -170,8 +196,8 @@ export default function EmpiricalPractice({ allowCustom = true }: Props) {
       }
     }
   }, [genTrigger, molarMasses]) // eslint-disable-line react-hooks/exhaustive-deps
-  // Note: `difficulty` is intentionally excluded — changing difficulty updates
-  // genTrigger via handleDifficultyChange which already captures the new value
+  // Note: `difficulty` and `allowCustom` are intentionally excluded — changing them
+  // updates genTrigger via handleDifficultyChange or the initial trigger value.
 
   function handleDifficultyChange(d: Difficulty | 'all') {
     setDifficulty(d)
@@ -250,36 +276,52 @@ export default function EmpiricalPractice({ allowCustom = true }: Props) {
           >
             {/* Header row */}
             <div className="flex items-center justify-between">
-              <span className="font-mono text-xs uppercase tracking-widest px-2 py-0.5 rounded-sm border"
-                style={{
-                  color: problem.difficulty === 'easy' ? '#4ade80' : problem.difficulty === 'medium' ? '#fb923c' : '#f87171',
-                  borderColor: problem.difficulty === 'easy' ? 'rgba(74,222,128,0.3)' : problem.difficulty === 'medium' ? 'rgba(251,146,60,0.3)' : 'rgba(248,113,113,0.3)',
-                  background: problem.difficulty === 'easy' ? 'rgba(74,222,128,0.05)' : problem.difficulty === 'medium' ? 'rgba(251,146,60,0.05)' : 'rgba(248,113,113,0.05)',
-                }}>
-                {problem.difficulty}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs uppercase tracking-widest px-2 py-0.5 rounded-sm border"
+                  style={{
+                    color: problem.difficulty === 'easy' ? '#4ade80' : problem.difficulty === 'medium' ? '#fb923c' : '#f87171',
+                    borderColor: problem.difficulty === 'easy' ? 'rgba(74,222,128,0.3)' : problem.difficulty === 'medium' ? 'rgba(251,146,60,0.3)' : 'rgba(248,113,113,0.3)',
+                    background: problem.difficulty === 'easy' ? 'rgba(74,222,128,0.05)' : problem.difficulty === 'medium' ? 'rgba(251,146,60,0.05)' : 'rgba(248,113,113,0.05)',
+                  }}>
+                  {problemIsDynamic ? 'dynamic' : problem.difficulty}
+                </span>
+                {problemIsDynamic && (
+                  <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
+                    style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
+                    generated
+                  </span>
+                )}
+              </div>
               <button onClick={nextProblem}
                 className="font-mono text-[10px] text-dim hover:text-primary transition-colors">
                 skip →
               </button>
             </div>
 
-            {/* Percent composition table */}
+            {/* Composition table */}
             <div className="flex flex-col gap-2">
-              <p className="font-sans text-xs text-secondary">Find the empirical formula from the percent composition:</p>
+              <p className="font-sans text-xs text-secondary">
+                {problemIsDynamic
+                  ? 'Find the empirical formula from the element masses in the sample:'
+                  : 'Find the empirical formula from the percent composition:'}
+              </p>
               <div className="overflow-x-auto rounded-sm border border-border" style={{ background: 'rgba(var(--overlay),0.02)' }}>
                 <table className="border-collapse text-xs font-mono">
                   <thead>
                     <tr>
                       <th className="px-4 py-2 text-left text-xs tracking-widest text-secondary uppercase border-b border-border">Element</th>
-                      <th className="px-4 py-2 text-left text-xs tracking-widest text-secondary uppercase border-b border-border">% by Mass</th>
+                      <th className="px-4 py-2 text-left text-xs tracking-widest text-secondary uppercase border-b border-border">
+                        {problemIsDynamic ? 'Mass (g)' : '% by Mass'}
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {problem.elements.map(e => (
                       <tr key={e.symbol} className="border-b border-border last:border-0">
                         <td className="px-4 py-2 font-semibold" style={{ color: 'var(--c-halogen)' }}>{e.symbol}</td>
-                        <td className="px-4 py-2 text-primary">{e.percent.toFixed(2)}%</td>
+                        <td className="px-4 py-2 text-primary">
+                          {problemIsDynamic ? `${e.percent.toFixed(2)} g` : `${e.percent.toFixed(2)}%`}
+                        </td>
                       </tr>
                     ))}
                   </tbody>

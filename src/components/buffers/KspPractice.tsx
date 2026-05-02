@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { generateRandomKspProblem, type KspProblem } from '../../utils/kspPractice'
+import { generateRandomKspProblem, generateDynamicRandomKspProblem, type KspProblem } from '../../utils/kspPractice'
 import NumberField from '../shared/NumberField'
 import ResultDisplay from '../shared/ResultDisplay'
 import type { VerifyState } from '../../utils/calcHelpers'
@@ -8,17 +8,21 @@ interface Props {
   allowCustom?: boolean
 }
 
+function nextKsp(allowCustom: boolean): KspProblem {
+  return (!allowCustom || Math.random() < 0.6) ? generateDynamicRandomKspProblem() : generateRandomKspProblem()
+}
+
 export default function KspPractice({ allowCustom = true }: Props) {
-  const [problem, setProblem]   = useState<KspProblem>(() => generateRandomKspProblem())
+  const [problem, setProblem]   = useState<KspProblem>(() => nextKsp(allowCustom))
   const [userAns, setUserAns]   = useState('')
   const [verified, setVerified] = useState<VerifyState>(null)
   const [score, setScore]       = useState({ correct: 0, total: 0 })
 
   const newProblem = useCallback(() => {
-    setProblem(generateRandomKspProblem())
+    setProblem(nextKsp(allowCustom))
     setUserAns('')
     setVerified(null)
-  }, [])
+  }, [allowCustom])
 
   function verify() {
     const val = parseFloat(userAns)
@@ -60,6 +64,14 @@ export default function KspPractice({ allowCustom = true }: Props) {
       </div>
 
       <div className="p-4 rounded-sm border border-border bg-raised">
+        <div className="flex items-center gap-2 mb-1.5">
+          {problem.isDynamic && (
+            <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
+              style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
+              generated
+            </span>
+          )}
+        </div>
         <p className="font-sans text-sm text-primary leading-relaxed">{problem.prompt}</p>
       </div>
 

@@ -1,25 +1,34 @@
 import { useState, useCallback } from 'react'
-import { generateCrossoverTProblem, type CrossoverTProblem } from '../../utils/thermodynamicsPractice'
+import {
+  generateCrossoverTProblem,
+  generateDynamicCrossoverTProblem,
+  type CrossoverTProblem,
+} from '../../utils/thermodynamicsPractice'
 import { useShowAnswers } from '../../stores/preferencesStore'
+
+function nextCrossoverTProblem(allowCustom: boolean): CrossoverTProblem {
+  if (!allowCustom || Math.random() < 0.6) return generateDynamicCrossoverTProblem()
+  return generateCrossoverTProblem()
+}
 
 interface Props {
   allowCustom?: boolean
 }
 
-export default function GibbsTempPractice(_props: Props) {
+export default function GibbsTempPractice({ allowCustom = true }: Props) {
   const showAnswers = useShowAnswers()
-  const [problem, setProblem] = useState<CrossoverTProblem>(() => generateCrossoverTProblem())
+  const [problem, setProblem] = useState<CrossoverTProblem>(() => nextCrossoverTProblem(allowCustom))
   const [input, setInput]     = useState('')
   const [verify, setVerify]   = useState<'correct' | 'incorrect' | null>(null)
   const [score, setScore]     = useState({ correct: 0, total: 0 })
   const [showSteps, setShowSteps] = useState(false)
 
   const nextProblem = useCallback(() => {
-    setProblem(generateCrossoverTProblem())
+    setProblem(nextCrossoverTProblem(allowCustom))
     setInput('')
     setVerify(null)
     setShowSteps(false)
-  }, [])
+  }, [allowCustom])
 
   function handleCheck() {
     const val = parseFloat(input)
@@ -40,9 +49,17 @@ export default function GibbsTempPractice(_props: Props) {
       </div>
 
       <div className="p-4 rounded-sm border border-border bg-raised">
-        <p className="font-sans text-sm text-secondary mb-3">
-          Find the crossover temperature (T in K) at which ΔG° = 0:
-        </p>
+        <div className="flex items-center gap-2 mb-3">
+          <p className="font-sans text-sm text-secondary">
+            Find the crossover temperature (T in K) at which ΔG° = 0:
+          </p>
+          {problem.isDynamic && (
+            <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
+              style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
+              generated
+            </span>
+          )}
+        </div>
         <div className="grid grid-cols-2 gap-3 font-mono text-sm">
           <div>
             <span className="text-secondary text-xs">ΔH°</span>

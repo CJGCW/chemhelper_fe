@@ -24,6 +24,7 @@ export interface EmpiricalProblem {
   empiricalASCII:   string    // plain:   CH2O
   hint?:           string
   steps:           string[]
+  isDynamic?:      boolean
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -102,4 +103,83 @@ export function generateEmpiricalProblem(): EmpiricalProblem {
 
 export function checkEmpiricalAnswer(input: string, problem: EmpiricalProblem): boolean {
   return formulasMatch(input.trim(), problem.empiricalASCII)
+}
+
+// ── Dynamic generator ─────────────────────────────────────────────────────────
+//
+// Picks a random compound from COMPOUND_POOL, then applies a random total sample
+// mass (5–50 g with one decimal place) rather than always assuming a 100 g sample.
+// The percent composition is derived from the molecular formula so the numbers
+// are always self-consistent; the student is given actual masses of each element
+// and must work out the empirical formula.
+//
+// Because the problem is framed differently (masses instead of percentages) the
+// EmpiricalProblem shape is preserved but `elements[].percent` holds the actual
+// gram value for that element in the sample.
+
+export function generateDynamicEmpiricalProblem(): EmpiricalProblem {
+  const mm = PRACTICE_MOLAR_MASSES
+
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const template = COMPOUND_POOL[Math.floor(Math.random() * COMPOUND_POOL.length)]
+    const p = generateProblem(template, mm)
+    if (!p) continue
+
+    // Random total sample mass: 5.0–50.0 g, one decimal
+    const totalMass = parseFloat((5 + Math.random() * 45).toFixed(1))
+
+    // Convert each percent to actual grams in this sample
+    const sampledElements = p.elements.map(e => ({
+      symbol: e.symbol,
+      percent: parseFloat(((e.percent / 100) * totalMass).toFixed(2)),
+    }))
+
+    // Verify all elements have known molar masses
+    if (!sampledElements.every(e => mm[e.symbol])) continue
+
+    // Build steps treating the values as actual masses (not assuming 100 g)
+    const result = solveEmpiricalFormula(
+      sampledElements.map(e => ({ symbol: e.symbol, value: e.percent })),
+      mm,
+    )
+    if (!result) continue
+
+    const steps: string[] = []
+    const step1Parts = sampledElements.map(e => `${e.symbol} = ${e.percent} g`).join(', ')
+    steps.push(`Given sample masses: ${step1Parts} (total ≈ ${totalMass} g)`)
+
+    const minMoles = Math.min(...result.rows.map(r => r.moles))
+    const step2Parts = result.rows
+      .map(r => `${r.symbol}: ${r.inputValue.toFixed(3)} ÷ ${r.molarMass.toFixed(3)} = ${r.moles.toFixed(4)} mol`)
+      .join(';  ')
+    steps.push(`Divide by molar mass: ${step2Parts}`)
+
+    const step3Parts = result.rows
+      .map(r => `${r.symbol}: ${r.moles.toFixed(4)} ÷ ${minMoles.toFixed(4)} = ${r.ratio.toFixed(4)}`)
+      .join(';  ')
+    steps.push(`Divide by smallest (${minMoles.toFixed(4)} mol): ${step3Parts}`)
+
+    if (result.multiplier > 1) {
+      const step4Parts = result.rows
+        .map(r => `${r.symbol}: ${r.ratio.toFixed(4)} × ${result.multiplier} ≈ ${r.subscript}`)
+        .join(';  ')
+      steps.push(`Multiply ratios by ${result.multiplier} for whole numbers: ${step4Parts}`)
+    }
+    steps.push(`Empirical formula: ${p.empiricalDisplay}`)
+
+    return {
+      compoundName: p.compoundName,
+      elements: sampledElements,
+      empiricalDisplay: p.empiricalDisplay,
+      empiricalASCII: p.empiricalASCII,
+      hint: p.hint
+        ? `${p.hint} (total sample mass: ${totalMass} g)`
+        : `Total sample mass: ${totalMass} g`,
+      steps,
+      isDynamic: true,
+    }
+  }
+
+  // Fallback to the pool generator
+  return generateEmpiricalProblem()
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  generateSolStoichProblem, checkSolStoichAnswer,
+  generateSolStoichProblem, generateDynamicSolStoichProblem, checkSolStoichAnswer,
   type SolStoichType, type SolStoichProblem,
 } from '../../utils/solutionStoichPractice'
 import { useShowAnswers } from '../../stores/preferencesStore'
@@ -26,10 +26,14 @@ export default function SolutionStoichPractice({ allowCustom = true }: Props) {
   const showAnswers = useShowAnswers()
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { if (!allowCustom) next() }, [allowCustom])
+  useEffect(() => { if (!allowCustom) next(filter, true) }, [allowCustom])
 
-  function next(f: SolStoichType | 'all' = filter) {
-    setProblem(generateSolStoichProblem(f === 'all' ? undefined : f))
+  function next(f: SolStoichType | 'all' = filter, forceDynamic = false) {
+    const t = f === 'all' ? undefined : f
+    const p = (forceDynamic || Math.random() < 0.6)
+      ? generateDynamicSolStoichProblem(t)
+      : generateSolStoichProblem(t)
+    setProblem(p)
     setInput('')
     setChecked(false)
     setCorrect(false)
@@ -101,8 +105,16 @@ export default function SolutionStoichPractice({ allowCustom = true }: Props) {
         initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.18 }}
         className={`rounded-sm border p-5 flex flex-col gap-4 transition-colors ${borderClass}`}
       >
-        {/* Equation badge */}
-        <p className="font-mono text-[10px] text-secondary">{problem.equation}</p>
+        {/* Equation badge + dynamic tag */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <p className="font-mono text-[10px] text-secondary">{problem.equation}</p>
+          {problem.isDynamic && (
+            <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
+              style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
+              generated
+            </span>
+          )}
+        </div>
 
         {/* Question */}
         <p className="font-sans text-base text-bright leading-relaxed">{problem.question}</p>

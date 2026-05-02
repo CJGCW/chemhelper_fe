@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react'
 import NumberField from '../shared/NumberField'
 import PhScale from '../shared/PhScale'
 import { useShowAnswers } from '../../stores/preferencesStore'
-import { generatePhProblem } from '../../utils/acidBasePractice'
+import { generatePhProblem, generateDynamicPhProblem } from '../../utils/acidBasePractice'
 
 interface Props {
   allowCustom?: boolean
@@ -10,20 +10,26 @@ interface Props {
 
 type VerifyState = 'correct' | 'incorrect' | null
 
+function nextPh(allowCustom: boolean) {
+  // Problems mode (allowCustom=false) → always dynamic
+  // Practice mode → 60% dynamic, 40% pool
+  return (!allowCustom || Math.random() < 0.6) ? generateDynamicPhProblem() : generatePhProblem()
+}
+
 export default function PhCalculatorPractice({ allowCustom: _allowCustom = true }: Props) {
   const showAnswers = useShowAnswers()
-  const [problem, setProblem] = useState(() => generatePhProblem())
+  const [problem, setProblem] = useState(() => nextPh(_allowCustom))
   const [answer, setAnswer] = useState('')
   const [verifyState, setVerifyState] = useState<VerifyState>(null)
   const [score, setScore] = useState({ correct: 0, total: 0 })
   const [revealed, setRevealed] = useState(false)
 
   const next = useCallback(() => {
-    setProblem(generatePhProblem())
+    setProblem(nextPh(_allowCustom))
     setAnswer('')
     setVerifyState(null)
     setRevealed(false)
-  }, [])
+  }, [_allowCustom])
 
   function handleVerify() {
     const studentPh = parseFloat(answer)
@@ -59,6 +65,14 @@ export default function PhCalculatorPractice({ allowCustom: _allowCustom = true 
 
       {/* Problem */}
       <div className="p-4 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>
+        <div className="flex items-center gap-2 mb-1.5">
+          {problem.isDynamic && (
+            <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
+              style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
+              generated
+            </span>
+          )}
+        </div>
         <p className="font-sans text-sm text-primary leading-relaxed">{problem.question}</p>
       </div>
 

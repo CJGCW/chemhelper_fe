@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { RedoxSubtype } from '../../utils/redoxPractice'
-import { generateRedoxProblem, checkRedoxAnswer } from '../../utils/redoxPractice'
+import { generateRedoxProblem, generateDynamicRedoxProblem, checkRedoxAnswer } from '../../utils/redoxPractice'
 import { useShowAnswers } from '../../stores/preferencesStore'
 type Selection = RedoxSubtype | 'random'
 
@@ -11,12 +11,16 @@ const TYPES: { id: Selection; label: string; formula: string }[] = [
   { id: 'identify_redox',  label: 'Identify Oxidised/Reduced', formula: 'OA/RA' },
   { id: 'ox_change',       label: 'Oxidation State Change',    formula: 'Δox'   },
   { id: 'charge_balance',  label: 'Charge Balancing',          formula: 'q⁺/q⁻' },
+  { id: 'ecell',           label: 'E°cell',                    formula: 'E°'    },
 ]
 
-function freshProblem(sel: Selection) {
+const ALL_SUBTYPES: RedoxSubtype[] = ['ox_state', 'identify_redox', 'ox_change', 'charge_balance', 'ecell']
+
+function freshProblem(sel: Selection, forceDynamic = false) {
   const t: RedoxSubtype = sel === 'random'
-    ? (['ox_state', 'identify_redox', 'ox_change', 'charge_balance'] as RedoxSubtype[])[Math.floor(Math.random() * 4)]
+    ? ALL_SUBTYPES[Math.floor(Math.random() * ALL_SUBTYPES.length)]
     : sel
+  if (forceDynamic || Math.random() < 0.6) return generateDynamicRedoxProblem(t)
   return generateRedoxProblem(t)
 }
 
@@ -42,7 +46,7 @@ export default function RedoxPractice({ allowCustom = true }: Props) {
   useEffect(() => { if (!allowCustom) nextProblem() }, [allowCustom])
 
   function nextProblem(sel: Selection = selected) {
-    setProblem(freshProblem(sel))
+    setProblem(freshProblem(sel, !allowCustom))
     setAnswer('')
     setChecked(false)
     setShowSteps(false)
@@ -149,7 +153,15 @@ export default function RedoxPractice({ allowCustom = true }: Props) {
         )}
 
         {/* Question */}
-        <p className="font-sans text-base text-bright leading-relaxed">{problem.question}</p>
+        <div className="flex items-start gap-2 flex-wrap">
+          <p className="font-sans text-base text-bright leading-relaxed flex-1">{problem.question}</p>
+          {problem.isDynamic && (
+            <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm shrink-0"
+              style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
+              generated
+            </span>
+          )}
+        </div>
 
         {/* Hint */}
         {problem.hint && (

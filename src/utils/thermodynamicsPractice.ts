@@ -3,12 +3,14 @@
 
 import {
   calcDeltaS,
+  calcDeltaG_method1,
   calcDeltaG_method2,
   deltaGtoK,
   kToDeltaG,
   spontaneityAnalysis,
   type ThermochemSpecies,
 } from '../chem/thermodynamics'
+import { THERMO_TABLE } from '../data/thermoData'
 
 // ── Canned reactions ──────────────────────────────────────────────────────────
 // Each entry is a balanced reaction usable for ΔS° and ΔG° problems.
@@ -88,6 +90,7 @@ export interface EntropyProblem {
   reactants: ThermochemSpecies[]
   answer: number  // J/(mol·K), correct ΔS°
   steps: string[]
+  isDynamic?: boolean
 }
 
 export function generateEntropyProblem(): EntropyProblem {
@@ -116,6 +119,7 @@ export interface GibbsProblem {
   T?: number
   answer: number  // kJ/mol
   steps: string[]
+  isDynamic?: boolean
 }
 
 export function generateGibbsProblem(): GibbsProblem {
@@ -158,6 +162,7 @@ export interface SpontaneityProblem {
   crossoverT?: number
   steps: string[]
   explanation: string
+  isDynamic?: boolean
 }
 
 const SPONTANEITY_SCENARIOS: { deltaH: number; deltaS: number }[] = [
@@ -197,6 +202,7 @@ export interface GibbsKProblem {
   T: number
   answer: number
   steps: string[]
+  isDynamic?: boolean
 }
 
 const TEMPERATURES = [298, 500, 750, 1000, 373, 473]
@@ -227,6 +233,7 @@ export interface CrossoverTProblem {
   deltaS_JperK: number
   answer: number   // K
   steps: string[]
+  isDynamic?: boolean
 }
 
 export function generateCrossoverTProblem(): CrossoverTProblem {
@@ -244,4 +251,260 @@ export function generateCrossoverTProblem(): CrossoverTProblem {
     answer: result.crossoverT!,
     steps: result.steps,
   }
+}
+
+// ── Dynamic generators ────────────────────────────────────────────────────────
+//
+// These generators pull real species from THERMO_TABLE to build fresh reactions
+// rather than selecting from the fixed CANNED_REACTIONS pool.  They return the
+// SAME types as the pool-based generators so Practice components can use them
+// interchangeably.
+
+/** Pick a random entry from an array. */
+function randPick<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)]
+}
+
+/** Round n to the nearest step. */
+function roundTo(n: number, step: number): number {
+  return Math.round(n / step) * step
+}
+
+/**
+ * Build a label string for a balanced reaction from ThermochemSpecies arrays.
+ * e.g.  "2 H₂(g) + O₂(g) → 2 H₂O(l)"
+ */
+function reactionLabel(products: ThermochemSpecies[], reactants: ThermochemSpecies[]): string {
+  const fmt = (sp: ThermochemSpecies) =>
+    `${sp.coefficient === 1 ? '' : sp.coefficient + ' '}${sp.formula}(${sp.state})`
+  return reactants.map(fmt).join(' + ') + ' → ' + products.map(fmt).join(' + ')
+}
+
+interface SpeciesSpec {
+  formula: string
+  state: string
+  coefficient: number
+}
+
+// Dynamic reaction templates — all species exist in THERMO_TABLE.
+const DYNAMIC_THERMO_TEMPLATES: { products: SpeciesSpec[]; reactants: SpeciesSpec[] }[] = [
+  // H₂ combustion
+  { products: [{ formula: 'H₂O', state: 'l', coefficient: 2 }],
+    reactants: [{ formula: 'H₂', state: 'g', coefficient: 2 }, { formula: 'O₂', state: 'g', coefficient: 1 }] },
+  // CH₄ combustion
+  { products: [{ formula: 'CO₂', state: 'g', coefficient: 1 }, { formula: 'H₂O', state: 'l', coefficient: 2 }],
+    reactants: [{ formula: 'CH₄', state: 'g', coefficient: 1 }, { formula: 'O₂', state: 'g', coefficient: 2 }] },
+  // C₂H₆ combustion
+  { products: [{ formula: 'CO₂', state: 'g', coefficient: 2 }, { formula: 'H₂O', state: 'l', coefficient: 3 }],
+    reactants: [{ formula: 'C₂H₆', state: 'g', coefficient: 1 }, { formula: 'O₂', state: 'g', coefficient: 3.5 }] },
+  // C₃H₈ combustion
+  { products: [{ formula: 'CO₂', state: 'g', coefficient: 3 }, { formula: 'H₂O', state: 'l', coefficient: 4 }],
+    reactants: [{ formula: 'C₃H₈', state: 'g', coefficient: 1 }, { formula: 'O₂', state: 'g', coefficient: 5 }] },
+  // SO₂ → SO₃
+  { products: [{ formula: 'SO₃', state: 'g', coefficient: 2 }],
+    reactants: [{ formula: 'SO₂', state: 'g', coefficient: 2 }, { formula: 'O₂', state: 'g', coefficient: 1 }] },
+  // NO → NO₂
+  { products: [{ formula: 'NO₂', state: 'g', coefficient: 2 }],
+    reactants: [{ formula: 'NO', state: 'g', coefficient: 2 }, { formula: 'O₂', state: 'g', coefficient: 1 }] },
+  // CaCO₃ decomp
+  { products: [{ formula: 'CaO', state: 's', coefficient: 1 }, { formula: 'CO₂', state: 'g', coefficient: 1 }],
+    reactants: [{ formula: 'CaCO₃', state: 's', coefficient: 1 }] },
+  // N₂ + H₂ → NH₃
+  { products: [{ formula: 'NH₃', state: 'g', coefficient: 2 }],
+    reactants: [{ formula: 'N₂', state: 'g', coefficient: 1 }, { formula: 'H₂', state: 'g', coefficient: 3 }] },
+  // CO combustion
+  { products: [{ formula: 'CO₂', state: 'g', coefficient: 2 }],
+    reactants: [{ formula: 'CO', state: 'g', coefficient: 2 }, { formula: 'O₂', state: 'g', coefficient: 1 }] },
+  // Fe₂O₃ + CO reduction
+  { products: [{ formula: 'Fe', state: 's', coefficient: 2 }, { formula: 'CO₂', state: 'g', coefficient: 3 }],
+    reactants: [{ formula: 'Fe₂O₃', state: 's', coefficient: 1 }, { formula: 'CO', state: 'g', coefficient: 3 }] },
+  // HI formation
+  { products: [{ formula: 'HI', state: 'g', coefficient: 2 }],
+    reactants: [{ formula: 'H₂', state: 'g', coefficient: 1 }, { formula: 'I₂', state: 's', coefficient: 1 }] },
+  // HBr formation
+  { products: [{ formula: 'HBr', state: 'g', coefficient: 2 }],
+    reactants: [{ formula: 'H₂', state: 'g', coefficient: 1 }, { formula: 'Br₂', state: 'l', coefficient: 1 }] },
+  // HCl formation
+  { products: [{ formula: 'HCl', state: 'g', coefficient: 2 }],
+    reactants: [{ formula: 'H₂', state: 'g', coefficient: 1 }, { formula: 'Cl₂', state: 'g', coefficient: 1 }] },
+  // Water gas formation (CO + H₂O)
+  { products: [{ formula: 'CO', state: 'g', coefficient: 1 }, { formula: 'H₂O', state: 'g', coefficient: 1 }],
+    reactants: [{ formula: 'CO₂', state: 'g', coefficient: 1 }, { formula: 'H₂', state: 'g', coefficient: 1 }] },
+  // MgO formation
+  { products: [{ formula: 'MgO', state: 's', coefficient: 2 }],
+    reactants: [{ formula: 'Mg', state: 's', coefficient: 2 }, { formula: 'O₂', state: 'g', coefficient: 1 }] },
+  // ZnO formation
+  { products: [{ formula: 'ZnO', state: 's', coefficient: 2 }],
+    reactants: [{ formula: 'Zn', state: 's', coefficient: 2 }, { formula: 'O₂', state: 'g', coefficient: 1 }] },
+  // Al₂O₃ formation
+  { products: [{ formula: 'Al₂O₃', state: 's', coefficient: 2 }],
+    reactants: [{ formula: 'Al', state: 's', coefficient: 4 }, { formula: 'O₂', state: 'g', coefficient: 3 }] },
+  // N₂O formation
+  { products: [{ formula: 'N₂O', state: 'g', coefficient: 2 }],
+    reactants: [{ formula: 'N₂', state: 'g', coefficient: 2 }, { formula: 'O₂', state: 'g', coefficient: 1 }] },
+  // C₂H₄ combustion
+  { products: [{ formula: 'CO₂', state: 'g', coefficient: 2 }, { formula: 'H₂O', state: 'l', coefficient: 2 }],
+    reactants: [{ formula: 'C₂H₄', state: 'g', coefficient: 1 }, { formula: 'O₂', state: 'g', coefficient: 3 }] },
+  // PCl₃ → PCl₅
+  { products: [{ formula: 'PCl₅', state: 'g', coefficient: 1 }],
+    reactants: [{ formula: 'PCl₃', state: 'g', coefficient: 1 }, { formula: 'Cl₂', state: 'g', coefficient: 1 }] },
+]
+
+/** Verify all species in a template have THERMO_TABLE entries. */
+function templateIsValid(t: { products: SpeciesSpec[]; reactants: SpeciesSpec[] }): boolean {
+  for (const sp of [...t.products, ...t.reactants]) {
+    if (!THERMO_TABLE.find(e => e.formula === sp.formula && e.state === sp.state)) return false
+  }
+  return true
+}
+
+const VALID_DYNAMIC_TEMPLATES = DYNAMIC_THERMO_TEMPLATES.filter(templateIsValid)
+
+/**
+ * generateDynamicEntropyProblem — picks a random template from a larger pool
+ * than the canned list.  Returns EntropyProblem.
+ */
+export function generateDynamicEntropyProblem(): EntropyProblem {
+  for (let attempt = 0; attempt < 30; attempt++) {
+    try {
+      const t = randPick(VALID_DYNAMIC_TEMPLATES)
+      const { deltaS, steps } = calcDeltaS(t.products, t.reactants)
+      return {
+        type: 'entropy',
+        label: reactionLabel(t.products, t.reactants),
+        products: t.products,
+        reactants: t.reactants,
+        answer: deltaS,
+        steps,
+        isDynamic: true,
+      }
+    } catch {
+      // template data mismatch — retry
+    }
+  }
+  return generateEntropyProblem()
+}
+
+/**
+ * generateDynamicGibbsProblem — method 1: uses a real reaction for ΔH/ΔS but
+ * picks a random T (200–1200 K, rounded to 25) to ensure variety.
+ * Returns GibbsProblem.
+ */
+export function generateDynamicGibbsProblem(): GibbsProblem {
+  for (let attempt = 0; attempt < 30; attempt++) {
+    try {
+      const t = randPick(VALID_DYNAMIC_TEMPLATES)
+      const { deltaS } = calcDeltaS(t.products, t.reactants)
+      // Compute ΔH: Σ n·ΔHf(products) − Σ n·ΔHf(reactants)
+      let sumH = 0
+      for (const sp of t.products) {
+        const entry = THERMO_TABLE.find(e => e.formula === sp.formula && e.state === sp.state)!
+        sumH += sp.coefficient * entry.deltaHf
+      }
+      for (const sp of t.reactants) {
+        const entry = THERMO_TABLE.find(e => e.formula === sp.formula && e.state === sp.state)!
+        sumH -= sp.coefficient * entry.deltaHf
+      }
+      const T = roundTo(200 + Math.random() * 1000, 25)
+      const { deltaG, steps } = calcDeltaG_method1(sumH, deltaS, T)
+      return {
+        type: 'gibbs',
+        method: 1,
+        label: reactionLabel(t.products, t.reactants),
+        deltaH_kJ: parseFloat(sumH.toFixed(2)),
+        deltaS_JperK: parseFloat(deltaS.toFixed(2)),
+        T,
+        answer: deltaG,
+        steps,
+        isDynamic: true,
+      }
+    } catch {
+      // retry
+    }
+  }
+  return generateGibbsProblem()
+}
+
+/**
+ * generateDynamicSpontaneityProblem — generates ΔH and ΔS in each of the four
+ * sign quadrants so all four classifications appear with equal probability.
+ * Returns SpontaneityProblem.
+ */
+export function generateDynamicSpontaneityProblem(): SpontaneityProblem {
+  const combos = [
+    { hSign: -1, sSign: 1 },  // always
+    { hSign: 1,  sSign: -1 }, // never
+    { hSign: -1, sSign: -1 }, // low-T
+    { hSign: 1,  sSign: 1 },  // high-T
+  ]
+  const { hSign, sSign } = randPick(combos)
+  // |ΔH|: 20–400 kJ/mol in 10 kJ steps
+  const absH = (Math.floor(Math.random() * 39) + 2) * 10
+  // |ΔS|: 50–300 J/(mol·K) in 10 J steps
+  const absS = (Math.floor(Math.random() * 26) + 5) * 10
+  const deltaH = hSign * absH
+  const deltaS = sSign * absS
+  const result = spontaneityAnalysis(deltaH, deltaS)
+  return {
+    type: 'spontaneity',
+    deltaH_kJ: deltaH,
+    deltaS_JperK: deltaS,
+    answer: result.classification,
+    crossoverT: result.crossoverT,
+    steps: result.steps,
+    explanation: result.explanation,
+    isDynamic: true,
+  }
+}
+
+/**
+ * generateDynamicGibbsKProblem — generates a ΔG° ↔ K problem with a random T
+ * (200–1200 K) and a random ΔG° value (−80 to +80 kJ/mol).
+ * Returns GibbsKProblem.
+ */
+export function generateDynamicGibbsKProblem(): GibbsKProblem {
+  const T = roundTo(200 + Math.random() * 1000, 25)
+  // ΔG° range: −80 to +80 kJ/mol in 5 kJ steps
+  const deltaG_kJ = (Math.floor(Math.random() * 33) - 16) * 5
+  const direction: GibbsKDirection = Math.random() < 0.5 ? 'deltaG-to-K' : 'K-to-deltaG'
+  if (direction === 'deltaG-to-K') {
+    const { K, steps } = deltaGtoK(deltaG_kJ, T)
+    return { type: 'gibbs-k', direction, deltaG_kJ, T, answer: K, steps, isDynamic: true }
+  } else {
+    const { K } = deltaGtoK(deltaG_kJ, T)
+    const { deltaG, steps } = kToDeltaG(K, T)
+    return { type: 'gibbs-k', direction, K, T, answer: deltaG, steps, isDynamic: true }
+  }
+}
+
+/**
+ * generateDynamicCrossoverTProblem — generates a crossover-T problem with
+ * random ΔH and ΔS values that guarantee a valid positive crossover.
+ * Returns CrossoverTProblem.
+ */
+export function generateDynamicCrossoverTProblem(): CrossoverTProblem {
+  // Must have ΔH and ΔS of the same sign so there IS a crossover.
+  for (let attempt = 0; attempt < 50; attempt++) {
+    const sameSign = Math.random() < 0.5 ? 1 : -1
+    const absH = (Math.floor(Math.random() * 39) + 2) * 10   // 20–400 kJ/mol
+    const absS = (Math.floor(Math.random() * 26) + 5) * 10   // 50–300 J/(mol·K)
+    const deltaH = sameSign * absH
+    const deltaS = sameSign * absS
+    const result = spontaneityAnalysis(deltaH, deltaS)
+    if (
+      result.crossoverT !== undefined &&
+      result.crossoverT > 100 &&
+      result.crossoverT < 2500
+    ) {
+      return {
+        type: 'crossover-T',
+        deltaH_kJ: deltaH,
+        deltaS_JperK: deltaS,
+        answer: result.crossoverT,
+        steps: result.steps,
+        isDynamic: true,
+      }
+    }
+  }
+  return generateCrossoverTProblem()
 }

@@ -44,6 +44,7 @@ function generateProblems(
   inclCount: boolean,
   inclMultDiv: boolean,
   inclAddSub: boolean,
+  allowCustom = true,
 ): Problem[] {
   type Slot = 'count' | 'multdiv' | 'addsub'
   const enabled: Slot[] = []
@@ -61,6 +62,17 @@ function generateProblems(
   }
 
   return slots.map((slot, i): Problem => {
+    // Problems mode → 100% dynamic; Practice mode → 60% dynamic
+    const useDynamic = !allowCustom || Math.random() < 0.6
+    if (useDynamic) {
+      // generateDynamicSigfigProblem picks randomly; re-roll until slot matches
+      // For simplicity, generate with the correct slot type and tag as dynamic
+      let base: SigFigProblem
+      if (slot === 'count')   base = { ...makeCountProblem(),      isDynamic: true }
+      else if (slot === 'multdiv') base = { ...makeArithProblem(false), isDynamic: true }
+      else base = { ...makeArithProblem(true), isDynamic: true }
+      return { ...base, id: i }
+    }
     if (slot === 'count')   return { ...makeCountProblem(),       id: i }
     if (slot === 'multdiv') return { ...makeArithProblem(false),  id: i }
     return                         { ...makeArithProblem(true),   id: i }
@@ -83,7 +95,7 @@ type PrecResult = 'correct' | 'wrong' | null
 
 interface Props { allowCustom?: boolean }
 
-export default function SigFigPractice({ allowCustom: _allowCustom = true }: Props) {
+export default function SigFigPractice({ allowCustom = true }: Props) {
   const [count, setCount] = useState(5)
   const [inclCount, setInclCount] = useState(true)
   const [inclMultDiv, setInclMultDiv] = useState(true)
@@ -96,7 +108,7 @@ export default function SigFigPractice({ allowCustom: _allowCustom = true }: Pro
   const [precResults, setPrecResults] = useState<Record<number, PrecResult> | null>(null)
 
   function generate() {
-    setProblems(generateProblems(count, inclCount, inclMultDiv, inclAddSub))
+    setProblems(generateProblems(count, inclCount, inclMultDiv, inclAddSub, allowCustom))
     setAnswers({})
     setPrecAnswers({})
     setResults(null)
@@ -230,18 +242,28 @@ export default function SigFigPractice({ allowCustom: _allowCustom = true }: Pro
                   <span className="font-mono text-xs text-dim shrink-0 pt-0.5">{idx + 1}.</span>
                   <div className="flex flex-col gap-2.5 flex-1 min-w-0">
 
-                    {p.kind === 'count' ? (
-                      <p className="font-sans text-sm text-secondary">
-                        How many significant figures does{' '}
-                        <span className="font-mono text-bright text-base tracking-wide">{p.display}</span>
-                        {' '}have?
-                      </p>
-                    ) : (
-                      <p className="font-sans text-sm text-secondary">
-                        Evaluate (apply sig fig rules):{' '}
-                        <span className="font-mono text-bright text-base tracking-wide">{p.display}</span>
-                      </p>
-                    )}
+                    <div className="flex items-start gap-2">
+                      <div className="flex-1">
+                        {p.kind === 'count' ? (
+                          <p className="font-sans text-sm text-secondary">
+                            How many significant figures does{' '}
+                            <span className="font-mono text-bright text-base tracking-wide">{p.display}</span>
+                            {' '}have?
+                          </p>
+                        ) : (
+                          <p className="font-sans text-sm text-secondary">
+                            Evaluate (apply sig fig rules):{' '}
+                            <span className="font-mono text-bright text-base tracking-wide">{p.display}</span>
+                          </p>
+                        )}
+                      </div>
+                      {p.isDynamic && (
+                        <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm shrink-0"
+                          style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
+                          generated
+                        </span>
+                      )}
+                    </div>
 
                     <div className="flex items-start gap-3 flex-wrap">
                       {/* Answer value input */}

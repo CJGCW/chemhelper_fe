@@ -1,6 +1,16 @@
 import { useState, useCallback } from 'react'
-import { generateSpontaneityProblem, type SpontaneityClass, type SpontaneityProblem } from '../../utils/thermodynamicsPractice'
+import {
+  generateSpontaneityProblem,
+  generateDynamicSpontaneityProblem,
+  type SpontaneityClass,
+  type SpontaneityProblem,
+} from '../../utils/thermodynamicsPractice'
 import { useShowAnswers } from '../../stores/preferencesStore'
+
+function nextSpontaneityProblem(allowCustom: boolean): SpontaneityProblem {
+  if (!allowCustom || Math.random() < 0.6) return generateDynamicSpontaneityProblem()
+  return generateSpontaneityProblem()
+}
 
 const CLASS_OPTIONS: { value: SpontaneityClass; label: string }[] = [
   { value: 'always',  label: 'Always spontaneous' },
@@ -13,9 +23,9 @@ interface Props {
   allowCustom?: boolean
 }
 
-export default function SpontaneityPractice(_props: Props) {
+export default function SpontaneityPractice({ allowCustom = true }: Props) {
   const showAnswers = useShowAnswers()
-  const [problem, setProblem] = useState<SpontaneityProblem>(() => generateSpontaneityProblem())
+  const [problem, setProblem] = useState<SpontaneityProblem>(() => nextSpontaneityProblem(allowCustom))
   const [selected, setSelected] = useState<SpontaneityClass | null>(null)
   const [tInput, setTInput]     = useState('')
   const [verify, setVerify]     = useState<'correct' | 'incorrect' | null>(null)
@@ -25,12 +35,12 @@ export default function SpontaneityPractice(_props: Props) {
   const needsCrossover = problem.answer === 'low-T' || problem.answer === 'high-T'
 
   const nextProblem = useCallback(() => {
-    setProblem(generateSpontaneityProblem())
+    setProblem(nextSpontaneityProblem(allowCustom))
     setSelected(null)
     setTInput('')
     setVerify(null)
     setShowSteps(false)
-  }, [])
+  }, [allowCustom])
 
   function handleCheck() {
     if (!selected) return
@@ -55,7 +65,15 @@ export default function SpontaneityPractice(_props: Props) {
       </div>
 
       <div className="p-4 rounded-sm border border-border bg-raised">
-        <p className="font-sans text-sm text-secondary mb-3">Classify the spontaneity:</p>
+        <div className="flex items-center gap-2 mb-3">
+          <p className="font-sans text-sm text-secondary">Classify the spontaneity:</p>
+          {problem.isDynamic && (
+            <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
+              style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
+              generated
+            </span>
+          )}
+        </div>
         <div className="grid grid-cols-2 gap-3 font-mono text-sm">
           <div>
             <span className="text-secondary text-xs">ΔH°</span>

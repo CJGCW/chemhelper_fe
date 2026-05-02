@@ -9,6 +9,7 @@ export interface ConversionProblem {
   answer:     number
   answerUnit: string
   steps:      string[]
+  isDynamic?: boolean
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -181,6 +182,99 @@ export function generateConversionProblem(): ConversionProblem {
   if (sub === 'mass')        return genMass()
   if (sub === 'volume')      return genVolume()
   return genTemperature()
+}
+
+// ── Dynamic generators (random numeric values within realistic ranges) ─────────
+
+/** Ranges (inclusive) for each unit when generating a random fromValue. */
+const DYNAMIC_MASS_RANGES: Record<MassUnit, [number, number]> = {
+  g:  [1, 500],
+  kg: [0.1, 50],
+  mg: [50, 10000],
+}
+
+const DYNAMIC_VOL_RANGES: Record<VolumeUnit, [number, number]> = {
+  L:  [0.05, 50],
+  mL: [5, 2000],
+}
+
+/** Temperature ranges that keep converted results physically sensible. */
+const DYNAMIC_TEMP_RANGES: Record<string, [number, number]> = {
+  '°C': [-40, 300],
+  K:    [233, 573],
+  '°F': [-40, 572],
+}
+
+function randFloat(lo: number, hi: number, dp: number): number {
+  const raw = lo + Math.random() * (hi - lo)
+  return parseFloat(raw.toFixed(dp))
+}
+
+function genDynamicMass(): ConversionProblem {
+  const [from, to] = pick(MASS_PAIRS.map(([f, t]) => [f, t] as [MassUnit, MassUnit]))
+  const [lo, hi] = DYNAMIC_MASS_RANGES[from]
+  const val = randFloat(lo, hi, from === 'mg' ? 0 : 2)
+  const answer = parseFloat(fmt((val * MASS_TO_G[from]) / MASS_TO_G[to]))
+  const context = pick(MASS_CONTEXTS)(val, from, to)
+
+  let step: string
+  if (from === 'g'  && to === 'kg') step = `${fmt(val)} g ÷ 1000 = ${fmt(answer)} kg`
+  else if (from === 'kg' && to === 'g')  step = `${fmt(val)} kg × 1000 = ${fmt(answer)} g`
+  else if (from === 'g'  && to === 'mg') step = `${fmt(val)} g × 1000 = ${fmt(answer)} mg`
+  else if (from === 'mg' && to === 'g')  step = `${fmt(val)} mg ÷ 1000 = ${fmt(answer)} g`
+  else if (from === 'kg' && to === 'mg') step = `${fmt(val)} kg × 1,000,000 = ${fmt(answer)} mg`
+  else step = `${fmt(val)} mg ÷ 1,000,000 = ${fmt(answer)} kg`
+
+  return {
+    category: 'mass', fromValue: val, fromUnit: from, toUnit: to,
+    question: context, answer, answerUnit: to,
+    steps: ['Conversion factor: 1 kg = 1000 g = 1,000,000 mg', step],
+    isDynamic: true,
+  }
+}
+
+function genDynamicVolume(): ConversionProblem {
+  const [from, to] = pick(VOL_PAIRS.map(([f, t]) => [f, t] as [VolumeUnit, VolumeUnit]))
+  const [lo, hi] = DYNAMIC_VOL_RANGES[from]
+  const val = randFloat(lo, hi, from === 'L' ? 3 : 1)
+  const answer = from === 'L' ? parseFloat(fmt(val * 1000)) : parseFloat(fmt(val / 1000))
+  const context = pick(VOL_CONTEXTS)(val, from, to)
+
+  const step = from === 'L'
+    ? `${fmt(val)} L × 1000 mL/L = ${fmt(answer)} mL`
+    : `${fmt(val)} mL ÷ 1000 = ${fmt(answer)} L`
+
+  return {
+    category: 'volume', fromValue: val, fromUnit: from, toUnit: to,
+    question: context, answer, answerUnit: to,
+    steps: ['1 L = 1000 mL', step],
+    isDynamic: true,
+  }
+}
+
+function genDynamicTemperature(): ConversionProblem {
+  const conv = pick(TEMP_CONVERSIONS)
+  const [lo, hi] = DYNAMIC_TEMP_RANGES[conv.from] ?? [-40, 300]
+  // Round to 1 decimal for °F/°C, whole number for K
+  const dp = conv.from === 'K' ? 0 : 1
+  const val = randFloat(lo, hi, dp)
+  const raw = conv.convert(val)
+  const answer = parseFloat(parseFloat(raw.toFixed(4)).toString())
+  const context = pick(TEMP_CONTEXTS)(val, conv.from, conv.to)
+
+  return {
+    category: 'temperature', fromValue: val, fromUnit: conv.from, toUnit: conv.to,
+    question: context, answer, answerUnit: conv.to,
+    steps: [conv.formula, conv.stepFn(val, answer)],
+    isDynamic: true,
+  }
+}
+
+export function generateDynamicConversionProblem(): ConversionProblem {
+  const sub = pick(['mass', 'volume', 'temperature'] as const)
+  if (sub === 'mass')   return genDynamicMass()
+  if (sub === 'volume') return genDynamicVolume()
+  return genDynamicTemperature()
 }
 
 export function checkConversionAnswer(input: string, problem: ConversionProblem): boolean {

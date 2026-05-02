@@ -1,25 +1,35 @@
 import { useState, useCallback } from 'react'
-import { generateEntropyProblem, type EntropyProblem } from '../../utils/thermodynamicsPractice'
+import {
+  generateEntropyProblem,
+  generateDynamicEntropyProblem,
+  type EntropyProblem,
+} from '../../utils/thermodynamicsPractice'
 import { useShowAnswers } from '../../stores/preferencesStore'
+
+function nextEntropyProblem(allowCustom: boolean): EntropyProblem {
+  // Problems mode (allowCustom=false) always dynamic; Practice mode 60% dynamic
+  if (!allowCustom || Math.random() < 0.6) return generateDynamicEntropyProblem()
+  return generateEntropyProblem()
+}
 
 interface Props {
   allowCustom?: boolean
 }
 
-export default function EntropyPractice(_props: Props) {
+export default function EntropyPractice({ allowCustom = true }: Props) {
   const showAnswers = useShowAnswers()
-  const [problem, setProblem]   = useState<EntropyProblem>(() => generateEntropyProblem())
+  const [problem, setProblem]   = useState<EntropyProblem>(() => nextEntropyProblem(allowCustom))
   const [input, setInput]       = useState('')
   const [verify, setVerify]     = useState<'correct' | 'sig_fig_warning' | 'incorrect' | null>(null)
   const [score, setScore]       = useState({ correct: 0, total: 0 })
   const [showSteps, setShowSteps] = useState(false)
 
   const nextProblem = useCallback(() => {
-    setProblem(generateEntropyProblem())
+    setProblem(nextEntropyProblem(allowCustom))
     setInput('')
     setVerify(null)
     setShowSteps(false)
-  }, [])
+  }, [allowCustom])
 
   function handleCheck() {
     const val = parseFloat(input)
@@ -49,7 +59,15 @@ export default function EntropyPractice(_props: Props) {
       </div>
 
       <div className="p-4 rounded-sm border border-border bg-raised">
-        <p className="font-sans text-sm text-secondary mb-1">Calculate ΔS°rxn for:</p>
+        <div className="flex items-center gap-2 mb-1">
+          <p className="font-sans text-sm text-secondary">Calculate ΔS°rxn for:</p>
+          {problem.isDynamic && (
+            <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
+              style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
+              generated
+            </span>
+          )}
+        </div>
         <p className="font-mono text-sm text-primary font-medium">{problem.label}</p>
         <div className="mt-3 flex flex-col gap-1 text-xs text-dim font-mono">
           <p>Products: {problem.products.map(p => `${p.coefficient} ${p.formula}(${p.state})`).join(' + ')}</p>

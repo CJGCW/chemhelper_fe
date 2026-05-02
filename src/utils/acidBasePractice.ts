@@ -2,7 +2,7 @@
 // Pure TypeScript — no React imports.
 
 import {
-  WEAK_ACIDS, WEAK_BASES, POLYPROTIC_ACIDS,
+  WEAK_ACIDS, WEAK_BASES, POLYPROTIC_ACIDS, STRONG_ACIDS, STRONG_BASES,
 } from '../data/acidBaseConstants'
 import {
   strongAcidPh, strongBasePh, weakAcidPh, weakBasePh,
@@ -30,6 +30,7 @@ export interface PhProblem {
   question: string
   correctPh: number
   steps: string[]
+  isDynamic?: boolean
 }
 
 export function generatePhProblem(): PhProblem {
@@ -147,6 +148,7 @@ export interface WeakAcidProblem {
   question: string
   correctPh: number
   steps: string[]
+  isDynamic?: boolean
 }
 
 export function generateWeakAcidProblem(): WeakAcidProblem {
@@ -166,6 +168,7 @@ export interface WeakBaseProblem {
   question: string
   correctPh: number
   steps: string[]
+  isDynamic?: boolean
 }
 
 export function generateWeakBaseProblem(): WeakBaseProblem {
@@ -205,6 +208,7 @@ export interface SaltPhProblem {
   correctPh: number
   classification: 'acidic' | 'basic' | 'neutral'
   steps: string[]
+  isDynamic?: boolean
 }
 
 export function generateSaltPhProblem(): SaltPhProblem {
@@ -225,6 +229,7 @@ export interface PolyproticProblem {
   question: string
   correctPh: number
   steps: string[]
+  isDynamic?: boolean
 }
 
 export function generatePolyproticProblem(): PolyproticProblem {
@@ -237,3 +242,98 @@ export function generatePolyproticProblem(): PolyproticProblem {
     steps: res.steps,
   }
 }
+
+// ── Dynamic generators ────────────────────────────────────────────────────────
+// These generators pick randomly from the full data tables and compute answers
+// via the same chem/ solvers. They return the same types as the pool generators
+// and are marked isDynamic: true so the UI can show a "generated" badge.
+
+/** Dynamic version of generatePhProblem — full range of all four acid/base types. */
+export function generateDynamicPhProblem(): PhProblem {
+  const type = pick(['strong-acid', 'strong-base', 'weak-acid', 'weak-base'] as const)
+  const C = randBetween(0.010, 1.00, 3)
+
+  if (type === 'strong-acid') {
+    // Exclude H₂SO₄ — its second proton (Ka2 = 1.2e-2) is not strong; keep monoprotic strong acids
+    const acid = pick(STRONG_ACIDS.filter(a => a.Ka === Infinity && !a.Ka2))
+    const res = strongAcidPh(C, 1)
+    return {
+      question: `Calculate the pH of ${fmtConc(C)} M ${acid.name} (${acid.formula}) solution.`,
+      correctPh: res.pH,
+      steps: res.steps,
+      isDynamic: true,
+    }
+  }
+
+  if (type === 'strong-base') {
+    const base = pick([...STRONG_BASES])
+    const res = strongBasePh(C, 1)
+    return {
+      question: `Calculate the pH of ${fmtConc(C)} M ${base} solution.`,
+      correctPh: res.pH,
+      steps: res.steps,
+      isDynamic: true,
+    }
+  }
+
+  if (type === 'weak-acid') {
+    const acid = pick(WEAK_ACIDS)
+    const res = weakAcidPh(C, acid.Ka)
+    return {
+      question: `Calculate the pH of ${fmtConc(C)} M ${acid.name} (${acid.formula}) solution. Ka = ${acid.Ka.toExponential(2)}.`,
+      correctPh: res.pH,
+      steps: res.steps,
+      isDynamic: true,
+    }
+  }
+
+  // weak-base
+  const base = pick(WEAK_BASES)
+  const res = weakBasePh(C, base.Kb)
+  return {
+    question: `Calculate the pH of ${fmtConc(C)} M ${base.name} (${base.formula}) solution. Kb = ${base.Kb.toExponential(2)}.`,
+    correctPh: res.pH,
+    steps: res.steps,
+    isDynamic: true,
+  }
+}
+
+/** Dynamic version of generateWeakAcidProblem — uses the full WEAK_ACIDS table. */
+export function generateDynamicWeakAcidProblem(): WeakAcidProblem {
+  const acid = pick(WEAK_ACIDS)
+  const C = randBetween(0.010, 1.00, 3)
+  const res = weakAcidPh(C, acid.Ka)
+  return {
+    question: `What is the pH of ${fmtConc(C)} M ${acid.name} (${acid.formula})? Ka = ${acid.Ka.toExponential(2)}.`,
+    correctPh: res.pH,
+    steps: res.steps,
+    isDynamic: true,
+  }
+}
+
+/** Dynamic version of generateWeakBaseProblem — uses the full WEAK_BASES table. */
+export function generateDynamicWeakBaseProblem(): WeakBaseProblem {
+  const base = pick(WEAK_BASES)
+  const C = randBetween(0.010, 1.00, 3)
+  const res = weakBasePh(C, base.Kb)
+  return {
+    question: `What is the pH of ${fmtConc(C)} M ${base.name} (${base.formula})? Kb = ${base.Kb.toExponential(2)}.`,
+    correctPh: res.pH,
+    steps: res.steps,
+    isDynamic: true,
+  }
+}
+
+/** Dynamic version of generatePolyproticProblem — uses the full POLYPROTIC_ACIDS table. */
+export function generateDynamicPolyproticProblem(): PolyproticProblem {
+  const acid = pick(POLYPROTIC_ACIDS)
+  const C = randBetween(0.010, 1.00, 3)
+  const res = polyproticPh(C, acid.Ka, acid.Ka2!, acid.Ka3)
+  return {
+    question: `What is the pH of ${fmtConc(C)} M ${acid.name} (${acid.formula})? Ka1 = ${acid.Ka.toExponential(2)}, Ka2 = ${acid.Ka2!.toExponential(2)}${acid.Ka3 ? `, Ka3 = ${acid.Ka3.toExponential(2)}` : ''}.`,
+    correctPh: res.pH,
+    steps: res.steps,
+    isDynamic: true,
+  }
+}
+
