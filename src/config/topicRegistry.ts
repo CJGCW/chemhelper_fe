@@ -12,6 +12,7 @@ export type UnitId =
   | 'atomic'
   | 'bonding'
   | 'redox'
+  | 'electrochemistry'
   | 'kinetics'
   | 'equilibrium'
   | 'acid-base'
@@ -38,7 +39,7 @@ export type SectionId =
   | 'lewis-bonding'
   | 'molecular-geometry'
   | 'redox-reactions'
-  | 'electrochemistry'
+  | 'echem-cells'
   | 'rate-laws'
   | 'integrated-rates'
   | 'equilibrium-basics'
@@ -61,6 +62,7 @@ export interface Unit {
   label: string
   route: string
   sections: SectionId[]
+  level: 1 | 2
 }
 
 export interface Section {
@@ -81,102 +83,23 @@ export interface Topic {
 // ── Units ─────────────────────────────────────────────────────────────────────
 
 export const UNITS: Unit[] = [
-  {
-    id: 'measurement',
-    label: 'Measurement & Math',
-    route: '/base-calculations',
-    sections: ['math-tools'],
-  },
-  {
-    id: 'molar',
-    label: 'Molar Calculations',
-    route: '/molar',
-    sections: ['molar-basics', 'molar-colligative'],
-  },
-  {
-    id: 'stoichiometry',
-    label: 'Stoichiometry',
-    route: '/stoichiometry',
-    sections: ['stoich-basics', 'stoich-core', 'stoich-advanced'],
-  },
-  {
-    id: 'empirical',
-    label: 'Empirical Formulas',
-    route: '/empirical',
-    sections: ['formula-types'],
-  },
-  {
-    id: 'ideal-gas',
-    label: 'Ideal Gas Laws',
-    route: '/ideal-gas',
-    sections: ['gas-laws', 'real-gas'],
-  },
-  {
-    id: 'thermochemistry',
-    label: 'Thermochemistry',
-    route: '/thermochemistry',
-    sections: ['thermo-energy', 'thermo-heat-phase', 'thermo-phase-behavior'],
-  },
-  {
-    id: 'atomic',
-    label: 'Atomic Structure',
-    route: '/electron-config',
-    sections: ['electron-config', 'atomic-properties'],
-  },
-  {
-    id: 'bonding',
-    label: 'Chemical Bonding',
-    route: '/structures',
-    sections: ['lewis-bonding', 'molecular-geometry'],
-  },
-  {
-    id: 'redox',
-    label: 'Redox & Electrochemistry',
-    route: '/redox',
-    sections: ['redox-reactions', 'electrochemistry'],
-  },
-  {
-    id: 'kinetics',
-    label: 'Chemical Kinetics',
-    route: '/kinetics',
-    sections: ['rate-laws', 'integrated-rates'],
-  },
-  {
-    id: 'equilibrium',
-    label: 'Chemical Equilibrium',
-    route: '/equilibrium',
-    sections: ['equilibrium-basics', 'equilibrium-calculations'],
-  },
-  {
-    id: 'acid-base',
-    label: 'Acids & Bases',
-    route: '/acid-base',
-    sections: ['ph-basics', 'weak-acid-base', 'salt-hydrolysis'],
-  },
-  {
-    id: 'buffers-ksp',
-    label: 'Buffers & Solubility',
-    route: '/buffers',
-    sections: ['buffer-systems', 'titration-curves', 'solubility-product'],
-  },
-  {
-    id: 'thermodynamics',
-    label: 'Thermodynamics',
-    route: '/thermodynamics',
-    sections: ['entropy', 'gibbs-energy'],
-  },
-  {
-    id: 'nuclear',
-    label: 'Nuclear Chemistry',
-    route: '/nuclear',
-    sections: ['nuclear-reactions', 'nuclear-applications'],
-  },
-  {
-    id: 'organic',
-    label: 'Organic Chemistry',
-    route: '/organic',
-    sections: ['hydrocarbons', 'functional-groups'],
-  },
+  { id: 'measurement',   label: 'Measurement & Math',      route: '/base-calculations', level: 1, sections: ['math-tools']                                    },
+  { id: 'molar',         label: 'Molar Calculations',      route: '/molar',             level: 1, sections: ['molar-basics', 'molar-colligative']             },
+  { id: 'stoichiometry', label: 'Stoichiometry',           route: '/stoichiometry',     level: 1, sections: ['stoich-basics', 'stoich-core', 'stoich-advanced']},
+  { id: 'empirical',     label: 'Empirical Formulas',      route: '/empirical',         level: 1, sections: ['formula-types']                                 },
+  { id: 'ideal-gas',     label: 'Ideal Gas Laws',          route: '/ideal-gas',         level: 1, sections: ['gas-laws', 'real-gas']                          },
+  { id: 'thermochemistry', label: 'Thermochemistry',       route: '/thermochemistry',   level: 1, sections: ['thermo-energy', 'thermo-heat-phase', 'thermo-phase-behavior'] },
+  { id: 'atomic',        label: 'Atomic Structure',        route: '/electron-config',   level: 1, sections: ['electron-config', 'atomic-properties']          },
+  { id: 'bonding',       label: 'Chemical Bonding',        route: '/structures',        level: 1, sections: ['lewis-bonding', 'molecular-geometry']           },
+  { id: 'redox',         label: 'Redox Reactions',          route: '/redox',            level: 1, sections: ['redox-reactions']                              },
+  { id: 'electrochemistry', label: 'Electrochemistry',     route: '/redox',            level: 2, sections: ['echem-cells']                                    },
+  { id: 'kinetics',      label: 'Chemical Kinetics',       route: '/kinetics',          level: 2, sections: ['rate-laws', 'integrated-rates']                 },
+  { id: 'equilibrium',   label: 'Chemical Equilibrium',    route: '/equilibrium',       level: 2, sections: ['equilibrium-basics', 'equilibrium-calculations'] },
+  { id: 'acid-base',     label: 'Acids & Bases',           route: '/acid-base',         level: 2, sections: ['ph-basics', 'weak-acid-base', 'salt-hydrolysis'] },
+  { id: 'buffers-ksp',   label: 'Buffers & Solubility',    route: '/buffers',           level: 2, sections: ['buffer-systems', 'titration-curves', 'solubility-product'] },
+  { id: 'thermodynamics', label: 'Thermodynamics',         route: '/thermodynamics',    level: 2, sections: ['entropy', 'gibbs-energy']                       },
+  { id: 'nuclear',       label: 'Nuclear Chemistry',       route: '/nuclear',           level: 2, sections: ['nuclear-reactions', 'nuclear-applications']     },
+  { id: 'organic',       label: 'Organic Chemistry',       route: '/organic',           level: 2, sections: ['hydrocarbons', 'functional-groups']             },
 ]
 
 // ── Sections ──────────────────────────────────────────────────────────────────
@@ -198,8 +121,8 @@ export const SECTIONS: Section[] = [
   { id: 'atomic-properties',    label: 'Atomic Properties', unitId: 'atomic'        },
   { id: 'lewis-bonding',        label: 'Lewis & Bonding',   unitId: 'bonding'       },
   { id: 'molecular-geometry',   label: 'Geometry & Solids', unitId: 'bonding'       },
-  { id: 'redox-reactions',      label: 'Reactions',         unitId: 'redox'         },
-  { id: 'electrochemistry',     label: 'Electrochemistry',  unitId: 'redox'         },
+  { id: 'redox-reactions',      label: 'Reactions',         unitId: 'redox'            },
+  { id: 'echem-cells',          label: 'Electrochemistry',  unitId: 'electrochemistry' },
   { id: 'rate-laws',                label: 'Rate Laws',         unitId: 'kinetics'      },
   { id: 'integrated-rates',        label: 'Integrated Rates',  unitId: 'kinetics'      },
   { id: 'equilibrium-basics',       label: 'Concepts',          unitId: 'equilibrium'   },
@@ -332,13 +255,13 @@ export const TOPICS: Topic[] = [
 
   // ── Electrochemistry ─────────────────────────────────────────────────────
   // 'practice' is the redox problems-tab entry; shared across pages but non-confusable in context
-  { id: 'redox-balance',      label: 'Redox (Balancing)',   sectionId: 'electrochemistry', tabs: ['redox-practice', 'practice', 'ref-redox-concepts'] },
-  { id: 'ecell-nernst',       label: 'E°cell / Nernst',    sectionId: 'electrochemistry', tabs: ['ecell', 'ecell-practice', 'ref-ecell'] },
-  { id: 'electrolyte',        label: 'Electrolytes',        sectionId: 'electrochemistry', tabs: ['electrolyte', 'electrolyte-problems'] },
-  { id: 'titration',          label: 'Titration',           sectionId: 'electrochemistry', tabs: ['titration', 'titration-problems', 'ref-titration'] },
-  { id: 'delta-g-ecell-k',    label: 'ΔG°-E°-K Triangle',  sectionId: 'electrochemistry', tabs: ['dg-e-k', 'dg-e-k-practice', 'dg-e-k-problems', 'ref-dg-e-k'] },
-  { id: 'electrolysis',       label: 'Electrolysis',        sectionId: 'electrochemistry', tabs: ['electrolysis', 'electrolysis-practice', 'electrolysis-problems', 'ref-electrolysis'] },
-  { id: 'concentration-cell', label: 'Concentration Cells', sectionId: 'electrochemistry', tabs: ['conc-cell', 'conc-cell-practice', 'ref-conc-cell'] },
+  { id: 'redox-balance',      label: 'Redox (Balancing)',   sectionId: 'redox-reactions', tabs: ['redox-practice', 'practice', 'ref-redox-concepts'] },
+  { id: 'ecell-nernst',       label: 'E°cell / Nernst',    sectionId: 'echem-cells', tabs: ['ecell', 'ecell-practice', 'ref-ecell'] },
+  { id: 'electrolyte',        label: 'Electrolytes',        sectionId: 'redox-reactions', tabs: ['electrolyte', 'electrolyte-problems'] },
+  { id: 'titration',          label: 'Titration',           sectionId: 'redox-reactions', tabs: ['titration', 'titration-problems', 'ref-titration'] },
+  { id: 'delta-g-ecell-k',    label: 'ΔG°-E°-K Triangle',  sectionId: 'echem-cells', tabs: ['dg-e-k', 'dg-e-k-practice', 'dg-e-k-problems', 'ref-dg-e-k'] },
+  { id: 'electrolysis',       label: 'Electrolysis',        sectionId: 'echem-cells', tabs: ['electrolysis', 'electrolysis-practice', 'electrolysis-problems', 'ref-electrolysis'] },
+  { id: 'concentration-cell', label: 'Concentration Cells', sectionId: 'echem-cells', tabs: ['conc-cell', 'conc-cell-practice', 'ref-conc-cell'] },
 
   // ── Chemical Kinetics ─────────────────────────────────────────────────────
   { id: 'rate-law',        label: 'Rate Law (Initial Rates)', sectionId: 'rate-laws',        tabs: ['rate-law', 'rate-law-practice', 'rate-law-problems', 'ref-rate-law'] },
@@ -446,4 +369,9 @@ export function isTabHidden(tabValue: string, hiddenTopics: Set<string>): boolea
 /** All topic IDs that own the given tab value. */
 export function getTopicsForTab(tabValue: string): Set<string> {
   return _topicTabSet.get(tabValue) ?? new Set()
+}
+
+/** Units belonging to a given curriculum level (1 = Gen Chem 1, 2 = Gen Chem 2). */
+export function getUnitsByLevel(level: 1 | 2): Unit[] {
+  return UNITS.filter(u => u.level === level)
 }

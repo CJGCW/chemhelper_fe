@@ -236,6 +236,16 @@ export default function ThermodynamicsPage() {
         >
           ? What is this?
         </button>
+        {mode === 'reference' && (
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-2 px-3 py-1 rounded-sm font-sans text-sm border border-border
+                       text-secondary hover:text-primary hover:border-muted transition-colors"
+          >
+            <span>⎙</span>
+            <span>Print</span>
+          </button>
+        )}
       </div>
 
       <ExplanationModal

@@ -3,13 +3,12 @@
 ## Philosophy
 
 ChemHelper is an educational chemistry tool — accuracy and pedagogical clarity come before feature breadth or visual polish. When in doubt:
-
 - Prefer correctness with a textbook worked example over UI elegance.
 - Prefer verbose step-by-step output over terse "the answer is X".
 - Prefer pushing domain logic into `src/chem/` over inline component math.
 - Prefer adding tests (especially against Chang or Atkins worked examples) over just visual verification.
 
-Chang's _Chemistry_ (14e, 2022) is the primary curriculum reference. When reference data and textbook values disagree, prefer matching Chang so students comparing in-app answers to homework see consistency. Exceptions (more rigorous modern values) should be footnoted, not silently adopted.
+Chang's *Chemistry* (14e, 2022) is the primary curriculum reference. When reference data and textbook values disagree, prefer matching Chang so students comparing in-app answers to homework see consistency. Exceptions (more rigorous modern values) should be footnoted, not silently adopted.
 
 ---
 
@@ -35,7 +34,6 @@ If the topic's data is already present, build the practice/problems tool on top 
 ## `src/chem/` purity rule (non-negotiable)
 
 No module in `src/chem/` may import from:
-
 - React or any React-adjacent library
 - `../utils/*` (especially `sigfigs`)
 - `../components/*`
@@ -65,14 +63,14 @@ When a tool has both a "live" calculator and a "show me an example" button, the 
 ```tsx
 function buildWorkedExample(rxn: Reaction) {
   const sol = calcLimitingReagent(rxn, [
-    { val: 20, unit: "g" },
-    { val: computeNiceB(rxn), unit: "g" },
-  ]);
+    { val: 20, unit: 'g' },
+    { val: computeNiceB(rxn), unit: 'g' },
+  ])
   return {
     problem: `...`,
     steps: sol.steps,
     answer: `Limiting reagent: ${sol.limitingSpecies?.display}`,
-  };
+  }
 }
 ```
 
@@ -93,34 +91,19 @@ Reference  |  Practice  |  Problems
 - **Problems** — **dynamically generated** random problems with verify/check. Uses the same tool components as Practice with `allowCustom={false}`. **Every Practice tool must have a corresponding problem generator** in `utils/*Practice.ts` that produces randomized problems with varied inputs. A practice tool shipped without a problem generator is a bug. A problem generator that produces the same problem every time is also a bug.
 
 ### Mode switch
-
 A rounded-full pill toggle drives `Mode = 'reference' | 'practice' | 'problems'`. Tab changes via `?tab=` URL param — never component state — so deep links always work.
 
 ### Tab groups
-
 Tabs within each mode are grouped (Basic / Stoichiometry / Advanced, etc.) using `TabGroup[]`:
-
 ```ts
-{
-  id: string;
-  label: string;
-  pills: {
-    id: Tab;
-    label: string;
-    formula: string;
-  }
-  [];
-}
+{ id: string; label: string; pills: { id: Tab; label: string; formula: string }[] }
 ```
-
 The `formula` field is a short monospace annotation shown beside the label (e.g. `g↔mol`, `%Y`).
 
 ### Switching modes
-
 When the user switches mode, the topic is preserved via `TAB_TO_TOPIC` + `TOPIC_MODE_TAB` maps. If no mapping exists for the current tab, fall back to `MODE_DEFAULT[mode]`.
 
 ### Print
-
 - **All** navigation rows (`print:hidden`) — mode switch, tab pills, every group row.
 - Print / Print All buttons appear **only in Reference mode**, beside the page heading. Never in Practice or Problems — students should not be printing generated problems or calculator interfaces.
 - For "Print All", set a `printingAll` flag, render the full reference outside `AnimatePresence`, then call `window.print()` in a `requestAnimationFrame` after mount.
@@ -167,17 +150,16 @@ Title + "What is this?" button + Print button (Reference only). Same order, same
 
 Every calculator tool must use these shared primitives from `src/components/shared/`:
 
-| Primitive                                              | Purpose                                                                                       |
-| ------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| `NumberField`                                          | Labeled text input with `inputMode="decimal"` — **never `<input type="number">`** (see below) |
-| `useStepsPanelState` + `StepsTrigger` + `StepsContent` | Collapsible step-by-step panel; also drives the Example button                                |
-| `SigFigTrigger` + `SigFigContent`                      | Sig fig breakdown panel                                                                       |
-| `ResultDisplay`                                        | Animated result card with optional sig-fig alternate and verify state                         |
+| Primitive | Purpose |
+|---|---|
+| `NumberField` | Labeled text input with `inputMode="decimal"` — **never `<input type="number">`** (see below) |
+| `useStepsPanelState` + `StepsTrigger` + `StepsContent` | Collapsible step-by-step panel; also drives the Example button |
+| `SigFigTrigger` + `SigFigContent` | Sig fig breakdown panel |
+| `ResultDisplay` | Animated result card with optional sig-fig alternate and verify state |
 
 ### ⚠ Never use `<input type="number">` for numeric input
 
 Always use `NumberField` (which uses `<input type="text" inputMode="decimal">`). `type="number"`:
-
 - Mangles `inputMode` on mobile (especially iOS), forcing users to hunt for the decimal key
 - Eats accidental mouse scrolls and silently changes values
 - Rounds in browser-specific ways (Firefox vs Chrome vs Safari all differ)
@@ -188,7 +170,6 @@ This rule is about **numeric** inputs. Plain text inputs (for naming answers, se
 **Known violation to fix when touched:** `components/atomic/ElectromagneticSpectrum.tsx` uses raw `<input>` elements for wavelength/frequency/energy fields. These are numeric and should migrate to `NumberField`.
 
 ### Wiring pattern
-
 ```tsx
 // State
 const [steps, setSteps]               = useState<string[]>([])
@@ -223,7 +204,6 @@ function handleTool() {
 ```
 
 ### Rules
-
 - Reset `steps`, `breakdown`, and `result` to null/empty on every input change.
 - `ResultDisplay value` must be `string` — coerce with `String(n)` if the solver returns a number.
 - `SigFigBreakdown` only applies when the input unit is `'g'` (mass); skip it for mol inputs.
@@ -241,7 +221,6 @@ Tools that ask the student to produce a numeric answer use the three-state verif
 - `'incorrect'` — value doesn't match
 
 This applies to all `*Tool` components with an answer field. Exceptions are tools without a single "answer" to check:
-
 - **Legitimate exceptions:** `HeatingCurveTool`, `ReactionProfileTool` (visualizers).
 - **Pending adoption:** `LimitingReagentTool`, `EmpiricalTool`, `GasStoichTool`, `PercentCompositionTool` should adopt verify-state when next touched.
 
@@ -269,13 +248,9 @@ const stepsState = useStepsPanelState(noSteps, generateMyExample)
 `useStepsPanelState` with an empty `steps` array and a `generate` function renders only the "Show me an example" button — it never shows calculation steps. Keep `AnimatePresence` for the reactive result display below.
 
 If the tool's internal steps are typed as `{ label: string; expr: string }[]` rather than `string[]`, map them before passing:
-
 ```tsx
-const stringSteps = useMemo(
-  () => steps.map((s) => `${s.label}: ${s.expr}`),
-  [steps],
-);
-const stepsState = useStepsPanelState(stringSteps, generateExample);
+const stringSteps = useMemo(() => steps.map(s => `${s.label}: ${s.expr}`), [steps])
+const stepsState = useStepsPanelState(stringSteps, generateExample)
 ```
 
 ---
@@ -315,7 +290,7 @@ Example: "Values from CRC Handbook (2023). Chang Table 6.2 uses slightly differe
 
 ## Adding a New Topic or Practice Tool
 
-When a new calculator/practice topic is added, **all five** of the following must be updated:
+When a new calculator/practice topic is added, **all seven** of the following must be updated:
 
 1. **Practice tab** — add the tool as a tab in the relevant `*Page.tsx` under the Practice mode group.
 2. **Problems tab with dynamic generation** — add a corresponding auto-generated problem mode under the Problems group. Every Practice tool must have a Problems counterpart powered by a `generate*Problem()` function. Wire it into the Problems tab with `allowCustom={false}`. **The Problems tab must produce a fresh, randomized problem every time the student clicks "Next."** Pre-defined static problem pools are not acceptable — problems must be dynamically generated with randomized inputs.
@@ -325,12 +300,65 @@ When a new calculator/practice topic is added, **all five** of the following mus
    - Return **step-by-step solution** strings showing the full worked solution
    - Round generated inputs to "nice" values that match textbook style (multiples of 5 for mass, 0.1 for molality, 0.5 for pressure, etc.)
    - Never produce the same problem twice in a row (use sufficient randomization in inputs and pool selection)
-4. **Automated tests** — add test cases covering the solver, the problem generator (verify correctness across 20+ random runs), and at least one Chang-verbatim verification case.
+4. **Automated tests for the generator** — create `utils/*Practice.test.ts` alongside the generator file. This is NOT optional. Every problem generator must ship with its test file in the same PR. The test file must include:
+   - **20+ random iteration test:** call the generator 20+ times, verify each problem has a correct answer by recomputing from the problem's inputs using the known formula
+   - **Answer correctness test:** for each generated problem, independently verify that `problem.answer` matches the result of applying the formula to `problem`'s inputs (within tolerance)
+   - **Edge case tests:** verify no division by zero, no negative concentrations, no NaN results
+   - **At least one hardcoded verification case** using a known textbook problem (e.g. Chang worked example) with exact input values and expected output
+   - **Steps non-empty test:** verify every generated problem has a non-empty `steps` array
+   - If the generator has a `check*Answer()` function, test that it returns `true` for the correct answer and `false` for a clearly wrong one
 5. **Navigation + search** — add the new topic to `NavSidebar.tsx`:
    - Add a nav entry under the appropriate section, reflecting the page's actual tab structure.
    - Add search keywords so students can find the tool by searching natural terms (e.g. "titration", "acid base", "neutralization" should all surface a titration tool).
+6. **Test Generator** — add the topic to `components/test/TestBuilder.tsx`:
+   - Add a `TopicDef` entry in `ALL_TOPICS` with the correct `kind`, `group`, `label`, and `formula`.
+   - Add the generator import and wire it into the `generate()` switch.
+   - The topic must respect visibility: `TestBuilder` filters `ALL_TOPICS` through `usePreferencesStore` so hidden topics don't appear in the test builder UI.
+7. **Print Reference** — if the topic has a Reference component, add it to `PrintPage.tsx`:
+   - Add the import for the Reference component.
+   - Add a `case` in the `ReferenceSection` switch.
+   - Add a `PrintTopicDef` entry in `ALL_PRINT_TOPICS` in `components/print/PrintBuilder.tsx`.
+   - The topic must respect visibility: `PrintBuilder` filters `ALL_PRINT_TOPICS` through `usePreferencesStore` so hidden topics don't appear in the print builder UI.
 
-Skipping any one of these is a bug.
+Skipping any one of these is a bug. **A problem generator shipped without a test file is a bug.** A test file that only tests the solver but not the generator is incomplete. **A topic with a Reference page that isn't in PrintPage is incomplete. A topic with a practice generator that isn't in TestBuilder is incomplete.**
+
+### Every reference component must be printable — both on-page and in PrintBuilder
+
+There are two independent requirements for print coverage. A reference component that meets only one of them is incomplete:
+
+1. **On-page Print button:** The page that hosts the reference component must have a `⎙ Print` button in its heading row, visible only when `mode === 'reference'`. Call `window.print()` on click. This lets students print the current reference tab directly from the topic page.
+
+2. **PrintBuilder entry:** The reference component must have a `PrintTopicDef` entry in `ALL_PRINT_TOPICS` in `PrintBuilder.tsx`, with a matching `case` in the `ReferenceSection` switch in `PrintPage.tsx`. This lets students include the reference in a custom multi-topic print sheet.
+
+Both are required. A reference component with an on-page Print button but no `PrintBuilder` entry is invisible to the print sheet builder. A reference component in `PrintBuilder` but hosted on a page without a Print button gives students no single-page print path.
+
+**When adding a new reference component:** add both the on-page button (step already covered by CLAUDE.md heading-row rule) and the `PrintBuilder` entry (step 7 in the checklist above). If you are touching an existing topic page for any other reason, check both requirements and fix any gap you find.
+
+### Test problems must replicate the practice page presentation
+
+When a topic is added to `TestBuilder.tsx`, the test must render the problem **exactly as the student sees it on the Problems tab** — same visual structure, same input format, same checking logic. The test is not allowed to "simplify" a structured problem into a different format.
+
+**The rule:** if the Problems tab shows a grid, the test shows a grid. If the Problems tab has multiple input cells, the test has multiple input cells. If the Problems tab checks per-cell with tolerance, the test checks per-cell with tolerance.
+
+**What this means in practice:**
+
+- **ICE tables** render as a full I/C/E × species grid with given/blank cells — not as a single "Find [X] at equilibrium" numeric question. This was fixed; `ice_table` now has kind `'ice_table'` in `testTypes.ts` with a proper `ICETableTestProblem` type.
+- **Balancing equations** render as coefficient inputs per species (the comma-separated format matches the practice page's instruction style).
+- **Heating curve / phase diagram / reaction profile** problems include the SVG diagram — they already do this and set the standard.
+- **Lewis draw / VSEPR draw** open the same draw modal — already correct.
+- **Any future interactive problem type** must carry its interactive format into the test.
+
+**Anti-pattern to avoid:** reducing a structured problem to `kind: 'numeric'` or `kind: 'classification'` in `TestBuilder.tsx` when the practice page has custom UI. The `numeric` and `classification` fallback kinds exist only for problems that genuinely have a single typed answer.
+
+**Shared utilities:** when the practice component and the test component both need the same rendering or checking logic (e.g. `generateICEPrefilled`, `checkConcentrationAnswer`, `fmtICECell`), extract that logic to the shared `utils/` file — not duplicated in both places. The ICE table implementation follows this pattern: all three utilities are exported from `utils/equilibriumPractice.ts` and imported by both `ICETablePractice.tsx` and `TestSheet.tsx`.
+
+**Print fidelity:** `buildQuestionHtml()` in `TestSheet.tsx` must also replicate the problem format for print. ICE tables print as an HTML `<table>` with given values filled and blank cells as empty bordered boxes. The printed test should look like a worksheet a professor would hand out — not a wall of text questions.
+
+**Known violations fixed:**
+
+| Topic | Was | Now |
+|---|---|---|
+| ICE Table (`ice_table`) | `numeric` — single answer box | Full I/C/E grid, per-cell ±2% checking |
 
 ### NavSidebar must reflect page layout
 
@@ -344,16 +372,13 @@ Every Practice tool must have a corresponding `utils/*Practice.ts` file containi
 
 **Dynamic generation:** Problems are created algorithmically at runtime, not pulled from a static list. The generator picks random values, random reactions, random compounds, and random solve-directions each time it's called. A student who clicks "Next" 20 times must see 20 meaningfully different problems.
 
-**Maximize randomization over static pools:** Prefer generating random numeric inputs (concentrations, masses, volumes, temperatures, pressures) over picking from a fixed list of pre-solved scenarios. A curated compound/reaction pool is fine and necessary for chemical realism, but the *numbers* in every problem should always be freshly randomized. The larger the combinatorial space of (compound × numeric inputs × solve direction), the more practice a student can get before seeing a repeated scenario. When a generator currently uses a fixed list of pre-written problem objects, migrate it to pick a compound/reaction from a pool and generate fresh numeric parameters each time.
-
 **Generator structure:**
-
 ```ts
 export interface SomeProblem {
-  scenario: string; // the problem statement shown to the student
-  answer: number | string; // the correct answer
-  answerUnit?: string; // unit of the answer
-  steps: string[]; // full worked solution
+  scenario: string          // the problem statement shown to the student
+  answer: number | string   // the correct answer
+  answerUnit?: string       // unit of the answer
+  steps: string[]           // full worked solution
 }
 
 export function generateSomeProblem(): SomeProblem {
@@ -372,7 +397,6 @@ export function generateSomeProblem(): SomeProblem {
 **Testing:** Every generator must have a test that runs 20+ iterations and verifies each generated problem has a correct answer. If the generator can produce edge cases that break the formula (division by zero, negative concentrations, etc.), the test must catch them.
 
 **What is NOT acceptable:**
-
 - A static array of 10 problems that repeats
 - A generator that always uses the same numeric values with only the compound name changing
 - A generator with no `steps` array (students need to see the worked solution after checking)
@@ -416,27 +440,27 @@ Other domains (thermo, idealgas, empirical, molar calculations) still compute lo
 
 Coverage against Chang 14e chapters, as of the most recent review:
 
-| Ch  | Topic                                          | Status                                                                      |
-| --- | ---------------------------------------------- | --------------------------------------------------------------------------- |
-| 1   | Measurement, sig figs, conversions             | ✓ Strong                                                                    |
-| 2   | Atoms, ions, molecules                         | ✓ Strong                                                                    |
-| 2   | Nomenclature practice                          | ✓ Complete (NomenclatureTool on ElectronConfigPage)                         |
-| 3   | Stoichiometry                                  | ✓ Strong (chained yield, molecular diagrams added)                          |
-| 3   | Weighted atomic mass from isotopes             | ✓ Complete (isotopePractice + ReverseIsotopeTool)                           |
-| 3   | **Combustion analysis mode for EmpiricalTool** | ⚠ Missing                                                                   |
-| 4   | Aqueous reactions                              | ✓ Strong (titration arithmetic added)                                       |
-| 4   | **Titration curves** (pH vs volume)            | ⚠ Missing                                                                   |
-| 5   | Gases                                          | ✓ Complete (custom T/P, reverse density, gas-over-water added)              |
-| 6   | Thermochemistry                                | ✓ Complete (expansion work, heat of soln/neut, ΔU↔ΔH, energy balance added) |
-| 7   | Quantum theory / electron config               | ✓ Reference strong                                                          |
-| 7   | **Bohr/photoelectric/deBroglie practice**      | ⚠ Missing computational tools                                               |
-| 8   | Periodic trends                                | ⚠ Data + comparison exist; no dedicated reference or practice               |
-| 9   | Lewis structures, bonding                      | ✓ Complete                                                                  |
-| 9   | **Lattice energy / Born-Haber**                | ⚠ Missing (medium priority)                                                 |
-| 10  | VSEPR / molecular geometry                     | ✓ Complete                                                                  |
-| 10  | **Hybridization practice tool**                | ⚠ Reference only (embedded in VSEPR data)                                   |
-| 10  | **Dipole moment / polarity tool**              | ⚠ Missing                                                                   |
-| 10  | **Molecular orbital theory**                   | ⚠ Missing (syllabus-dependent)                                              |
+| Ch | Topic | Status |
+|---|---|---|
+| 1 | Measurement, sig figs, conversions | ✓ Strong |
+| 2 | Atoms, ions, molecules | ✓ Strong |
+| 2 | Nomenclature practice | ✓ Complete (NomenclatureTool on ElectronConfigPage) |
+| 3 | Stoichiometry | ✓ Strong (chained yield, molecular diagrams added) |
+| 3 | Weighted atomic mass from isotopes | ✓ Complete (isotopePractice + ReverseIsotopeTool) |
+| 3 | **Combustion analysis mode for EmpiricalTool** | ⚠ Missing |
+| 4 | Aqueous reactions | ✓ Strong (titration arithmetic added) |
+| 4 | **Titration curves** (pH vs volume) | ⚠ Missing |
+| 5 | Gases | ✓ Complete (custom T/P, reverse density, gas-over-water added) |
+| 6 | Thermochemistry | ✓ Complete (expansion work, heat of soln/neut, ΔU↔ΔH, energy balance added) |
+| 7 | Quantum theory / electron config | ✓ Reference strong |
+| 7 | **Bohr/photoelectric/deBroglie practice** | ⚠ Missing computational tools |
+| 8 | Periodic trends | ⚠ Data + comparison exist; no dedicated reference or practice |
+| 9 | Lewis structures, bonding | ✓ Complete |
+| 9 | **Lattice energy / Born-Haber** | ⚠ Missing (medium priority) |
+| 10 | VSEPR / molecular geometry | ✓ Complete |
+| 10 | **Hybridization practice tool** | ⚠ Reference only (embedded in VSEPR data) |
+| 10 | **Dipole moment / polarity tool** | ⚠ Missing |
+| 10 | **Molecular orbital theory** | ⚠ Missing (syllabus-dependent) |
 
 When adding a new topic, consult this table. If the topic is marked `⚠`, data or reference material likely already exists — build on it rather than duplicating.
 
@@ -473,20 +497,54 @@ Don't add new topics to ReferencePage — dedicated topic pages handle everythin
 **Framework:** Vitest. Run with `npm test` (single run) or `npm run test:watch` (watch mode).
 
 **Test file locations:**
-
 - Domain logic tests: `src/chem/__tests__/*.test.ts` — co-located under the chem/ folder
-- Utility tests: alongside the util file, e.g. `src/utils/daltonsPractice.test.ts`
+- Practice generator tests: alongside the generator, e.g. `src/utils/daltonsPractice.test.ts`
 - Component tests: alongside the component, e.g. `src/components/lewis/LewisEditor.test.ts`
 
-**What to test:**
+**Mandatory test coverage — no exceptions:**
 
-- Every `src/chem/` function: full coverage with edge cases. These are the most valuable tests in the project because they protect chemistry correctness.
-- Every practice generator: run 20+ iterations and verify each generated problem has a correct answer. Generators that use random inputs can produce edge cases that a single test won't catch.
-- At least one **Chang-verbatim verification case** per solver. Pick a worked example from the textbook, hardcode its inputs, and verify the output matches Chang's published answer. This catches drift from the curriculum reference.
-- Component tests are lower priority. Focus testing effort on the math, not the UI.
+1. **Every `src/chem/` function** must have tests with edge cases. These protect chemistry correctness — the most valuable tests in the project.
+
+2. **Every `utils/*Practice.ts` generator must have a corresponding `utils/*Practice.test.ts`.** A generator shipped without tests is a bug. The test file must include:
+
+```ts
+describe('generateSomeProblem', () => {
+  // REQUIRED: 20+ iteration correctness check
+  it('produces correct answers across 20+ runs', () => {
+    for (let i = 0; i < 25; i++) {
+      const p = generateSomeProblem()
+      // Recompute answer from p's inputs using the known formula
+      expect(recomputed).toBeCloseTo(p.answer, tolerance)
+    }
+  })
+
+  // REQUIRED: hardcoded verification case
+  it('matches Chang Example X.Y', () => {
+    // Use exact textbook values
+  })
+
+  // REQUIRED: range/validity checks
+  it('all values in valid ranges', () => {
+    for (let i = 0; i < 20; i++) {
+      const p = generateSomeProblem()
+      expect(p.answer).not.toBeNaN()
+      expect(p.steps.length).toBeGreaterThan(0)
+      // Topic-specific: pH 0-14, concentrations > 0, etc.
+    }
+  })
+
+  // RECOMMENDED: if generator has check*Answer(), test it
+  it('checkAnswer returns true for correct, false for wrong', () => {
+    const p = generateSomeProblem()
+    expect(checkAnswer(p.answer.toString(), p)).toBe(true)
+    expect(checkAnswer('999999', p)).toBe(false)
+  })
+})
+```
+
+3. At least one **Chang-verbatim verification case** per solver. Pick a worked example from the textbook, hardcode its inputs, and verify the output matches Chang's published answer.
 
 **What NOT to test:**
-
 - Don't test React rendering behavior unless it's a complex interactive component (like ChainedProblem or LewisEditor). Simple display components don't need tests.
 - Don't test Tailwind classes or animation parameters.
 
@@ -510,7 +568,7 @@ Learned from bugs found during code review:
 - **Van't Hoff factor (i) must never affect sig fig count.** The factor i is an exact integer (or treated as one) — it doesn't limit the significant figures of the result.
 - **Never output scientific notation as `1e+1`.** Always format as `1.0 × 10¹` or similar. Students don't recognize JS exponential notation as a valid answer. Use `toFixed` or a custom formatter, never raw `.toString()` on large/small numbers.
 - **Sign conventions in calorimetry:** q_system = −q_surroundings. The existing tools handle this correctly; don't invert it when adding new modes. When the temperature drops (endothermic dissolution), q_water is negative, q_rxn is positive, ΔH_soln is positive.
-- **Formal charge formula:** FC = (valence electrons) − (lone pair electrons) − (number of bonds). Not bond _order_ — count each bond (single, double, triple) as 1 for the bond count in the FC formula, regardless of bond order. (The existing LewisEditor uses bond degree sum, which is equivalent for FC because the formula actually uses shared electrons / 2.)
+- **Formal charge formula:** FC = (valence electrons) − (lone pair electrons) − (number of bonds). Not bond *order* — count each bond (single, double, triple) as 1 for the bond count in the FC formula, regardless of bond order. (The existing LewisEditor uses bond degree sum, which is equivalent for FC because the formula actually uses shared electrons / 2.)
 - **Sig figs on constants:** Tabulated constants (Kb, Kf, R, F, etc.) are exact or have more sig figs than student data. They should never limit the sig fig count of a result.
 - **Reduction potentials:** E°cell = E°cathode − E°anode (not the other way around). The sign of E° for a half-reaction never changes when you reverse it — that's the modern IUPAC convention. Only the cell potential uses the subtraction.
 

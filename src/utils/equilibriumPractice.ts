@@ -399,3 +399,65 @@ export function checkConcentrationAnswer(input: string, correct: number): boolea
 
 export type { ICESolution }
 export { fmt }
+
+// ── ICE table shared types & utilities ───────────────────────────────────────
+
+export type ICERowKey = 'initial' | 'change' | 'equilibrium'
+export type ICEDifficulty = 2 | 3 | 4 | 5
+export type ICEPrefilled = Record<string, { initial: boolean; change: boolean; equilibrium: boolean }>
+
+/** Format a concentration value for display in an ICE table cell (4 sig figs). */
+export function fmtICECell(n: number): string {
+  const p = parseFloat(n.toPrecision(4))
+  if (Math.abs(p) >= 1e4 || (Math.abs(p) < 1e-3 && p !== 0)) return p.toExponential(3)
+  return String(p)
+}
+
+/**
+ * Generate a prefilled-cell map for an ICE table.
+ * false = student must fill; true = value is given.
+ * Mirrors the logic in ICETablePractice so tests and practice are identical.
+ */
+export function generateICEPrefilled(species: string[], difficulty: ICEDifficulty): ICEPrefilled {
+  const n = species.length
+  const result: ICEPrefilled = {}
+
+  const blankIProb = difficulty === 5 ? 0.5 : 0.25
+  const blankIMode = n >= 2 && Math.random() < blankIProb
+  const blankISpecies = blankIMode ? species[Math.floor(Math.random() * n)] : null
+
+  for (const sp of species) {
+    result[sp] = {
+      initial:     sp !== blankISpecies,
+      change:      false,
+      equilibrium: sp === blankISpecies,
+    }
+  }
+
+  if (difficulty < 5) {
+    const prob = Math.random() * 0.45
+    for (const sp of species) {
+      if (Math.random() < prob) result[sp].change = true
+      if (sp !== blankISpecies && Math.random() < prob) result[sp].equilibrium = true
+    }
+
+    const filledCE = species
+      .flatMap(sp => (['change', 'equilibrium'] as const)
+        .filter(row => result[sp][row] && !(sp === blankISpecies && row === 'equilibrium'))
+        .map(row => ({ sp, row }))
+      )
+      .sort(() => Math.random() - 0.5)
+
+    const iBlanks = blankISpecies ? 1 : 0
+    const ceBlanks = species.length * 2 - filledCE.length - (blankISpecies ? 1 : 0)
+    let totalBlanks = iBlanks + ceBlanks
+    let i = 0
+    while (totalBlanks < n && i < filledCE.length) {
+      result[filledCE[i].sp][filledCE[i].row] = false
+      totalBlanks++
+      i++
+    }
+  }
+
+  return result
+}

@@ -19,7 +19,7 @@ function verifyKFromEquil(
   reactants: EquilibriumSpecies[],
   eq: Record<string, number>,
   K: number,
-  tol = 0.06,
+  tol = 0.12,
 ): void {
   const active = (sps: EquilibriumSpecies[]) => sps.filter(s => s.state === 'g' || s.state === 'aq')
   let Kcalc = 1

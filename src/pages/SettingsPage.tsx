@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import PageShell from '../components/Layout/PageShell'
 import { usePreferencesStore } from '../stores/preferencesStore'
-import { UNITS, SECTIONS, getSectionsForUnit, getTopicsForSection } from '../config/topicRegistry'
+import { UNITS, SECTIONS, getSectionsForUnit, getTopicsForSection, getUnitsByLevel } from '../config/topicRegistry'
 import type { UnitId, SectionId } from '../config/topicRegistry'
 
 // ── Toggle switch ─────────────────────────────────────────────────────────────
@@ -181,14 +181,21 @@ function UnitCard({ unitId }: { unitId: UnitId }) {
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function SettingsPage() {
-  const showAnswers    = usePreferencesStore(s => s.showAnswers)
-  const setShowAnswers = usePreferencesStore(s => s.setShowAnswers)
-  const showAll        = usePreferencesStore(s => s.showAll)
-  const hideAll        = usePreferencesStore(s => s.hideAll)
-  const resetToDefaults = usePreferencesStore(s => s.resetToDefaults)
+  const showAnswers      = usePreferencesStore(s => s.showAnswers)
+  const setShowAnswers   = usePreferencesStore(s => s.setShowAnswers)
+  const showAll          = usePreferencesStore(s => s.showAll)
+  const hideAll          = usePreferencesStore(s => s.hideAll)
+  const resetToDefaults  = usePreferencesStore(s => s.resetToDefaults)
+  const setGenChemPreset = usePreferencesStore(s => s.setGenChemPreset)
 
-  const hiddenTopics   = usePreferencesStore(s => s.hiddenTopics)
-  const hiddenCount    = hiddenTopics.size
+  const hiddenUnits  = usePreferencesStore(s => s.hiddenUnits)
+  const hiddenTopics = usePreferencesStore(s => s.hiddenTopics)
+  const hiddenCount  = hiddenTopics.size
+
+  const gc1Ids = getUnitsByLevel(1).map(u => u.id)
+  const gc2Ids = getUnitsByLevel(2).map(u => u.id)
+  const isGC1Active = gc1Ids.every(id => !hiddenUnits.has(id)) && gc2Ids.every(id => hiddenUnits.has(id))
+  const isGC2Active = gc2Ids.every(id => !hiddenUnits.has(id)) && gc1Ids.every(id => hiddenUnits.has(id))
 
   const initialSnapshot = useRef<string>(JSON.stringify([...hiddenTopics].sort()))
   const currentSnapshot = JSON.stringify([...hiddenTopics].sort())
@@ -252,6 +259,32 @@ export default function SettingsPage() {
                 <span style={{ color: 'rgb(248 113 113)' }}>{hiddenCount}</span> topic{hiddenCount !== 1 ? 's' : ''} hidden
               </span>
             )}
+          </div>
+
+          {/* Course preset */}
+          <div className="rounded-sm border border-border overflow-hidden flex divide-x divide-border"
+            style={{ background: 'rgb(var(--color-surface))' }}>
+            {([1, 2] as const).map(level => {
+              const isActive = level === 1 ? isGC1Active : isGC2Active
+              return (
+                <button
+                  key={level}
+                  onClick={() => setGenChemPreset(level)}
+                  className="flex-1 flex flex-col items-center gap-0.5 px-3 py-2 transition-colors"
+                  style={isActive ? {
+                    background: 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))',
+                    color: 'var(--c-halogen)',
+                  } : {
+                    color: 'rgb(var(--color-secondary))',
+                  }}
+                >
+                  <span className="font-sans text-xs font-semibold">Gen Chem {level}</span>
+                  <span className="font-mono text-[9px] opacity-60">
+                    {level === 1 ? '101 only' : '102 only'}
+                  </span>
+                </button>
+              )
+            })}
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">

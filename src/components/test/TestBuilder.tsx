@@ -40,12 +40,33 @@ import { genHCProblem } from '../../utils/heatingCurveProblems'
 import { genPDProblem } from '../../utils/phaseDiagramProblems'
 import type { ProfileSubtype } from '../../utils/reactionProfilePractice'
 import { generateProfileProblem } from '../../utils/reactionProfilePractice'
+import { generateRateLawProblem } from '../../utils/kineticsRateLawPractice'
+import { generateArrheniusProblem } from '../../utils/kineticsArrheniusPractice'
+import { generateIntegratedProblem } from '../../utils/kineticsIntegratedPractice'
+import { generateKExpressionProblem, generateQvsKProblem, generateKpKcProblem, generateDynamicICEProblem, generateICEPrefilled } from '../../utils/equilibriumPractice'
+import { generatePhProblem, generateKaKbProblem, generateWeakAcidProblem, generateWeakBaseProblem, generateSaltPhProblem, generatePolyproticProblem } from '../../utils/acidBasePractice'
+import { generateBufferPhProblem } from '../../utils/bufferPractice'
+import { generateKspToSolubilityProblem, generateSolubilityToKspProblem, generatePrecipitationProblem } from '../../utils/kspPractice'
+import { generateEntropyProblem, generateGibbsProblem, generateSpontaneityProblem, generateGibbsKProblem, generateCrossoverTProblem } from '../../utils/thermodynamicsPractice'
+import { genTriangleProblem, genFaradayProblem, genConcCellProblem } from '../../utils/electrochemPractice'
+import { generateDecayProblem, generateHalfLifeProblem, generateBindingEnergyProblem, generateDatingProblem } from '../../utils/nuclearPractice'
+import { genHydrocarbonProblem, hydrocarbonSolutionSteps, genIsomerProblem, genNamingProblem, genFunctionalGroupProblem, genOrganicReactionProblem } from '../../utils/organicPractice'
+import { usePreferencesStore } from '../../stores/preferencesStore'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
 // ── Topic definitions ─────────────────────────────────────────────────────────
 
 type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | 'lewis' | 'lewis_draw' | 'vsepr' | 'vsepr_draw' | 'sigma_pi' | 'stoich' | 'redox' | 'perc_comp' | 'gas_stoich' | 'sol_stoich' | 'balancing' | 'calorimetry' | 'enthalpy' | 'hess' | 'bond_enthalpy' | 'heat_transfer' | 'vdw' | 'ideal_gas' | 'ecell' | 'rxn_pred' | 'dilution' | 'conc' | 'clausius_clapeyron' | 'heating_curve' | 'phase_diagram' | 'reaction_profile'
+  | 'rate_law' | 'arrhenius' | 'integrated_rate'
+  | 'keq_expr' | 'q_vs_k' | 'ice_table' | 'kp_kc'
+  | 'ph_calc' | 'ka_kb' | 'weak_acid' | 'weak_base' | 'salt_ph' | 'polyprotic'
+  | 'buffer_ph' | 'ksp' | 'ksp_rev' | 'precipitation'
+  | 'entropy' | 'spontaneity' | 'gibbs' | 'gibbs_k' | 'crossover_t'
+  | 'triangle' | 'faraday' | 'conc_cell'
+  | 'nuclear_decay' | 'nuclear_halflife' | 'binding_energy' | 'nuclear_dating'
+  | 'hydrocarbon' | 'isomer' | 'organic_naming' | 'func_group' | 'organic_rxn'
 type TopicGroup = 'core' | 'atomic_molecular' | 'structures' | 'molar_solutions' | 'stoichiometry' | 'gases' | 'redox' | 'thermochemistry'
+  | 'kinetics' | 'equilibrium' | 'acid_base' | 'buffers_ksp' | 'thermo_dynamics' | 'nuclear' | 'organic'
 
 const GROUP_LABELS: Record<TopicGroup, string> = {
   core:             'Core Skills',
@@ -56,8 +77,18 @@ const GROUP_LABELS: Record<TopicGroup, string> = {
   gases:            'Gas Laws',
   redox:            'Redox & Electrochemistry',
   thermochemistry:  'Thermochemistry',
+  kinetics:         'Kinetics',
+  equilibrium:      'Chemical Equilibrium',
+  acid_base:        'Acid-Base Chemistry',
+  buffers_ksp:      'Buffers & Ksp',
+  thermo_dynamics:  'Thermodynamics',
+  nuclear:          'Nuclear Chemistry',
+  organic:          'Organic Chemistry',
 }
-const GROUP_ORDER: TopicGroup[] = ['core', 'atomic_molecular', 'structures', 'molar_solutions', 'stoichiometry', 'gases', 'redox', 'thermochemistry']
+const GROUP_ORDER: TopicGroup[] = [
+  'core', 'atomic_molecular', 'structures', 'molar_solutions', 'stoichiometry', 'gases', 'redox', 'thermochemistry',
+  'kinetics', 'equilibrium', 'acid_base', 'buffers_ksp', 'thermo_dynamics', 'nuclear', 'organic',
+]
 
 interface TopicDef {
   id:              string
@@ -65,6 +96,7 @@ interface TopicDef {
   group:           TopicGroup
   label:           string
   formula:         string
+  registryId?:     string   // topic ID in topicRegistry.ts for visibility filtering
   molarType?:      MolarCalcType
   stoichType?:     StoichProblemType
   redoxType?:      RedoxSubtype
@@ -136,6 +168,54 @@ const ALL_TOPICS: TopicDef[] = [
   { id: 'rxn-profile-id',   kind: 'reaction_profile', group: 'thermochemistry', label: 'Reaction Profile: Exo/Endo',  formula: 'sign ΔH',  profileSubtype: 'identify'   },
   { id: 'rxn-profile-calc', kind: 'reaction_profile', group: 'thermochemistry', label: 'Reaction Profile: ΔH & Eₐ',  formula: 'ΔH / Eₐ'                               },
   { id: 'rxn-profile-cat',  kind: 'reaction_profile', group: 'thermochemistry', label: 'Reaction Profile: Catalyst',  formula: 'cat.',     profileSubtype: 'catalyst'   },
+
+  // ── Kinetics ────────────────────────────────────────────────────────────────
+  { id: 'rate-law',        kind: 'rate_law',       group: 'kinetics', label: 'Rate Law',            formula: 'rate=k[A]ⁿ',    registryId: 'rate-law'        },
+  { id: 'arrhenius',       kind: 'arrhenius',      group: 'kinetics', label: 'Arrhenius Equation',  formula: 'k=Ae^(-Ea/RT)', registryId: 'arrhenius'       },
+  { id: 'integrated-rate', kind: 'integrated_rate', group: 'kinetics', label: 'Integrated Rate Law', formula: '[A]t / t / t½', registryId: 'integrated-rate' },
+
+  // ── Chemical Equilibrium ────────────────────────────────────────────────────
+  { id: 'keq-expr',  kind: 'keq_expr', group: 'equilibrium', label: 'Keq Expression',  formula: 'Kc expr',     registryId: 'keq-expression' },
+  { id: 'q-vs-k',   kind: 'q_vs_k',   group: 'equilibrium', label: 'Q vs K',           formula: 'Q⋛K',         registryId: 'q-vs-k'         },
+  { id: 'ice-table', kind: 'ice_table', group: 'equilibrium', label: 'ICE Table',       formula: '[x]eq',       registryId: 'ice-table'      },
+  { id: 'kp-kc',    kind: 'kp_kc',    group: 'equilibrium', label: 'Kp ↔ Kc',          formula: 'Kp=KcRTΔn',  registryId: 'kp-kc'          },
+
+  // ── Acid-Base Chemistry ─────────────────────────────────────────────────────
+  { id: 'ph-calc',    kind: 'ph_calc',   group: 'acid_base', label: 'pH Calculation',   formula: 'pH',          registryId: 'ph-calculator' },
+  { id: 'ka-kb',      kind: 'ka_kb',     group: 'acid_base', label: 'Ka / Kb',          formula: 'Ka↔Kb',       registryId: 'ka-kb'         },
+  { id: 'weak-acid',  kind: 'weak_acid', group: 'acid_base', label: 'Weak Acid pH',     formula: 'pH<7',        registryId: 'weak-acid'     },
+  { id: 'weak-base',  kind: 'weak_base', group: 'acid_base', label: 'Weak Base pH',     formula: 'pH>7',        registryId: 'weak-base'     },
+  { id: 'salt-ph',    kind: 'salt_ph',   group: 'acid_base', label: 'Salt pH',          formula: 'acidic/basic', registryId: 'salt-ph'      },
+  { id: 'polyprotic', kind: 'polyprotic', group: 'acid_base', label: 'Polyprotic Acid', formula: 'Ka1,Ka2',     registryId: 'polyprotic'    },
+
+  // ── Buffers & Ksp ───────────────────────────────────────────────────────────
+  { id: 'buffer-ph',    kind: 'buffer_ph',    group: 'buffers_ksp', label: 'Buffer pH',         formula: 'H-H eq.',  registryId: 'buffer-ph'    },
+  { id: 'ksp-sol',      kind: 'ksp',          group: 'buffers_ksp', label: 'Ksp → Solubility',  formula: 'Ksp→s',    registryId: 'ksp'          },
+  { id: 'ksp-rev',      kind: 'ksp_rev',      group: 'buffers_ksp', label: 'Solubility → Ksp',  formula: 's→Ksp',    registryId: 'ksp'          },
+  { id: 'precipitation', kind: 'precipitation', group: 'buffers_ksp', label: 'Precipitation',   formula: 'Q>Ksp?',   registryId: 'precipitation' },
+
+  // ── Thermodynamics ──────────────────────────────────────────────────────────
+  { id: 'entropy',     kind: 'entropy',     group: 'thermo_dynamics', label: 'Entropy (ΔS°)',    formula: 'ΔS°',       registryId: 'entropy-calc'       },
+  { id: 'spontaneity', kind: 'spontaneity', group: 'thermo_dynamics', label: 'Spontaneity',      formula: 'ΔH/ΔS',     registryId: 'spontaneity'        },
+  { id: 'gibbs',       kind: 'gibbs',       group: 'thermo_dynamics', label: 'Gibbs Energy',     formula: 'ΔG=ΔH-TΔS', registryId: 'gibbs-calc'         },
+  { id: 'gibbs-k',     kind: 'gibbs_k',     group: 'thermo_dynamics', label: 'ΔG° ↔ K',         formula: 'ΔG=-RTlnK', registryId: 'gibbs-equilibrium'  },
+  { id: 'crossover-t', kind: 'crossover_t', group: 'thermo_dynamics', label: 'Crossover T',      formula: 'T=ΔH/ΔS',   registryId: 'gibbs-temperature'  },
+  { id: 'dg-ecell-k',  kind: 'triangle',    group: 'thermo_dynamics', label: 'ΔG°/E°cell/K',     formula: 'ΔG↔E↔K',    registryId: 'delta-g-ecell-k'    },
+  { id: 'electrolysis', kind: 'faraday',    group: 'thermo_dynamics', label: 'Electrolysis',      formula: 'm=ItM/nF',   registryId: 'electrolysis'       },
+  { id: 'conc-cell',   kind: 'conc_cell',   group: 'thermo_dynamics', label: 'Concentration Cell', formula: 'Nernst',   registryId: 'concentration-cell' },
+
+  // ── Nuclear Chemistry ───────────────────────────────────────────────────────
+  { id: 'nuclear-decay',   kind: 'nuclear_decay',   group: 'nuclear', label: 'Nuclear Decay',   formula: 'α/β/γ',   registryId: 'nuclear-decay'   },
+  { id: 'nuclear-hl',      kind: 'nuclear_halflife', group: 'nuclear', label: 'Nuclear Half-Life', formula: 'N=N₀/2ⁿ', registryId: 'nuclear-half-life' },
+  { id: 'binding-energy',  kind: 'binding_energy',  group: 'nuclear', label: 'Binding Energy',  formula: 'BE/A',    registryId: 'binding-energy'  },
+  { id: 'nuclear-dating',  kind: 'nuclear_dating',  group: 'nuclear', label: 'Radiocarbon Dating', formula: 't age', registryId: 'nuclear-dating'  },
+
+  // ── Organic Chemistry ───────────────────────────────────────────────────────
+  { id: 'hydrocarbon',    kind: 'hydrocarbon',    group: 'organic', label: 'Hydrocarbons',        formula: 'CₙH…',    registryId: 'alkanes-alkenes'     },
+  { id: 'isomer',         kind: 'isomer',         group: 'organic', label: 'Isomers',             formula: 'same formula?', registryId: 'isomers'      },
+  { id: 'organic-naming', kind: 'organic_naming', group: 'organic', label: 'Organic Naming',      formula: 'IUPAC',   registryId: 'organic-naming'      },
+  { id: 'func-group',     kind: 'func_group',     group: 'organic', label: 'Functional Groups',   formula: '-OH, C=O', registryId: 'functional-group-id' },
+  { id: 'organic-rxn',    kind: 'organic_rxn',    group: 'organic', label: 'Organic Reactions',   formula: 'rxn type', registryId: 'organic-reactions'  },
 ]
 
 const STYLES: ProblemStyle[] = ['word', 'arithmetic']
@@ -169,11 +249,15 @@ interface Props {
 }
 
 export default function TestBuilder({ onGenerate }: Props) {
+  const { isTopicVisible } = usePreferencesStore()
   const [title, setTitle]           = useState('Chemistry Practice Test')
   const [generating, setGenerating] = useState(false)
   const [rows, setRows]             = useState<TopicRow[]>(
     ALL_TOPICS.map(def => ({ def, enabled: true, count: 5 }))
   )
+
+  // Filter rows to only those whose registry topic is visible (or has no registry ID)
+  const visibleRows = rows.filter(r => !r.def.registryId || isTopicVisible(r.def.registryId))
 
   // ── Selection helpers ──────────────────────────────────────────────────────
 
@@ -182,14 +266,16 @@ export default function TestBuilder({ onGenerate }: Props) {
   }
 
   function toggleAll() {
-    const allOn = rows.every(r => r.enabled)
-    setRows(prev => prev.map(r => ({ ...r, enabled: !allOn })))
+    const allOn = visibleRows.every(r => r.enabled)
+    const visibleIds = new Set(visibleRows.map(r => r.def.id))
+    setRows(prev => prev.map(r => visibleIds.has(r.def.id) ? { ...r, enabled: !allOn } : r))
   }
 
   function toggleGroup(group: TopicGroup) {
-    const groupRows = rows.filter(r => r.def.group === group)
+    const groupRows = visibleRows.filter(r => r.def.group === group)
     const allOn = groupRows.every(r => r.enabled)
-    setRows(prev => prev.map(r => r.def.group === group ? { ...r, enabled: !allOn } : r))
+    const groupIds = new Set(groupRows.map(r => r.def.id))
+    setRows(prev => prev.map(r => groupIds.has(r.def.id) ? { ...r, enabled: !allOn } : r))
   }
 
   function setCount(id: string, val: number) {
@@ -198,10 +284,10 @@ export default function TestBuilder({ onGenerate }: Props) {
     ))
   }
 
-  const enabledRows    = rows.filter(r => r.enabled)
+  const enabledRows    = visibleRows.filter(r => r.enabled)
   const totalQuestions = enabledRows.reduce((s, r) => s + r.count, 0)
-  const allChecked     = rows.every(r => r.enabled)
-  const someChecked    = rows.some(r => r.enabled)
+  const allChecked     = visibleRows.every(r => r.enabled)
+  const someChecked    = visibleRows.some(r => r.enabled)
 
   // ── Generation ────────────────────────────────────────────────────────────
 
@@ -285,6 +371,209 @@ export default function TestBuilder({ onGenerate }: Props) {
           ?? (['read_dh', 'read_ea', 'reverse_ea'] as ProfileSubtype[])[Math.floor(Math.random() * 3)]
         return { topic: t.label, topicFormula: t.formula, problem: { kind: 'reaction_profile', data: generateProfileProblem(sub) } }
       }
+
+      // ── Generic numeric / classification kinds ─────────────────────────────
+      function num(question: string, answer: number, unit: string, tolerance: number, steps?: string[]) {
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'numeric' as const, data: { question, answer, unit, tolerance, steps } } }
+      }
+      function cls(question: string, answer: string, options?: string[], steps?: string[]) {
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'classification' as const, data: { question, answer, options, steps } } }
+      }
+
+      if (t.kind === 'rate_law') {
+        const p = generateRateLawProblem()
+        return num(p.question, p.answer, 'reaction order', 0.1, p.steps)
+      }
+      if (t.kind === 'arrhenius') {
+        const p = generateArrheniusProblem()
+        return num(p.question, p.answer, p.answerUnit, 0.02, p.steps)
+      }
+      if (t.kind === 'integrated_rate') {
+        const p = generateIntegratedProblem()
+        return num(p.question, p.answer, p.answerUnit, 0.02, p.steps)
+      }
+      if (t.kind === 'keq_expr') {
+        const p = generateKExpressionProblem()
+        return cls(
+          `Write the equilibrium constant expression (Kc) for:\n${p.reaction.equation}`,
+          p.answer, undefined, p.steps
+        )
+      }
+      if (t.kind === 'q_vs_k') {
+        const p = generateQvsKProblem()
+        const concStr = Object.entries(p.concentrations)
+          .map(([sp, c]) => `[${sp}] = ${c.toFixed(2)} M`).join(', ')
+        const dirLabel = p.direction === 'forward' ? 'shift right' : p.direction === 'reverse' ? 'shift left' : 'at equilibrium'
+        return cls(
+          `For the reaction:\n${p.reaction.equation}\nK = ${p.reaction.K.toPrecision(3)}\nConcentrations: ${concStr}\nIn which direction does the reaction shift to reach equilibrium?`,
+          dirLabel, ['shift right', 'shift left', 'at equilibrium'], p.steps
+        )
+      }
+      if (t.kind === 'ice_table') {
+        const p = generateDynamicICEProblem(3)
+        const species = [...p.reactants.map(s => s.formula), ...p.products.map(s => s.formula)]
+        const prefilled = generateICEPrefilled(species, 3)
+        return {
+          topic: t.label, topicFormula: t.formula,
+          problem: {
+            kind: 'ice_table' as const,
+            data: {
+              equation:  p.equation,
+              K:         p.K,
+              kType:     p.kType,
+              species,
+              initial:   p.initial,
+              solution:  p.solution,
+              prefilled,
+              steps:     p.solution.steps,
+            },
+          },
+        }
+      }
+      if (t.kind === 'kp_kc') {
+        const p = generateKpKcProblem()
+        const from = p.mode === 'Kp' ? 'Kp' : 'Kc'
+        const to = p.mode === 'Kp' ? 'Kc' : 'Kp'
+        return num(
+          `For the reaction:\n${p.reaction.equation}\nT = ${p.T} K, ${from} = ${p.reaction.K.toPrecision(3)}\nCalculate ${to}.`,
+          p.answer, '', 0.02, p.steps
+        )
+      }
+      if (t.kind === 'ph_calc') {
+        const p = generatePhProblem()
+        return num(p.question, p.correctPh, '', 0.02, p.steps)
+      }
+      if (t.kind === 'ka_kb') {
+        const p = generateKaKbProblem()
+        return num(p.question, p.correctValue, p.answerLabel, 0.02)
+      }
+      if (t.kind === 'weak_acid') {
+        const p = generateWeakAcidProblem()
+        return num(p.question, p.correctPh, '', 0.02, p.steps)
+      }
+      if (t.kind === 'weak_base') {
+        const p = generateWeakBaseProblem()
+        return num(p.question, p.correctPh, '', 0.02, p.steps)
+      }
+      if (t.kind === 'salt_ph') {
+        const p = generateSaltPhProblem()
+        return num(p.question, p.correctPh, '', 0.02, p.steps)
+      }
+      if (t.kind === 'polyprotic') {
+        const p = generatePolyproticProblem()
+        return num(p.question, p.correctPh, '', 0.02, p.steps)
+      }
+      if (t.kind === 'buffer_ph') {
+        const p = generateBufferPhProblem()
+        return num(p.prompt, p.answer, '', 0.02)
+      }
+      if (t.kind === 'ksp') {
+        const p = generateKspToSolubilityProblem()
+        return num(p.prompt, p.answer, 'M', 0.02)
+      }
+      if (t.kind === 'ksp_rev') {
+        const p = generateSolubilityToKspProblem()
+        return num(p.prompt, p.answer, '', 0.02)
+      }
+      if (t.kind === 'precipitation') {
+        const p = generatePrecipitationProblem()
+        return num(p.prompt, p.answer, '', 0.02)
+      }
+      if (t.kind === 'entropy') {
+        const p = generateEntropyProblem()
+        return num(`Calculate ΔS° for:\n${p.label}`, p.answer, 'J/(mol·K)', 0.02, p.steps)
+      }
+      if (t.kind === 'spontaneity') {
+        const p = generateSpontaneityProblem()
+        return cls(
+          `ΔH° = ${p.deltaH_kJ > 0 ? '+' : ''}${p.deltaH_kJ} kJ/mol, ΔS° = ${p.deltaS_JperK > 0 ? '+' : ''}${p.deltaS_JperK} J/(mol·K)\nClassify the spontaneity of this reaction.`,
+          p.answer, ['always', 'never', 'low-T', 'high-T'], [p.explanation]
+        )
+      }
+      if (t.kind === 'gibbs') {
+        const p = generateGibbsProblem()
+        const question = p.method === 2 && p.deltaH_kJ !== undefined
+          ? `ΔH° = ${p.deltaH_kJ > 0 ? '+' : ''}${p.deltaH_kJ} kJ/mol, ΔS° = ${p.deltaS_JperK} J/(mol·K), T = ${p.T} K\nCalculate ΔG° (in kJ/mol).`
+          : `Calculate ΔG° for:\n${p.label}`
+        return num(question, p.answer, 'kJ/mol', 0.02, p.steps)
+      }
+      if (t.kind === 'gibbs_k') {
+        const p = generateGibbsKProblem()
+        const question = p.direction === 'deltaG-to-K' && p.deltaG_kJ !== undefined
+          ? `ΔG° = ${p.deltaG_kJ > 0 ? '+' : ''}${p.deltaG_kJ} kJ/mol at T = ${p.T} K\nCalculate the equilibrium constant K.`
+          : `K = ${p.K?.toPrecision(3)} at T = ${p.T} K\nCalculate ΔG° (in kJ/mol).`
+        return num(question, p.answer, p.direction === 'deltaG-to-K' ? '' : 'kJ/mol', 0.02, p.steps)
+      }
+      if (t.kind === 'crossover_t') {
+        const p = generateCrossoverTProblem()
+        return num(
+          `ΔH° = ${p.deltaH_kJ > 0 ? '+' : ''}${p.deltaH_kJ} kJ/mol, ΔS° = ${p.deltaS_JperK > 0 ? '+' : ''}${p.deltaS_JperK} J/(mol·K)\nAt what temperature (in K) does spontaneity change?`,
+          p.answer, 'K', 0.02, p.steps
+        )
+      }
+      if (t.kind === 'triangle') {
+        const p = genTriangleProblem('random')
+        return num(p.question, p.answer, p.unit, 0.02, p.steps)
+      }
+      if (t.kind === 'faraday') {
+        const p = genFaradayProblem('random')
+        return num(p.question, p.answer, p.unit, 0.02, p.steps)
+      }
+      if (t.kind === 'conc_cell') {
+        const p = genConcCellProblem()
+        return num(p.question, p.answer, 'V', 0.02, p.steps)
+      }
+      if (t.kind === 'nuclear_decay') {
+        const p = generateDecayProblem()
+        const q = `${p.parentSymbol} (Z=${p.parentZ}, A=${p.parentA}) undergoes ${p.decayType} decay.\nWhat is the mass number A of the daughter nuclide?`
+        return num(q, p.answerA, '', 0.1, p.steps)
+      }
+      if (t.kind === 'nuclear_halflife') {
+        const p = generateHalfLifeProblem()
+        return num(p.question, p.answer, p.unit, 0.02, p.steps)
+      }
+      if (t.kind === 'binding_energy') {
+        const p = generateBindingEnergyProblem()
+        return num(p.question, p.answer, p.unit, 0.02, p.steps)
+      }
+      if (t.kind === 'nuclear_dating') {
+        const p = generateDatingProblem()
+        return num(p.question, p.answer, 'years', 0.02, p.steps)
+      }
+      if (t.kind === 'hydrocarbon') {
+        const p = genHydrocarbonProblem()
+        const steps = hydrocarbonSolutionSteps(p)
+        return cls(
+          `A compound has the formula C${p.C}H${p.H}.\nIs it an alkane, alkene, or alkyne?`,
+          p.correctFamily, ['alkane', 'alkene', 'alkyne'], steps
+        )
+      }
+      if (t.kind === 'isomer') {
+        const p = genIsomerProblem()
+        return cls(
+          `Are ${p.formula1} and ${p.formula2} structural isomers?`,
+          p.areIsomers ? 'yes' : 'no', ['yes', 'no'], [p.explanation]
+        )
+      }
+      if (t.kind === 'organic_naming') {
+        const p = genNamingProblem()
+        return cls(`What is the IUPAC name of ${p.formula} (${p.family}, n=${p.n})?`, p.name)
+      }
+      if (t.kind === 'func_group') {
+        const p = genFunctionalGroupProblem()
+        return cls(
+          `${p.description}\nIdentify the functional group.`,
+          p.correctId, p.options
+        )
+      }
+      if (t.kind === 'organic_rxn') {
+        const p = genOrganicReactionProblem()
+        return cls(
+          `${p.scenario}\nWhat type of organic reaction is this?`,
+          p.correctType, p.options, [p.explanation]
+        )
+      }
+
       return { topic: t.label, topicFormula: t.formula, problem: { kind: 'molar', data: generateMolarProblem(t.molarType!, randomStyle()) } }
     }
 
@@ -349,7 +638,8 @@ export default function TestBuilder({ onGenerate }: Props) {
 
           {/* Grouped rows */}
           {GROUP_ORDER.map(group => {
-            const groupRows = rows.filter(r => r.def.group === group)
+            const groupRows = visibleRows.filter(r => r.def.group === group)
+            if (groupRows.length === 0) return null
             const allOn  = groupRows.every(r => r.enabled)
             const someOn = groupRows.some(r => r.enabled)
             return (

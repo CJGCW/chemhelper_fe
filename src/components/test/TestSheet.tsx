@@ -34,11 +34,39 @@ import type { PDProblem } from '../../utils/phaseDiagramProblems'
 import { identifyPhase } from '../../utils/phaseDiagramProblems'
 import { checkProfileAnswer } from '../../utils/reactionProfilePractice'
 import type { ProfileProblem } from '../../utils/reactionProfilePractice'
-import type { GeneratedTest, TestQuestion } from './testTypes'
+import { checkConcentrationAnswer, fmtICECell } from '../../utils/equilibriumPractice'
+import type { ICERowKey as RowKey } from '../../utils/equilibriumPractice'
+import type { GeneratedTest, TestQuestion, ICETableTestProblem } from './testTypes'
 
 // ── Answer checking ───────────────────────────────────────────────────────────
 
 type Result = 'correct' | 'wrong' | 'wrong_sf' | 'blank'
+
+type ICECells = Record<string, Record<RowKey, string>>
+
+function iceCorrectValue(
+  data: ICETableTestProblem['data'],
+  sp: string,
+  row: RowKey,
+): number {
+  if (row === 'initial')     return data.initial[sp] ?? 0
+  if (row === 'change')      return data.solution.equilibriumConcentrations[sp] - (data.initial[sp] ?? 0)
+  return data.solution.equilibriumConcentrations[sp]
+}
+
+function checkICECells(data: ICETableTestProblem['data'], cells: ICECells): Result {
+  const rows: RowKey[] = ['initial', 'change', 'equilibrium']
+  let anyBlank = false
+  for (const sp of data.species) {
+    for (const row of rows) {
+      if (data.prefilled[sp][row]) continue
+      const val = cells[sp]?.[row]
+      if (!val?.trim()) { anyBlank = true; continue }
+      if (!checkConcentrationAnswer(val, iceCorrectValue(data, sp, row))) return 'wrong'
+    }
+  }
+  return anyBlank ? 'blank' : 'correct'
+}
 
 function checkQuestion(q: TestQuestion, answer: string): Result {
   if (!answer || answer.trim() === '') return 'blank'
@@ -95,7 +123,17 @@ function checkQuestion(q: TestQuestion, answer: string): Result {
     return checkCCAnswer(q.problem.data, answer) ? 'correct' : 'wrong'
   if (q.problem.kind === 'sigma_pi')
     return checkSigmaPiCombined(answer, q.problem.data) ? 'correct' : 'wrong'
+  if (q.problem.kind === 'numeric') {
+    const { answer: correctAnswer, tolerance } = q.problem.data
+    const v = parseFloat(answer.trim())
+    if (!isFinite(v)) return 'wrong'
+    if (correctAnswer === 0) return Math.abs(v) < 1e-6 ? 'correct' : 'wrong'
+    return Math.abs((v - correctAnswer) / correctAnswer) <= tolerance ? 'correct' : 'wrong'
+  }
+  if (q.problem.kind === 'classification')
+    return answer.trim().toLowerCase() === q.problem.data.answer.trim().toLowerCase() ? 'correct' : 'wrong'
   if (q.problem.kind === 'vsepr-draw' || q.problem.kind === 'lewis-draw') return 'blank'  // scored externally via Ketcher
+  if (q.problem.kind === 'ice_table') return 'blank'  // scored via checkICECells, not checkQuestion
   if (q.problem.kind === 'heating_curve') {
     const p = q.problem.data
     const validPhases = new Set(p.validIdxs.map(i => p.segments[i].phase))
@@ -454,6 +492,48 @@ function buildQuestionHtml(q: TestQuestion): string {
     </div>`
   }
 
+  if (q.problem.kind === 'ice_table') {
+    const p = q.problem.data
+    const TH = 'border:1px solid #ccc;padding:5px 14px;font-family:monospace;font-size:10pt;'
+    const TD = 'border:1px solid #ccc;padding:5px 14px;text-align:center;font-family:monospace;font-size:10pt;'
+    const GIVEN = 'background:#eef2ff;'
+    const BLANK = 'border:1px solid #aaa;min-width:70px;'
+    const rowLabels: [string, RowKey][] = [['I', 'initial'], ['C', 'change'], ['E', 'equilibrium']]
+    const rowBg: Record<RowKey, string> = { initial: 'background:#eef2ff;', change: '', equilibrium: 'background:#f7f7f7;' }
+    const thead = `<tr><th style="${TH}width:24px;"></th>${p.species.map(sp => `<th style="${TH}">${sp}</th>`).join('')}</tr>`
+    const tbody = rowLabels.map(([lbl, row]) =>
+      `<tr style="${rowBg[row]}"><td style="${TH}font-weight:bold;color:#555;">${lbl}</td>${p.species.map(sp => {
+        const isGiven = p.prefilled[sp][row]
+        return isGiven
+          ? `<td style="${TD}${GIVEN}">${fmtICECell(iceCorrectValue(p, sp, row))}</td>`
+          : `<td style="${TD}${BLANK}"></td>`
+      }).join('')}</tr>`
+    ).join('')
+    return `<div class="question">${header}
+      <p class="q-text" style="font-family:monospace;">${p.equation}</p>
+      <p class="q-text" style="font-size:10pt;color:#555;">K<sub>${p.kType === 'Kc' ? 'c' : 'p'}</sub> = ${p.K.toPrecision(3)}</p>
+      <div style="margin:10px 0 0 22px;overflow-x:auto;">
+        <table style="border-collapse:collapse;"><thead>${thead}</thead><tbody>${tbody}</tbody></table>
+      </div>
+    </div>`
+  }
+
+  if (q.problem.kind === 'numeric') {
+    const { question, unit } = q.problem.data
+    const textHtml = question.split('\n').map(l => `<p class="q-text">${l}</p>`).join('')
+    const unitLabel = unit ? `<span class="unit-label">${unit}</span>` : ''
+    return `<div class="question">${header}${textHtml}<div class="answer-row"><span class="solve-for">Answer:</span><span class="answer-line"></span>${unitLabel}</div></div>`
+  }
+
+  if (q.problem.kind === 'classification') {
+    const { question, options } = q.problem.data
+    const textHtml = question.split('\n').map(l => `<p class="q-text">${l}</p>`).join('')
+    const optionsHtml = options?.length
+      ? `<div class="given">${options.map(o => `<span class="chip">${o}</span>`).join('')}</div>`
+      : ''
+    return `<div class="question">${header}${textHtml}${optionsHtml}<div class="answer-row"><span class="solve-for">Answer:</span><span class="answer-line"></span></div></div>`
+  }
+
   // molar
   const p = q.problem.data
   const givenHtml = p.style === 'arithmetic' && p.given.length > 0
@@ -722,6 +802,30 @@ function buildAnswerKeyHtml(q: TestQuestion): string {
   } else if (q.problem.kind === 'phase_diagram')
     answer = q.problem.data.target.replace('_', ' ')
   else if (q.problem.kind === 'reaction_profile')
+    answer = q.problem.data.answer
+  else if (q.problem.kind === 'ice_table') {
+    const p = q.problem.data
+    const TH = 'border:1px solid #ccc;padding:3px 10px;font-family:monospace;font-size:9pt;font-weight:600;'
+    const TD = 'border:1px solid #ccc;padding:3px 10px;text-align:center;font-family:monospace;font-size:9pt;'
+    const GIVEN = 'background:#eef2ff;'
+    const rowLabels: [string, RowKey][] = [['I', 'initial'], ['C', 'change'], ['E', 'equilibrium']]
+    const rowBg: Record<RowKey, string> = { initial: 'background:#eef2ff;', change: '', equilibrium: 'background:#f7f7f7;' }
+    const thead = `<tr><th style="${TH}width:20px;"></th>${p.species.map(sp => `<th style="${TH}">${sp}</th>`).join('')}</tr>`
+    const tbody = rowLabels.map(([lbl, row]) =>
+      `<tr style="${rowBg[row]}"><td style="${TH}color:#555;">${lbl}</td>${p.species.map(sp => {
+        const isGiven = p.prefilled[sp][row]
+        return `<td style="${TD}${isGiven ? GIVEN : ''}">${fmtICECell(iceCorrectValue(p, sp, row))}</td>`
+      }).join('')}</tr>`
+    ).join('')
+    return `<div class="key-row"><span class="key-num">${q.id}.</span>
+      <table style="border-collapse:collapse;margin-top:2px;"><thead>${thead}</thead><tbody>${tbody}</tbody></table>
+    </div>`
+  }
+  else if (q.problem.kind === 'numeric') {
+    const { answer: a, unit } = q.problem.data
+    answer = unit ? `${parseFloat(a.toPrecision(4))} ${unit}` : String(a)
+  }
+  else if (q.problem.kind === 'classification')
     answer = q.problem.data.answer
   else
     answer = `${q.problem.data.answer} ${q.problem.data.answerUnit}`
@@ -1003,6 +1107,7 @@ export default function TestSheet({ test, onBack }: Props) {
 
   const [answers, setAnswers]       = useState<Record<number, string>>({})
   const [diagramDots, setDiagramDots] = useState<Record<number, { x: number; y: number }>>({})
+  const [iceCells, setIceCells]     = useState<Record<number, ICECells>>({})
   const [checked, setChecked]       = useState(false)
   const [revealed, setRevealed]     = useState<Set<number>>(new Set())
   const [submissions, setSubmissions] = useState<Record<number, DrawSubmission>>({})
@@ -1011,6 +1116,14 @@ export default function TestSheet({ test, onBack }: Props) {
   function setAnswer(id: number, val: string) {
     if (checked) return
     setAnswers(prev => ({ ...prev, [id]: val }))
+  }
+
+  function setIceCell(qId: number, sp: string, row: RowKey, val: string) {
+    if (checked) return
+    setIceCells(prev => ({
+      ...prev,
+      [qId]: { ...prev[qId], [sp]: { ...prev[qId]?.[sp], [row]: val } },
+    }))
   }
 
   function toggleReveal(id: number) {
@@ -1023,6 +1136,10 @@ export default function TestSheet({ test, onBack }: Props) {
 
   const answeredCount = Object.values(answers).filter(v => v?.trim() !== '').length
     + Object.keys(submissions).length
+    + test.questions.filter(q =>
+        q.problem.kind === 'ice_table' &&
+        Object.values(iceCells[q.id] ?? {}).some(rows => Object.values(rows).some(v => v.trim()))
+      ).length
 
   const results: Record<number, Result> | null = checked
     ? Object.fromEntries(test.questions.map(q => {
@@ -1030,6 +1147,8 @@ export default function TestSheet({ test, onBack }: Props) {
           const s = submissions[q.id]
           return [q.id, s === undefined ? 'blank' : s.passed ? 'correct' : 'wrong']
         }
+        if (q.problem.kind === 'ice_table')
+          return [q.id, checkICECells(q.problem.data, iceCells[q.id] ?? {})]
         return [q.id, checkQuestion(q, answers[q.id] ?? '')]
       }))
     : null
@@ -1078,6 +1197,9 @@ export default function TestSheet({ test, onBack }: Props) {
     const dilutionP      = q.problem.kind === 'dilution'           ? q.problem.data : null
     const concP          = q.problem.kind === 'conc'               ? q.problem.data : null
     const ccP            = q.problem.kind === 'clausius_clapeyron' ? q.problem.data : null
+    const numericP       = q.problem.kind === 'numeric'       ? q.problem.data : null
+    const classifP       = q.problem.kind === 'classification' ? q.problem.data : null
+    const iceTableP      = q.problem.kind === 'ice_table'     ? q.problem.data : null
     const drawP          = vseprDrawP ?? lewisDrawP   // either draw-type problem
 
     const questionText = sfProblem
@@ -1156,6 +1278,25 @@ export default function TestSheet({ test, onBack }: Props) {
         </div>
       : drawP
       ? <p className="font-sans text-base text-bright leading-relaxed pl-8">{drawP.question}</p>
+      : iceTableP
+      ? <div className="pl-2 sm:pl-8 flex flex-col gap-1">
+          <p className="font-mono text-sm text-primary">{iceTableP.equation}</p>
+          <p className="font-mono text-xs text-secondary">
+            K{iceTableP.kType === 'Kc' ? <sub>c</sub> : <sub>p</sub>} = {iceTableP.K.toPrecision(3)}
+          </p>
+          <p className="font-sans text-xs text-dim mt-0.5">Fill in the blank cells. Shaded cells are given.</p>
+        </div>
+      : (numericP || classifP)
+      ? <div className="pl-8 flex flex-col gap-1">
+          {(numericP?.question ?? classifP!.question).split('\n').map((line, i) => (
+            <p key={i} className="font-sans text-base text-bright leading-relaxed">{line}</p>
+          ))}
+          {classifP?.options && classifP.options.length > 0 && (
+            <p className="font-sans text-xs text-dim mt-0.5">
+              Options: {classifP.options.join(' · ')}
+            </p>
+          )}
+        </div>
       : <p className="font-sans text-base text-bright leading-relaxed pl-8">
           {percCompP?.question ?? atomicP?.question ?? lewisP?.question ?? vseprP?.question ?? conversionP?.question
            ?? calorimetryP?.question ?? heatTransferP?.question ?? vdwP?.question ?? idealGasP?.question
@@ -1224,6 +1365,12 @@ export default function TestSheet({ test, onBack }: Props) {
       ? `${concP.answer.toPrecision(3)} ${concP.answerUnit}`
       : ccP
       ? ccP.answer
+      : iceTableP
+      ? 'See completed table'
+      : numericP
+      ? (numericP.unit ? `${parseFloat(numericP.answer.toPrecision(4))} ${numericP.unit}` : String(numericP.answer))
+      : classifP
+      ? classifP.answer
       : `${molarP!.answer} ${molarP!.answerUnit}`
 
     const solutionSteps = sfProblem
@@ -1286,6 +1433,12 @@ export default function TestSheet({ test, onBack }: Props) {
       ? concP.steps
       : ccP
       ? ccP.steps
+      : iceTableP
+      ? iceTableP.steps
+      : numericP
+      ? (numericP.steps ?? [])
+      : classifP
+      ? (classifP.steps ?? [])
       : molarP!.steps
 
     return (
@@ -1337,6 +1490,102 @@ export default function TestSheet({ test, onBack }: Props) {
         {reactionProfileP && (
           <div className="pl-8" dangerouslySetInnerHTML={{ __html: reactionProfileSvg(reactionProfileP) }} />
         )}
+
+        {/* ICE table: full I/C/E grid with given/blank cells */}
+        {iceTableP && (() => {
+          const rows: { label: string; row: RowKey; bg?: string }[] = [
+            { label: 'I', row: 'initial',     bg: 'color-mix(in srgb, var(--c-halogen) 4%, rgb(var(--color-raised)))' },
+            { label: 'C', row: 'change' },
+            { label: 'E', row: 'equilibrium', bg: 'rgb(var(--color-surface))' },
+          ]
+          const GIVEN_STYLE: React.CSSProperties = {
+            background: 'color-mix(in srgb, var(--c-halogen) 5%, rgb(var(--color-raised)))',
+          }
+          const blankIds = rows.flatMap(({ row }) =>
+            iceTableP.species
+              .filter(sp => !iceTableP.prefilled[sp][row])
+              .map(sp => `ice-${q.id}-${sp}-${row}`)
+          )
+          return (
+            <div className="pl-2 sm:pl-8 overflow-x-auto">
+              <table className="font-mono text-sm border-collapse">
+                <thead>
+                  <tr>
+                    <th className="border border-border px-3 py-1.5 text-left text-secondary font-normal text-xs uppercase tracking-wider w-6" />
+                    {iceTableP.species.map(sp => (
+                      <th key={sp} className="border border-border px-3 py-2 text-center text-primary font-medium min-w-[7rem]">{sp}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map(({ label, row, bg }) => (
+                    <tr key={row} style={bg ? { background: bg } : undefined}>
+                      <td className="border border-border px-3 py-1.5 text-secondary text-xs font-bold">{label}</td>
+                      {iceTableP.species.map(sp => {
+                        const isGiven  = iceTableP.prefilled[sp][row]
+                        const correct  = iceCorrectValue(iceTableP, sp, row)
+                        const cellVal  = iceCells[q.id]?.[sp]?.[row] ?? ''
+                        const isOk     = checked && !isGiven ? checkConcentrationAnswer(cellVal, correct) : false
+                        if (isGiven) {
+                          return (
+                            <td key={sp} className="border border-border p-1">
+                              <div className="px-3 py-2 text-center font-mono text-sm text-secondary rounded-sm" style={GIVEN_STYLE}>
+                                {fmtICECell(correct)}
+                              </div>
+                            </td>
+                          )
+                        }
+                        if (checked) {
+                          return (
+                            <td key={sp} className="border border-border p-1">
+                              <div className="flex flex-col items-center gap-0.5 py-1 px-2">
+                                <span className={`text-sm font-mono ${isOk ? 'text-emerald-300' : 'text-rose-300'}`}>
+                                  {cellVal || '—'}
+                                </span>
+                                {!isOk && <span className="text-xs text-emerald-400">{fmtICECell(correct)}</span>}
+                              </div>
+                            </td>
+                          )
+                        }
+                        const placeholder = row === 'initial' ? '?' : row === 'change' ? '±value' : 'M'
+                        return (
+                          <td key={sp} className="border border-border p-1">
+                            <input
+                              id={`ice-${q.id}-${sp}-${row}`}
+                              type="text"
+                              inputMode="decimal"
+                              value={cellVal}
+                              onChange={e => setIceCell(q.id, sp, row, e.target.value)}
+                              onKeyDown={e => {
+                                if (e.key !== 'Enter') return
+                                e.preventDefault()
+                                const idx = blankIds.indexOf(`ice-${q.id}-${sp}-${row}`)
+                                if (idx >= 0 && idx < blankIds.length - 1) {
+                                  ;(document.getElementById(blankIds[idx + 1]) as HTMLInputElement | null)?.focus()
+                                }
+                              }}
+                              placeholder={placeholder}
+                              className="w-full bg-raised border border-border rounded-sm px-2 py-1 text-center font-mono text-sm
+                                focus:outline-none focus:border-muted transition-colors text-primary"
+                            />
+                          </td>
+                        )
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {!checked && (
+                <p className="font-mono text-xs text-dim mt-2">Enter to advance · shaded cells are given · ±2% tolerance</p>
+              )}
+              {checked && (
+                <button onClick={() => toggleReveal(q.id)} className="mt-2 font-mono text-xs text-dim hover:text-secondary transition-colors">
+                  {revealed.has(q.id) ? '▲ hide steps' : '▼ show steps'}
+                </button>
+              )}
+            </div>
+          )
+        })()}
 
         {/* Draw problems: open Ketcher editor in modal */}
         {drawP && (
@@ -1405,8 +1654,8 @@ export default function TestSheet({ test, onBack }: Props) {
           </div>
         )}
 
-        {/* Answer input — skipped for draw/diagram problems */}
-        {!drawP && !sigmaPiP && !heatingCurveP && !phaseDiagramP && (
+        {/* Answer input — skipped for draw/diagram/ICE table problems */}
+        {!drawP && !sigmaPiP && !heatingCurveP && !phaseDiagramP && !numericP && !classifP && !iceTableP && (
         <div className="flex items-center gap-3 pl-8">
           {molarP && (
             <span className="font-mono text-base text-secondary whitespace-nowrap">{molarP.solveFor} =</span>
@@ -1529,6 +1778,37 @@ export default function TestSheet({ test, onBack }: Props) {
           </div>
         )}
 
+        {/* Numeric / classification answer input */}
+        {(numericP || classifP) && (
+          <div className="flex items-center gap-3 pl-8">
+            <input
+              type="text"
+              inputMode={numericP ? 'decimal' : 'text'}
+              value={answers[q.id] ?? ''}
+              onChange={e => setAnswer(q.id, e.target.value)}
+              disabled={checked}
+              placeholder={classifP?.options ? classifP.options[0] : 'answer'}
+              className={`bg-raised border rounded-sm px-3 py-1.5 font-mono text-base
+                          placeholder-dim focus:outline-none focus:border-muted
+                          disabled:cursor-not-allowed transition-colors w-36
+                          ${result === 'correct' ? 'border-emerald-700/60 text-emerald-300'
+                            : (result === 'wrong' || result === 'wrong_sf') ? 'border-rose-700/60 text-rose-300'
+                            : 'border-border text-bright'}`}
+            />
+            {numericP?.unit && (
+              <span className="font-mono text-sm text-secondary">{numericP.unit}</span>
+            )}
+            {checked && (
+              <button
+                onClick={() => toggleReveal(q.id)}
+                className="ml-2 font-mono text-xs text-dim hover:text-secondary transition-colors"
+              >
+                {revealed.has(q.id) ? '▲ hide' : '▼ solution'}
+              </button>
+            )}
+          </div>
+        )}
+
         {/* Revealed solution */}
         <AnimatePresence>
           {revealed.has(q.id) && (
@@ -1574,6 +1854,14 @@ export default function TestSheet({ test, onBack }: Props) {
                     <div style={{ maxWidth: 360 }}>
                       <LewisStructureDiagram structure={drawP.structure} />
                     </div>
+                  </div>
+                </div>
+              ) : iceTableP ? (
+                <div className="pl-2 sm:pl-8 flex flex-col gap-3 pt-1">
+                  <div className="flex flex-col gap-1.5 pl-3 border-l border-border">
+                    {iceTableP.steps.map((step, i) => (
+                      <p key={i} className="font-mono text-sm text-primary">{step}</p>
+                    ))}
                   </div>
                 </div>
               ) : (
@@ -1635,7 +1923,7 @@ export default function TestSheet({ test, onBack }: Props) {
             </>
           ) : (
             <button
-              onClick={() => { setAnswers({}); setDiagramDots({}); setChecked(false); setRevealed(new Set()); setSubmissions({}) }}
+              onClick={() => { setAnswers({}); setDiagramDots({}); setIceCells({}); setChecked(false); setRevealed(new Set()); setSubmissions({}) }}
               className="px-4 py-1.5 rounded-sm font-sans text-sm border border-border
                          text-secondary hover:text-primary hover:border-muted transition-colors"
             >

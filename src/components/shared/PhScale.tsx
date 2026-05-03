@@ -11,33 +11,42 @@ export default function PhScale({ pH, label, orientation = 'horizontal' }: PhSca
 
   const pct = pH !== null ? Math.max(0, Math.min(100, (pH / 14) * 100)) : null
 
-  // Color stops for the pH gradient
-  const gradient = 'linear-gradient(to right, #ef4444, #f97316, #eab308, #22c55e, #3b82f6, #6366f1, #8b5cf6)'
-
   return (
     <div className="flex flex-col gap-1 w-full select-none">
-      {/* Bar + marker */}
-      <div className="relative w-full h-5 rounded-full overflow-visible">
-        {/* Gradient bar */}
-        <div
-          className="absolute inset-0 rounded-full"
-          style={{ background: gradient }}
-        />
-        {/* Marker */}
-        {pct !== null && (
-          <div
-            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 z-10"
-            style={{ left: `${pct}%` }}
-          >
-            <div
-              className="w-4 h-7 rounded-sm border-2 border-white shadow-lg"
-              style={{
-                background: interpolatePhColor(pH!),
-                filter: 'brightness(0.85)',
-              }}
+      {/* Bar + marker — SVG so gradient prints correctly in all browsers */}
+      <div className="relative w-full" style={{ height: pct !== null ? 28 : 20 }}>
+        <svg
+          width="100%" height={pct !== null ? 28 : 20}
+          xmlns="http://www.w3.org/2000/svg"
+          style={{ display: 'block', overflow: 'visible' }}
+        >
+          <defs>
+            <linearGradient id="ph-scale-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%"    stopColor="#ef4444" />
+              <stop offset="21.4%" stopColor="#f97316" />
+              <stop offset="35.7%" stopColor="#eab308" />
+              <stop offset="50%"   stopColor="#22c55e" />
+              <stop offset="64.3%" stopColor="#3b82f6" />
+              <stop offset="78.6%" stopColor="#6366f1" />
+              <stop offset="100%"  stopColor="#8b5cf6" />
+            </linearGradient>
+          </defs>
+          <rect x="0" y="4" width="100%" height="16" rx="8" ry="8" fill="url(#ph-scale-grad)" />
+          {pct !== null && (
+            <rect
+              x={`${pct}%`}
+              y="0"
+              width="16"
+              height="24"
+              rx="3"
+              fill={interpolatePhColor(pH!)}
+              stroke="white"
+              strokeWidth="2"
+              transform="translate(-8, 0)"
+              style={{ filter: 'brightness(0.85)' }}
             />
-          </div>
-        )}
+          )}
+        </svg>
       </div>
 
       {/* Number scale */}

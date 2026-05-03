@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { generateDynamicICEProblem, checkConcentrationAnswer } from '../../utils/equilibriumPractice'
+import { generateDynamicICEProblem, checkConcentrationAnswer, generateICEPrefilled as generatePrefilled, fmtICECell as fmt } from '../../utils/equilibriumPractice'
 import type { ICESolution } from '../../chem/equilibrium'
 import type { EquilibriumSpecies } from '../../data/equilibriumReactions'
+import type { ICEPrefilled as Prefilled, ICEDifficulty as Difficulty, ICERowKey as RowKey } from '../../utils/equilibriumPractice'
 import GeneratedBadge from '../shared/GeneratedBadge'
 
 interface Props { allowCustom?: boolean }
-
-type Prefilled = Record<string, { initial: boolean; change: boolean; equilibrium: boolean }>
-type Difficulty = 2 | 3 | 4 | 5
 
 const DIFFICULTY_LABELS: Record<Difficulty, string> = {
   2: 'Simple',
@@ -31,53 +29,6 @@ interface Problem {
   solution: ICESolution
   prefilled: Prefilled
   isDynamic: boolean
-}
-
-// Expert mode: all C/E blank, higher blank-I rate.
-// Normal mode: random C/E pre-fills at low rate, 25% chance of one blank I.
-function generatePrefilled(species: string[], difficulty: Difficulty): Prefilled {
-  const n = species.length
-  const result: Prefilled = {}
-
-  const blankIProb = difficulty === 5 ? 0.5 : 0.25
-  const blankIMode = n >= 2 && Math.random() < blankIProb
-  const blankISpecies = blankIMode ? species[Math.floor(Math.random() * n)] : null
-
-  for (const sp of species) {
-    result[sp] = {
-      initial:     sp !== blankISpecies,
-      change:      false,
-      equilibrium: sp === blankISpecies, // forced given when I is blank
-    }
-  }
-
-  if (difficulty < 5) {
-    const prob = Math.random() * 0.45
-    for (const sp of species) {
-      if (Math.random() < prob) result[sp].change = true
-      if (sp !== blankISpecies && Math.random() < prob) result[sp].equilibrium = true
-    }
-
-    // Ensure at least n blank cells remain
-    const filledCE = species
-      .flatMap(sp => (['change', 'equilibrium'] as const)
-        .filter(row => result[sp][row] && !(sp === blankISpecies && row === 'equilibrium'))
-        .map(row => ({ sp, row }))
-      )
-      .sort(() => Math.random() - 0.5)
-
-    const iBlanks = blankISpecies ? 1 : 0
-    const ceBlanks = species.length * 2 - filledCE.length - (blankISpecies ? 1 : 0)
-    let totalBlanks = iBlanks + ceBlanks
-    let i = 0
-    while (totalBlanks < n && i < filledCE.length) {
-      result[filledCE[i].sp][filledCE[i].row] = false
-      totalBlanks++
-      i++
-    }
-  }
-
-  return result
 }
 
 function generateProblem(difficulty: Difficulty): Problem {
@@ -106,14 +57,7 @@ function generateProblem(difficulty: Difficulty): Problem {
   }
 }
 
-function fmt(n: number): string {
-  const p = parseFloat(n.toPrecision(4))
-  if (Math.abs(p) >= 1e4 || (Math.abs(p) < 1e-3 && p !== 0)) return p.toExponential(3)
-  return String(p)
-}
-
 type CellState = 'idle' | 'correct' | 'wrong'
-type RowKey = 'initial' | 'change' | 'equilibrium'
 
 const GIVEN_STYLE: React.CSSProperties = {
   background: 'color-mix(in srgb, var(--c-halogen) 5%, rgb(var(--color-raised)))',

@@ -26,6 +26,8 @@ import type { SigmaPiProblem } from '../../utils/sigmaPiPractice'
 import type { HCProblem } from '../../utils/heatingCurveProblems'
 import type { PDProblem } from '../../utils/phaseDiagramProblems'
 import type { ProfileProblem } from '../../utils/reactionProfilePractice'
+import type { ICESolution } from '../../chem/equilibrium'
+import type { ICEPrefilled } from '../../utils/equilibriumPractice'
 
 export type { SigFigProblem, EmpiricalProblem, ConversionProblem, AtomicProblem, LewisProblem, LewisDrawProblem, VseprProblem, VseprDrawProblem, StoichProblem, RedoxProblem, PercCompProblem, GasStoichProblem, SolStoichProblem, BalancingEquation, CalorimetryProblem, EnthalpyProblem, HessProblem, BondEnthalpyProblem, HeatTransferProblem, VdWProblem, GasProblem, EcellProblem, RxnPracticeProblem, DilutionProblem, ConcProblem, ClausiusClapeyronProblem, SigmaPiProblem, HCProblem, PDProblem, ProfileProblem }
 
@@ -61,6 +63,41 @@ export interface HeatingCurveTestProblem          { kind: 'heating_curve';      
 export interface PhaseDiagramTestProblem          { kind: 'phase_diagram';      data: PDProblem                    }
 export interface ReactionProfileTestProblem       { kind: 'reaction_profile';   data: ProfileProblem               }
 
+export interface ICETableTestProblem {
+  kind: 'ice_table'
+  data: {
+    equation:  string
+    K:         number
+    kType:     'Kc' | 'Kp'
+    species:   string[]
+    initial:   Record<string, number>
+    solution:  ICESolution
+    prefilled: ICEPrefilled
+    steps:     string[]
+  }
+}
+
+export interface NumericTestProblem {
+  kind: 'numeric'
+  data: {
+    question:  string
+    answer:    number
+    unit:      string
+    tolerance: number   // relative (0.02 = 2%)
+    steps?:    string[]
+  }
+}
+
+export interface ClassificationTestProblem {
+  kind: 'classification'
+  data: {
+    question: string
+    answer:   string       // correct answer text (case-insensitive match)
+    options?: string[]     // shown as hint chips in interactive + print
+    steps?:   string[]
+  }
+}
+
 export type TestProblem =
   | MolarTestProblem
   | SigFigTestProblem
@@ -93,6 +130,9 @@ export type TestProblem =
   | HeatingCurveTestProblem
   | PhaseDiagramTestProblem
   | ReactionProfileTestProblem
+  | ICETableTestProblem
+  | NumericTestProblem
+  | ClassificationTestProblem
 
 export interface TestQuestion {
   id:           number

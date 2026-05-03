@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import {
   UNITS, SECTIONS, TOPICS,
-  getSectionsForUnit, getTopicsForUnit, getTopicsForSection,
+  getSectionsForUnit, getTopicsForUnit, getTopicsForSection, getUnitsByLevel,
   isTabHidden as registryIsTabHidden,
 } from '../config/topicRegistry'
 import type { UnitId, SectionId } from '../config/topicRegistry'
@@ -42,6 +42,7 @@ interface PreferencesState {
   showAll: () => void
   hideAll: () => void
   resetToDefaults: () => void
+  setGenChemPreset: (level: 1 | 2) => void
 
   setShowAnswers: (v: boolean) => void
 }
@@ -204,6 +205,46 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => {
         hiddenTopics:   new Set(),
         showAnswers:    true,
       }))
+    },
+
+    setGenChemPreset(level: 1 | 2) {
+      mutate(state => {
+        const nextUnits    = new Set(state.hiddenUnits)
+        const nextSections = new Set(state.hiddenSections)
+        const nextTopics   = new Set(state.hiddenTopics)
+
+        const show = (unitIds: UnitId[]) => {
+          unitIds.forEach(id => {
+            nextUnits.delete(id)
+            getSectionsForUnit(id).forEach(s => {
+              nextSections.delete(s.id)
+              getTopicsForSection(s.id as SectionId).forEach(t => nextTopics.delete(t.id))
+            })
+          })
+        }
+        const hide = (unitIds: UnitId[]) => {
+          unitIds.forEach(id => {
+            nextUnits.add(id)
+            getSectionsForUnit(id).forEach(s => {
+              nextSections.add(s.id)
+              getTopicsForSection(s.id as SectionId).forEach(t => nextTopics.add(t.id))
+            })
+          })
+        }
+
+        const gc1 = getUnitsByLevel(1).map(u => u.id as UnitId)
+        const gc2 = getUnitsByLevel(2).map(u => u.id as UnitId)
+
+        if (level === 1) {
+          show(gc1)
+          hide(gc2)
+        } else {
+          hide(gc1)
+          show(gc2)
+        }
+
+        return { hiddenUnits: nextUnits, hiddenSections: nextSections, hiddenTopics: nextTopics }
+      })
     },
 
     setShowAnswers(v) {
