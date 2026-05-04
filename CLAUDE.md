@@ -290,31 +290,35 @@ Example: "Values from CRC Handbook (2023). Chang Table 6.2 uses slightly differe
 
 ## Adding a New Topic or Practice Tool
 
-When a new calculator/practice topic is added, **all seven** of the following must be updated:
+When a new calculator/practice topic is added, **all eight** of the following must be updated:
 
-1. **Practice tab** — add the tool as a tab in the relevant `*Page.tsx` under the Practice mode group.
-2. **Problems tab with dynamic generation** — add a corresponding auto-generated problem mode under the Problems group. Every Practice tool must have a Problems counterpart powered by a `generate*Problem()` function. Wire it into the Problems tab with `allowCustom={false}`. **The Problems tab must produce a fresh, randomized problem every time the student clicks "Next."** Pre-defined static problem pools are not acceptable — problems must be dynamically generated with randomized inputs.
-3. **Problem generator** — create `utils/*Practice.ts` with a `generate*Problem()` function. The generator must:
+1. **Topic registry** — add the topic to `src/config/topicRegistry.ts`:
+   - Add a `TopicId` string literal to the union type.
+   - Add a `Topic` entry in `TOPICS` under the correct section.
+   - This is the single source of truth for visibility, settings UI, and preset filtering. Nothing is wired up until this entry exists.
+2. **Practice tab** — add the tool as a tab in the relevant `*Page.tsx` under the Practice mode group.
+3. **Problems tab with dynamic generation** — add a corresponding auto-generated problem mode under the Problems group. Every Practice tool must have a Problems counterpart powered by a `generate*Problem()` function. Wire it into the Problems tab with `allowCustom={false}`. **The Problems tab must produce a fresh, randomized problem every time the student clicks "Next."** Pre-defined static problem pools are not acceptable — problems must be dynamically generated with randomized inputs.
+4. **Problem generator** — create `utils/*Practice.ts` with a `generate*Problem()` function. The generator must:
    - Produce **varied, realistic inputs** each time it's called — random values within sensible ranges, random reactions/compounds from curated pools, random directions (solve for volume vs. solve for molarity, etc.)
    - Return the **correct answer** computed from the randomized inputs using the same formula the solver uses
    - Return **step-by-step solution** strings showing the full worked solution
    - Round generated inputs to "nice" values that match textbook style (multiples of 5 for mass, 0.1 for molality, 0.5 for pressure, etc.)
    - Never produce the same problem twice in a row (use sufficient randomization in inputs and pool selection)
-4. **Automated tests for the generator** — create `utils/*Practice.test.ts` alongside the generator file. This is NOT optional. Every problem generator must ship with its test file in the same PR. The test file must include:
+5. **Automated tests for the generator** — create `utils/*Practice.test.ts` alongside the generator file. This is NOT optional. Every problem generator must ship with its test file in the same PR. The test file must include:
    - **20+ random iteration test:** call the generator 20+ times, verify each problem has a correct answer by recomputing from the problem's inputs using the known formula
    - **Answer correctness test:** for each generated problem, independently verify that `problem.answer` matches the result of applying the formula to `problem`'s inputs (within tolerance)
    - **Edge case tests:** verify no division by zero, no negative concentrations, no NaN results
    - **At least one hardcoded verification case** using a known textbook problem (e.g. Chang worked example) with exact input values and expected output
    - **Steps non-empty test:** verify every generated problem has a non-empty `steps` array
    - If the generator has a `check*Answer()` function, test that it returns `true` for the correct answer and `false` for a clearly wrong one
-5. **Navigation + search** — add the new topic to `NavSidebar.tsx`:
-   - Add a nav entry under the appropriate section, reflecting the page's actual tab structure.
+6. **Navigation + search** — add the new topic to `NavSidebar.tsx`:
+   - Add the tab to the appropriate `*_GROUPS` data array (or add a new group if needed). Do not copy-paste a new `*GroupedItems` component — `GroupedNavSection` handles all tab-based sections generically.
    - Add search keywords so students can find the tool by searching natural terms (e.g. "titration", "acid base", "neutralization" should all surface a titration tool).
-6. **Test Generator** — add the topic to `components/test/TestBuilder.tsx`:
+7. **Test Generator** — add the topic to `components/test/TestBuilder.tsx`:
    - Add a `TopicDef` entry in `ALL_TOPICS` with the correct `kind`, `group`, `label`, and `formula`.
    - Add the generator import and wire it into the `generate()` switch.
    - The topic must respect visibility: `TestBuilder` filters `ALL_TOPICS` through `usePreferencesStore` so hidden topics don't appear in the test builder UI.
-7. **Print Reference** — if the topic has a Reference component, add it to `PrintPage.tsx`:
+8. **Print Reference** — if the topic has a Reference component, add it to `PrintPage.tsx`:
    - Add the import for the Reference component.
    - Add a `case` in the `ReferenceSection` switch.
    - Add a `PrintTopicDef` entry in `ALL_PRINT_TOPICS` in `components/print/PrintBuilder.tsx`.
@@ -365,6 +369,33 @@ When a topic is added to `TestBuilder.tsx`, the test must render the problem **e
 The sidebar navigation structure should mirror what the student sees when they arrive at a page. If a page has tabs for "Limiting Reagent", "Theoretical Yield", and "Percent Yield" under Practice, the sidebar should show those as sub-entries under the topic — not just a single "Stoichiometry" link. When a new tab is added to a page, add a corresponding sidebar entry.
 
 Search entries should include common synonyms and related terms. A student searching "moles to grams" should find the moles tool; a student searching "neutralization" should find titration practice.
+
+**NavSidebar is data-driven — do not copy-paste `*GroupedItems` components.** All tab-based topic sections use the generic `GroupedNavSection` component. To add a new tab: add it to the relevant `*_GROUPS` data array. To add a new topic section: add a `SectionConfig` entry to `SECTION_CONFIGS`. The three special-case renderers (`TableGroupedItems`, the inline base-calc block, and the inline structures block) exist because they use `?topic=` params or flat path lists — do not add a fourth.
+
+### `topicRegistry.ts` is the single source of truth for topic visibility
+
+`src/config/topicRegistry.ts` defines every topic the app knows about. The Settings page, the Gen Chem 1/2 presets, the `usePreferencesStore` visibility checks, the `TestBuilder` topic list, and the `PrintBuilder` topic list all derive from it. **When you add a topic, you must add it to the registry first.** A tab that exists on a page but has no registry entry will never appear in settings, will not be hidden when the user hides its section, and cannot be shown or hidden by the Gen Chem presets.
+
+### Extract shared utilities before the second caller
+
+When a practice component and a test component (or two pages) both need the same rendering or checking logic, extract it to `utils/` on the first duplication. Do not let the same logic live in two places "temporarily." The ICE table case — `generateICEPrefilled`, `checkConcentrationAnswer`, `fmtICECell` all exported from `utils/equilibriumPractice.ts` and imported by both `ICETablePractice.tsx` and `TestSheet.tsx` — is the reference pattern.
+
+### Backend package creation conventions
+
+When adding a new Go backend package under `chemhelper/` (e.g. `organic/`, `nuclear/`):
+- Package directory name = lowercase single word matching the chemistry domain.
+- Exported solver functions return `(Result, error)` where `Result` is a named struct.
+- HTTP handler lives in `api/` and calls the domain package — domain packages must not import `net/http`.
+- Errors are `422 Unprocessable Entity` with a `{"error": "descriptive message"}` body — use the existing `writeError` helper.
+- Check `chemhelper/` before building frontend-only: molarity, Lewis structures, SMILES, BPE/FPD are already server-side.
+
+### Tab value naming conventions
+
+Tab IDs in `*Page.tsx` and the registry follow these conventions:
+- **Reference tabs:** prefix `ref-` (e.g. `ref-entropy`, `ref-rate-law`).
+- **Practice/tool tabs:** no prefix, kebab-case (e.g. `entropy`, `rate-law`).
+- **Problems tabs:** suffix `-problems` (e.g. `entropy-problems`, `gibbs-k-problems`).
+- Tab IDs must match between the page's `Tab` union type, the `TAB_TO_TOPIC` map, the `TOPIC_MODE_TAB` map, the `*_GROUPS` data arrays in `NavSidebar.tsx`, and the `Topic.id` in `topicRegistry.ts`. A mismatch in any one place will break visibility filtering or navigation.
 
 ### Problem generator requirements (non-negotiable)
 

@@ -28,6 +28,8 @@ interface Props {
   onToggleTheme: () => void;
 }
 
+// ── Shared header button for nav groups ──────────────────────────────────────
+
 function NavGroup({ label, expanded, onToggle }: { label: string; expanded: boolean; onToggle: () => void }) {
   return (
     <button
@@ -90,13 +92,13 @@ function PathSubItem({ path, formula, label, onNavigate }: {
   )
 }
 
-// ── Periodic Table sub-items ──────────────────────────────────────────────────
+// ── Periodic Table sub-items (special: uses ?topic= not ?tab=) ────────────────
 
 const TABLE_GROUPS: { label: string; items: { path: string; label: string; formula: string; topicTabId?: string }[] }[] = [
   {
     label: 'Elements',
     items: [
-      { path: '/table', label: 'Periodic Table', formula: '⬡' }, // no topicTabId = always shown
+      { path: '/table', label: 'Periodic Table', formula: '⬡' },
     ],
   },
   {
@@ -219,25 +221,12 @@ const BASE_CALC_ITEMS: { tab?: string; label: string; formula: string }[] = [
   { tab: "percent-error", label: "Percent Error",    formula: "%err"  },
 ]
 
-function BaseCalcSubItem({ item, onNavigate }: { item: typeof BASE_CALC_ITEMS[0]; onNavigate: () => void }) {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const currentTab = new URLSearchParams(location.search).get("tab") ?? "sig-figs"
-  const isActive = location.pathname === "/base-calculations" && currentTab === item.tab
+// ── Tab-based nav data ────────────────────────────────────────────────────────
 
-  return (
-    <SubItem formula={item.formula} label={item.label} isActive={isActive}
-      onClick={() => { navigate(`/base-calculations?tab=${item.tab}`); onNavigate() }} />
-  )
-}
+type NavTabItem  = { tab: string; label: string; formula: string }
+type NavTabGroup = { label: string; items: NavTabItem[] }
 
-// ── Empirical sub-items ───────────────────────────────────────────────────────
-
-// ── Molar Calculations sub-items ─────────────────────────────────────────────
-
-type CalcItem = { tab: string; label: string; formula: string }
-
-const CALC_GROUPS: { label: string; items: CalcItem[] }[] = [
+const CALC_GROUPS: NavTabGroup[] = [
   {
     label: 'Basic',
     items: [
@@ -263,89 +252,7 @@ const CALC_GROUPS: { label: string; items: CalcItem[] }[] = [
   },
 ]
 
-function CalcSubItem({ item, onNavigate }: { item: CalcItem; onNavigate: () => void }) {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const currentTab = new URLSearchParams(location.search).get("tab") ?? "ref-moles"
-  const isActive = location.pathname === "/calculations" && currentTab === item.tab
-
-  return (
-    <SubItem formula={item.formula} label={item.label} isActive={isActive}
-      onClick={() => { navigate(`/calculations?tab=${item.tab}`); onNavigate() }} />
-  )
-}
-
-function CalcGroupedItems({ onNavigate }: { onNavigate: () => void }) {
-  const location = useLocation()
-  const currentTab = new URLSearchParams(location.search).get("tab") ?? "ref-moles"
-  const isTabVisible = usePreferencesStore(s => s.isTabVisible)
-
-  const visibleGroups = CALC_GROUPS
-    .map(g => ({ ...g, items: g.items.filter(i => isTabVisible(i.tab)) }))
-    .filter(g => g.items.length > 0)
-
-  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
-    const active = CALC_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
-    return new Set(active ? [active.label] : ['Basic'])
-  })
-
-  function toggleGroup(label: string) {
-    setOpenGroups(prev => {
-      const next = new Set(prev)
-      if (next.has(label)) { next.delete(label) } else { next.add(label) }
-      return next
-    })
-  }
-
-  return (
-    <>
-      {visibleGroups.map(group => {
-        const isOpen = openGroups.has(group.label)
-        const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === "/calculations"
-        return (
-          <div key={group.label}>
-            <button
-              onClick={() => toggleGroup(group.label)}
-              className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
-            >
-              <span className={`font-mono text-[13px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
-                {group.label}
-              </span>
-              <motion.span
-                animate={{ rotate: isOpen ? 90 : 0 }}
-                transition={{ duration: 0.15 }}
-                className="font-mono text-[7px] text-dim group-hover:text-secondary transition-colors"
-              >
-                ▶
-              </motion.span>
-            </button>
-            <AnimatePresence initial={false}>
-              {isOpen && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.18 }}
-                  style={{ overflow: 'hidden' }}
-                >
-                  {group.items.map(item => (
-                    <CalcSubItem key={item.tab} item={item} onNavigate={onNavigate} />
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )
-      })}
-    </>
-  )
-}
-
-// ── Ideal Gas sub-items ───────────────────────────────────────────────────────
-
-type IdealGasItem = { tab: string; label: string; formula: string }
-
-const IDEAL_GAS_GROUPS: { label: string; items: IdealGasItem[] }[] = [
+const IDEAL_GAS_GROUPS: NavTabGroup[] = [
   {
     label: 'Gas Laws',
     items: [
@@ -364,89 +271,7 @@ const IDEAL_GAS_GROUPS: { label: string; items: IdealGasItem[] }[] = [
   },
 ]
 
-function IdealGasSubItem({ item, onNavigate }: { item: IdealGasItem; onNavigate: () => void }) {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-combined'
-  const isActive = location.pathname === '/ideal-gas' && currentTab === item.tab
-
-  return (
-    <SubItem formula={item.formula} label={item.label} isActive={isActive}
-      onClick={() => { navigate(`/ideal-gas?tab=${item.tab}`); onNavigate() }} />
-  )
-}
-
-function IdealGasGroupedItems({ onNavigate }: { onNavigate: () => void }) {
-  const location = useLocation()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-combined'
-  const isTabVisible = usePreferencesStore(s => s.isTabVisible)
-
-  const visibleGroups = IDEAL_GAS_GROUPS
-    .map(g => ({ ...g, items: g.items.filter(i => isTabVisible(i.tab)) }))
-    .filter(g => g.items.length > 0)
-
-  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
-    const active = IDEAL_GAS_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
-    return new Set(active ? [active.label] : ['Ideal Gas'])
-  })
-
-  function toggleGroup(label: string) {
-    setOpenGroups(prev => {
-      const next = new Set(prev)
-      if (next.has(label)) { next.delete(label) } else { next.add(label) }
-      return next
-    })
-  }
-
-  return (
-    <>
-      {visibleGroups.map(group => {
-        const isOpen = openGroups.has(group.label)
-        const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === '/ideal-gas'
-        return (
-          <div key={group.label}>
-            <button
-              onClick={() => toggleGroup(group.label)}
-              className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
-            >
-              <span className={`font-mono text-[13px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
-                {group.label}
-              </span>
-              <motion.span
-                animate={{ rotate: isOpen ? 90 : 0 }}
-                transition={{ duration: 0.15 }}
-                className="font-mono text-[7px] text-dim group-hover:text-secondary transition-colors"
-              >
-                ▶
-              </motion.span>
-            </button>
-            <AnimatePresence initial={false}>
-              {isOpen && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.18 }}
-                  style={{ overflow: 'hidden' }}
-                >
-                  {group.items.map(item => (
-                    <IdealGasSubItem key={item.tab} item={item} onNavigate={onNavigate} />
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )
-      })}
-    </>
-  )
-}
-
-// ── Stoichiometry sub-items ───────────────────────────────────────────────────
-
-type StoichItem = { tab: string; label: string; formula: string }
-
-const STOICH_GROUPS: { label: string; items: StoichItem[] }[] = [
+const STOICH_GROUPS: NavTabGroup[] = [
   {
     label: 'Basic',
     items: [
@@ -474,89 +299,7 @@ const STOICH_GROUPS: { label: string; items: StoichItem[] }[] = [
   },
 ]
 
-function StoichSubItem({ item, onNavigate }: { item: StoichItem; onNavigate: () => void }) {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'stoich'
-  const isActive = location.pathname === '/stoichiometry' && currentTab === item.tab
-
-  return (
-    <SubItem formula={item.formula} label={item.label} isActive={isActive}
-      onClick={() => { navigate(`/stoichiometry?tab=${item.tab}`); onNavigate() }} />
-  )
-}
-
-function StoichGroupedItems({ onNavigate }: { onNavigate: () => void }) {
-  const location = useLocation()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'stoich'
-  const isTabVisible = usePreferencesStore(s => s.isTabVisible)
-
-  const visibleGroups = STOICH_GROUPS
-    .map(g => ({ ...g, items: g.items.filter(i => isTabVisible(i.tab)) }))
-    .filter(g => g.items.length > 0)
-
-  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
-    const active = STOICH_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
-    return new Set(active ? [active.label] : ['Basic'])
-  })
-
-  function toggleGroup(label: string) {
-    setOpenGroups(prev => {
-      const next = new Set(prev)
-      if (next.has(label)) { next.delete(label) } else { next.add(label) }
-      return next
-    })
-  }
-
-  return (
-    <>
-      {visibleGroups.map(group => {
-        const isOpen = openGroups.has(group.label)
-        const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === '/stoichiometry'
-        return (
-          <div key={group.label}>
-            <button
-              onClick={() => toggleGroup(group.label)}
-              className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
-            >
-              <span className={`font-mono text-[13px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
-                {group.label}
-              </span>
-              <motion.span
-                animate={{ rotate: isOpen ? 90 : 0 }}
-                transition={{ duration: 0.15 }}
-                className="font-mono text-[7px] text-dim group-hover:text-secondary transition-colors"
-              >
-                ▶
-              </motion.span>
-            </button>
-            <AnimatePresence initial={false}>
-              {isOpen && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.18 }}
-                  style={{ overflow: 'hidden' }}
-                >
-                  {group.items.map(item => (
-                    <StoichSubItem key={item.tab} item={item} onNavigate={onNavigate} />
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )
-      })}
-    </>
-  )
-}
-
-// ── Redox sub-items ───────────────────────────────────────────────────────────
-
-type RedoxItem = { tab: string; label: string; formula: string }
-
-const REDOX_GROUPS: { label: string; items: RedoxItem[] }[] = [
+const REDOX_GROUPS: NavTabGroup[] = [
   {
     label: 'Reactions',
     items: [
@@ -569,120 +312,65 @@ const REDOX_GROUPS: { label: string; items: RedoxItem[] }[] = [
   {
     label: 'Electrochemistry',
     items: [
-      { tab: 'electrolyte',    label: 'Electrolyte',       formula: '⚡'      },
-      { tab: 'redox-practice', label: 'Redox',             formula: 'e⁻'     },
-      { tab: 'ecell',          label: 'E°cell / Nernst',   formula: 'E°'      },
-      { tab: 'ref-dg-e-k',    label: 'ΔG°-E°-K Triangle', formula: '-nFE°'   },
-      { tab: 'ref-electrolysis', label: 'Electrolysis',    formula: 'Faraday' },
-      { tab: 'ref-conc-cell',  label: 'Conc. Cell',        formula: 'ΔC'      },
+      { tab: 'electrolyte',      label: 'Electrolyte',       formula: '⚡'      },
+      { tab: 'redox-practice',   label: 'Redox',             formula: 'e⁻'     },
+      { tab: 'ecell',            label: 'E°cell / Nernst',   formula: 'E°'      },
+      { tab: 'ref-dg-e-k',      label: 'ΔG°-E°-K Triangle', formula: '-nFE°'   },
+      { tab: 'ref-electrolysis', label: 'Electrolysis',       formula: 'Faraday' },
+      { tab: 'ref-conc-cell',    label: 'Conc. Cell',         formula: 'ΔC'      },
     ],
   },
   {
     label: 'Titrations',
     items: [
-      { tab: 'titration',          label: 'Titration',          formula: 'MₐVₐ=MᵦVᵦ' },
-      { tab: 'titration-problems', label: 'Titration Problems',  formula: '✎' },
+      { tab: 'titration',          label: 'Titration',         formula: 'MₐVₐ=MᵦVᵦ' },
+      { tab: 'titration-problems', label: 'Titration Problems', formula: '✎'          },
     ],
   },
 ]
 
-function RedoxSubItem({ item, onNavigate }: { item: RedoxItem; onNavigate: () => void }) {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'classifier'
-  const isActive = location.pathname === '/redox' && currentTab === item.tab
-
-  return (
-    <SubItem formula={item.formula} label={item.label} isActive={isActive}
-      onClick={() => { navigate(`/redox?tab=${item.tab}`); onNavigate() }} />
-  )
-}
-
-function RedoxGroupedItems({ onNavigate }: { onNavigate: () => void }) {
-  const location = useLocation()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'classifier'
-  const isTabVisible = usePreferencesStore(s => s.isTabVisible)
-
-  const visibleGroups = REDOX_GROUPS
-    .map(g => ({ ...g, items: g.items.filter(i => isTabVisible(i.tab)) }))
-    .filter(g => g.items.length > 0)
-
-  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
-    const active = REDOX_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
-    return new Set(active ? [active.label] : ['Reactions'])
-  })
-
-  function toggleGroup(label: string) {
-    setOpenGroups(prev => {
-      const next = new Set(prev)
-      if (next.has(label)) { next.delete(label) } else { next.add(label) }
-      return next
-    })
-  }
-
-  return (
-    <>
-      {visibleGroups.map(group => {
-        const isOpen = openGroups.has(group.label)
-        const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === '/redox'
-        return (
-          <div key={group.label}>
-            <button
-              onClick={() => toggleGroup(group.label)}
-              className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
-            >
-              <span className={`font-mono text-[13px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
-                {group.label}
-              </span>
-              <motion.span
-                animate={{ rotate: isOpen ? 90 : 0 }}
-                transition={{ duration: 0.15 }}
-                className="font-mono text-[7px] text-dim group-hover:text-secondary transition-colors"
-              >
-                ▶
-              </motion.span>
-            </button>
-            <AnimatePresence initial={false}>
-              {isOpen && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.18 }}
-                  style={{ overflow: 'hidden' }}
-                >
-                  {group.items.map(item => (
-                    <RedoxSubItem key={item.tab} item={item} onNavigate={onNavigate} />
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )
-      })}
-    </>
-  )
-}
-
-// ── Structures sub-items ──────────────────────────────────────────────────────
-
 const STRUCTURE_ITEMS = [
-  { path: "/structures?tab=lewis",         tab: "lewis",         label: "Lewis Structures", formula: "⌬"         },
-  { path: "/structures?tab=vsepr",         tab: "vsepr",         label: "VSEPR",            formula: "⬡"         },
-  { path: "/structures?tab=formal-charge", tab: "formal-charge", label: "Formal Charge",    formula: "FC"        },
-  { path: "/structures?tab=solid-types",   tab: "solid-types",   label: "Solid Types",      formula: "4 types"   },
-  { path: "/structures?tab=unit-cell",     tab: "unit-cell",     label: "Unit Cell",        formula: "SC/BCC/FCC"},
+  { path: "/structures?tab=lewis",         tab: "lewis",         label: "Lewis Structures", formula: "⌬"          },
+  { path: "/structures?tab=vsepr",         tab: "vsepr",         label: "VSEPR",            formula: "⬡"          },
+  { path: "/structures?tab=formal-charge", tab: "formal-charge", label: "Formal Charge",    formula: "FC"         },
+  { path: "/structures?tab=solid-types",   tab: "solid-types",   label: "Solid Types",      formula: "4 types"    },
+  { path: "/structures?tab=unit-cell",     tab: "unit-cell",     label: "Unit Cell",        formula: "SC/BCC/FCC" },
 ]
 
-// ── Kinetics sub-items ───────────────────────────────────────────────────────
+const THERMO_GROUPS: NavTabGroup[] = [
+  {
+    label: 'Thermochemistry',
+    items: [
+      { tab: 'calorimetry-reference', label: 'Calorimetry',    formula: 'q'      },
+      { tab: 'enthalpy-reference',    label: 'Enthalpy ΔHrxn', formula: 'ΔH'     },
+      { tab: 'hess-reference',        label: "Hess's Law",     formula: 'ΣΔH'    },
+      { tab: 'bond-reference',        label: 'Bond Enthalpy',  formula: 'BE'     },
+    ],
+  },
+  {
+    label: 'Heat & Phase Changes',
+    items: [
+      { tab: 'profile',                 label: 'Reaction Profiles', formula: '⇀'      },
+      { tab: 'heattransfer-reference',  label: 'Heat Transfer',     formula: 'q₁=−q₂' },
+      { tab: 'heating-curve-reference', label: 'Heating Curves',    formula: 'q/T'    },
+      { tab: 'energy-balance',          label: 'Energy Balance',    formula: 'q+q=0'  },
+    ],
+  },
+  {
+    label: 'Phase Behavior',
+    items: [
+      { tab: 'phase-diagram-reference', label: 'Phase Diagrams', formula: 'P-T'  },
+      { tab: 'liquid-props',            label: 'Liquid Props',   formula: 'γ/η'  },
+      { tab: 'cc-reference',            label: 'Clausius-Clap.', formula: 'ln P' },
+    ],
+  },
+]
 
-type KineticsItem = { tab: string; label: string; formula: string }
-
-const KINETICS_GROUPS: { label: string; items: KineticsItem[] }[] = [
+const KINETICS_GROUPS: NavTabGroup[] = [
   {
     label: 'Rate Laws',
     items: [
-      { tab: 'ref-rate-law',  label: 'Rate Law',  formula: 'k[A]ⁿ'      },
+      { tab: 'ref-rate-law',  label: 'Rate Law',  formula: 'k[A]ⁿ'       },
       { tab: 'ref-arrhenius', label: 'Arrhenius', formula: 'k=Ae⁻ᴱᵃ/ᴿᵀ' },
     ],
   },
@@ -696,400 +384,30 @@ const KINETICS_GROUPS: { label: string; items: KineticsItem[] }[] = [
   },
 ]
 
-function KineticsSubItem({ item, onNavigate }: { item: KineticsItem; onNavigate: () => void }) {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-rate-law'
-  const isActive = location.pathname === '/kinetics' && currentTab === item.tab
-
-  return (
-    <SubItem formula={item.formula} label={item.label} isActive={isActive}
-      onClick={() => { navigate(`/kinetics?tab=${item.tab}`); onNavigate() }} />
-  )
-}
-
-function KineticsGroupedItems({ onNavigate }: { onNavigate: () => void }) {
-  const location = useLocation()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-rate-law'
-  const isTabVisible = usePreferencesStore(s => s.isTabVisible)
-
-  const visibleGroups = KINETICS_GROUPS
-    .map(g => ({ ...g, items: g.items.filter(i => isTabVisible(i.tab)) }))
-    .filter(g => g.items.length > 0)
-
-  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
-    const active = KINETICS_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
-    return new Set(active ? [active.label] : ['Rate Laws'])
-  })
-
-  function toggleGroup(label: string) {
-    setOpenGroups(prev => {
-      const next = new Set(prev)
-      if (next.has(label)) { next.delete(label) } else { next.add(label) }
-      return next
-    })
-  }
-
-  return (
-    <>
-      {visibleGroups.map(group => {
-        const isOpen = openGroups.has(group.label)
-        const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === '/kinetics'
-        return (
-          <div key={group.label}>
-            <button
-              onClick={() => toggleGroup(group.label)}
-              className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
-            >
-              <span className={`font-mono text-[13px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
-                {group.label}
-              </span>
-              <motion.span
-                animate={{ rotate: isOpen ? 90 : 0 }}
-                transition={{ duration: 0.15 }}
-                className="font-mono text-[7px] text-dim group-hover:text-secondary transition-colors"
-              >
-                ▶
-              </motion.span>
-            </button>
-            <AnimatePresence initial={false}>
-              {isOpen && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.18 }}
-                  style={{ overflow: 'hidden' }}
-                >
-                  {group.items.map(item => (
-                    <KineticsSubItem key={item.tab} item={item} onNavigate={onNavigate} />
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )
-      })}
-    </>
-  )
-}
-
-// ── Thermochemistry sub-items ─────────────────────────────────────────────────
-
-const THERMO_GROUPS: { label: string; items: { tab: string; label: string; formula: string }[] }[] = [
-  {
-    label: 'Thermochemistry',
-    items: [
-      { tab: 'calorimetry-reference', label: 'Calorimetry',    formula: 'q'    },
-      { tab: 'enthalpy-reference',    label: 'Enthalpy ΔHrxn', formula: 'ΔH'   },
-      { tab: 'hess-reference',        label: "Hess's Law",     formula: 'ΣΔH'  },
-      { tab: 'bond-reference',        label: 'Bond Enthalpy',  formula: 'BE'   },
-    ],
-  },
-  {
-    label: 'Heat & Phase Changes',
-    items: [
-      { tab: 'profile',                   label: 'Reaction Profiles', formula: '⇀'    },
-      { tab: 'heattransfer-reference',    label: 'Heat Transfer',     formula: 'q₁=−q₂' },
-      { tab: 'heating-curve-reference',   label: 'Heating Curves',    formula: 'q/T'  },
-      { tab: 'energy-balance',            label: 'Energy Balance',    formula: 'q+q=0' },
-    ],
-  },
-  {
-    label: 'Phase Behavior',
-    items: [
-      { tab: 'phase-diagram-reference', label: 'Phase Diagrams',    formula: 'P-T'  },
-      { tab: 'liquid-props',            label: 'Liquid Props',      formula: 'γ/η'  },
-      { tab: 'cc-reference',            label: 'Clausius-Clap.',    formula: 'ln P' },
-    ],
-  },
-]
-
-function ThermoGroupedItems({ onNavigate }: { onNavigate: () => void }) {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'calorimetry'
-  const isTabVisible = usePreferencesStore(s => s.isTabVisible)
-
-  const visibleGroups = THERMO_GROUPS
-    .map(g => ({ ...g, items: g.items.filter(i => isTabVisible(i.tab)) }))
-    .filter(g => g.items.length > 0)
-
-  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
-    const active = THERMO_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
-    return new Set(active ? [active.label] : ['Thermochemistry'])
-  })
-
-  function toggleGroup(label: string) {
-    setOpenGroups(prev => {
-      const next = new Set(prev)
-      if (next.has(label)) { next.delete(label) } else { next.add(label) }
-      return next
-    })
-  }
-
-  return (
-    <>
-      {visibleGroups.map(group => {
-        const isOpen = openGroups.has(group.label)
-        const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === '/thermochemistry'
-        return (
-          <div key={group.label}>
-            <button
-              onClick={() => toggleGroup(group.label)}
-              className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
-            >
-              <span className={`font-mono text-[13px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
-                {group.label}
-              </span>
-              <motion.span
-                animate={{ rotate: isOpen ? 90 : 0 }}
-                transition={{ duration: 0.15 }}
-                className="font-mono text-[7px] text-dim group-hover:text-secondary transition-colors"
-              >
-                ▶
-              </motion.span>
-            </button>
-            <AnimatePresence initial={false}>
-              {isOpen && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.15 }}
-                  style={{ overflow: 'hidden' }}
-                >
-                  {group.items.map(item => {
-                    const isActive = location.pathname === '/thermochemistry' && currentTab === item.tab
-                    return (
-                      <SubItem key={item.tab} formula={item.formula} label={item.label} isActive={isActive}
-                        onClick={() => { navigate(`/thermochemistry?tab=${item.tab}`); onNavigate() }} />
-                    )
-                  })}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )
-      })}
-    </>
-  )
-}
-
-// ── Equilibrium sub-items ────────────────────────────────────────────────────
-
-type EquilibriumItem = { tab: string; label: string; formula: string }
-
-const EQUILIBRIUM_GROUPS: { label: string; items: EquilibriumItem[] }[] = [
+const EQUILIBRIUM_GROUPS: NavTabGroup[] = [
   {
     label: 'Concepts',
     items: [
-      { tab: 'ref-keq',          label: 'K Expression',   formula: 'Kc'   },
-      { tab: 'ref-q-vs-k',       label: 'Q vs K',          formula: 'Q/K'  },
-      { tab: 'ref-le-chatelier', label: "Le Chatelier's",  formula: 'shift'},
+      { tab: 'ref-keq',          label: 'K Expression',  formula: 'Kc'    },
+      { tab: 'ref-q-vs-k',       label: 'Q vs K',         formula: 'Q/K'   },
+      { tab: 'ref-le-chatelier', label: "Le Chatelier's", formula: 'shift' },
     ],
   },
   {
     label: 'Calculations',
     items: [
-      { tab: 'ref-ice-table', label: 'ICE Table',    formula: 'ICE'      },
+      { tab: 'ref-ice-table', label: 'ICE Table',  formula: 'ICE'    },
       { tab: 'ref-kp-kc',    label: 'Kp \u2194 Kc', formula: 'RT\u0394n' },
     ],
   },
 ]
 
-function EquilibriumSubItem({ item, onNavigate }: { item: EquilibriumItem; onNavigate: () => void }) {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-keq'
-  const isActive = location.pathname === '/equilibrium' && currentTab === item.tab
-
-  return (
-    <SubItem formula={item.formula} label={item.label} isActive={isActive}
-      onClick={() => { navigate(`/equilibrium?tab=${item.tab}`); onNavigate() }} />
-  )
-}
-
-function EquilibriumGroupedItems({ onNavigate }: { onNavigate: () => void }) {
-  const location = useLocation()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-keq'
-  const isTabVisible = usePreferencesStore(s => s.isTabVisible)
-
-  const visibleGroups = EQUILIBRIUM_GROUPS
-    .map(g => ({ ...g, items: g.items.filter(i => isTabVisible(i.tab)) }))
-    .filter(g => g.items.length > 0)
-
-  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
-    const active = EQUILIBRIUM_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
-    return new Set(active ? [active.label] : ['Concepts'])
-  })
-
-  function toggleGroup(label: string) {
-    setOpenGroups(prev => {
-      const next = new Set(prev)
-      if (next.has(label)) { next.delete(label) } else { next.add(label) }
-      return next
-    })
-  }
-
-  return (
-    <>
-      {visibleGroups.map(group => {
-        const isOpen = openGroups.has(group.label)
-        const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === '/equilibrium'
-        return (
-          <div key={group.label}>
-            <button
-              onClick={() => toggleGroup(group.label)}
-              className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
-            >
-              <span className={`font-mono text-[13px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
-                {group.label}
-              </span>
-              <motion.span
-                animate={{ rotate: isOpen ? 90 : 0 }}
-                transition={{ duration: 0.15 }}
-                className="font-mono text-[7px] text-dim group-hover:text-secondary transition-colors"
-              >
-                ▶
-              </motion.span>
-            </button>
-            <AnimatePresence initial={false}>
-              {isOpen && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.18 }}
-                  style={{ overflow: 'hidden' }}
-                >
-                  {group.items.map(item => (
-                    <EquilibriumSubItem key={item.tab} item={item} onNavigate={onNavigate} />
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )
-      })}
-    </>
-  )
-}
-
-// ── Buffers & Solubility sub-items ───────────────────────────────────────────
-
-type BuffersItem = { tab: string; label: string; formula: string }
-
-const BUFFERS_GROUPS: { label: string; items: BuffersItem[] }[] = [
-  {
-    label: 'Buffers',
-    items: [
-      { tab: 'ref-buffer',     label: 'Buffer pH',      formula: 'H-H'     },
-      { tab: 'ref-buffer-cap', label: 'Buffer Capacity', formula: 'capacity' },
-    ],
-  },
-  {
-    label: 'Titration Curves',
-    items: [
-      { tab: 'ref-titration-curve', label: 'Titration Curves', formula: 'pH vs V' },
-    ],
-  },
-  {
-    label: 'Solubility',
-    items: [
-      { tab: 'ref-ksp',           label: 'Ksp',           formula: 'Ksp'     },
-      { tab: 'ref-common-ion',    label: 'Common Ion',    formula: 'common'  },
-      { tab: 'ref-precipitation', label: 'Precipitation', formula: 'Q vs Ksp' },
-    ],
-  },
-]
-
-function BuffersSubItem({ item, onNavigate }: { item: BuffersItem; onNavigate: () => void }) {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-buffer'
-  const isActive = location.pathname === '/buffers' && currentTab === item.tab
-
-  return (
-    <SubItem formula={item.formula} label={item.label} isActive={isActive}
-      onClick={() => { navigate(`/buffers?tab=${item.tab}`); onNavigate() }} />
-  )
-}
-
-function BuffersGroupedItems({ onNavigate }: { onNavigate: () => void }) {
-  const location = useLocation()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-buffer'
-  const isTabVisible = usePreferencesStore(s => s.isTabVisible)
-
-  const visibleGroups = BUFFERS_GROUPS
-    .map(g => ({ ...g, items: g.items.filter(i => isTabVisible(i.tab)) }))
-    .filter(g => g.items.length > 0)
-
-  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
-    const active = BUFFERS_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
-    return new Set(active ? [active.label] : ['Buffers'])
-  })
-
-  function toggleGroup(label: string) {
-    setOpenGroups(prev => {
-      const next = new Set(prev)
-      if (next.has(label)) { next.delete(label) } else { next.add(label) }
-      return next
-    })
-  }
-
-  return (
-    <>
-      {visibleGroups.map(group => {
-        const isOpen = openGroups.has(group.label)
-        const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === '/buffers'
-        return (
-          <div key={group.label}>
-            <button
-              onClick={() => toggleGroup(group.label)}
-              className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
-            >
-              <span className={`font-mono text-[13px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
-                {group.label}
-              </span>
-              <motion.span
-                animate={{ rotate: isOpen ? 90 : 0 }}
-                transition={{ duration: 0.15 }}
-                className="font-mono text-[7px] text-dim group-hover:text-secondary transition-colors"
-              >
-                ▶
-              </motion.span>
-            </button>
-            <AnimatePresence initial={false}>
-              {isOpen && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.18 }}
-                  style={{ overflow: 'hidden' }}
-                >
-                  {group.items.map(item => (
-                    <BuffersSubItem key={item.tab} item={item} onNavigate={onNavigate} />
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )
-      })}
-    </>
-  )
-}
-
-// ── Acids & Bases sub-items ──────────────────────────────────────────────────
-
-type AcidBaseItem = { tab: string; label: string; formula: string }
-
-const ACID_BASE_GROUPS: { label: string; items: AcidBaseItem[] }[] = [
+const ACID_BASE_GROUPS: NavTabGroup[] = [
   {
     label: 'pH Fundamentals',
     items: [
-      { tab: 'ref-ph',     label: 'pH Calculator', formula: 'pH'    },
-      { tab: 'ref-ka-kb',  label: 'Ka / Kb',       formula: 'Ka×Kb' },
+      { tab: 'ref-ph',    label: 'pH Calculator', formula: 'pH'    },
+      { tab: 'ref-ka-kb', label: 'Ka / Kb',        formula: 'Ka×Kb' },
     ],
   },
   {
@@ -1102,95 +420,37 @@ const ACID_BASE_GROUPS: { label: string; items: AcidBaseItem[] }[] = [
   {
     label: 'Salts & Polyprotic',
     items: [
-      { tab: 'ref-salt-ph',    label: 'Salt pH',         formula: 'A⁻+H₂O' },
-      { tab: 'ref-polyprotic', label: 'Polyprotic Acids', formula: 'Ka1≫Ka2' },
+      { tab: 'ref-salt-ph',    label: 'Salt pH',          formula: 'A⁻+H₂O'  },
+      { tab: 'ref-polyprotic', label: 'Polyprotic Acids',  formula: 'Ka1≫Ka2' },
     ],
   },
 ]
 
-function AcidBaseSubItem({ item, onNavigate }: { item: AcidBaseItem; onNavigate: () => void }) {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-ph'
-  const isActive = location.pathname === '/acid-base' && currentTab === item.tab
+const BUFFERS_GROUPS: NavTabGroup[] = [
+  {
+    label: 'Buffers',
+    items: [
+      { tab: 'ref-buffer',     label: 'Buffer pH',       formula: 'H-H'      },
+      { tab: 'ref-buffer-cap', label: 'Buffer Capacity', formula: 'capacity' },
+    ],
+  },
+  {
+    label: 'Titration Curves',
+    items: [
+      { tab: 'ref-titration-curve', label: 'Titration Curves', formula: 'pH vs V' },
+    ],
+  },
+  {
+    label: 'Solubility',
+    items: [
+      { tab: 'ref-ksp',           label: 'Ksp',            formula: 'Ksp'      },
+      { tab: 'ref-common-ion',    label: 'Common Ion',     formula: 'common'   },
+      { tab: 'ref-precipitation', label: 'Precipitation',  formula: 'Q vs Ksp' },
+    ],
+  },
+]
 
-  return (
-    <SubItem formula={item.formula} label={item.label} isActive={isActive}
-      onClick={() => { navigate(`/acid-base?tab=${item.tab}`); onNavigate() }} />
-  )
-}
-
-function AcidBaseGroupedItems({ onNavigate }: { onNavigate: () => void }) {
-  const location = useLocation()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-ph'
-  const isTabVisible = usePreferencesStore(s => s.isTabVisible)
-
-  const visibleGroups = ACID_BASE_GROUPS
-    .map(g => ({ ...g, items: g.items.filter(i => isTabVisible(i.tab)) }))
-    .filter(g => g.items.length > 0)
-
-  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
-    const active = ACID_BASE_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
-    return new Set(active ? [active.label] : ['pH Fundamentals'])
-  })
-
-  function toggleGroup(label: string) {
-    setOpenGroups(prev => {
-      const next = new Set(prev)
-      if (next.has(label)) { next.delete(label) } else { next.add(label) }
-      return next
-    })
-  }
-
-  return (
-    <>
-      {visibleGroups.map(group => {
-        const isOpen = openGroups.has(group.label)
-        const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === '/acid-base'
-        return (
-          <div key={group.label}>
-            <button
-              onClick={() => toggleGroup(group.label)}
-              className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
-            >
-              <span className={`font-mono text-[13px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
-                {group.label}
-              </span>
-              <motion.span
-                animate={{ rotate: isOpen ? 90 : 0 }}
-                transition={{ duration: 0.15 }}
-                className="font-mono text-[7px] text-dim group-hover:text-secondary transition-colors"
-              >
-                ▶
-              </motion.span>
-            </button>
-            <AnimatePresence initial={false}>
-              {isOpen && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.18 }}
-                  style={{ overflow: 'hidden' }}
-                >
-                  {group.items.map(item => (
-                    <AcidBaseSubItem key={item.tab} item={item} onNavigate={onNavigate} />
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )
-      })}
-    </>
-  )
-}
-
-// ── Thermodynamics sub-items ──────────────────────────────────────────────────
-
-type ThermodynamicsItem = { tab: string; label: string; formula: string }
-
-const THERMODYNAMICS_GROUPS: { label: string; items: ThermodynamicsItem[] }[] = [
+const THERMODYNAMICS_GROUPS: NavTabGroup[] = [
   {
     label: 'Entropy',
     items: [
@@ -1202,95 +462,13 @@ const THERMODYNAMICS_GROUPS: { label: string; items: ThermodynamicsItem[] }[] = 
     label: 'Gibbs Energy',
     items: [
       { tab: 'ref-gibbs',      label: 'ΔG° Calculation',   formula: 'ΔH-TΔS'  },
-      { tab: 'ref-gibbs-k',    label: 'ΔG° ↔ K',          formula: '-RTlnK' },
+      { tab: 'ref-gibbs-k',    label: 'ΔG° \u2194 K',      formula: '-RTlnK'   },
       { tab: 'ref-gibbs-temp', label: 'ΔG vs Temperature', formula: 'T=ΔH/ΔS' },
     ],
   },
 ]
 
-function ThermodynamicsSubItem({ item, onNavigate }: { item: ThermodynamicsItem; onNavigate: () => void }) {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-entropy'
-  const isActive = location.pathname === '/thermodynamics' && currentTab === item.tab
-
-  return (
-    <SubItem formula={item.formula} label={item.label} isActive={isActive}
-      onClick={() => { navigate(`/thermodynamics?tab=${item.tab}`); onNavigate() }} />
-  )
-}
-
-function ThermodynamicsGroupedItems({ onNavigate }: { onNavigate: () => void }) {
-  const location = useLocation()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-entropy'
-  const isTabVisible = usePreferencesStore(s => s.isTabVisible)
-
-  const visibleGroups = THERMODYNAMICS_GROUPS
-    .map(g => ({ ...g, items: g.items.filter(i => isTabVisible(i.tab)) }))
-    .filter(g => g.items.length > 0)
-
-  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
-    const active = THERMODYNAMICS_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
-    return new Set(active ? [active.label] : ['Entropy'])
-  })
-
-  function toggleGroup(label: string) {
-    setOpenGroups(prev => {
-      const next = new Set(prev)
-      if (next.has(label)) { next.delete(label) } else { next.add(label) }
-      return next
-    })
-  }
-
-  return (
-    <>
-      {visibleGroups.map(group => {
-        const isOpen = openGroups.has(group.label)
-        const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === '/thermodynamics'
-        return (
-          <div key={group.label}>
-            <button
-              onClick={() => toggleGroup(group.label)}
-              className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
-            >
-              <span className={`font-mono text-[13px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
-                {group.label}
-              </span>
-              <motion.span
-                animate={{ rotate: isOpen ? 90 : 0 }}
-                transition={{ duration: 0.15 }}
-                className="font-mono text-[7px] text-dim group-hover:text-secondary transition-colors"
-              >
-                ▶
-              </motion.span>
-            </button>
-            <AnimatePresence initial={false}>
-              {isOpen && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.18 }}
-                  style={{ overflow: 'hidden' }}
-                >
-                  {group.items.map(item => (
-                    <ThermodynamicsSubItem key={item.tab} item={item} onNavigate={onNavigate} />
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )
-      })}
-    </>
-  )
-}
-
-// ── Nuclear Chemistry sub-items ──────────────────────────────────────────────
-
-type NuclearItem = { tab: string; label: string; formula: string }
-
-const NUCLEAR_GROUPS: { label: string; items: NuclearItem[] }[] = [
+const NUCLEAR_GROUPS: NavTabGroup[] = [
   {
     label: 'Nuclear Reactions',
     items: [
@@ -1301,95 +479,13 @@ const NUCLEAR_GROUPS: { label: string; items: NuclearItem[] }[] = [
   {
     label: 'Applications',
     items: [
-      { tab: 'ref-binding', label: 'Binding Energy',    formula: 'Δm·c²' },
-      { tab: 'ref-dating',  label: 'Radiometric Dating', formula: '¹⁴C'  },
+      { tab: 'ref-binding', label: 'Binding Energy',     formula: 'Δm·c²' },
+      { tab: 'ref-dating',  label: 'Radiometric Dating', formula: '¹⁴C'   },
     ],
   },
 ]
 
-function NuclearSubItem({ item, onNavigate }: { item: NuclearItem; onNavigate: () => void }) {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-decay'
-  const isActive = location.pathname === '/nuclear' && currentTab === item.tab
-
-  return (
-    <SubItem formula={item.formula} label={item.label} isActive={isActive}
-      onClick={() => { navigate(`/nuclear?tab=${item.tab}`); onNavigate() }} />
-  )
-}
-
-function NuclearGroupedItems({ onNavigate }: { onNavigate: () => void }) {
-  const location = useLocation()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-decay'
-  const isTabVisible = usePreferencesStore(s => s.isTabVisible)
-
-  const visibleGroups = NUCLEAR_GROUPS
-    .map(g => ({ ...g, items: g.items.filter(i => isTabVisible(i.tab)) }))
-    .filter(g => g.items.length > 0)
-
-  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
-    const active = NUCLEAR_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
-    return new Set(active ? [active.label] : ['Nuclear Reactions'])
-  })
-
-  function toggleGroup(label: string) {
-    setOpenGroups(prev => {
-      const next = new Set(prev)
-      if (next.has(label)) { next.delete(label) } else { next.add(label) }
-      return next
-    })
-  }
-
-  return (
-    <>
-      {visibleGroups.map(group => {
-        const isOpen = openGroups.has(group.label)
-        const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === '/nuclear'
-        return (
-          <div key={group.label}>
-            <button
-              onClick={() => toggleGroup(group.label)}
-              className="w-full flex items-center justify-between pl-12 pr-4 py-1 group"
-            >
-              <span className={`font-mono text-[13px] font-semibold tracking-[0.08em] uppercase transition-colors ${groupActive ? 'text-primary' : 'text-dim group-hover:text-secondary'}`}>
-                {group.label}
-              </span>
-              <motion.span
-                animate={{ rotate: isOpen ? 90 : 0 }}
-                transition={{ duration: 0.15 }}
-                className="font-mono text-[7px] text-dim group-hover:text-secondary transition-colors"
-              >
-                ▶
-              </motion.span>
-            </button>
-            <AnimatePresence initial={false}>
-              {isOpen && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.18 }}
-                  style={{ overflow: 'hidden' }}
-                >
-                  {group.items.map(item => (
-                    <NuclearSubItem key={item.tab} item={item} onNavigate={onNavigate} />
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )
-      })}
-    </>
-  )
-}
-
-// ── Organic Chemistry sub-items ───────────────────────────────────────────────
-
-type OrganicItem = { tab: string; label: string; formula: string }
-
-const ORGANIC_GROUPS: { label: string; items: OrganicItem[] }[] = [
+const ORGANIC_GROUPS: NavTabGroup[] = [
   {
     label: 'Hydrocarbons',
     items: [
@@ -1407,30 +503,33 @@ const ORGANIC_GROUPS: { label: string; items: OrganicItem[] }[] = [
   },
 ]
 
-function OrganicSubItem({ item, onNavigate }: { item: OrganicItem; onNavigate: () => void }) {
+// ── Generic grouped nav section (replaces all *GroupedItems + *SubItem) ───────
+
+function GroupedNavSection({
+  groups,
+  basePath,
+  defaultTab,
+  defaultGroup,
+  onNavigate,
+}: {
+  groups: NavTabGroup[]
+  basePath: string
+  defaultTab: string
+  defaultGroup: string
+  onNavigate: () => void
+}) {
   const location = useLocation()
   const navigate = useNavigate()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-hydrocarbons'
-  const isActive = location.pathname === '/organic' && currentTab === item.tab
-
-  return (
-    <SubItem formula={item.formula} label={item.label} isActive={isActive}
-      onClick={() => { navigate(`/organic?tab=${item.tab}`); onNavigate() }} />
-  )
-}
-
-function OrganicGroupedItems({ onNavigate }: { onNavigate: () => void }) {
-  const location = useLocation()
-  const currentTab = new URLSearchParams(location.search).get('tab') ?? 'ref-hydrocarbons'
+  const currentTab = new URLSearchParams(location.search).get('tab') ?? defaultTab
   const isTabVisible = usePreferencesStore(s => s.isTabVisible)
 
-  const visibleGroups = ORGANIC_GROUPS
+  const visibleGroups = groups
     .map(g => ({ ...g, items: g.items.filter(i => isTabVisible(i.tab)) }))
     .filter(g => g.items.length > 0)
 
   const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
-    const active = ORGANIC_GROUPS.find(g => g.items.some(i => i.tab === currentTab))
-    return new Set(active ? [active.label] : ['Hydrocarbons'])
+    const active = groups.find(g => g.items.some(i => i.tab === currentTab))
+    return new Set(active ? [active.label] : [defaultGroup])
   })
 
   function toggleGroup(label: string) {
@@ -1445,7 +544,7 @@ function OrganicGroupedItems({ onNavigate }: { onNavigate: () => void }) {
     <>
       {visibleGroups.map(group => {
         const isOpen = openGroups.has(group.label)
-        const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === '/organic'
+        const groupActive = group.items.some(i => i.tab === currentTab) && location.pathname === basePath
         return (
           <div key={group.label}>
             <button
@@ -1473,7 +572,13 @@ function OrganicGroupedItems({ onNavigate }: { onNavigate: () => void }) {
                   style={{ overflow: 'hidden' }}
                 >
                   {group.items.map(item => (
-                    <OrganicSubItem key={item.tab} item={item} onNavigate={onNavigate} />
+                    <SubItem
+                      key={item.tab}
+                      formula={item.formula}
+                      label={item.label}
+                      isActive={location.pathname === basePath && currentTab === item.tab}
+                      onClick={() => { navigate(`${basePath}?tab=${item.tab}`); onNavigate() }}
+                    />
                   ))}
                 </motion.div>
               )}
@@ -1485,7 +590,34 @@ function OrganicGroupedItems({ onNavigate }: { onNavigate: () => void }) {
   )
 }
 
-// ── Practice / top-level nav items ────────────────────────────────────────────
+// ── Section config — drives the main nav loop ─────────────────────────────────
+
+interface SectionConfig {
+  key: string
+  icon: string
+  label: string
+  basePath: string
+  defaultTab: string
+  defaultGroup: string
+  groups: NavTabGroup[]
+}
+
+const SECTION_CONFIGS: SectionConfig[] = [
+  { key: 'idealGas',       icon: 'PV',    label: 'Ideal Gas Law',        basePath: '/ideal-gas',       groups: IDEAL_GAS_GROUPS,      defaultTab: 'ref-combined',         defaultGroup: 'Gas Laws'            },
+  { key: 'molar',          icon: '⚗',    label: 'Molar Calculations',    basePath: '/calculations',    groups: CALC_GROUPS,           defaultTab: 'ref-moles',            defaultGroup: 'Basic'               },
+  { key: 'redox',          icon: '⇌',    label: 'Reactions / Redox',     basePath: '/redox',           groups: REDOX_GROUPS,          defaultTab: 'classifier',           defaultGroup: 'Reactions'           },
+  { key: 'stoich',         icon: '⚖',    label: 'Stoichiometry',         basePath: '/stoichiometry',   groups: STOICH_GROUPS,         defaultTab: 'stoich',               defaultGroup: 'Basic'               },
+  { key: 'thermo',         icon: 'ΔH',   label: 'Thermochemistry',       basePath: '/thermochemistry', groups: THERMO_GROUPS,         defaultTab: 'calorimetry-reference', defaultGroup: 'Thermochemistry'     },
+  { key: 'kinetics',       icon: 'k',    label: 'Chemical Kinetics',     basePath: '/kinetics',        groups: KINETICS_GROUPS,       defaultTab: 'ref-rate-law',         defaultGroup: 'Rate Laws'           },
+  { key: 'equilibrium',    icon: '\u21cc', label: 'Chemical Equilibrium', basePath: '/equilibrium',    groups: EQUILIBRIUM_GROUPS,    defaultTab: 'ref-keq',              defaultGroup: 'Concepts'            },
+  { key: 'acidBase',       icon: 'pH',   label: 'Acids & Bases',         basePath: '/acid-base',       groups: ACID_BASE_GROUPS,      defaultTab: 'ref-ph',               defaultGroup: 'pH Fundamentals'     },
+  { key: 'buffers',        icon: 'β',    label: 'Buffers & Solubility',  basePath: '/buffers',         groups: BUFFERS_GROUPS,        defaultTab: 'ref-buffer',           defaultGroup: 'Buffers'             },
+  { key: 'thermodynamics', icon: 'ΔG',   label: 'Thermodynamics',        basePath: '/thermodynamics',  groups: THERMODYNAMICS_GROUPS, defaultTab: 'ref-entropy',          defaultGroup: 'Entropy'             },
+  { key: 'nuclear',        icon: '⚛',   label: 'Nuclear Chemistry',     basePath: '/nuclear',         groups: NUCLEAR_GROUPS,        defaultTab: 'ref-decay',            defaultGroup: 'Nuclear Reactions'   },
+  { key: 'organic',        icon: 'C',    label: 'Organic Chemistry',     basePath: '/organic',         groups: ORGANIC_GROUPS,        defaultTab: 'ref-hydrocarbons',     defaultGroup: 'Hydrocarbons'        },
+]
+
+// ── Top-level nav items ───────────────────────────────────────────────────────
 
 function PracticeNavItem({ path, icon, label, onNavigate }: {
   path: string; icon: string; label: string; onNavigate: () => void
@@ -1589,64 +721,40 @@ export default function NavSidebar({ open, onClose, theme, onToggleTheme }: Prop
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
 
-  const currentPath    = location.pathname
-  const isTabVisible   = usePreferencesStore(s => s.isTabVisible)
-  const searchResults  = useSearchItems(query)
+  const currentPath   = location.pathname
+  const isTabVisible  = usePreferencesStore(s => s.isTabVisible)
+  const searchResults = useSearchItems(query)
 
-  // Compute whether each expandable section has at least one visible item
-  const showBaseCalc  = [...BASE_CALC_ITEMS.map(i => i.tab).filter((t): t is string => t != null), 'empirical'].some(t => isTabVisible(t))
-  const showIdealGas  = IDEAL_GAS_GROUPS.flatMap(g => g.items.map(i => i.tab)).some(t => isTabVisible(t))
-  const showMolar     = CALC_GROUPS.flatMap(g => g.items.map(i => i.tab)).some(t => isTabVisible(t))
-  // Periodic Table section always visible (the /table route has no topicTabId)
-  const showTable     = true
-  const showStoich    = STOICH_GROUPS.flatMap(g => g.items.map(i => i.tab)).some(t => isTabVisible(t))
-  const showRedox     = REDOX_GROUPS.flatMap(g => g.items.map(i => i.tab)).some(t => isTabVisible(t))
+  // Top-level section open/close
+  const [refCalcOpen,      setRefCalcOpen]      = useState(true)
+  const [pracSectionOpen,  setPracSectionOpen]  = useState(true)
+  const [toolsSectionOpen, setToolsSectionOpen] = useState(
+    currentPath === '/tools' || currentPath === '/compound' || currentPath === '/reference' || currentPath === '/settings'
+  )
+
+  // All topic expandables in one Set (key = SectionConfig.key or special key)
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(() => {
+    const initial = new Set<string>()
+    if (currentPath === '/table' || currentPath === '/electron-config') initial.add('table')
+    if (currentPath === '/base-calculations' || currentPath === '/empirical') initial.add('baseCalc')
+    if (currentPath === '/structures') initial.add('struct')
+    SECTION_CONFIGS.forEach(cfg => {
+      if (currentPath === cfg.basePath) initial.add(cfg.key)
+    })
+    return initial
+  })
+
+  function toggleSection(key: string) {
+    setExpandedSections(prev => {
+      const next = new Set(prev)
+      if (next.has(key)) { next.delete(key) } else { next.add(key) }
+      return next
+    })
+  }
+
+  // Visibility: show a section only if it has at least one visible tab
+  const showBaseCalc   = [...BASE_CALC_ITEMS.map(i => i.tab).filter((t): t is string => t != null), 'empirical'].some(t => isTabVisible(t))
   const showStructures = STRUCTURE_ITEMS.some(i => isTabVisible(i.tab))
-  const showThermo    = THERMO_GROUPS.flatMap(g => g.items.map(i => i.tab)).some(t => isTabVisible(t))
-  const showKinetics  = KINETICS_GROUPS.flatMap(g => g.items.map(i => i.tab)).some(t => isTabVisible(t))
-  const showEquilibrium = EQUILIBRIUM_GROUPS.flatMap(g => g.items.map(i => i.tab)).some(t => isTabVisible(t))
-  const showAcidBase = ACID_BASE_GROUPS.flatMap(g => g.items.map(i => i.tab)).some(t => isTabVisible(t))
-  const showBuffers = BUFFERS_GROUPS.flatMap(g => g.items.map(i => i.tab)).some(t => isTabVisible(t))
-  const showThermodynamics = THERMODYNAMICS_GROUPS.flatMap(g => g.items.map(i => i.tab)).some(t => isTabVisible(t))
-  const showNuclear = NUCLEAR_GROUPS.flatMap(g => g.items.map(i => i.tab)).some(t => isTabVisible(t))
-  const showOrganic = ORGANIC_GROUPS.flatMap(g => g.items.map(i => i.tab)).some(t => isTabVisible(t))
-
-  const [refCalcOpen,        setRefCalcOpen]        = useState(true)
-  const [pracSectionOpen,    setPracSectionOpen]    = useState(true)
-  const [toolsSectionOpen,   setToolsSectionOpen]   = useState(currentPath === '/tools' || currentPath === '/compound' || currentPath === '/reference' || currentPath === '/settings')
-  const [kineticsNavExpanded, setKineticsNavExpanded] = useState(currentPath === '/kinetics')
-  const [equilibriumNavExpanded, setEquilibriumNavExpanded] = useState(currentPath === '/equilibrium')
-  const [acidBaseNavExpanded, setAcidBaseNavExpanded] = useState(currentPath === '/acid-base')
-  const [buffersNavExpanded, setBuffersNavExpanded] = useState(currentPath === '/buffers')
-  const [thermodynamicsNavExpanded, setThermodynamicsNavExpanded] = useState(currentPath === '/thermodynamics')
-  const [nuclearNavExpanded, setNuclearNavExpanded] = useState(currentPath === '/nuclear')
-  const [organicNavExpanded, setOrganicNavExpanded] = useState(currentPath === '/organic')
-
-  // ── Reference / Calculations expandables ────────────────────────────────────
-  const [tableExpanded,       setTableExpanded]       = useState(currentPath === "/table" || currentPath === "/electron-config")
-  const [baseCalcExpanded,    setBaseCalcExpanded]    = useState(currentPath === "/base-calculations" || currentPath === "/empirical")
-  const [calcExpanded,        setCalcExpanded]        = useState(currentPath === "/calculations")
-  const [stoichExpanded,      setStoichExpanded]      = useState(currentPath === "/stoichiometry")
-  const [redoxExpanded,       setRedoxExpanded]       = useState(currentPath === "/redox")
-  const [structExpanded,      setStructExpanded]      = useState(currentPath === "/structures")
-  const [thermoExpanded,      setThermoExpanded]      = useState(currentPath === "/thermochemistry")
-  const [idealGasNavExpanded, setIdealGasNavExpanded] = useState(currentPath === '/ideal-gas')
-
-  const isTableActive      = currentPath === "/table" || currentPath === "/electron-config"
-  const isBaseCalcActive   = currentPath === "/base-calculations" || currentPath === "/empirical"
-  const isMolarCalcActive  = currentPath === "/calculations"
-  const isStoichActive     = currentPath === "/stoichiometry"
-  const isRedoxActive      = currentPath === "/redox"
-  const isStructActive     = currentPath === "/structures"
-  const isThermoActive     = currentPath === "/thermochemistry"
-  const isIdealGasNavActive = currentPath === '/ideal-gas'
-  const isKineticsNavActive = currentPath === '/kinetics'
-  const isEquilibriumNavActive = currentPath === '/equilibrium'
-  const isAcidBaseNavActive = currentPath === '/acid-base'
-  const isBuffersNavActive = currentPath === '/buffers'
-  const isThermodynamicsNavActive = currentPath === '/thermodynamics'
-  const isNuclearNavActive = currentPath === '/nuclear'
-  const isOrganicNavActive = currentPath === '/organic'
 
   const inner = (
     <div className="flex flex-col h-full">
@@ -1683,32 +791,30 @@ export default function NavSidebar({ open, onClose, theme, onToggleTheme }: Prop
       <nav className="flex-1 overflow-y-auto py-2">
 
         {/* Search results */}
-        {query.trim() && (() => {
-          return (
-            <div className="flex flex-col gap-0.5 py-2">
-              {searchResults.length === 0 ? (
-                <p className="font-mono text-xs text-dim px-5 py-3">No results for "{query}"</p>
-              ) : searchResults.map(item => (
-                <button
-                  key={item.path}
-                  onClick={() => { navigate(item.path); setQuery(''); onClose() }}
-                  className="w-full flex items-center gap-2 pl-4 pr-3 py-1.5 mx-2 rounded-sm font-sans text-sm text-left text-secondary hover:text-primary hover:bg-surface transition-all"
-                  style={{ width: 'calc(100% - 16px)' }}
-                >
-                  <span className="nav-sub-formula font-mono text-[9px] shrink-0 w-8 text-right">{item.formula}</span>
-                  <div className="flex flex-col min-w-0">
-                    <span className="truncate text-[13px]">{item.label}</span>
-                    <span className="font-mono text-[9px] text-dim">{item.section}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )
-        })()}
+        {query.trim() && (
+          <div className="flex flex-col gap-0.5 py-2">
+            {searchResults.length === 0 ? (
+              <p className="font-mono text-xs text-dim px-5 py-3">No results for "{query}"</p>
+            ) : searchResults.map(item => (
+              <button
+                key={item.path}
+                onClick={() => { navigate(item.path); setQuery(''); onClose() }}
+                className="w-full flex items-center gap-2 pl-4 pr-3 py-1.5 mx-2 rounded-sm font-sans text-sm text-left text-secondary hover:text-primary hover:bg-surface transition-all"
+                style={{ width: 'calc(100% - 16px)' }}
+              >
+                <span className="nav-sub-formula font-mono text-[9px] shrink-0 w-8 text-right">{item.formula}</span>
+                <div className="flex flex-col min-w-0">
+                  <span className="truncate text-[13px]">{item.label}</span>
+                  <span className="font-mono text-[9px] text-dim">{item.section}</span>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Normal nav — hidden during search */}
         {!query.trim() && (<>
-          {/* Reference / Calculations */}
+          {/* Topics */}
           <NavGroup label="Topics" expanded={refCalcOpen} onToggle={() => setRefCalcOpen(e => !e)} />
           <AnimatePresence initial={false}>
             {refCalcOpen && (
@@ -1720,75 +826,40 @@ export default function NavSidebar({ open, onClose, theme, onToggleTheme }: Prop
                 {showBaseCalc && (
                   <ExpandableSection
                     icon="±" label="Base Calculations"
-                    isActive={isBaseCalcActive} expanded={baseCalcExpanded}
-                    onToggle={() => setBaseCalcExpanded(e => !e)}
+                    isActive={currentPath === '/base-calculations' || currentPath === '/empirical'}
+                    expanded={expandedSections.has('baseCalc')}
+                    onToggle={() => toggleSection('baseCalc')}
                   >
-                    {BASE_CALC_ITEMS.filter(i => i.tab != null && isTabVisible(i.tab)).map((item, idx) => (
-                      <BaseCalcSubItem key={idx} item={item} onNavigate={onClose} />
-                    ))}
+                    {BASE_CALC_ITEMS.filter(i => i.tab != null && isTabVisible(i.tab)).map((item, idx) => {
+                      const currentTab = new URLSearchParams(location.search).get('tab') ?? 'sig-figs'
+                      const isActive = currentPath === '/base-calculations' && currentTab === item.tab
+                      return (
+                        <SubItem key={idx} formula={item.formula} label={item.label} isActive={isActive}
+                          onClick={() => { navigate(`/base-calculations?tab=${item.tab}`); onClose() }} />
+                      )
+                    })}
                     {isTabVisible('empirical') && (
                       <PathSubItem path="/empirical" formula="⌬" label="Empirical Formula" onNavigate={onClose} />
                     )}
                   </ExpandableSection>
                 )}
 
-                {showIdealGas && (
-                  <ExpandableSection
-                    icon="PV" label="Ideal Gas Law"
-                    isActive={isIdealGasNavActive} expanded={idealGasNavExpanded}
-                    onToggle={() => setIdealGasNavExpanded(e => !e)}
-                  >
-                    <IdealGasGroupedItems onNavigate={onClose} />
-                  </ExpandableSection>
-                )}
-
-                {showMolar && (
-                  <ExpandableSection
-                    icon="⚗" label="Molar Calculations"
-                    isActive={isMolarCalcActive} expanded={calcExpanded}
-                    onToggle={() => setCalcExpanded(e => !e)}
-                  >
-                    <CalcGroupedItems onNavigate={onClose} />
-                  </ExpandableSection>
-                )}
-
-                {showTable && (
-                  <ExpandableSection
-                    icon="⬡" label="Periodic Table"
-                    isActive={isTableActive} expanded={tableExpanded}
-                    onToggle={() => setTableExpanded(e => !e)}
-                  >
-                    <TableGroupedItems onNavigate={onClose} />
-                  </ExpandableSection>
-                )}
-
-                {showRedox && (
-                  <ExpandableSection
-                    icon="⇌" label="Reactions / Redox"
-                    isActive={isRedoxActive} expanded={redoxExpanded}
-                    onToggle={() => setRedoxExpanded(e => !e)}
-                  >
-                    <RedoxGroupedItems onNavigate={onClose} />
-                  </ExpandableSection>
-                )}
-
-                <PracticeNavItem path="/reference?tab=solubility" icon="S/I" label="Solubility" onNavigate={onClose} />
-
-                {showStoich && (
-                  <ExpandableSection
-                    icon="⚖" label="Stoichiometry"
-                    isActive={isStoichActive} expanded={stoichExpanded}
-                    onToggle={() => setStoichExpanded(e => !e)}
-                  >
-                    <StoichGroupedItems onNavigate={onClose} />
-                  </ExpandableSection>
-                )}
+                {/* Periodic Table (always visible) */}
+                <ExpandableSection
+                  icon="⬡" label="Periodic Table"
+                  isActive={currentPath === '/table' || currentPath === '/electron-config'}
+                  expanded={expandedSections.has('table')}
+                  onToggle={() => toggleSection('table')}
+                >
+                  <TableGroupedItems onNavigate={onClose} />
+                </ExpandableSection>
 
                 {showStructures && (
                   <ExpandableSection
                     icon="⬡" label="Structures"
-                    isActive={isStructActive} expanded={structExpanded}
-                    onToggle={() => setStructExpanded(e => !e)}
+                    isActive={currentPath === '/structures'}
+                    expanded={expandedSections.has('struct')}
+                    onToggle={() => toggleSection('struct')}
                   >
                     {STRUCTURE_ITEMS.filter(i => isTabVisible(i.tab)).map((item, idx) => (
                       <PathSubItem key={idx} path={item.path} formula={item.formula} label={item.label} onNavigate={onClose} />
@@ -1796,85 +867,30 @@ export default function NavSidebar({ open, onClose, theme, onToggleTheme }: Prop
                   </ExpandableSection>
                 )}
 
-                {showThermo && (
-                  <ExpandableSection
-                    icon="ΔH" label="Thermochemistry"
-                    isActive={isThermoActive} expanded={thermoExpanded}
-                    onToggle={() => setThermoExpanded(e => !e)}
-                  >
-                    <ThermoGroupedItems onNavigate={onClose} />
-                  </ExpandableSection>
-                )}
+                <PracticeNavItem path="/reference?tab=solubility" icon="S/I" label="Solubility" onNavigate={onClose} />
 
-                {showKinetics && (
-                  <ExpandableSection
-                    icon="k" label="Chemical Kinetics"
-                    isActive={isKineticsNavActive} expanded={kineticsNavExpanded}
-                    onToggle={() => setKineticsNavExpanded(e => !e)}
-                  >
-                    <KineticsGroupedItems onNavigate={onClose} />
-                  </ExpandableSection>
-                )}
-
-                {showEquilibrium && (
-                  <ExpandableSection
-                    icon="\u21cc" label="Chemical Equilibrium"
-                    isActive={isEquilibriumNavActive} expanded={equilibriumNavExpanded}
-                    onToggle={() => setEquilibriumNavExpanded(e => !e)}
-                  >
-                    <EquilibriumGroupedItems onNavigate={onClose} />
-                  </ExpandableSection>
-                )}
-
-                {showAcidBase && (
-                  <ExpandableSection
-                    icon="pH" label="Acids &amp; Bases"
-                    isActive={isAcidBaseNavActive} expanded={acidBaseNavExpanded}
-                    onToggle={() => setAcidBaseNavExpanded(e => !e)}
-                  >
-                    <AcidBaseGroupedItems onNavigate={onClose} />
-                  </ExpandableSection>
-                )}
-
-                {showBuffers && (
-                  <ExpandableSection
-                    icon="β" label="Buffers &amp; Solubility"
-                    isActive={isBuffersNavActive} expanded={buffersNavExpanded}
-                    onToggle={() => setBuffersNavExpanded(e => !e)}
-                  >
-                    <BuffersGroupedItems onNavigate={onClose} />
-                  </ExpandableSection>
-                )}
-
-                {showThermodynamics && (
-                  <ExpandableSection
-                    icon="ΔG" label="Thermodynamics"
-                    isActive={isThermodynamicsNavActive} expanded={thermodynamicsNavExpanded}
-                    onToggle={() => setThermodynamicsNavExpanded(e => !e)}
-                  >
-                    <ThermodynamicsGroupedItems onNavigate={onClose} />
-                  </ExpandableSection>
-                )}
-
-                {showNuclear && (
-                  <ExpandableSection
-                    icon="⚛" label="Nuclear Chemistry"
-                    isActive={isNuclearNavActive} expanded={nuclearNavExpanded}
-                    onToggle={() => setNuclearNavExpanded(e => !e)}
-                  >
-                    <NuclearGroupedItems onNavigate={onClose} />
-                  </ExpandableSection>
-                )}
-
-                {showOrganic && (
-                  <ExpandableSection
-                    icon="C" label="Organic Chemistry"
-                    isActive={isOrganicNavActive} expanded={organicNavExpanded}
-                    onToggle={() => setOrganicNavExpanded(e => !e)}
-                  >
-                    <OrganicGroupedItems onNavigate={onClose} />
-                  </ExpandableSection>
-                )}
+                {SECTION_CONFIGS.map(cfg => {
+                  const hasVisible = cfg.groups.flatMap(g => g.items.map(i => i.tab)).some(t => isTabVisible(t))
+                  if (!hasVisible) return null
+                  return (
+                    <ExpandableSection
+                      key={cfg.key}
+                      icon={cfg.icon}
+                      label={cfg.label}
+                      isActive={currentPath === cfg.basePath}
+                      expanded={expandedSections.has(cfg.key)}
+                      onToggle={() => toggleSection(cfg.key)}
+                    >
+                      <GroupedNavSection
+                        groups={cfg.groups}
+                        basePath={cfg.basePath}
+                        defaultTab={cfg.defaultTab}
+                        defaultGroup={cfg.defaultGroup}
+                        onNavigate={onClose}
+                      />
+                    </ExpandableSection>
+                  )
+                })}
 
               </motion.div>
             )}
