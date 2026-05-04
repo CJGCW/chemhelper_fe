@@ -78,6 +78,7 @@ import NuclearHalfLifeReference from '../components/nuclear/HalfLifeReference'
 import BindingEnergyReference from '../components/nuclear/BindingEnergyReference'
 import DatingReference        from '../components/nuclear/DatingReference'
 // ── Organic ───────────────────────────────────────────────────────────────────
+import OrgMechanismReference  from '../components/mechanisms/MechanismReference'
 import HydrocarbonReference   from '../components/organic/HydrocarbonReference'
 import IsomerReference        from '../components/organic/IsomerReference'
 import OrganicNamingReference from '../components/organic/OrganicNamingReference'
@@ -166,6 +167,9 @@ function ReferenceSection({ id }: { id: string }) {
     case 'nuclear-half-life':  return <NuclearHalfLifeReference />
     case 'binding-energy':     return <BindingEnergyReference />
     case 'nuclear-dating':     return <DatingReference />
+    // organic mechanisms
+    case 'org-mech-sn-e':      return <OrgMechanismReference initialCategory="sn_e" />
+    case 'org-mech-alkene':    return <OrgMechanismReference initialCategory="alkene" />
     // organic
     case 'hydrocarbons':       return <HydrocarbonReference />
     case 'isomers':            return <IsomerReference />

@@ -43,6 +43,7 @@ interface PreferencesState {
   hideAll: () => void
   resetToDefaults: () => void
   setGenChemPreset: (level: 1 | 2) => void
+  setOrgChem1Preset: () => void
 
   setShowAnswers: (v: boolean) => void
 }
@@ -242,6 +243,21 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => {
           hide(gc1)
           show(gc2)
         }
+
+        return { hiddenUnits: nextUnits, hiddenSections: nextSections, hiddenTopics: nextTopics }
+      })
+    },
+
+    setOrgChem1Preset() {
+      mutate(() => {
+        // Hide everything, then un-hide only the organic unit + reaction-mechanisms
+        const nextUnits    = new Set(UNITS.map(u => u.id))
+        const nextSections = new Set(SECTIONS.map(s => s.id))
+        const nextTopics   = new Set(TOPICS.map(t => t.id))
+
+        nextUnits.delete('organic')
+        nextSections.delete('reaction-mechanisms')
+        nextTopics.delete('reaction-mechanisms')
 
         return { hiddenUnits: nextUnits, hiddenSections: nextSections, hiddenTopics: nextTopics }
       })

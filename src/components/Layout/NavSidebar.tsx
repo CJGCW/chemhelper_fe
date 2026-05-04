@@ -503,6 +503,7 @@ const ORGANIC_GROUPS: NavTabGroup[] = [
   },
 ]
 
+
 // ── Generic grouped nav section (replaces all *GroupedItems + *SubItem) ───────
 
 function GroupedNavSection({
@@ -891,6 +892,9 @@ export default function NavSidebar({ open, onClose, theme, onToggleTheme }: Prop
                     </ExpandableSection>
                   )
                 })}
+                {isTabVisible('reaction-mechanisms') && (
+                  <PracticeNavItem path="/mechanisms" icon="⚗" label="Reaction Mechanisms" onNavigate={onClose} />
+                )}
 
               </motion.div>
             )}

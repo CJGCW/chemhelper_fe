@@ -126,6 +126,9 @@ export const ALL_PRINT_TOPICS: PrintTopicDef[] = [
   { id: 'binding-energy',   group: 'nuclear', label: 'Binding Energy',   formula: 'BE/A',    registryId: 'binding-energy'  },
   { id: 'nuclear-dating',   group: 'nuclear', label: 'Radiocarbon Dating', formula: 't age', registryId: 'nuclear-dating'  },
 
+  // ── Organic Mechanisms ──────────────────────────────────────────────────────
+  { id: 'org-mech-sn-e',     group: 'organic', label: 'SN/E Reactions',       formula: 'SN/E',     registryId: 'mech-sn-e'           },
+  { id: 'org-mech-alkene',   group: 'organic', label: 'Alkene Reactions',     formula: 'C=C',      registryId: 'mech-alkene'         },
   // ── Organic Chemistry ───────────────────────────────────────────────────────
   { id: 'hydrocarbons',       group: 'organic', label: 'Hydrocarbons',         formula: 'CₙH…',    registryId: 'alkanes-alkenes'     },
   { id: 'isomers',            group: 'organic', label: 'Isomers',              formula: 'same formula?', registryId: 'isomers'       },

@@ -631,3 +631,101 @@ The Go backend at `chemhelper/` has its own domain packages (`element/`, `soluti
 - **Check whether the backend already has the calculation.** Molarity, molality, BPE/FPD, Lewis structures, and SMILES resolution are already server-side. Don't build a second implementation on the frontend if the backend can serve it.
 - **API errors should return 422 with descriptive messages**, not generic 404s. Follow the existing `writeError(w, http.StatusUnprocessableEntity, "descriptive message")` pattern in the Go handlers.
 - **Frontend `src/api/` is the only place that calls the backend.** Don't put `fetch` or `axios` calls inside components or utils. All API calls go through the `src/api/client.ts` axios instance.
+
+---
+
+## Mechanism Animation Consistency
+
+All mechanism reaction data lives in `src/data/mechanisms/`. Every new reaction file must follow these rules — no exceptions.
+
+### No hand-coded atom coordinates
+
+Use `SceneBuilder` and `atomFrom()` for all atom placement. Use template functions for standard geometries:
+
+- `sp3CarbonScene()` — tetrahedral sp³ carbon with wedge/dash slots for 3D representation
+- `alkeneScene()` — trigonal sp² alkene (C=C) with 120° substituent angles
+- `alkyneScene()` — linear sp alkyne (C≡C)
+- `benzeneScene()` — hexagonal ring, atom ids `b1`–`b6`
+- `carbonylScene()` — trigonal carbonyl C=O
+
+When a geometry doesn't fit a template, use `SceneBuilder` directly with `atomFrom()` (polar coordinates from an anchor atom). Never type raw x/y pixel values.
+
+Standard scene dimensions: **700×320** unless the reaction needs more vertical space for stacked molecules. Standard bond length: **`BOND_LENGTH = 100`px** (from `geometry.ts`).
+
+### No raw coordinates in animations
+
+Use `ArrowBuilder` for all curved arrows and atom translates. Never write raw `from`/`to`/`control` coordinates in animation primitives:
+
+```ts
+const scene = sceneBuilder.build()
+const ab = new ArrowBuilder(scene)
+
+// ✓ correct
+ab.fromAtomToAtom('nu', 'c', { color: 'var(--c-alkali)', duration: 0.6 })
+ab.translateAtom('br', 650, 150, { duration: 0.8, delay: 0.3 })
+
+// ✗ wrong — raw coordinates
+{ type: 'curved_arrow', from: {x:130, y:150}, to: {x:326, y:150}, control: {x:220, y:72} }
+```
+
+Exception: virtual points with no corresponding atom (e.g. SN1 "second face" arrow below the carbocation) may use raw coordinates with a comment explaining why.
+
+### atom_translate must use targetId
+
+All `atom_translate` animations must include `targetId` (the atom's id string). The legacy distance-based matching (no targetId) is kept for backward compat but should not appear in new data:
+
+```ts
+// ✓ correct — ID-based
+ab.translateAtom('br', 650, 150, { duration: 0.8 })
+// produces: { type:'atom_translate', targetId:'br', from:{x:550,y:150}, to:{x:650,y:150}, duration:0.8 }
+
+// ✗ wrong — distance-based only
+{ type: 'atom_translate', from: {x:555, y:150}, to: {x:650, y:150} }
+```
+
+### Wedge/dash bonds for stereocenters
+
+Every stereocenter in an SN/inversion/addition reaction must show 3D geometry with wedge and dash-wedge bonds:
+
+- `'wedge'` — bond pointing toward the viewer (out of the page). Narrow at the carbon, wide at the substituent.
+- `'dash-wedge'` — bond pointing away from the viewer (into the page). Series of widening tick marks.
+- `'solid'` and `'dashed'` — in-plane bonds.
+
+**SN2 / Williamson / inversion reactions:** use `invert_stereocenter` on the central carbon to flip wedge↔dash-wedge. Never translate H atoms to fake the inversion.
+
+**E2 reactions:** place the β-H on a wedge bond and the leaving group on a dash-wedge bond on adjacent carbons to show anti-periplanar geometry visually.
+
+**SN1 reactions:** the carbocation is planar sp² — no wedge/dash bonds on any bonds to the cationic carbon. Show racemization with two curved arrows (one from each face) in step 2.
+
+### Atom ID conventions
+
+- `c`, `c1`, `c2` — reactive carbons at the reaction site
+- `c_alpha`, `c_beta` — named by Greek letter position
+- `nu` — nucleophile
+- `lg` (or `br`, `cl`, `x`) — leaving group
+- `base` — base atom/group
+- `b1`–`b6` — benzene ring carbons
+- `me1`, `me2`, `me3` — methyl substituents
+- `r1`, `r2`, `r3` — generic R group substituents
+
+### Atom role tags
+
+Apply `role` on key atoms in every reaction:
+- `'nucleophile'`, `'leaving_group'`, `'base'`, `'acid'`
+- `'alpha_carbon'`, `'beta_carbon'`, `'carbonyl_carbon'`, `'carbonyl_oxygen'`
+- `'more_substituted'`, `'less_substituted'` — for regioselective reactions
+- `'r_group'`, `'h_substituent'`
+
+Use `findByRole(scene, role)`, `getNucleophile(scene)`, `getLeavingGroup(scene)` etc. when animations need to reference atoms semantically.
+
+### Validation
+
+`validateAllReactions(ALL_REACTIONS)` runs at module load in dev mode (called from `index.ts`). It warns on:
+- Coordinate drift in `atom_translate` (declared `from` vs actual atom position >5px)
+- Atom_translate without `targetId` and no matching atom within 50px
+- Orphan `targetId` references (atom/bond doesn't exist in scene)
+- Off-canvas atoms (outside scene.width × scene.height)
+- Overlapping atoms (<25px apart)
+- Stereocenter in inversion reaction with no wedge/dash bonds
+
+Fix all warnings before committing. A green console (no validate warnings) is the acceptance criterion.

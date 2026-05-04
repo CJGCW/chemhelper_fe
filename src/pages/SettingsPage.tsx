@@ -186,16 +186,23 @@ export default function SettingsPage() {
   const showAll          = usePreferencesStore(s => s.showAll)
   const hideAll          = usePreferencesStore(s => s.hideAll)
   const resetToDefaults  = usePreferencesStore(s => s.resetToDefaults)
-  const setGenChemPreset = usePreferencesStore(s => s.setGenChemPreset)
+  const setGenChemPreset  = usePreferencesStore(s => s.setGenChemPreset)
+  const setOrgChem1Preset = usePreferencesStore(s => s.setOrgChem1Preset)
 
-  const hiddenUnits  = usePreferencesStore(s => s.hiddenUnits)
-  const hiddenTopics = usePreferencesStore(s => s.hiddenTopics)
-  const hiddenCount  = hiddenTopics.size
+  const hiddenUnits    = usePreferencesStore(s => s.hiddenUnits)
+  const hiddenSections = usePreferencesStore(s => s.hiddenSections)
+  const hiddenTopics   = usePreferencesStore(s => s.hiddenTopics)
+  const hiddenCount    = hiddenTopics.size
 
   const gc1Ids = getUnitsByLevel(1).map(u => u.id)
   const gc2Ids = getUnitsByLevel(2).map(u => u.id)
   const isGC1Active = gc1Ids.every(id => !hiddenUnits.has(id)) && gc2Ids.every(id => hiddenUnits.has(id))
   const isGC2Active = gc2Ids.every(id => !hiddenUnits.has(id)) && gc1Ids.every(id => hiddenUnits.has(id))
+  const allUnitIds  = [...gc1Ids, ...gc2Ids]
+  const isOC1Active = !hiddenUnits.has('organic') &&
+    !hiddenSections.has('reaction-mechanisms') &&
+    !hiddenTopics.has('reaction-mechanisms') &&
+    allUnitIds.filter(id => id !== 'organic').every(id => hiddenUnits.has(id))
 
   const initialSnapshot = useRef<string>(JSON.stringify([...hiddenTopics].sort()))
   const currentSnapshot = JSON.stringify([...hiddenTopics].sort())
@@ -285,6 +292,19 @@ export default function SettingsPage() {
                 </button>
               )
             })}
+            <button
+              onClick={setOrgChem1Preset}
+              className="flex-1 flex flex-col items-center gap-0.5 px-3 py-2 transition-colors"
+              style={isOC1Active ? {
+                background: 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))',
+                color: 'var(--c-halogen)',
+              } : {
+                color: 'rgb(var(--color-secondary))',
+              }}
+            >
+              <span className="font-sans text-xs font-semibold">Org Chem 1</span>
+              <span className="font-mono text-[9px] opacity-60">mechanisms only</span>
+            </button>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">

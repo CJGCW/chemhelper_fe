@@ -51,6 +51,7 @@ import { generateEntropyProblem, generateGibbsProblem, generateSpontaneityProble
 import { genTriangleProblem, genFaradayProblem, genConcCellProblem } from '../../utils/electrochemPractice'
 import { generateDecayProblem, generateHalfLifeProblem, generateBindingEnergyProblem, generateDatingProblem } from '../../utils/nuclearPractice'
 import { genHydrocarbonProblem, hydrocarbonSolutionSteps, genIsomerProblem, genNamingProblem, genFunctionalGroupProblem, genOrganicReactionProblem } from '../../utils/organicPractice'
+import { generateMechanismProblem } from '../../utils/mechanismPractice'
 import { usePreferencesStore } from '../../stores/preferencesStore'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
@@ -64,7 +65,7 @@ type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | '
   | 'entropy' | 'spontaneity' | 'gibbs' | 'gibbs_k' | 'crossover_t'
   | 'triangle' | 'faraday' | 'conc_cell'
   | 'nuclear_decay' | 'nuclear_halflife' | 'binding_energy' | 'nuclear_dating'
-  | 'hydrocarbon' | 'isomer' | 'organic_naming' | 'func_group' | 'organic_rxn'
+  | 'hydrocarbon' | 'isomer' | 'organic_naming' | 'func_group' | 'organic_rxn' | 'mechanism_id'
 type TopicGroup = 'core' | 'atomic_molecular' | 'structures' | 'molar_solutions' | 'stoichiometry' | 'gases' | 'redox' | 'thermochemistry'
   | 'kinetics' | 'equilibrium' | 'acid_base' | 'buffers_ksp' | 'thermo_dynamics' | 'nuclear' | 'organic'
 
@@ -216,6 +217,7 @@ const ALL_TOPICS: TopicDef[] = [
   { id: 'organic-naming', kind: 'organic_naming', group: 'organic', label: 'Organic Naming',      formula: 'IUPAC',   registryId: 'organic-naming'      },
   { id: 'func-group',     kind: 'func_group',     group: 'organic', label: 'Functional Groups',   formula: '-OH, C=O', registryId: 'functional-group-id' },
   { id: 'organic-rxn',    kind: 'organic_rxn',    group: 'organic', label: 'Organic Reactions',   formula: 'rxn type', registryId: 'organic-reactions'  },
+  { id: 'mechanism-id',  kind: 'mechanism_id',   group: 'organic', label: 'Identify Mechanism',  formula: 'SN/E/Add', registryId: 'mech-sn-e'          },
 ]
 
 const STYLES: ProblemStyle[] = ['word', 'arithmetic']
@@ -571,6 +573,13 @@ export default function TestBuilder({ onGenerate }: Props) {
         return cls(
           `${p.scenario}\nWhat type of organic reaction is this?`,
           p.correctType, p.options, [p.explanation]
+        )
+      }
+      if (t.kind === 'mechanism_id') {
+        const p = generateMechanismProblem()
+        return cls(
+          `${p.scenario}\n\n${p.question}`,
+          p.answer, p.choices, p.steps
         )
       }
 

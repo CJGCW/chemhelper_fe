@@ -20,6 +20,7 @@ export type UnitId =
   | 'thermodynamics'
   | 'nuclear'
   | 'organic'
+  | 'org-mechanisms'
 
 export type SectionId =
   | 'math-tools'
@@ -56,6 +57,9 @@ export type SectionId =
   | 'nuclear-applications'
   | 'hydrocarbons'
   | 'functional-groups'
+  | 'sn-elimination'
+  | 'alkene-reactions'
+  | 'reaction-mechanisms'
 
 export interface Unit {
   id: UnitId
@@ -99,7 +103,8 @@ export const UNITS: Unit[] = [
   { id: 'buffers-ksp',   label: 'Buffers & Solubility',    route: '/buffers',           level: 2, sections: ['buffer-systems', 'titration-curves', 'solubility-product'] },
   { id: 'thermodynamics', label: 'Thermodynamics',         route: '/thermodynamics',    level: 2, sections: ['entropy', 'gibbs-energy']                       },
   { id: 'nuclear',       label: 'Nuclear Chemistry',       route: '/nuclear',           level: 2, sections: ['nuclear-reactions', 'nuclear-applications']     },
-  { id: 'organic',       label: 'Organic Chemistry',       route: '/organic',           level: 2, sections: ['hydrocarbons', 'functional-groups']             },
+  { id: 'organic',       label: 'Organic Chemistry',       route: '/organic',           level: 2, sections: ['hydrocarbons', 'functional-groups', 'reaction-mechanisms'] },
+  { id: 'org-mechanisms', label: 'Organic Mechanisms',    route: '/mechanisms',         level: 2, sections: ['sn-elimination', 'alkene-reactions']              },
 ]
 
 // ── Sections ──────────────────────────────────────────────────────────────────
@@ -139,6 +144,9 @@ export const SECTIONS: Section[] = [
   { id: 'nuclear-applications', label: 'Applications',      unitId: 'nuclear' },
   { id: 'hydrocarbons',         label: 'Hydrocarbons',      unitId: 'organic' },
   { id: 'functional-groups',    label: 'Functional Groups', unitId: 'organic' },
+  { id: 'sn-elimination',       label: 'SN/E Reactions',        unitId: 'org-mechanisms' },
+  { id: 'alkene-reactions',     label: 'Alkene Reactions',      unitId: 'org-mechanisms' },
+  { id: 'reaction-mechanisms',  label: 'Reaction Mechanisms',   unitId: 'organic'        },
 ]
 
 // ── Topics ────────────────────────────────────────────────────────────────────
@@ -314,6 +322,14 @@ export const TOPICS: Topic[] = [
   { id: 'organic-naming',      label: 'IUPAC Naming',                sectionId: 'hydrocarbons',      tabs: ['organic-naming', 'naming-problems', 'ref-organic-naming']  },
   { id: 'functional-group-id', label: 'Functional Groups',           sectionId: 'functional-groups', tabs: ['func-groups', 'func-groups-problems', 'ref-func-groups']   },
   { id: 'organic-reactions',   label: 'Common Reactions',            sectionId: 'functional-groups', tabs: ['organic-rxn', 'organic-rxn-problems', 'ref-organic-rxn']   },
+
+  // ── Organic Mechanisms ─────────────────────────────────────────────────────
+  // 'mech-identify' and 'mech-identify-problems' are shared by both topics
+  { id: 'mech-sn-e',   label: 'SN1/SN2/E1/E2',     sectionId: 'sn-elimination',   tabs: ['ref-mech-sn-e',   'mech-identify', 'mech-identify-problems'] },
+  { id: 'mech-alkene', label: 'Alkene Reactions',   sectionId: 'alkene-reactions', tabs: ['ref-mech-alkene', 'mech-identify', 'mech-identify-problems'] },
+
+  // ── Reaction Mechanisms page ──────────────────────────────────────────────
+  { id: 'reaction-mechanisms', label: 'Reaction Mechanisms', sectionId: 'reaction-mechanisms', tabs: ['reaction-mechanisms'] },
 ]
 
 // ── Build-time Maps ───────────────────────────────────────────────────────────

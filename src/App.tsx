@@ -24,6 +24,7 @@ import BuffersPage from './pages/BuffersPage'
 import ThermodynamicsPage from './pages/ThermodynamicsPage'
 import NuclearPage from './pages/NuclearPage'
 import OrganicPage from './pages/OrganicPage'
+import MechanismsPage from './pages/MechanismsPage'
 
 export default function App() {
   return (
@@ -52,6 +53,7 @@ export default function App() {
         <Route path="/thermodynamics"  element={<ThermodynamicsPage />} />
         <Route path="/nuclear"         element={<NuclearPage />} />
         <Route path="/organic"         element={<OrganicPage />} />
+        <Route path="/mechanisms"      element={<MechanismsPage />} />
         <Route path="/test"            element={<TestPage />} />
         <Route path="/print"           element={<PrintPage />} />
         <Route path="*" element={<Navigate to="/table" replace />} />
