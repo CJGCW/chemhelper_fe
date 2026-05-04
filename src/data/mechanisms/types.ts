@@ -72,6 +72,7 @@ export type AnimPrimitiveType =
   | 'single_arrow'       // single-electron movement for radicals
   | 'bond_break'
   | 'bond_form'
+  | 'bond_order_change'  // downgrade/upgrade bond order without breaking it (targetId=bondId, text=new order as string)
   | 'atom_translate'
   | 'charge_appear'
   | 'charge_disappear'
@@ -123,6 +124,7 @@ export interface AtomPosition {
   label?: string
   role?: AtomRole
   stereochem?: 'R' | 'S' | null
+  glow?: boolean
 }
 
 export interface BondPosition {
@@ -146,6 +148,30 @@ export interface EnergyPoint {
   isTransitionState?: boolean
 }
 
+// ── Frame-based mechanism model ────────────────────────────────────────────────
+
+export type ArrowAnchor =
+  | { kind: 'atom'; id: string }
+  | { kind: 'bond'; id: string }
+  | { kind: 'lonePair'; atomId: string; angleDeg: number }
+
+export interface CurvedArrowOverlay {
+  from: ArrowAnchor
+  to: ArrowAnchor
+  style?: 'curved' | 'fishhook'
+  color?: string
+  bow?: number
+}
+
+export interface MechanismFrame {
+  atoms: AtomPosition[]
+  bonds: BondPosition[]
+  arrows: CurvedArrowOverlay[]
+  caption?: string
+  description: string
+  shortLabel: string
+}
+
 // ── Main reaction definition ───────────────────────────────────────────────────
 
 export interface ReactionDef {
@@ -164,8 +190,11 @@ export interface ReactionDef {
   brownRef: string
   relatedReactions: string[]
   tags: string[]
-  scene: MoleculeScene
-  steps: MechanismStep[]
+  // Frame-based model (new)
+  frames?: MechanismFrame[]
+  // Legacy animation model (snE.ts still uses these)
+  scene?: MoleculeScene
+  steps?: MechanismStep[]
   energyDiagram: EnergyPoint[]
   positionDirector?: 'ortho_para' | 'meta' | null
   activatingEffect?: 'strong_activator' | 'weak_activator' | 'weak_deactivator' | 'strong_deactivator' | null
@@ -174,7 +203,7 @@ export interface ReactionDef {
 }
 
 // Lightweight summary without heavy scene/steps/energyDiagram payloads
-export type ReactionSummary = Omit<ReactionDef, 'scene' | 'steps' | 'energyDiagram'>
+export type ReactionSummary = Omit<ReactionDef, 'scene' | 'steps' | 'energyDiagram' | 'frames'>
 
 // ── Filter state ───────────────────────────────────────────────────────────────
 

@@ -8,7 +8,11 @@ export function validateAllReactions(reactions: ReactionDef[]): void {
   if (typeof import.meta !== 'undefined' && (import.meta as any).env?.PROD) return
 
   for (const reaction of reactions) {
+    // Frame-based reactions have no legacy scene/steps to validate
+    if (reaction.frames) continue
+
     const { scene, steps } = reaction
+    if (!scene || !steps) continue
     const atomIds = new Set(scene.atoms.map(a => a.id))
     const bondIds = new Set(scene.bonds.map(b => b.id))
     const w = (msg: string) => console.warn(`[validate:${reaction.id}] ${msg}`)
@@ -56,10 +60,14 @@ export function validateAllReactions(reactions: ReactionDef[]): void {
           if (atomOps.includes(anim.type) && !atomIds.has(anim.targetId)) {
             w(`step ${step.step}: '${anim.type}' references unknown atom '${anim.targetId}'`)
           }
-          // Orphan bond references (allow derived "fromId-toId" new bonds)
-          if (anim.type === 'bond_break' || anim.type === 'bond_style_change') {
+          // Orphan bond references — allow dynamically-formed bonds (fromId-toId pairs where both atoms exist)
+          if (anim.type === 'bond_break' || anim.type === 'bond_style_change' || anim.type === 'bond_order_change') {
             if (!bondIds.has(anim.targetId)) {
-              w(`step ${step.step}: '${anim.type}' references unknown bond '${anim.targetId}'`)
+              const idx = anim.targetId.indexOf('-')
+              const isDynamic = idx > 0 && atomIds.has(anim.targetId.slice(0, idx)) && atomIds.has(anim.targetId.slice(idx + 1))
+              if (!isDynamic) {
+                w(`step ${step.step}: '${anim.type}' references unknown bond '${anim.targetId}'`)
+              }
             }
           }
         }

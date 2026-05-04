@@ -71,7 +71,7 @@ export default function MechanismCard({ reaction, defaultExpanded = false }: Pro
         <motion.span
           animate={{ rotate: expanded ? 90 : 0 }}
           transition={{ duration: 0.15 }}
-          className="mt-0.5 shrink-0 font-mono text-[10px] text-dim"
+          className="mt-0.5 shrink-0 font-mono text-sm text-dim"
         >
           ▶
         </motion.span>
@@ -92,16 +92,16 @@ export default function MechanismCard({ reaction, defaultExpanded = false }: Pro
             )}
           </div>
 
-          <p className="font-sans text-xs text-secondary">{reaction.summary}</p>
+          <p className="font-sans text-sm text-secondary">{reaction.summary}</p>
 
-          <p className="font-mono text-xs">
+          <p className="font-mono text-sm">
             <span className="text-primary">{reaction.reactants}</span>
             <span className="text-dim"> → </span>
             <span className="text-bright font-semibold">{reaction.products}</span>
           </p>
         </div>
 
-        <span className="font-mono text-[9px] text-dim shrink-0 mt-0.5 whitespace-nowrap">
+        <span className="font-mono text-xs text-dim shrink-0 mt-0.5 whitespace-nowrap">
           {reaction.brownRef}
         </span>
       </button>
@@ -118,18 +118,18 @@ export default function MechanismCard({ reaction, defaultExpanded = false }: Pro
           >
             {/* Conditions */}
             <div className="px-4 py-3 border-t border-border">
-              <p className="font-mono text-[9px] text-dim uppercase tracking-widest mb-1.5">Conditions</p>
+              <p className="font-mono text-xs text-dim uppercase tracking-widest mb-1.5">Conditions</p>
               <p className="font-sans text-sm text-secondary">{reaction.conditions}</p>
             </div>
 
             {/* Key Points */}
             {reaction.importantInfo.length > 0 && (
               <div className="px-4 py-3 border-t border-border">
-                <p className="font-mono text-[9px] text-dim uppercase tracking-widest mb-1.5">Key Points</p>
+                <p className="font-mono text-xs text-dim uppercase tracking-widest mb-1.5">Key Points</p>
                 <ul className="flex flex-col gap-1">
                   {reaction.importantInfo.map((info, i) => (
                     <li key={i} className="flex gap-2 items-start">
-                      <span className="font-mono text-[10px] text-dim shrink-0 mt-0.5">•</span>
+                      <span className="font-mono text-sm text-dim shrink-0 mt-0.5">•</span>
                       <span className="font-sans text-sm text-secondary leading-relaxed">{info}</span>
                     </li>
                   ))}
@@ -139,7 +139,7 @@ export default function MechanismCard({ reaction, defaultExpanded = false }: Pro
 
             {/* Mechanism animation player */}
             <div className="px-4 py-3 border-t border-border">
-              <p className="font-mono text-[9px] text-dim uppercase tracking-widest mb-2">Mechanism</p>
+              <p className="font-mono text-xs text-dim uppercase tracking-widest mb-2">Mechanism</p>
               <MechanismPlayer reaction={reaction} />
             </div>
 
@@ -147,18 +147,18 @@ export default function MechanismCard({ reaction, defaultExpanded = false }: Pro
             {(reaction.rearrangementPossible || reaction.reversible || reaction.positionDirector || reaction.activatingEffect) && (
               <div className="px-4 py-2 border-t border-border flex flex-wrap gap-3 text-dim">
                 {reaction.rearrangementPossible && (
-                  <span className="font-mono text-[10px]">⚠ Rearrangement possible</span>
+                  <span className="font-mono text-xs">⚠ Rearrangement possible</span>
                 )}
                 {reaction.reversible && (
-                  <span className="font-mono text-[10px]">↔ Reversible</span>
+                  <span className="font-mono text-xs">↔ Reversible</span>
                 )}
                 {reaction.positionDirector && (
-                  <span className="font-mono text-[10px]">
+                  <span className="font-mono text-xs">
                     Director: {reaction.positionDirector === 'ortho_para' ? 'ortho/para' : 'meta'}
                   </span>
                 )}
                 {reaction.activatingEffect && (
-                  <span className="font-mono text-[10px]">{reaction.activatingEffect.replace(/_/g, ' ')}</span>
+                  <span className="font-mono text-xs">{reaction.activatingEffect.replace(/_/g, ' ')}</span>
                 )}
               </div>
             )}
@@ -166,11 +166,11 @@ export default function MechanismCard({ reaction, defaultExpanded = false }: Pro
             {/* Related reactions */}
             {reaction.relatedReactions.length > 0 && (
               <div className="px-4 py-2 border-t border-border flex flex-wrap items-center gap-2">
-                <span className="font-mono text-[10px] text-dim">Related:</span>
+                <span className="font-mono text-xs text-dim">Related:</span>
                 {reaction.relatedReactions.map(id => (
                   <span
                     key={id}
-                    className="font-mono text-[10px] px-1.5 py-0.5 rounded-sm border border-border text-dim"
+                    className="font-mono text-xs px-2 py-0.5 rounded-sm border border-border text-dim"
                   >
                     {id}
                   </span>

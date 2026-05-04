@@ -1,12 +1,19 @@
 import type { ReactionDef, MechanismFilter, MechanismCategory } from './types'
 import { SN_E_REACTIONS } from './snE'
+import { ALKENE_REACTIONS } from './alkenes'
+import { ALKYNE_REACTIONS } from './alkynes'
+import { AROMATIC_REACTIONS } from './aromatics'
+import { ALCOHOL_ETHER_REACTIONS } from './alcoholsEthers'
 import { validateAllReactions } from './validate'
 export { CATEGORY_LABELS, CATEGORY_ORDER } from './types'
 export type { ReactionDef, ReactionSummary, MechanismFilter, MechanismCategory, ReactionType, Regiochemistry, Stereochemistry }  from './types'
 
 export const ALL_REACTIONS: ReactionDef[] = [
   ...SN_E_REACTIONS,
-  // Future: ...ALKENE_REACTIONS, ...ALKYNE_REACTIONS, ...AROMATIC_REACTIONS, etc.
+  ...ALKENE_REACTIONS,
+  ...ALKYNE_REACTIONS,
+  ...AROMATIC_REACTIONS,
+  ...ALCOHOL_ETHER_REACTIONS,
 ]
 
 // Runs in dev mode at module load — console-warns on coordinate drift, orphan refs, overlaps, etc.

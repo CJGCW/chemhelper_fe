@@ -1,25 +1,32 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { motion, AnimatePresence, useAnimate } from 'framer-motion'
-import type { ReactionDef, AnimPrimitive, AtomPosition } from '../../data/mechanisms/types'
+import type {
+  ReactionDef, AnimPrimitive, AtomPosition, MoleculeScene, MechanismStep,
+  CurvedArrowOverlay, ArrowAnchor, MechanismFrame, BondPosition,
+} from '../../data/mechanisms/types'
 
 interface Props {
   reaction: ReactionDef
   compact?: boolean
 }
 
-// ── Scene state accumulator ────────────────────────────────────────────────────
+// ── Scene state accumulator (legacy path) ─────────────────────────────────────
 
 interface ComputedScene {
   atoms: AtomPosition[]
   bonds: Array<{ id: string; from: string; to: string; order: 1 | 2 | 3; style?: string }>
-  newBonds: Array<{ fromId: string; toId: string; order: 1 | 2 | 3; key: string }>
+  newBonds: Array<{ fromId: string; toId: string; order: 1 | 2 | 3; style?: BondStyle; key: string }>
 }
 
 type BondStyle = 'solid' | 'dashed' | 'wedge' | 'dash-wedge'
 
-function computeSceneAtStep(reaction: ReactionDef, upToStep: number): ComputedScene {
+function computeSceneAtStep(
+  scene: MoleculeScene,
+  steps: MechanismStep[],
+  upToStep: number
+): ComputedScene {
   const atomMap = new Map<string, AtomPosition>(
-    reaction.scene.atoms.map(a => [a.id, { ...a }])
+    scene.atoms.map(a => [a.id, { ...a }])
   )
   const brokenBondIds   = new Set<string>()
   const upgradedBonds   = new Map<string, 1 | 2 | 3>()
@@ -27,13 +34,12 @@ function computeSceneAtStep(reaction: ReactionDef, upToStep: number): ComputedSc
   const newBonds: Array<{ fromId: string; toId: string; order: 1 | 2 | 3; key: string }> = []
 
   for (let i = 0; i < upToStep; i++) {
-    const step = reaction.steps[i]
+    const step = steps[i]
     if (!step) break
     for (const anim of step.animations) {
       if (anim.type === 'bond_break' && anim.targetId) {
         brokenBondIds.add(anim.targetId)
       }
-      // Part 5: ID-based atom_translate, distance fallback for legacy data
       if (anim.type === 'atom_translate' && anim.to) {
         if (anim.targetId) {
           const atom = atomMap.get(anim.targetId)
@@ -41,7 +47,7 @@ function computeSceneAtStep(reaction: ReactionDef, upToStep: number): ComputedSc
             if (anim.from) {
               const drift = Math.hypot(atom.x - anim.from.x, atom.y - anim.from.y)
               if (drift > 5) {
-                console.warn(`[mechanism] atom_translate drift ${drift.toFixed(1)}px on '${anim.targetId}' in '${reaction.id}' — from declared (${anim.from.x},${anim.from.y}) vs actual (${atom.x},${atom.y})`)
+                console.warn(`[mechanism] atom_translate drift ${drift.toFixed(1)}px on '${anim.targetId}'`)
               }
             }
             atom.x = anim.to.x
@@ -60,7 +66,7 @@ function computeSceneAtStep(reaction: ReactionDef, upToStep: number): ComputedSc
         }
       }
       if (anim.type === 'bond_form' && anim.targetId) {
-        const isExisting = reaction.scene.bonds.some(b => b.id === anim.targetId)
+        const isExisting = scene.bonds.some(b => b.id === anim.targetId)
         if (isExisting) {
           const cur = upgradedBonds.get(anim.targetId) ?? 1
           upgradedBonds.set(anim.targetId, Math.min(3, cur + 1) as 1 | 2 | 3)
@@ -75,6 +81,10 @@ function computeSceneAtStep(reaction: ReactionDef, upToStep: number): ComputedSc
           }
         }
       }
+      if (anim.type === 'bond_order_change' && anim.targetId && anim.text) {
+        const newOrder = Math.max(1, Math.min(3, parseInt(anim.text, 10))) as 1 | 2 | 3
+        upgradedBonds.set(anim.targetId, newOrder)
+      }
       if (anim.type === 'charge_appear' && anim.targetId && anim.text) {
         const atom = atomMap.get(anim.targetId)
         if (atom) atom.charge = anim.text
@@ -87,16 +97,15 @@ function computeSceneAtStep(reaction: ReactionDef, upToStep: number): ComputedSc
         const atom = atomMap.get(anim.targetId)
         if (atom) atom.symbol = anim.text
       }
-      // Part 2: bond style changes persisted in committed state
       if (anim.type === 'bond_style_change' && anim.targetId && anim.text) {
         bondStyleOverrides.set(anim.targetId, anim.text as BondStyle)
       }
       if (anim.type === 'invert_stereocenter' && anim.targetId) {
-        for (const bond of reaction.scene.bonds) {
+        for (const bond of scene.bonds) {
           if (bond.from !== anim.targetId && bond.to !== anim.targetId) continue
           if (brokenBondIds.has(bond.id)) continue
           const cur = (bondStyleOverrides.get(bond.id) ?? bond.style) as BondStyle | undefined
-          if (cur === 'wedge')      bondStyleOverrides.set(bond.id, 'dash-wedge')
+          if (cur === 'wedge')           bondStyleOverrides.set(bond.id, 'dash-wedge')
           else if (cur === 'dash-wedge') bondStyleOverrides.set(bond.id, 'wedge')
         }
       }
@@ -105,14 +114,16 @@ function computeSceneAtStep(reaction: ReactionDef, upToStep: number): ComputedSc
 
   return {
     atoms: [...atomMap.values()],
-    bonds: reaction.scene.bonds
+    bonds: scene.bonds
       .filter(b => !brokenBondIds.has(b.id))
       .map(b => ({
         ...b,
         order: (upgradedBonds.get(b.id) ?? b.order) as 1 | 2 | 3,
         style: bondStyleOverrides.get(b.id) ?? b.style,
       })),
-    newBonds,
+    newBonds: newBonds
+      .filter(nb => !brokenBondIds.has(nb.key))
+      .map(nb => ({ ...nb, style: bondStyleOverrides.get(nb.key) })),
   }
 }
 
@@ -122,8 +133,6 @@ function getAtomById(atoms: AtomPosition[], id: string) {
   return atoms.find(a => a.id === id)
 }
 
-// Returns the label offset direction opposite to the atom's net bond direction.
-// Prevents the label from rendering on the same side as the bond line.
 function labelOffset(
   atom: AtomPosition,
   atoms: AtomPosition[],
@@ -213,8 +222,6 @@ function BondSegments({ from, to, order, style }: {
   </>
 }
 
-// Animated version — used when one or both endpoint atoms are translating.
-// Wedge/dash-wedge bonds render at their final positions (they rarely translate).
 function AnimatedBondSegments({ from, fromTarget, to, toTarget, order, style, transition }: {
   from: { x: number; y: number }
   fromTarget?: { x: number; y: number }
@@ -224,7 +231,6 @@ function AnimatedBondSegments({ from, fromTarget, to, toTarget, order, style, tr
   style?: string
   transition: object
 }) {
-  // Wedge/dash-wedge: render statically at final position (these bond types rarely translate)
   if (style === 'wedge') {
     return <WedgeBond from={fromTarget ?? from} to={toTarget ?? to} />
   }
@@ -286,7 +292,7 @@ function AnimatedBondSegments({ from, fromTarget, to, toTarget, order, style, tr
   </>
 }
 
-// ── Animation primitive renderers ──────────────────────────────────────────────
+// ── Animation primitive renderers (legacy path) ────────────────────────────────
 
 function CurvedArrow({ prim, playing }: { prim: AnimPrimitive; playing: boolean }) {
   const [scope, animate] = useAnimate()
@@ -355,7 +361,7 @@ function StepLabelOverlay({ prim, playing }: { prim: AnimPrimitive; playing: boo
   return (
     <motion.text
       x="50%" y="95%" textAnchor="middle"
-      fill="var(--c-halogen)" fontFamily="monospace" fontSize={11}
+      fill="var(--c-halogen)" fontFamily="monospace" fontSize={13}
       initial={{ opacity: 0 }}
       animate={playing ? { opacity: 1 } : { opacity: 0 }}
       transition={{ duration: 0.3, delay: prim.delay ?? 0 }}
@@ -459,8 +465,8 @@ function EnergyDiagram({ points }: { points: { label: string; energy: number; is
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: W }}>
       <line x1={pad.left} y1={pad.top} x2={pad.left} y2={pad.top + innerH} stroke="rgba(var(--overlay),0.3)" strokeWidth={1} />
       <line x1={pad.left} y1={pad.top + innerH} x2={pad.left + innerW} y2={pad.top + innerH} stroke="rgba(var(--overlay),0.3)" strokeWidth={1} />
-      <text transform={`translate(10,${pad.top + innerH / 2}) rotate(-90)`} textAnchor="middle" fontSize={8} fill="rgba(var(--color-primary),0.5)" fontFamily="monospace">Energy</text>
-      <text x={pad.left + innerW / 2} y={H - 4} textAnchor="middle" fontSize={8} fill="rgba(var(--color-primary),0.5)" fontFamily="monospace">Reaction coordinate</text>
+      <text transform={`translate(10,${pad.top + innerH / 2}) rotate(-90)`} textAnchor="middle" fontSize={10} fill="rgba(var(--color-primary),0.5)" fontFamily="monospace">Energy</text>
+      <text x={pad.left + innerW / 2} y={H - 4} textAnchor="middle" fontSize={10} fill="rgba(var(--color-primary),0.5)" fontFamily="monospace">Reaction coordinate</text>
       <motion.path d={d} fill="none" stroke="rgb(var(--color-primary))" strokeWidth={1.5} strokeOpacity={0.6}
         initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.2, ease: 'easeInOut' }} />
       {points.map((p, i) => {
@@ -469,7 +475,7 @@ function EnergyDiagram({ points }: { points: { label: string; energy: number; is
         return (
           <g key={i}>
             <circle cx={cx} cy={cy} r={4} fill={dotColor} />
-            <text x={cx} y={cy - 8} textAnchor="middle" fontSize={7} fill={dotColor} fontFamily="monospace">{p.label}</text>
+            <text x={cx} y={cy - 8} textAnchor="middle" fontSize={9} fill={dotColor} fontFamily="monospace">{p.label}</text>
           </g>
         )
       })}
@@ -477,15 +483,290 @@ function EnergyDiagram({ points }: { points: { label: string; energy: number; is
   )
 }
 
-// ── Main component ─────────────────────────────────────────────────────────────
+// ── Frame-based player ─────────────────────────────────────────────────────────
 
-export default function MechanismPlayer({ reaction, compact = false }: Props) {
+function resolveAnchor(
+  anchor: ArrowAnchor,
+  atoms: AtomPosition[],
+  bonds: BondPosition[],
+): { x: number; y: number } | null {
+  if (anchor.kind === 'atom') {
+    const atom = atoms.find(a => a.id === anchor.id)
+    return atom ? { x: atom.x, y: atom.y } : null
+  }
+  if (anchor.kind === 'bond') {
+    const bond = bonds.find(b => b.id === anchor.id)
+    if (!bond) return null
+    const fa = atoms.find(a => a.id === bond.from)
+    const ta = atoms.find(a => a.id === bond.to)
+    if (!fa || !ta) return null
+    return { x: (fa.x + ta.x) / 2, y: (fa.y + ta.y) / 2 }
+  }
+  if (anchor.kind === 'lonePair') {
+    const atom = atoms.find(a => a.id === anchor.atomId)
+    if (!atom) return null
+    const rad = anchor.angleDeg * Math.PI / 180
+    return { x: atom.x + Math.cos(rad) * 22, y: atom.y + Math.sin(rad) * 22 }
+  }
+  return null
+}
+
+function FrameArrow({ arrow, atoms, bonds }: {
+  arrow: CurvedArrowOverlay
+  atoms: AtomPosition[]
+  bonds: BondPosition[]
+}) {
+  const from = resolveAnchor(arrow.from, atoms, bonds)
+  const to   = resolveAnchor(arrow.to,   atoms, bonds)
+  if (!from || !to) return null
+
+  const color = arrow.color ?? 'var(--c-alkali)'
+  const bowSign = arrow.bow ?? -1
+
+  const mx = (from.x + to.x) / 2, my = (from.y + to.y) / 2
+  const dx = to.x - from.x,       dy = to.y - from.y
+  const len = Math.sqrt(dx * dx + dy * dy)
+  const nx = len > 0 ? -dy / len : 0
+  const ny = len > 0 ?  dx / len : 0
+  const bowDist = Math.min(len * 0.38, 65) * bowSign
+  const ctrl = { x: mx + nx * bowDist, y: my + ny * bowDist }
+
+  const OFFSET = 18
+  const shorten = (pt: { x: number; y: number }, toward: { x: number; y: number }) => {
+    const dx2 = toward.x - pt.x, dy2 = toward.y - pt.y
+    const l2 = Math.sqrt(dx2 * dx2 + dy2 * dy2)
+    if (l2 < OFFSET * 2) return pt
+    return { x: pt.x + (dx2 / l2) * OFFSET, y: pt.y + (dy2 / l2) * OFFSET }
+  }
+
+  const fromS = shorten(from, ctrl)
+  const toS   = shorten(to,   ctrl)
+  const angle = Math.atan2(to.y - ctrl.y, to.x - ctrl.x) * (180 / Math.PI)
+
+  const path = `M ${fromS.x} ${fromS.y} Q ${ctrl.x} ${ctrl.y} ${toS.x} ${toS.y}`
+
+  if (arrow.style === 'fishhook') {
+    return (
+      <g>
+        <path d={path} fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" />
+        <polygon points="0,-3 6,0 0,0" fill={color}
+          transform={`translate(${toS.x},${toS.y}) rotate(${angle})`} />
+      </g>
+    )
+  }
+
+  return (
+    <g>
+      <path d={path} fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" />
+      <polygon points="0,-4 7,0 0,4" fill={color}
+        transform={`translate(${toS.x},${toS.y}) rotate(${angle})`} />
+    </g>
+  )
+}
+
+function FrameAtom({ atom, bonds, allAtoms, reactionId }: {
+  atom: AtomPosition
+  bonds: BondPosition[]
+  allAtoms: AtomPosition[]
+  reactionId: string
+}) {
+  const off = atom.label ? labelOffset(atom, allAtoms, bonds) : { dx: 0, dy: 0 }
+  return (
+    <g key={`${reactionId}:${atom.id}`}>
+      {atom.glow && (
+        <circle cx={atom.x} cy={atom.y} r={22} fill="var(--c-alkali)" opacity={0.35} />
+      )}
+      <circle
+        cx={atom.x} cy={atom.y} r={16}
+        fill="rgb(var(--color-surface))"
+        stroke="rgba(var(--overlay),0.2)" strokeWidth={1.5}
+      />
+      <text
+        x={atom.x} y={atom.y}
+        textAnchor="middle" dominantBaseline="central"
+        fill="rgb(var(--color-primary))"
+        fontFamily="monospace" fontSize={14} fontWeight={600}
+      >
+        {atom.symbol}
+      </text>
+      {atom.charge && (
+        <text x={atom.x + 11} y={atom.y - 11} fill="var(--c-halogen)" fontFamily="monospace" fontSize={11}>
+          {atom.charge}
+        </text>
+      )}
+      {atom.label && (
+        <text
+          x={atom.x + off.dx} y={atom.y + off.dy}
+          textAnchor="middle"
+          fill="rgb(var(--color-primary))" fillOpacity={0.45}
+          fontFamily="monospace" fontSize={10}
+        >
+          {atom.label}
+        </text>
+      )}
+    </g>
+  )
+}
+
+function FrameCanvas({ frame, reactionId }: { frame: MechanismFrame; reactionId: string }) {
+  return (
+    <>
+      {frame.bonds.map(bond => {
+        const fa = frame.atoms.find(a => a.id === bond.from)
+        const ta = frame.atoms.find(a => a.id === bond.to)
+        if (!fa || !ta) return null
+        return <g key={bond.id}><BondSegments from={fa} to={ta} order={bond.order} style={bond.style} /></g>
+      })}
+
+      {frame.arrows.map((arrow, i) => (
+        <FrameArrow key={i} arrow={arrow} atoms={frame.atoms} bonds={frame.bonds} />
+      ))}
+
+      {frame.atoms.map(atom => (
+        <FrameAtom key={atom.id} atom={atom} bonds={frame.bonds} allAtoms={frame.atoms} reactionId={reactionId} />
+      ))}
+    </>
+  )
+}
+
+function FramePlayer({ reaction, compact }: { reaction: ReactionDef; compact: boolean }) {
+  const frames = reaction.frames!
+  const [frameIdx, setFrameIdx] = useState(0)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const frame = frames[frameIdx]
+  const total = frames.length
+
+  useEffect(() => {
+    if (!isPlaying) return
+    timerRef.current = setTimeout(() => {
+      if (frameIdx < total - 1) {
+        setFrameIdx(f => f + 1)
+      } else {
+        setIsPlaying(false)
+      }
+    }, 1800)
+    return () => { if (timerRef.current) clearTimeout(timerRef.current) }
+  }, [isPlaying, frameIdx, total])
+
+  function prev() {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    setIsPlaying(false)
+    setFrameIdx(f => Math.max(0, f - 1))
+  }
+
+  function next() {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    setIsPlaying(false)
+    setFrameIdx(f => Math.min(total - 1, f + 1))
+  }
+
+  function togglePlay() {
+    if (isPlaying) {
+      setIsPlaying(false)
+      if (timerRef.current) clearTimeout(timerRef.current)
+    } else {
+      if (frameIdx >= total - 1) setFrameIdx(0)
+      setIsPlaying(true)
+    }
+  }
+
+  const activeTint   = 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))'
+  const activeBorder = 'color-mix(in srgb, var(--c-halogen) 30%, transparent)'
+  const playBg       = 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))'
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="rounded-sm border border-border overflow-hidden bg-[rgb(var(--color-surface))]">
+        <AnimatePresence mode="wait">
+          <motion.svg
+            key={`${reaction.id}-f${frameIdx}`}
+            viewBox="0 0 700 320"
+            style={{ width: '100%', display: 'block' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+          >
+            <FrameCanvas frame={frame} reactionId={reaction.id} />
+          </motion.svg>
+        </AnimatePresence>
+      </div>
+
+      {/* Controls */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <button onClick={prev} disabled={frameIdx === 0}
+          className="rounded-sm border border-border font-sans text-sm px-3 py-1 disabled:opacity-30"
+        >
+          ← Prev
+        </button>
+        <button onClick={togglePlay}
+          className="rounded-sm border border-border font-sans text-sm px-3 py-1"
+          style={{ background: playBg }}
+        >
+          {isPlaying ? '❚❚ Pause' : (frameIdx >= total - 1 ? '↺ Replay' : '▶ Play')}
+        </button>
+        <button onClick={next} disabled={frameIdx >= total - 1}
+          className="rounded-sm border border-border font-sans text-sm px-3 py-1 disabled:opacity-30"
+        >
+          Next →
+        </button>
+
+        {frames.map((f, i) => (
+          <button
+            key={i}
+            onClick={() => { setIsPlaying(false); if (timerRef.current) clearTimeout(timerRef.current); setFrameIdx(i) }}
+            className="px-2 py-0.5 rounded-full border font-mono text-xs"
+            style={i === frameIdx
+              ? { background: activeTint, borderColor: activeBorder, color: 'var(--c-halogen)' }
+              : { borderColor: 'rgb(var(--color-border))' }
+            }
+          >
+            {f.shortLabel}
+          </button>
+        ))}
+
+        <span className="ml-auto font-mono text-sm opacity-50">{frameIdx + 1}/{total}</span>
+      </div>
+
+      {/* Frame description */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={`${reaction.id}-desc-${frameIdx}`}
+          initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.2 }}
+          className="rounded-sm border border-border p-3 bg-[rgb(var(--color-raised))]"
+        >
+          {frame.caption && (
+            <div className="font-mono text-xs opacity-50 mb-1">{frame.caption}</div>
+          )}
+          <div className="font-sans text-sm text-secondary">{frame.description}</div>
+        </motion.div>
+      </AnimatePresence>
+
+      {!compact && reaction.energyDiagram.length >= 2 && (
+        <div className="rounded-sm border border-border p-2 bg-[rgb(var(--color-raised))]">
+          <EnergyDiagram points={reaction.energyDiagram} />
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Legacy animation player ────────────────────────────────────────────────────
+
+function LegacyPlayer({ reaction, scene, steps, compact }: {
+  reaction: ReactionDef
+  scene: MoleculeScene
+  steps: MechanismStep[]
+  compact: boolean
+}) {
   const [currentStep, setCurrentStep] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [allStepsPlayed, setAllStepsPlayed] = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const steps = reaction.steps
   const step = steps[currentStep]
   const totalSteps = steps.length
 
@@ -493,22 +774,18 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
     ? Math.max(0, ...step.animations.map(a => (a.delay ?? 0) + (a.duration ?? 0.6))) * 1000
     : 0
 
-  // Scene state at the START of currentStep (before its animations)
   const preScene = useMemo(
-    () => computeSceneAtStep(reaction, currentStep),
-    [reaction, currentStep]
+    () => computeSceneAtStep(scene, steps, currentStep),
+    [scene, steps, currentStep]
   )
 
-  // Scene state AFTER all steps (final product)
   const finalScene = useMemo(
-    () => computeSceneAtStep(reaction, totalSteps),
-    [reaction, totalSteps]
+    () => computeSceneAtStep(scene, steps, totalSteps),
+    [scene, steps, totalSteps]
   )
 
-  // Which scene to display as the committed base
   const baseScene = allStepsPlayed && !playing ? finalScene : preScene
 
-  // Which atoms are translating in the current step — ID-based lookup with distance fallback
   const translateTargets = useMemo(() => {
     const map = new Map<string, { x: number; y: number; duration: number; delay: number }>()
     if (!step) return map
@@ -516,7 +793,6 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
       if (anim.type !== 'atom_translate' || !anim.to) continue
       let atomId: string | undefined
       if (anim.targetId) {
-        // ID-based: direct lookup
         const atom = preScene.atoms.find(a => a.id === anim.targetId)
         if (atom) {
           if (anim.from) {
@@ -526,7 +802,6 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
           atomId = anim.targetId
         }
       } else if (anim.from) {
-        // Distance-based fallback for legacy data without targetId
         let minDist = Infinity, closestId = ''
         for (const atom of preScene.atoms) {
           const d = Math.hypot(atom.x - anim.from.x, atom.y - anim.from.y)
@@ -541,7 +816,6 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
     return map
   }, [step, preScene.atoms])
 
-  // Which bonds change style in the current step (bond_style_change / invert_stereocenter)
   const styleChangesInStep = useMemo(() => {
     const map = new Map<string, { newStyle: BondStyle; delay: number; duration: number }>()
     if (!step) return map
@@ -563,14 +837,12 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
     return map
   }, [step, preScene.bonds])
 
-  // Atoms whose static charge should be suppressed during animation (charge_disappear handles them)
   const suppressChargeIds = useMemo(() => new Set(
     (step?.animations ?? [])
       .filter(a => a.type === 'charge_disappear' && a.targetId)
       .map(a => a.targetId!)
   ), [step])
 
-  // Which bonds break in the current step
   const breakingBondMap = useMemo(() => {
     const map = new Map<string, { delay: number; duration: number }>()
     if (!step) return map
@@ -582,7 +854,6 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
     return map
   }, [step])
 
-  // Which bonds form in the current step
   const formingBondsInStep = useMemo(() => {
     if (!step) return []
     const result: Array<{
@@ -591,9 +862,9 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
     }> = []
     for (const anim of step.animations) {
       if (anim.type !== 'bond_form' || !anim.targetId) continue
-      const isExistingBond = reaction.scene.bonds.some(b => b.id === anim.targetId)
+      const isExistingBond = scene.bonds.some(b => b.id === anim.targetId)
       if (isExistingBond) {
-        const bond = reaction.scene.bonds.find(b => b.id === anim.targetId)!
+        const bond = scene.bonds.find(b => b.id === anim.targetId)!
         result.push({ fromId: bond.from, toId: bond.to, order: 2, delay: anim.delay ?? 0, isUpgrade: true, key: anim.targetId })
       } else {
         const idx = anim.targetId.indexOf('-')
@@ -603,7 +874,7 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
       }
     }
     return result
-  }, [step, reaction.scene.bonds])
+  }, [step, scene.bonds])
 
   useEffect(() => {
     if (!playing) return
@@ -636,17 +907,15 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
     setCurrentStep(i)
   }
 
-  const activeTint  = 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))'
+  const activeTint   = 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))'
   const activeBorder = 'color-mix(in srgb, var(--c-halogen) 30%, transparent)'
-  const playBg      = 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))'
+  const playBg       = 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))'
 
   return (
     <div className="flex flex-col gap-3">
-      {/* SVG Canvas */}
       <div className="rounded-sm border border-border overflow-hidden bg-[rgb(var(--color-surface))]">
-        <svg viewBox={`0 0 ${reaction.scene.width} ${reaction.scene.height}`} style={{ width: '100%', display: 'block' }}>
+        <svg viewBox={`0 0 ${scene.width} ${scene.height}`} style={{ width: '100%', display: 'block' }}>
 
-          {/* ── Bonds ── */}
           {baseScene.bonds.map(bond => {
             const fromAtom = baseScene.atoms.find(a => a.id === bond.from)
             const toAtom   = baseScene.atoms.find(a => a.id === bond.to)
@@ -668,7 +937,6 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
               ease:     'easeInOut' as const,
             }
 
-            // Style change (invert_stereocenter / bond_style_change): crossfade old→new
             if (styleChange) {
               return (
                 <g key={bond.id}>
@@ -728,19 +996,17 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
             )
           })}
 
-          {/* Committed new bonds from previous steps */}
           {baseScene.newBonds.map(nb => {
             const fromAtom = baseScene.atoms.find(a => a.id === nb.fromId)
             const toAtom   = baseScene.atoms.find(a => a.id === nb.toId)
             if (!fromAtom || !toAtom) return null
             return (
               <g key={nb.key}>
-                <BondSegments from={fromAtom} to={toAtom} order={nb.order} />
+                <BondSegments from={fromAtom} to={toAtom} order={nb.order} style={nb.style} />
               </g>
             )
           })}
 
-          {/* New bonds forming in current step — endpoint follows the moving atom */}
           {!allStepsPlayed && formingBondsInStep.filter(fb => !fb.isUpgrade).map(fb => {
             const fromAtom = preScene.atoms.find(a => a.id === fb.fromId)
             const toAtom   = preScene.atoms.find(a => a.id === fb.toId)
@@ -748,17 +1014,12 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
 
             const fromTranslate = translateTargets.get(fb.fromId)
             const toTranslate   = translateTargets.get(fb.toId)
-
-            // Endpoint positions: use translate target if the atom is moving, else current
             const endX = fromTranslate?.x ?? fromAtom.x
             const endY = fromTranslate?.y ?? fromAtom.y
             const ancX = toTranslate?.x   ?? toAtom.x
             const ancY = toTranslate?.y   ?? toAtom.y
 
             if (fromTranslate) {
-              // Bond endpoint animates in sync with the nucleophile translate.
-              // Opacity fades in during the second half of the move so the bond
-              // appears as the nucleophile approaches the carbon.
               const dur = fromTranslate.duration
               const del = fromTranslate.delay
               return (
@@ -780,7 +1041,6 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
               )
             }
 
-            // No translate — both atoms stationary, just fade in
             return (
               <motion.g
                 key={fb.key}
@@ -793,12 +1053,10 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
             )
           })}
 
-          {/* Arrow-push overlay (curved arrows, charges, labels) */}
           {step && !allStepsPlayed && (
             <AnimOverlay animations={step.animations} playing={playing} atoms={preScene.atoms} />
           )}
 
-          {/* ── Atoms ── */}
           {baseScene.atoms.map(atom => {
             const translate   = !allStepsPlayed ? translateTargets.get(atom.id) : undefined
             const isAnimating = playing && !!translate
@@ -810,8 +1068,6 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
               ease:     'easeInOut' as const,
             }
 
-            // Label offset: opposite the net bond direction so it never sits on top of a bond line.
-            // Combine committed bonds + newly formed bonds from previous steps.
             const allBondsForLabel = [
               ...baseScene.bonds,
               ...baseScene.newBonds.map(nb => ({ from: nb.fromId, to: nb.toId })),
@@ -821,13 +1077,11 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
               : { dx: 0, dy: 0 }
 
             return (
-              // Compound key prevents cross-reaction drift when reactions share atom IDs (br, c, h1…)
               <g key={`${reaction.id}:${atom.id}`}>
                 {isAnimating ? (
-                  // Moving atom — mount at current position, animate to translate target
                   <>
                     <motion.circle
-                      r={14}
+                      r={16}
                       fill="rgb(var(--color-surface))"
                       stroke="rgba(var(--overlay),0.2)" strokeWidth={1.5}
                       initial={{ cx: atom.x, cy: atom.y }}
@@ -837,7 +1091,7 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
                     <motion.text
                       textAnchor="middle" dominantBaseline="central"
                       fill="rgb(var(--color-primary))"
-                      fontFamily="monospace" fontSize={12} fontWeight={600}
+                      fontFamily="monospace" fontSize={14} fontWeight={600}
                       initial={{ x: atom.x, y: atom.y }}
                       animate={{ x: translate!.x, y: translate!.y }}
                       transition={moveTrans}
@@ -846,9 +1100,9 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
                     </motion.text>
                     {showCharge && (
                       <motion.text
-                        fill="var(--c-halogen)" fontFamily="monospace" fontSize={9}
-                        initial={{ x: atom.x + 10, y: atom.y - 10 }}
-                        animate={{ x: translate!.x + 10, y: translate!.y - 10 }}
+                        fill="var(--c-halogen)" fontFamily="monospace" fontSize={11}
+                        initial={{ x: atom.x + 11, y: atom.y - 11 }}
+                        animate={{ x: translate!.x + 11, y: translate!.y - 11 }}
                         transition={moveTrans}
                       >
                         {atom.charge}
@@ -858,7 +1112,7 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
                       <motion.text
                         textAnchor="middle"
                         fill="rgb(var(--color-primary))" fillOpacity={0.45}
-                        fontFamily="monospace" fontSize={8}
+                        fontFamily="monospace" fontSize={10}
                         initial={{ x: atom.x + off.dx, y: atom.y + off.dy }}
                         animate={{ x: translate!.x + off.dx, y: translate!.y + off.dy }}
                         transition={moveTrans}
@@ -868,10 +1122,9 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
                     )}
                   </>
                 ) : (
-                  // Static atom — plain SVG, cannot animate under any circumstance
                   <>
                     <circle
-                      cx={atom.x} cy={atom.y} r={14}
+                      cx={atom.x} cy={atom.y} r={16}
                       fill="rgb(var(--color-surface))"
                       stroke="rgba(var(--overlay),0.2)" strokeWidth={1.5}
                     />
@@ -879,14 +1132,14 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
                       x={atom.x} y={atom.y}
                       textAnchor="middle" dominantBaseline="central"
                       fill="rgb(var(--color-primary))"
-                      fontFamily="monospace" fontSize={12} fontWeight={600}
+                      fontFamily="monospace" fontSize={14} fontWeight={600}
                     >
                       {atom.symbol}
                     </text>
                     {showCharge && (
                       <text
-                        x={atom.x + 10} y={atom.y - 10}
-                        fill="var(--c-halogen)" fontFamily="monospace" fontSize={9}
+                        x={atom.x + 11} y={atom.y - 11}
+                        fill="var(--c-halogen)" fontFamily="monospace" fontSize={11}
                       >
                         {atom.charge}
                       </text>
@@ -896,7 +1149,7 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
                         x={atom.x + off.dx} y={atom.y + off.dy}
                         textAnchor="middle"
                         fill="rgb(var(--color-primary))" fillOpacity={0.45}
-                        fontFamily="monospace" fontSize={8}
+                        fontFamily="monospace" fontSize={10}
                       >
                         {atom.label}
                       </text>
@@ -909,7 +1162,6 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
         </svg>
       </div>
 
-      {/* Playback controls */}
       <div className="flex items-center gap-2 flex-wrap">
         <button
           onClick={handlePlay}
@@ -931,12 +1183,11 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
             </button>
           )
         })}
-        <span className="ml-auto font-mono text-xs opacity-50">
+        <span className="ml-auto font-mono text-sm opacity-50">
           Step {currentStep + 1}/{totalSteps}
         </span>
       </div>
 
-      {/* Step description */}
       <AnimatePresence mode="wait">
         {step && (
           <motion.div
@@ -953,7 +1204,6 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
         )}
       </AnimatePresence>
 
-      {/* Result panel — appears after full playthrough */}
       <AnimatePresence>
         {allStepsPlayed && !playing && (
           <motion.div
@@ -966,7 +1216,7 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
               borderColor: 'color-mix(in srgb, var(--c-noble) 30%, transparent)',
             }}
           >
-            <span className="font-mono text-[10px] tracking-widest uppercase opacity-50">Result</span>
+            <span className="font-mono text-xs tracking-widest uppercase opacity-50">Result</span>
             <span className="font-mono text-sm text-bright">
               {reaction.reactants} → {reaction.products}
             </span>
@@ -974,7 +1224,6 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
         )}
       </AnimatePresence>
 
-      {/* Energy diagram */}
       {!compact && reaction.energyDiagram.length >= 2 && (
         <div className="rounded-sm border border-border p-2 bg-[rgb(var(--color-raised))]">
           <EnergyDiagram points={reaction.energyDiagram} />
@@ -982,4 +1231,16 @@ export default function MechanismPlayer({ reaction, compact = false }: Props) {
       )}
     </div>
   )
+}
+
+// ── Main component ─────────────────────────────────────────────────────────────
+
+export default function MechanismPlayer({ reaction, compact = false }: Props) {
+  if (reaction.frames && reaction.frames.length > 0) {
+    return <FramePlayer reaction={reaction} compact={compact} />
+  }
+
+  if (!reaction.scene || !reaction.steps) return null
+
+  return <LegacyPlayer reaction={reaction} scene={reaction.scene} steps={reaction.steps} compact={compact} />
 }
