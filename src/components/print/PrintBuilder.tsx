@@ -127,14 +127,35 @@ export const ALL_PRINT_TOPICS: PrintTopicDef[] = [
   { id: 'nuclear-dating',   group: 'nuclear', label: 'Radiocarbon Dating', formula: 't age', registryId: 'nuclear-dating'  },
 
   // ── Organic Mechanisms ──────────────────────────────────────────────────────
-  { id: 'org-mech-sn-e',     group: 'organic', label: 'SN/E Reactions',       formula: 'SN/E',     registryId: 'mech-sn-e'           },
-  { id: 'org-mech-alkene',   group: 'organic', label: 'Alkene Reactions',     formula: 'C=C',      registryId: 'mech-alkene'         },
+  { id: 'org-mech-sn-e',       group: 'organic', label: 'SN / E Reactions',         formula: 'SN/E',    registryId: 'mech-sn-e'           },
+  { id: 'org-mech-alkene',     group: 'organic', label: 'Alkene Reactions',         formula: 'C=C',     registryId: 'mech-alkene'         },
+  { id: 'org-mech-alkyne',     group: 'organic', label: 'Alkyne Reactions',         formula: 'C≡C',     registryId: 'reaction-mechanisms' },
+  { id: 'org-mech-aromatic',   group: 'organic', label: 'Aromatic / EAS Reactions', formula: 'EAS',     registryId: 'reaction-mechanisms' },
+  { id: 'org-mech-alc-eth',    group: 'organic', label: 'Alcohols & Ethers',        formula: 'OH/OR',   registryId: 'reaction-mechanisms' },
+  { id: 'org-mech-organom',    group: 'organic', label: 'Organometallics',          formula: 'RMgX',    registryId: 'reaction-mechanisms' },
+  { id: 'org-mech-carbonyl',   group: 'organic', label: 'Carbonyl Reactions',       formula: 'C=O',     registryId: 'reaction-mechanisms' },
+  { id: 'org-mech-enolate',    group: 'organic', label: 'Enolate / Aldol',          formula: 'enol',    registryId: 'reaction-mechanisms' },
+  { id: 'org-mech-acid-deriv', group: 'organic', label: 'Carboxylic Derivatives',   formula: 'RCO-X',   registryId: 'reaction-mechanisms' },
+  { id: 'org-mech-redox',      group: 'organic', label: 'Oxidation / Reduction',    formula: '[O]/[H]', registryId: 'reaction-mechanisms' },
+  { id: 'org-mech-amine',      group: 'organic', label: 'Amine Reactions',          formula: 'NH₂',     registryId: 'reaction-mechanisms' },
+  { id: 'mech-sn-e',           group: 'organic', label: 'SN/E Mechanisms',          formula: 'SN/E',    registryId: 'reaction-mechanisms' },
+  { id: 'mech-alkene',       group: 'organic', label: 'Alkene Mechanisms',    formula: 'C=C',      registryId: 'reaction-mechanisms' },
+  { id: 'mech-alkyne',       group: 'organic', label: 'Alkyne Mechanisms',    formula: 'C≡C',      registryId: 'reaction-mechanisms' },
+  { id: 'mech-aromatic',     group: 'organic', label: 'Aromatic Mechanisms',  formula: 'EAS',      registryId: 'reaction-mechanisms' },
+  { id: 'mech-alcohol',      group: 'organic', label: 'Alcohol/Ether',        formula: 'R-OH',     registryId: 'reaction-mechanisms' },
+  { id: 'mech-organomet',    group: 'organic', label: 'Organometallic',        formula: 'RMgX',     registryId: 'reaction-mechanisms' },
+  { id: 'mech-carbonyl',     group: 'organic', label: 'Carbonyl',             formula: 'C=O',      registryId: 'reaction-mechanisms' },
+  { id: 'mech-enolate',      group: 'organic', label: 'Enolate',              formula: 'aldol',    registryId: 'reaction-mechanisms' },
+  { id: 'mech-carb-deriv',   group: 'organic', label: 'Carboxylic Derivatives', formula: 'RCOX',   registryId: 'reaction-mechanisms' },
+  { id: 'mech-ox-red',       group: 'organic', label: 'Oxidation/Reduction',  formula: 'ox/red',   registryId: 'reaction-mechanisms' },
+  { id: 'mech-amine',        group: 'organic', label: 'Amines',               formula: 'RNH₂',    registryId: 'reaction-mechanisms' },
   // ── Organic Chemistry ───────────────────────────────────────────────────────
   { id: 'hydrocarbons',       group: 'organic', label: 'Hydrocarbons',         formula: 'CₙH…',    registryId: 'alkanes-alkenes'     },
   { id: 'isomers',            group: 'organic', label: 'Isomers',              formula: 'same formula?', registryId: 'isomers'       },
   { id: 'organic-naming',     group: 'organic', label: 'Organic Naming',       formula: 'IUPAC',   registryId: 'organic-naming'      },
   { id: 'functional-groups',  group: 'organic', label: 'Functional Groups',    formula: '-OH, C=O', registryId: 'functional-group-id' },
   { id: 'organic-reactions',  group: 'organic', label: 'Organic Reactions',    formula: 'rxn type', registryId: 'organic-reactions'  },
+  { id: 'fgi-table',          group: 'organic', label: 'FGI Table',            formula: 'A→B',      registryId: 'organic-synthesis'  },
 ]
 
 // ── Checkbox button ───────────────────────────────────────────────────────────

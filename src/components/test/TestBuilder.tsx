@@ -52,6 +52,10 @@ import { genTriangleProblem, genFaradayProblem, genConcCellProblem } from '../..
 import { generateDecayProblem, generateHalfLifeProblem, generateBindingEnergyProblem, generateDatingProblem } from '../../utils/nuclearPractice'
 import { genHydrocarbonProblem, hydrocarbonSolutionSteps, genIsomerProblem, genNamingProblem, genFunctionalGroupProblem, genOrganicReactionProblem } from '../../utils/organicPractice'
 import { generateMechanismProblem } from '../../utils/mechanismPractice'
+import { ALL_REACTIONS } from '../../data/mechanisms/index'
+import { FGI_TABLE, type FunctionalGroup } from '../../data/organic/fgiTable'
+import { SYNTHESIS_PROBLEMS } from '../../data/organic/synthesisProblems'
+import { generatePredictProductProblem, shuffleChoices } from '../../utils/predictProductPractice'
 import { usePreferencesStore } from '../../stores/preferencesStore'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
@@ -66,6 +70,8 @@ type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | '
   | 'triangle' | 'faraday' | 'conc_cell'
   | 'nuclear_decay' | 'nuclear_halflife' | 'binding_energy' | 'nuclear_dating'
   | 'hydrocarbon' | 'isomer' | 'organic_naming' | 'func_group' | 'organic_rxn' | 'mechanism_id'
+  | 'mechanism_identify' | 'mechanism_product' | 'mechanism_reagent' | 'mechanism_regio'
+  | 'transform_drill' | 'synthesis_fillin' | 'predict_product'
 type TopicGroup = 'core' | 'atomic_molecular' | 'structures' | 'molar_solutions' | 'stoichiometry' | 'gases' | 'redox' | 'thermochemistry'
   | 'kinetics' | 'equilibrium' | 'acid_base' | 'buffers_ksp' | 'thermo_dynamics' | 'nuclear' | 'organic'
 
@@ -217,7 +223,14 @@ const ALL_TOPICS: TopicDef[] = [
   { id: 'organic-naming', kind: 'organic_naming', group: 'organic', label: 'Organic Naming',      formula: 'IUPAC',   registryId: 'organic-naming'      },
   { id: 'func-group',     kind: 'func_group',     group: 'organic', label: 'Functional Groups',   formula: '-OH, C=O', registryId: 'functional-group-id' },
   { id: 'organic-rxn',    kind: 'organic_rxn',    group: 'organic', label: 'Organic Reactions',   formula: 'rxn type', registryId: 'organic-reactions'  },
-  { id: 'mechanism-id',  kind: 'mechanism_id',   group: 'organic', label: 'Identify Mechanism',  formula: 'SN/E/Add', registryId: 'mech-sn-e'          },
+  { id: 'mechanism-id',       kind: 'mechanism_id',       group: 'organic', label: 'Identify Mechanism',   formula: 'SN/E/Add', registryId: 'mech-sn-e'            },
+  { id: 'mechanism-identify', kind: 'mechanism_identify', group: 'organic', label: 'Mechanism ID',         formula: 'SN?E?',    registryId: 'reaction-mechanisms'  },
+  { id: 'mechanism-product',  kind: 'mechanism_product',  group: 'organic', label: 'Predict Product',      formula: 'A→?',      registryId: 'reaction-mechanisms'  },
+  { id: 'mechanism-reagent',  kind: 'mechanism_reagent',  group: 'organic', label: 'Identify Reagent',     formula: '?→B',      registryId: 'reaction-mechanisms'  },
+  { id: 'mechanism-regio',    kind: 'mechanism_regio',    group: 'organic', label: 'Regio/Stereo',         formula: 'M/AM',     registryId: 'reaction-mechanisms'  },
+  { id: 'transform-drill',    kind: 'transform_drill',    group: 'organic', label: 'FGI Transform Drill',  formula: 'A→B',      registryId: 'organic-synthesis'    },
+  { id: 'synthesis-fillin',   kind: 'synthesis_fillin',   group: 'organic', label: 'Synthesis Fill-In',    formula: '→?',       registryId: 'organic-synthesis'    },
+  { id: 'predict-product',    kind: 'predict_product',    group: 'organic', label: 'Predict the Product',  formula: 'A+B→?',    registryId: 'predict-product'      },
 ]
 
 const STYLES: ProblemStyle[] = ['word', 'arithmetic']
@@ -581,6 +594,87 @@ export default function TestBuilder({ onGenerate }: Props) {
           `${p.scenario}\n\n${p.question}`,
           p.answer, p.choices, p.steps
         )
+      }
+
+      if (t.kind === 'mechanism_identify') {
+        const candidates = ALL_REACTIONS.filter(r => r.reactionType)
+        if (candidates.length === 0) return null
+        const r = candidates[Math.floor(Math.random() * candidates.length)]
+        const allTypes = [...new Set(ALL_REACTIONS.map(x => x.reactionType))]
+        const wrongTypes = allTypes.filter(x => x !== r.reactionType)
+        const options = [r.reactionType, ...wrongTypes.sort(() => Math.random() - 0.5).slice(0, 3)]
+          .sort(() => Math.random() - 0.5)
+        return cls(
+          `Reactants: ${r.reactants}\nConditions: ${r.conditions}\nProduct: ${r.products}\n\nClassify the mechanism type.`,
+          r.reactionType, options, [r.name + ': ' + r.summary]
+        )
+      }
+
+      if (t.kind === 'mechanism_product') {
+        const r = ALL_REACTIONS[Math.floor(Math.random() * ALL_REACTIONS.length)]
+        return cls(
+          `What is the major product when ${r.reactants} reacts under the following conditions?\nConditions: ${r.conditions}`,
+          r.products, undefined,
+          [r.name + ': ' + r.summary, ...(r.importantInfo ?? []).slice(0, 2)]
+        )
+      }
+
+      if (t.kind === 'mechanism_reagent') {
+        const r = ALL_REACTIONS[Math.floor(Math.random() * ALL_REACTIONS.length)]
+        return cls(
+          `What reagents/conditions convert ${r.reactants} to ${r.products}?`,
+          r.conditions, undefined, [r.name + ': ' + r.summary]
+        )
+      }
+
+      if (t.kind === 'mechanism_regio') {
+        const regioRxns = ALL_REACTIONS.filter(r => r.regiochemistry || r.stereochemistry)
+        if (regioRxns.length === 0) return null
+        const r = regioRxns[Math.floor(Math.random() * regioRxns.length)]
+        const aspect = r.regiochemistry ? 'regiochemistry' : 'stereochemistry'
+        const correctAnswer = (r.regiochemistry ?? r.stereochemistry) as string
+        const pool = aspect === 'regiochemistry'
+          ? ['markovnikov', 'anti-markovnikov', 'regiospecific', 'no preference']
+          : ['syn', 'anti', 'inversion', 'retention', 'racemization']
+        const options = [correctAnswer, ...pool.filter(x => x !== correctAnswer).slice(0, 3)]
+          .sort(() => Math.random() - 0.5)
+        return cls(
+          `For the reaction: ${r.reactants} → ${r.products}\nConditions: ${r.conditions}\n\nWhat is the ${aspect} of this reaction?`,
+          correctAnswer, options, [r.name + ': ' + r.summary]
+        )
+      }
+
+      if (t.kind === 'transform_drill') {
+        const correct = FGI_TABLE[Math.floor(Math.random() * FGI_TABLE.length)]
+        const FG_SHORT: Record<FunctionalGroup, string> = {
+          alkane: 'Alkane', alkene: 'Alkene', alkyne: 'Alkyne', alkyl_halide: 'Alkyl Halide',
+          alcohol: 'Alcohol', ether: 'Ether', epoxide: 'Epoxide', aldehyde: 'Aldehyde',
+          ketone: 'Ketone', carboxylic_acid: 'Carboxylic Acid', ester: 'Ester', amide: 'Amide',
+          amine: 'Amine', nitrile: 'Nitrile', aromatic: 'Aromatic',
+        }
+        const distractors = FGI_TABLE
+          .filter(e => e.from === correct.from && e.reagents !== correct.reagents)
+          .sort(() => Math.random() - 0.5).slice(0, 3)
+        const options = [correct.reagents, ...distractors.map(d => d.reagents)].sort(() => Math.random() - 0.5)
+        return cls(
+          `What reagents convert a ${FG_SHORT[correct.from]} to a ${FG_SHORT[correct.to]} in one step?`,
+          correct.reagents, options, correct.notes ? [correct.notes] : []
+        )
+      }
+
+      if (t.kind === 'synthesis_fillin') {
+        const prob = SYNTHESIS_PROBLEMS[Math.floor(Math.random() * SYNTHESIS_PROBLEMS.length)]
+        const stepIdx = Math.floor(Math.random() * prob.steps.length)
+        const step = prob.steps[stepIdx]
+        const q = `Synthesis: ${prob.startingMaterial.label} → ${prob.target.label}\n(${prob.difficulty}${prob.steps.length > 1 ? `, Step ${stepIdx + 1} of ${prob.steps.length}` : ''})\n\nWhat reagent(s) are used?`
+        return cls(q, step.reagents, undefined, undefined)
+      }
+
+      if (t.kind === 'predict_product') {
+        const prob = generatePredictProductProblem()
+        const choices = shuffleChoices(prob)
+        const q = `Substrate: ${prob.substrate}\nReagent/Conditions: ${prob.reagent}${prob.conditions ? `\n${prob.conditions}` : ''}\n\nWhat is the major product?`
+        return cls(q, prob.correctProduct.label, choices, [prob.hint, prob.explanation])
       }
 
       return { topic: t.label, topicFormula: t.formula, problem: { kind: 'molar', data: generateMolarProblem(t.molarType!, randomStyle()) } }

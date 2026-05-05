@@ -1,8 +1,15 @@
 import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, Link } from 'react-router-dom'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
 import MechanismCard from '../components/mechanisms/MechanismCard'
+import PredictProductPractice from '../components/mechanisms/PredictProductPractice'
+import IdentifyMechanismPractice from '../components/mechanisms/IdentifyMechanismPractice'
+import PredictRegioStereoPractice from '../components/mechanisms/PredictRegioStereoPractice'
+import IdentifyReagentPractice from '../components/mechanisms/IdentifyReagentPractice'
+import MechanismStepwise from '../components/mechanisms/MechanismStepwise'
+import QuickQuiz from '../components/mechanisms/QuickQuiz'
+import ExamSimulation from '../components/mechanisms/ExamSimulation'
 import PageShell from '../components/Layout/PageShell'
 import {
   ALL_REACTIONS,
@@ -15,6 +22,9 @@ import {
 import type { MechanismCategory } from '../data/mechanisms/types'
 
 type Mode = 'reference' | 'practice' | 'problems'
+
+type PracticeTab = 'predict-product' | 'identify-mechanism' | 'regio-stereo' | 'identify-reagent' | 'stepwise'
+type ProblemsTab = 'quick-quiz' | 'exam-sim' | 'custom-test'
 
 const PAGE_EXPLANATION: ExplanationContent = {
   title: 'Reaction Mechanisms',
@@ -31,10 +41,26 @@ const PAGE_EXPLANATION: ExplanationContent = {
     'Use the Reference cards to study each mechanism, then use Practice to test your recognition skills.',
 }
 
+const PRACTICE_TABS: { id: PracticeTab; label: string }[] = [
+  { id: 'predict-product',    label: 'Predict Product'    },
+  { id: 'identify-mechanism', label: 'Identify Mechanism' },
+  { id: 'regio-stereo',       label: 'Regio / Stereo'     },
+  { id: 'identify-reagent',   label: 'Identify Reagent'   },
+  { id: 'stepwise',           label: 'Stepwise Order'     },
+]
+
+const PROBLEMS_TABS: { id: ProblemsTab; label: string }[] = [
+  { id: 'quick-quiz', label: 'Quick Quiz (10 Q)' },
+  { id: 'exam-sim',   label: 'Exam Simulation'   },
+  { id: 'custom-test', label: 'Custom Test'      },
+]
+
 export default function MechanismsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [search, setSearch] = useState('')
   const [showExplanation, setShowExplanation] = useState(false)
+  const [practiceTab, setPracticeTab] = useState<PracticeTab>('predict-product')
+  const [problemsTab, setProblemsTab] = useState<ProblemsTab>('quick-quiz')
 
   const mode = (searchParams.get('mode') ?? 'reference') as Mode
   const activeCategory = (searchParams.get('cat') ?? 'all') as MechanismCategory | 'all'
@@ -221,10 +247,46 @@ export default function MechanismsPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.18 }}
-            className="flex flex-col items-center gap-3 py-16"
+            className="flex flex-col gap-5"
           >
-            <span className="text-4xl">⚗</span>
-            <p className="font-sans text-sm text-dim">Practice mode — coming next</p>
+            {/* Practice sub-tabs */}
+            <div className="flex items-center gap-1 flex-wrap print:hidden">
+              {PRACTICE_TABS.map(t => {
+                const isActive = practiceTab === t.id
+                return (
+                  <button
+                    key={t.id}
+                    onClick={() => setPracticeTab(t.id)}
+                    className="relative px-3 py-1 rounded-sm font-sans text-sm transition-colors"
+                    style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.45)' }}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="mech-practice-tab"
+                        className="absolute inset-0 rounded-sm"
+                        style={{ background: activeTint, border: `1px solid ${activeBorder}` }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                      />
+                    )}
+                    <span className="relative z-10">{t.label}</span>
+                  </button>
+                )
+              })}
+            </div>
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={practiceTab}
+                initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.15 }}
+              >
+                {practiceTab === 'predict-product'    && <PredictProductPractice    category={activeCategory === 'all' ? 'all' : activeCategory} />}
+                {practiceTab === 'identify-mechanism' && <IdentifyMechanismPractice category={activeCategory === 'all' ? 'all' : activeCategory} />}
+                {practiceTab === 'regio-stereo'       && <PredictRegioStereoPractice category={activeCategory === 'all' ? 'all' : activeCategory} />}
+                {practiceTab === 'identify-reagent'   && <IdentifyReagentPractice   category={activeCategory === 'all' ? 'all' : activeCategory} />}
+                {practiceTab === 'stepwise'           && <MechanismStepwise          category={activeCategory === 'all' ? 'all' : activeCategory} />}
+              </motion.div>
+            </AnimatePresence>
           </motion.div>
         )}
 
@@ -235,10 +297,57 @@ export default function MechanismsPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.18 }}
-            className="flex flex-col items-center gap-3 py-16"
+            className="flex flex-col gap-5"
           >
-            <span className="text-4xl">📝</span>
-            <p className="font-sans text-sm text-dim">Problems mode — coming next</p>
+            {/* Problems sub-tabs */}
+            <div className="flex items-center gap-1 flex-wrap print:hidden">
+              {PROBLEMS_TABS.map(t => {
+                const isActive = problemsTab === t.id
+                return (
+                  <button
+                    key={t.id}
+                    onClick={() => setProblemsTab(t.id)}
+                    className="relative px-3 py-1 rounded-sm font-sans text-sm transition-colors"
+                    style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.45)' }}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="mech-problems-tab"
+                        className="absolute inset-0 rounded-sm"
+                        style={{ background: activeTint, border: `1px solid ${activeBorder}` }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                      />
+                    )}
+                    <span className="relative z-10">{t.label}</span>
+                  </button>
+                )
+              })}
+            </div>
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={problemsTab}
+                initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.15 }}
+              >
+                {problemsTab === 'quick-quiz' && <QuickQuiz category={activeCategory === 'all' ? 'all' : activeCategory} />}
+                {problemsTab === 'exam-sim'   && <ExamSimulation />}
+                {problemsTab === 'custom-test' && (
+                  <div className="flex flex-col gap-4 max-w-lg">
+                    <p className="font-sans text-sm text-secondary leading-relaxed">
+                      Build a custom test with your choice of topics, question count, and format.
+                    </p>
+                    <Link
+                      to="/test"
+                      className="self-start flex items-center gap-2 px-4 py-2 rounded-sm font-sans text-sm border transition-colors"
+                      style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)', color: 'var(--c-halogen)' }}
+                    >
+                      Open Test Builder →
+                    </Link>
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>

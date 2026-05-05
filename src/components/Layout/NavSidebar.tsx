@@ -485,6 +485,34 @@ const NUCLEAR_GROUPS: NavTabGroup[] = [
   },
 ]
 
+const SPECTROSCOPY_GROUPS: NavTabGroup[] = [
+  {
+    label: 'IR Spectroscopy',
+    items: [
+      { tab: 'ref-ir',      label: 'IR Correlations', formula: 'cm⁻¹' },
+      { tab: 'ir-practice', label: 'IR Practice',     formula: '…'    },
+    ],
+  },
+  {
+    label: 'NMR',
+    items: [
+      { tab: 'ref-hnmr',    label: '¹H NMR Shifts',   formula: 'δ ppm' },
+      { tab: 'ref-cnmr',    label: '¹³C NMR Shifts',   formula: '13C'   },
+      { tab: 'nmr-practice', label: 'NMR Practice',    formula: '…'    },
+    ],
+  },
+  {
+    label: 'Mass Spectrometry',
+    items: [
+      { tab: 'ref-ms',           label: 'MS Fragmentation',       formula: 'm/z'       },
+      { tab: 'ms-practice',      label: 'MS Practice',             formula: '…'         },
+      { tab: 'spectral-analysis', label: 'Upload & Analyze',       formula: '↑'         },
+      { tab: 'combined-practice', label: 'Combined Practice',      formula: 'IR+NMR+MS' },
+      { tab: 'estimator',         label: 'Estimate from Structure', formula: 'draw→spec' },
+    ],
+  },
+]
+
 const ORGANIC_GROUPS: NavTabGroup[] = [
   {
     label: 'Hydrocarbons',
@@ -497,8 +525,100 @@ const ORGANIC_GROUPS: NavTabGroup[] = [
   {
     label: 'Functional Groups',
     items: [
-      { tab: 'ref-func-groups', label: 'Functional Groups', formula: 'R-OH' },
-      { tab: 'ref-organic-rxn', label: 'Common Reactions',  formula: 'rxn'  },
+      { tab: 'ref-func-groups',  label: 'Functional Groups', formula: 'R-OH' },
+      { tab: 'ref-organic-rxn',  label: 'Common Reactions',  formula: 'rxn'  },
+      { tab: 'predict-practice', label: 'Predict Product',   formula: '→?'   },
+    ],
+  },
+  {
+    label: 'Conformations',
+    items: [
+      { tab: 'ref-newman', label: 'Newman Projections', formula: 'φ'   },
+      { tab: 'ref-chair',  label: 'Chair Conformations', formula: '⬡'  },
+    ],
+  },
+  {
+    label: 'Stereochemistry',
+    items: [
+      { tab: 'ref-stereochem', label: 'Stereochemistry',  formula: 'R/S' },
+      { tab: 'ref-fischer',    label: 'Fischer / D–L',    formula: 'D/L' },
+    ],
+  },
+  {
+    label: 'Aromaticity',
+    items: [
+      { tab: 'ref-aromaticity', label: 'Aromaticity',       formula: '4n+2'  },
+      { tab: 'ref-directing',   label: 'Directing Effects',  formula: 'o/p/m' },
+      { tab: 'ref-conjugation', label: 'Conjugated Dienes',  formula: '1,4'   },
+    ],
+  },
+  {
+    label: 'Acid-Base',
+    items: [
+      { tab: 'ref-acid-base',     label: 'pKₐ Table',         formula: 'pKₐ'  },
+      { tab: 'acid-base-practice', label: 'Most Acidic H',    formula: 'H⁺'   },
+      { tab: 'acidity-factors',   label: 'Equil. Predictor',  formula: '⇌'    },
+    ],
+  },
+  {
+    label: 'Structure & Bonding',
+    items: [
+      { tab: 'ref-resonance',     label: 'Resonance',      formula: '↔'   },
+      { tab: 'ref-hybridization', label: 'Hybridization',  formula: 'sp³' },
+      { tab: 'ref-curved-arrow',  label: 'Curved Arrows',  formula: '⟶'   },
+    ],
+  },
+  {
+    label: 'Carbohydrates',
+    items: [
+      { tab: 'ref-sugars',          label: 'Monosaccharides',  formula: 'C₆' },
+      { tab: 'fischer-haworth',     label: 'Fischer→Haworth',  formula: 'D/L' },
+      { tab: 'anomers-mutarotation', label: 'Anomers',         formula: 'α/β' },
+      { tab: 'sugar-reactions',     label: 'Sugar Reactions',  formula: 'rxn' },
+    ],
+  },
+  {
+    label: 'Synthesis',
+    items: [
+      { tab: 'ref-fgi',            label: 'FGI Table',         formula: 'FGI' },
+      { tab: 'synthesis-fillin',   label: 'Fill-In Reagents',  formula: '→?'  },
+      { tab: 'synthesis-ordering', label: 'Step Ordering',     formula: '1→2' },
+      { tab: 'retro-disconnection', label: 'Retrosynthesis',   formula: '⟸'  },
+      { tab: 'transform-drill',    label: 'Transform Drill',   formula: 'A→B' },
+    ],
+  },
+  {
+    label: 'Amino Acids',
+    items: [
+      { tab: 'ref-amino-acids',  label: 'AA Synthesis',  formula: 'AA'   },
+      { tab: 'amino-acid-table', label: 'AA Table (20)', formula: '20'   },
+      { tab: 'peptide-bonds',    label: 'Peptide Bonds', formula: 'C-N'  },
+      { tab: 'zwitterions-pi',   label: 'Zwitterions/pI', formula: 'pI'  },
+    ],
+  },
+  {
+    label: 'Lipids',
+    items: [
+      { tab: 'ref-fatty-acids',       label: 'Fatty Acids',    formula: 'FA'   },
+      { tab: 'ref-triglycerides',     label: 'Triglycerides',  formula: '3×FA' },
+      { tab: 'ref-phospholipids',     label: 'Phospholipids',  formula: 'PL'   },
+      { tab: 'ref-terpenes-steroids', label: 'Terpenes',       formula: 'C₅n'  },
+    ],
+  },
+  {
+    label: 'Polymers',
+    items: [
+      { tab: 'ref-polymerization',     label: 'Mechanisms',      formula: 'Mn'   },
+      { tab: 'ref-common-polymers',    label: 'Common Polymers', formula: 'list' },
+      { tab: 'polymerization-practice', label: 'Practice',       formula: 'type?'},
+    ],
+  },
+  {
+    label: 'Nucleic Acids',
+    items: [
+      { tab: 'ref-nucleobases', label: 'Nucleobases', formula: 'ACGT' },
+      { tab: 'ref-nucleotides', label: 'Nucleotides', formula: '5′P'  },
+      { tab: 'ref-dna-rna',     label: 'DNA / RNA',   formula: 'helix'},
     ],
   },
 ]
@@ -616,6 +736,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
   { key: 'thermodynamics', icon: 'ΔG',   label: 'Thermodynamics',        basePath: '/thermodynamics',  groups: THERMODYNAMICS_GROUPS, defaultTab: 'ref-entropy',          defaultGroup: 'Entropy'             },
   { key: 'nuclear',        icon: '⚛',   label: 'Nuclear Chemistry',     basePath: '/nuclear',         groups: NUCLEAR_GROUPS,        defaultTab: 'ref-decay',            defaultGroup: 'Nuclear Reactions'   },
   { key: 'organic',        icon: 'C',    label: 'Organic Chemistry',     basePath: '/organic',         groups: ORGANIC_GROUPS,        defaultTab: 'ref-hydrocarbons',     defaultGroup: 'Hydrocarbons'        },
+  { key: 'spectroscopy',  icon: 'λ',   label: 'Spectroscopy',          basePath: '/spectral',        groups: SPECTROSCOPY_GROUPS,   defaultTab: 'ref-ir',               defaultGroup: 'IR Spectroscopy'     },
 ]
 
 // ── Top-level nav items ───────────────────────────────────────────────────────
@@ -739,6 +860,7 @@ export default function NavSidebar({ open, onClose, theme, onToggleTheme }: Prop
     if (currentPath === '/table' || currentPath === '/electron-config') initial.add('table')
     if (currentPath === '/base-calculations' || currentPath === '/empirical') initial.add('baseCalc')
     if (currentPath === '/structures') initial.add('struct')
+    if (currentPath === '/spectral') initial.add('spectroscopy')
     SECTION_CONFIGS.forEach(cfg => {
       if (currentPath === cfg.basePath) initial.add(cfg.key)
     })

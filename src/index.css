@@ -181,6 +181,28 @@ body {
   .border-emerald-500\/30 { border-color: #6ee7b7 !important; }
   .border-red-500\/30     { border-color: #fca5a5 !important; }
   .border-amber-500\/20   { border-color: #fcd34d !important; }
+
+  /* ── Mechanism print rows: never split across pages ─────────────────────── */
+  @page { size: letter portrait; margin: 0.5in; }
+  .mechanism-print-row { break-inside: avoid; margin-bottom: 0.25in; }
+  .mechanism-print-row svg { image-rendering: -webkit-optimize-contrast; }
+
+  /* ── Per-card print: hide everything except the print portal ─────────────── */
+  body.printing-mechanism-card > * { display: none !important; }
+  body.printing-mechanism-card .mechanism-print-portal { display: block !important; }
+
+  /* ── Spectrum estimator print sheet ──────────────────────────────────────── */
+  .print-sheet {
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    color: #000;
+    background: white !important;
+  }
+  .print-sheet section {
+    break-inside: avoid;
+  }
+  .print-sheet svg {
+    color: #000;
+  }
 }
 
 /* ── Light mode: override Tailwind utility classes ───────────────────────────── */

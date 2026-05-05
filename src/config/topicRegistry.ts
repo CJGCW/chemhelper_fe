@@ -21,6 +21,7 @@ export type UnitId =
   | 'nuclear'
   | 'organic'
   | 'org-mechanisms'
+  | 'spectroscopy'
 
 export type SectionId =
   | 'math-tools'
@@ -60,6 +61,18 @@ export type SectionId =
   | 'sn-elimination'
   | 'alkene-reactions'
   | 'reaction-mechanisms'
+  | 'org-conformations'
+  | 'org-stereochem'
+  | 'org-aromaticity'
+  | 'org-acid-base'
+  | 'org-bonding'
+  | 'org-carbohydrates'
+  | 'org-synthesis'
+  | 'org-amino-acids'
+  | 'org-lipids'
+  | 'org-polymers'
+  | 'org-nucleic-acids'
+  | 'spectral-methods'
 
 export interface Unit {
   id: UnitId
@@ -103,8 +116,9 @@ export const UNITS: Unit[] = [
   { id: 'buffers-ksp',   label: 'Buffers & Solubility',    route: '/buffers',           level: 2, sections: ['buffer-systems', 'titration-curves', 'solubility-product'] },
   { id: 'thermodynamics', label: 'Thermodynamics',         route: '/thermodynamics',    level: 2, sections: ['entropy', 'gibbs-energy']                       },
   { id: 'nuclear',       label: 'Nuclear Chemistry',       route: '/nuclear',           level: 2, sections: ['nuclear-reactions', 'nuclear-applications']     },
-  { id: 'organic',       label: 'Organic Chemistry',       route: '/organic',           level: 2, sections: ['hydrocarbons', 'functional-groups', 'reaction-mechanisms'] },
+  { id: 'organic',       label: 'Organic Chemistry',       route: '/organic',           level: 2, sections: ['hydrocarbons', 'functional-groups', 'reaction-mechanisms', 'org-conformations', 'org-stereochem', 'org-aromaticity', 'org-acid-base', 'org-bonding', 'org-carbohydrates', 'org-synthesis', 'org-amino-acids', 'org-lipids', 'org-polymers', 'org-nucleic-acids'] },
   { id: 'org-mechanisms', label: 'Organic Mechanisms',    route: '/mechanisms',         level: 2, sections: ['sn-elimination', 'alkene-reactions']              },
+  { id: 'spectroscopy',   label: 'Spectroscopy',          route: '/spectral',            level: 2, sections: ['spectral-methods']                                   },
 ]
 
 // ── Sections ──────────────────────────────────────────────────────────────────
@@ -147,6 +161,18 @@ export const SECTIONS: Section[] = [
   { id: 'sn-elimination',       label: 'SN/E Reactions',        unitId: 'org-mechanisms' },
   { id: 'alkene-reactions',     label: 'Alkene Reactions',      unitId: 'org-mechanisms' },
   { id: 'reaction-mechanisms',  label: 'Reaction Mechanisms',   unitId: 'organic'        },
+  { id: 'org-conformations',    label: 'Conformational Analysis', unitId: 'organic'      },
+  { id: 'org-stereochem',       label: 'Stereochemistry',         unitId: 'organic'      },
+  { id: 'org-aromaticity',      label: 'Aromaticity & Conjugation', unitId: 'organic'    },
+  { id: 'org-acid-base',        label: 'Acid-Base (Organic)',        unitId: 'organic'    },
+  { id: 'org-bonding',          label: 'Structure & Bonding',        unitId: 'organic'    },
+  { id: 'org-carbohydrates',    label: 'Carbohydrates',              unitId: 'organic'    },
+  { id: 'org-synthesis',        label: 'Synthesis',                  unitId: 'organic'    },
+  { id: 'org-amino-acids',      label: 'Amino Acids & Peptides',     unitId: 'organic'    },
+  { id: 'org-lipids',           label: 'Lipids',                     unitId: 'organic'    },
+  { id: 'org-polymers',         label: 'Polymers',                   unitId: 'organic'    },
+  { id: 'org-nucleic-acids',    label: 'Nucleic Acids',              unitId: 'organic'    },
+  { id: 'spectral-methods',     label: 'Spectral Methods',          unitId: 'spectroscopy' },
 ]
 
 // ── Topics ────────────────────────────────────────────────────────────────────
@@ -322,6 +348,7 @@ export const TOPICS: Topic[] = [
   { id: 'organic-naming',      label: 'IUPAC Naming',                sectionId: 'hydrocarbons',      tabs: ['organic-naming', 'naming-problems', 'ref-organic-naming']  },
   { id: 'functional-group-id', label: 'Functional Groups',           sectionId: 'functional-groups', tabs: ['func-groups', 'func-groups-problems', 'ref-func-groups']   },
   { id: 'organic-reactions',   label: 'Common Reactions',            sectionId: 'functional-groups', tabs: ['organic-rxn', 'organic-rxn-problems', 'ref-organic-rxn']   },
+  { id: 'predict-product',     label: 'Predict the Product',         sectionId: 'functional-groups', tabs: ['predict-practice', 'predict-problems']                        },
 
   // ── Organic Mechanisms ─────────────────────────────────────────────────────
   // 'mech-identify' and 'mech-identify-problems' are shared by both topics
@@ -330,6 +357,54 @@ export const TOPICS: Topic[] = [
 
   // ── Reaction Mechanisms page ──────────────────────────────────────────────
   { id: 'reaction-mechanisms', label: 'Reaction Mechanisms', sectionId: 'reaction-mechanisms', tabs: ['reaction-mechanisms'] },
+
+  // ── Conformational Analysis ────────────────────────────────────────────────
+  { id: 'newman-projection',  label: 'Newman Projections',    sectionId: 'org-conformations', tabs: ['ref-newman',  'newman-practice',  'newman-problems']       },
+  { id: 'chair-conformation', label: 'Chair Conformations',   sectionId: 'org-conformations', tabs: ['ref-chair',   'chair-practice',   'chair-problems']        },
+
+  // ── Stereochemistry ───────────────────────────────────────────────────────
+  { id: 'stereochemistry',    label: 'Stereochemistry',        sectionId: 'org-stereochem',   tabs: ['ref-stereochem', 'ref-fischer']                            },
+  { id: 'rs-assignment',      label: 'R/S Assignment',         sectionId: 'org-stereochem',   tabs: ['rs-practice',  'rs-problems']                              },
+  { id: 'stereoisomer',       label: 'Stereoisomers',          sectionId: 'org-stereochem',   tabs: ['stereoisomer-practice', 'stereoisomer-problems']            },
+  { id: 'ez-nomenclature',    label: 'E/Z Nomenclature',       sectionId: 'org-stereochem',   tabs: ['ez-practice',  'ez-problems']                              },
+
+  // ── Aromaticity & Conjugation ─────────────────────────────────────────────
+  { id: 'aromaticity',        label: 'Aromaticity',            sectionId: 'org-aromaticity',  tabs: ['ref-aromaticity', 'aromaticity-practice', 'aromaticity-problems'] },
+  { id: 'directing-effects',  label: 'Directing Effects (EAS)', sectionId: 'org-aromaticity', tabs: ['ref-directing',   'directing-practice',   'directing-problems']   },
+  { id: 'conjugated-diene',   label: 'Conjugated Dienes',      sectionId: 'org-aromaticity',  tabs: ['ref-conjugation', 'conjugation-practice', 'conjugation-problems'] },
+
+  // ── Organic Acid-Base ─────────────────────────────────────────────────────
+  { id: 'organic-acid-base',     label: 'pKₐ & Acidity',      sectionId: 'org-acid-base',     tabs: ['ref-acid-base', 'pka-table', 'acid-base-practice', 'acidity-factors', 'acid-base-problems'] },
+
+  // ── Structure & Bonding (Organic) ────────────────────────────────────────
+  { id: 'organic-resonance',     label: 'Resonance',           sectionId: 'org-bonding',       tabs: ['ref-resonance', 'resonance-practice', 'resonance-problems'] },
+  { id: 'organic-hybridization', label: 'Hybridization',       sectionId: 'org-bonding',       tabs: ['ref-hybridization', 'hybridization-practice', 'hybridization-problems'] },
+  { id: 'organic-formal-charge', label: 'Formal Charge',       sectionId: 'org-bonding',       tabs: ['ref-curved-arrow', 'formal-charge-practice', 'formal-charge-problems'] },
+
+  // ── Carbohydrates ─────────────────────────────────────────────────────────
+  { id: 'carbohydrates',         label: 'Carbohydrates',       sectionId: 'org-carbohydrates', tabs: ['ref-sugars', 'fischer-haworth', 'anomers-mutarotation', 'sugar-reactions', 'sugars-problems'] },
+
+  // ── Synthesis & Retrosynthesis ─────────────────────────────────────────────
+  { id: 'organic-synthesis',     label: 'Synthesis / Retrosynthesis', sectionId: 'org-synthesis', tabs: ['ref-fgi', 'synthesis-fillin', 'synthesis-ordering', 'retro-disconnection', 'transform-drill', 'synthesis-problems'] },
+
+  // ── Amino Acids & Peptides ────────────────────────────────────────────────
+  { id: 'amino-acids',           label: 'Amino Acids & Peptides',    sectionId: 'org-amino-acids',   tabs: ['ref-amino-acids', 'amino-acid-table', 'peptide-bonds', 'zwitterions-pi', 'amino-acid-problems'] },
+
+  // ── Lipids ────────────────────────────────────────────────────────────────
+  { id: 'lipids',                label: 'Lipids',                    sectionId: 'org-lipids',        tabs: ['ref-fatty-acids', 'ref-triglycerides', 'ref-phospholipids', 'ref-terpenes-steroids'] },
+
+  // ── Polymers ──────────────────────────────────────────────────────────────
+  { id: 'polymers',              label: 'Organic Polymers',          sectionId: 'org-polymers',      tabs: ['ref-polymerization', 'ref-common-polymers', 'polymerization-practice', 'polymerization-problems'] },
+
+  // ── Nucleic Acids ─────────────────────────────────────────────────────────
+  { id: 'nucleic-acids',         label: 'Nucleic Acids',             sectionId: 'org-nucleic-acids', tabs: ['ref-nucleobases', 'ref-nucleotides', 'ref-dna-rna'] },
+
+  // ── Spectroscopy ──────────────────────────────────────────────────────────
+  { id: 'ir-spectroscopy',      label: 'IR Spectroscopy',         sectionId: 'spectral-methods', tabs: ['ref-ir', 'ir-practice']                             },
+  { id: 'nmr-spectroscopy',     label: 'NMR',                     sectionId: 'spectral-methods', tabs: ['ref-hnmr', 'ref-cnmr', 'nmr-practice']            },
+  { id: 'mass-spectrometry',    label: 'Mass Spec',               sectionId: 'spectral-methods', tabs: ['ref-ms', 'ms-practice']                            },
+  { id: 'spectral-analysis',    label: 'Spectral Analysis',       sectionId: 'spectral-methods', tabs: ['spectral-analysis', 'combined-practice']           },
+  { id: 'spectrum-estimator',   label: 'Estimate from Structure', sectionId: 'spectral-methods', tabs: ['estimator']                                        },
 ]
 
 // ── Build-time Maps ───────────────────────────────────────────────────────────

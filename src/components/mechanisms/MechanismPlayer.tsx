@@ -1,9 +1,11 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { Fragment, useState, useEffect, useRef, useMemo } from 'react'
 import { motion, AnimatePresence, useAnimate } from 'framer-motion'
 import type {
   ReactionDef, AnimPrimitive, AtomPosition, MoleculeScene, MechanismStep,
   CurvedArrowOverlay, ArrowAnchor, MechanismFrame, BondPosition,
 } from '../../data/mechanisms/types'
+import { usePreferencesStore } from '../../stores/preferencesStore'
+import MechanismFrameInline from './MechanismFrameInline'
 
 interface Props {
   reaction: ReactionDef
@@ -629,6 +631,80 @@ function FrameCanvas({ frame, reactionId }: { frame: MechanismFrame; reactionId:
   )
 }
 
+// ── Static mechanism view ──────────────────────────────────────────────────────
+
+function StaticMechanismView({ reaction }: { reaction: ReactionDef }) {
+  const frames = reaction.frames ?? []
+  if (frames.length === 0) {
+    return (
+      <p className="font-sans text-sm text-dim py-4 text-center">No frame data available for static view.</p>
+    )
+  }
+  return (
+    <div className="overflow-x-auto pb-2">
+      <div className="flex items-center gap-2 min-w-max">
+        {frames.map((frame, i) => (
+          <Fragment key={i}>
+            <div className="flex flex-col items-center gap-1 shrink-0">
+              <div className="rounded-sm border border-border overflow-hidden" style={{ background: 'rgb(var(--color-surface))' }}>
+                <MechanismFrameInline frame={frame} width={300} height={200} showArrows />
+              </div>
+              <span className="font-mono text-xs text-dim">{frame.shortLabel}</span>
+              {frame.caption && (
+                <span className="font-sans text-xs text-secondary text-center max-w-[300px] leading-tight">
+                  {frame.caption}
+                </span>
+              )}
+            </div>
+            {i < frames.length - 1 && (
+              <span className="font-mono text-xl text-dim shrink-0 self-start mt-20">→</span>
+            )}
+          </Fragment>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ── View mode pill toggle ──────────────────────────────────────────────────────
+
+function ViewModePill() {
+  const viewMode = usePreferencesStore(s => s.mechanismViewMode)
+  const setViewMode = usePreferencesStore(s => s.setMechanismViewMode)
+  const activeTint   = 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))'
+  const activeBorder = 'color-mix(in srgb, var(--c-halogen) 30%, transparent)'
+  return (
+    <div
+      className="flex items-center gap-0.5 p-0.5 rounded-full self-start print:hidden"
+      style={{ background: 'rgb(var(--color-raised))', border: '1px solid rgb(var(--color-border))' }}
+    >
+      {(['animated', 'static'] as const).map(m => {
+        const isActive = viewMode === m
+        return (
+          <button
+            key={m}
+            onClick={() => setViewMode(m)}
+            className="relative px-3 py-0.5 rounded-full font-sans text-xs font-medium transition-colors capitalize"
+            style={{ color: isActive ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)' }}
+          >
+            {isActive && (
+              <motion.div
+                layoutId="mech-view-mode-pill"
+                className="absolute inset-0 rounded-full"
+                style={{ background: activeTint, border: `1px solid ${activeBorder}` }}
+                transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+              />
+            )}
+            <span className="relative z-10">{m}</span>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+// ── Frame-based player ─────────────────────────────────────────────────────────
+
 function FramePlayer({ reaction, compact }: { reaction: ReactionDef; compact: boolean }) {
   const frames = reaction.frames!
   const [frameIdx, setFrameIdx] = useState(0)
@@ -672,12 +748,28 @@ function FramePlayer({ reaction, compact }: { reaction: ReactionDef; compact: bo
     }
   }
 
+  const viewMode     = usePreferencesStore(s => s.mechanismViewMode)
   const activeTint   = 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))'
   const activeBorder = 'color-mix(in srgb, var(--c-halogen) 30%, transparent)'
   const playBg       = 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))'
 
+  if (viewMode === 'static') {
+    return (
+      <div className="flex flex-col gap-3">
+        <ViewModePill />
+        <StaticMechanismView reaction={reaction} />
+        {!compact && reaction.energyDiagram.length >= 2 && (
+          <div className="rounded-sm border border-border p-2 bg-[rgb(var(--color-raised))]">
+            <EnergyDiagram points={reaction.energyDiagram} />
+          </div>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col gap-3">
+      <ViewModePill />
       <div className="rounded-sm border border-border overflow-hidden bg-[rgb(var(--color-surface))]">
         <AnimatePresence mode="wait">
           <motion.svg

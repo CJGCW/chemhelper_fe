@@ -78,7 +78,8 @@ import NuclearHalfLifeReference from '../components/nuclear/HalfLifeReference'
 import BindingEnergyReference from '../components/nuclear/BindingEnergyReference'
 import DatingReference        from '../components/nuclear/DatingReference'
 // ── Organic ───────────────────────────────────────────────────────────────────
-import OrgMechanismReference  from '../components/mechanisms/MechanismReference'
+import OrgMechanismReference    from '../components/mechanisms/MechanismReference'
+import MechanismPrintReference  from '../components/mechanisms/MechanismPrintReference'
 import HydrocarbonReference   from '../components/organic/HydrocarbonReference'
 import IsomerReference        from '../components/organic/IsomerReference'
 import OrganicNamingReference from '../components/organic/OrganicNamingReference'
@@ -167,9 +168,31 @@ function ReferenceSection({ id }: { id: string }) {
     case 'nuclear-half-life':  return <NuclearHalfLifeReference />
     case 'binding-energy':     return <BindingEnergyReference />
     case 'nuclear-dating':     return <DatingReference />
-    // organic mechanisms
-    case 'org-mech-sn-e':      return <OrgMechanismReference initialCategory="sn_e" />
-    case 'org-mech-alkene':    return <OrgMechanismReference initialCategory="alkene" />
+    // organic mechanisms (full viewer — legacy data)
+    case 'org-mech-sn-e':        return <OrgMechanismReference initialCategory="sn_e" />
+    case 'org-mech-alkene':      return <OrgMechanismReference initialCategory="alkene" />
+    // organic mechanisms (new data — compact table)
+    case 'org-mech-alkyne':      return <MechanismPrintReference category="alkyne" />
+    case 'org-mech-aromatic':    return <MechanismPrintReference category="aromatic" />
+    case 'org-mech-alc-eth':     return <MechanismPrintReference category="alcohol" />
+    case 'org-mech-organom':     return <MechanismPrintReference category="organometallic" />
+    case 'org-mech-carbonyl':    return <MechanismPrintReference category="carbonyl" />
+    case 'org-mech-enolate':     return <MechanismPrintReference category="enolate" />
+    case 'org-mech-acid-deriv':  return <MechanismPrintReference category="carboxylic" />
+    case 'org-mech-redox':       return <MechanismPrintReference category="oxidation_reduction" />
+    case 'org-mech-amine':       return <MechanismPrintReference category="amine" />
+    // mechanism print reference (compact table by category)
+    case 'mech-sn-e':          return <MechanismPrintReference category="sn_e" />
+    case 'mech-alkene':        return <MechanismPrintReference category="alkene" />
+    case 'mech-alkyne':        return <MechanismPrintReference category="alkyne" />
+    case 'mech-aromatic':      return <MechanismPrintReference category="aromatic" />
+    case 'mech-alcohol':       return <MechanismPrintReference category="alcohol" />
+    case 'mech-organomet':     return <MechanismPrintReference category="organometallic" />
+    case 'mech-carbonyl':      return <MechanismPrintReference category="carbonyl" />
+    case 'mech-enolate':       return <MechanismPrintReference category="enolate" />
+    case 'mech-carb-deriv':    return <MechanismPrintReference category="carboxylic" />
+    case 'mech-ox-red':        return <MechanismPrintReference category="oxidation_reduction" />
+    case 'mech-amine':         return <MechanismPrintReference category="amine" />
     // organic
     case 'hydrocarbons':       return <HydrocarbonReference />
     case 'isomers':            return <IsomerReference />

@@ -15,6 +15,7 @@ interface PersistedPrefs {
   hiddenSections: string[]
   hiddenTopics: string[]
   showAnswers: boolean
+  mechanismViewMode?: 'animated' | 'static'
 }
 
 interface PreferencesState {
@@ -46,11 +47,14 @@ interface PreferencesState {
   setOrgChem1Preset: () => void
 
   setShowAnswers: (v: boolean) => void
+
+  mechanismViewMode: 'animated' | 'static'
+  setMechanismViewMode: (mode: 'animated' | 'static') => void
 }
 
 // ── Persistence ───────────────────────────────────────────────────────────────
 
-function persist(state: Pick<PreferencesState, 'hiddenUnits' | 'hiddenSections' | 'hiddenTopics' | 'showAnswers'>) {
+function persist(state: Pick<PreferencesState, 'hiddenUnits' | 'hiddenSections' | 'hiddenTopics' | 'showAnswers' | 'mechanismViewMode'>) {
   try {
     const data: PersistedPrefs = {
       version: CURRENT_VERSION,
@@ -58,6 +62,7 @@ function persist(state: Pick<PreferencesState, 'hiddenUnits' | 'hiddenSections' 
       hiddenSections: Array.from(state.hiddenSections),
       hiddenTopics: Array.from(state.hiddenTopics),
       showAnswers: state.showAnswers,
+      mechanismViewMode: state.mechanismViewMode,
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
   } catch {
@@ -83,10 +88,11 @@ const saved = loadPersistedPrefs()
 
 export const usePreferencesStore = create<PreferencesState>((set, get) => {
   const initial = {
-    hiddenUnits:    new Set<string>(saved.hiddenUnits    ?? []),
-    hiddenSections: new Set<string>(saved.hiddenSections ?? []),
-    hiddenTopics:   new Set<string>(saved.hiddenTopics   ?? []),
-    showAnswers:    saved.showAnswers ?? true,
+    hiddenUnits:        new Set<string>(saved.hiddenUnits    ?? []),
+    hiddenSections:     new Set<string>(saved.hiddenSections ?? []),
+    hiddenTopics:       new Set<string>(saved.hiddenTopics   ?? []),
+    showAnswers:        saved.showAnswers ?? true,
+    mechanismViewMode:  (saved.mechanismViewMode ?? 'animated') as 'animated' | 'static',
   }
 
   function mutate(
@@ -265,6 +271,14 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => {
 
     setShowAnswers(v) {
       mutate(state => ({ showAnswers: v, hiddenUnits: state.hiddenUnits, hiddenSections: state.hiddenSections, hiddenTopics: state.hiddenTopics }))
+    },
+
+    setMechanismViewMode(mode) {
+      set(s => {
+        const next = { ...s, mechanismViewMode: mode }
+        persist(next)
+        return { mechanismViewMode: mode }
+      })
     },
   }
 })

@@ -4,6 +4,13 @@ import { ALKENE_REACTIONS } from './alkenes'
 import { ALKYNE_REACTIONS } from './alkynes'
 import { AROMATIC_REACTIONS } from './aromatics'
 import { ALCOHOL_ETHER_REACTIONS } from './alcoholsEthers'
+import { ORGANOMETALLIC_REACTIONS } from './organometallics'
+import { CARBONYL_REACTIONS } from './carbonyls'
+import { ENOLATE_REACTIONS } from './enolates'
+import { CARBOXYLIC_DERIVATIVE_REACTIONS } from './carboxylicDerivatives'
+import { OX_RED_REACTIONS } from './oxidationReduction'
+import { AMINE_REACTIONS } from './amines'
+import { CROSS_COUPLING_REACTIONS } from './crossCoupling'
 import { validateAllReactions } from './validate'
 export { CATEGORY_LABELS, CATEGORY_ORDER } from './types'
 export type { ReactionDef, ReactionSummary, MechanismFilter, MechanismCategory, ReactionType, Regiochemistry, Stereochemistry }  from './types'
@@ -14,6 +21,13 @@ export const ALL_REACTIONS: ReactionDef[] = [
   ...ALKYNE_REACTIONS,
   ...AROMATIC_REACTIONS,
   ...ALCOHOL_ETHER_REACTIONS,
+  ...ORGANOMETALLIC_REACTIONS,
+  ...CARBONYL_REACTIONS,
+  ...ENOLATE_REACTIONS,
+  ...CARBOXYLIC_DERIVATIVE_REACTIONS,
+  ...OX_RED_REACTIONS,
+  ...AMINE_REACTIONS,
+  ...CROSS_COUPLING_REACTIONS,
 ]
 
 // Runs in dev mode at module load — console-warns on coordinate drift, orphan refs, overlaps, etc.

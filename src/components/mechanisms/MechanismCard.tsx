@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { ReactionDef, ReactionType, Regiochemistry, Stereochemistry } from '../../data/mechanisms/types'
 import MechanismPlayer from './MechanismPlayer'
+import MechanismPrintSheet from './MechanismPrintSheet'
 
 interface Props {
   reaction: ReactionDef
@@ -57,6 +59,18 @@ function Badge({ text, color }: { text: string; color: string }) {
 
 export default function MechanismCard({ reaction, defaultExpanded = false }: Props) {
   const [expanded, setExpanded] = useState(defaultExpanded)
+  const [isPrinting, setIsPrinting] = useState(false)
+
+  function handlePrint(e: React.MouseEvent) {
+    e.stopPropagation()
+    document.body.classList.add('printing-mechanism-card')
+    setIsPrinting(true)
+    requestAnimationFrame(() => {
+      window.print()
+      document.body.classList.remove('printing-mechanism-card')
+      setIsPrinting(false)
+    })
+  }
 
   return (
     <div
@@ -101,10 +115,27 @@ export default function MechanismCard({ reaction, defaultExpanded = false }: Pro
           </p>
         </div>
 
-        <span className="font-mono text-xs text-dim shrink-0 mt-0.5 whitespace-nowrap">
-          {reaction.brownRef}
-        </span>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={handlePrint}
+            className="font-mono text-xs text-dim hover:text-secondary transition-colors print:hidden"
+            title="Print this mechanism"
+          >
+            ⎙
+          </button>
+          <span className="font-mono text-xs text-dim mt-0.5 whitespace-nowrap">
+            {reaction.brownRef}
+          </span>
+        </div>
       </button>
+
+      {/* Print portal */}
+      {isPrinting && typeof document !== 'undefined' && createPortal(
+        <div className="mechanism-print-portal hidden print:block p-8">
+          <MechanismPrintSheet reactions={[reaction]} title={reaction.name} />
+        </div>,
+        document.body,
+      )}
 
       {/* Expanded section */}
       <AnimatePresence initial={false}>
