@@ -194,7 +194,7 @@ export default function HessTool() {
 
               {/* Contribution preview */}
               {p !== null && row.dh.trim() !== '' && (
-                <div className="ml-8 font-mono text-[11px] text-secondary">
+                <div className="ml-8 font-mono text-xs text-secondary">
                   {row.flipped ? `−` : `+`}{Math.abs(p.mult) !== 1 ? `${Math.abs(p.mult)}×` : ''}({row.dh}) = <span style={{ color: p.contribution < 0 ? '#34d399' : p.contribution > 0 ? '#f87171' : 'rgba(var(--overlay),0.5)' }}>{fmtDH(p.contribution)} kJ</span>
                   {row.flipped && <span className="text-dim ml-2">(reversed)</span>}
                 </div>

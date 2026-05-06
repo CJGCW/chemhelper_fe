@@ -116,7 +116,7 @@ export default function LewisStructurePractice({ allowCustom = true }: Props) {
           <button
             key={p.formula + p.charge}
             onClick={() => { setShowOther(false); setSelectedIdx(i) }}
-            className="font-mono text-[11px] px-2 py-0.5 rounded-sm border transition-colors"
+            className="font-mono text-xs px-2 py-0.5 rounded-sm border transition-colors"
             style={{
               borderColor: i === selectedIdx && !showOther ? 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' : 'rgb(var(--color-border))',
               color: i === selectedIdx && !showOther ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
@@ -129,7 +129,7 @@ export default function LewisStructurePractice({ allowCustom = true }: Props) {
         {/* Other — custom molecule inline with molecule buttons */}
         {allowCustom && <button
           onClick={() => setShowOther(v => !v)}
-          className="font-mono text-[11px] px-2 py-0.5 rounded-sm border transition-colors"
+          className="font-mono text-xs px-2 py-0.5 rounded-sm border transition-colors"
           style={{
             borderColor: showOther ? 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' : 'rgb(var(--color-border))',
             color: showOther ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
@@ -144,19 +144,19 @@ export default function LewisStructurePractice({ allowCustom = true }: Props) {
               type="text" value={otherFormula} onChange={e => setOtherFormula(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') loadOther() }}
               placeholder="Formula"
-              className="font-mono text-[11px] px-2 py-0.5 rounded-sm border border-border bg-raised text-primary placeholder-dim focus:outline-none"
+              className="font-mono text-xs px-2 py-0.5 rounded-sm border border-border bg-raised text-primary placeholder-dim focus:outline-none"
               style={{ width: 100 }}
             />
             <input
               type="text" inputMode="numeric" value={otherCharge} onChange={e => setOtherCharge(e.target.value)}
               placeholder="0"
-              className="font-mono text-[11px] px-2 py-0.5 rounded-sm border border-border bg-raised text-primary placeholder-dim focus:outline-none text-center"
+              className="font-mono text-xs px-2 py-0.5 rounded-sm border border-border bg-raised text-primary placeholder-dim focus:outline-none text-center"
               style={{ width: 40 }}
             />
             <button
               onClick={loadOther}
               disabled={!otherFormula.trim() || fetching}
-              className="font-mono text-[11px] px-2 py-0.5 rounded-sm border transition-colors disabled:opacity-40"
+              className="font-mono text-xs px-2 py-0.5 rounded-sm border transition-colors disabled:opacity-40"
               style={{ borderColor: 'rgb(var(--color-border))', color: 'rgba(var(--overlay),0.6)', background: 'rgb(var(--color-raised))' }}
             >
               Load

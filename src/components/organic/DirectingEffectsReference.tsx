@@ -113,8 +113,8 @@ export default function DirectingEffectsReference({ allowCustom = true }: Props)
           <div className="p-3 rounded-sm border border-border bg-surface flex flex-col gap-2">
             <p className="font-mono text-xs text-dim uppercase tracking-wider mb-1">Key Rules</p>
             <ul className="font-sans text-sm text-secondary flex flex-col gap-1 list-disc list-inside">
-              <li>All <span className="text-emerald-700 dark:text-emerald-400">activators</span> are ortho/para directors</li>
-              <li>All <span className="text-rose-700 dark:text-rose-400">deactivators</span> are meta directors — <strong className="text-primary">except halogens</strong> (deactivating but o/p directing)</li>
+              <li>All <span className="text-success">activators</span> are ortho/para directors</li>
+              <li>All <span className="text-error">deactivators</span> are meta directors — <strong className="text-primary">except halogens</strong> (deactivating but o/p directing)</li>
               <li>Lone pair donors (N, O, X on atom attached to ring) → o/p via resonance</li>
               <li>Carbonyl/cyano/nitro groups → meta (+ charge at o/p is destabilized)</li>
             </ul>
@@ -134,15 +134,15 @@ export default function DirectingEffectsReference({ allowCustom = true }: Props)
                   <tr key={row.sub} className="border-b border-border/50 group">
                     <td className="py-2 pr-3 text-primary font-medium">{row.sub}</td>
                     <td className="py-2 pr-3">
-                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${row.type === 'EDG' ? 'bg-emerald-950/40 text-emerald-700 dark:text-emerald-400' : 'bg-rose-950/40 text-rose-700 dark:text-rose-400'}`}>
+                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${row.type === 'EDG' ? 'bg-emerald-950/40 text-success' : 'bg-rose-950/40 text-error'}`}>
                         {row.type}
                       </span>
                     </td>
                     <td className="py-2 pr-3" style={{ color: row.director === 'meta' ? '#f87171' : 'var(--c-halogen)' }}>
                       {row.director}
                     </td>
-                    <td className="py-2 pr-3 text-dim text-[11px]">{row.strength}</td>
-                    <td className="py-2 pr-3 text-dim text-[11px]">{row.example}</td>
+                    <td className="py-2 pr-3 text-dim text-xs">{row.strength}</td>
+                    <td className="py-2 pr-3 text-dim text-xs">{row.example}</td>
                   </tr>
                 ))}
               </tbody>
@@ -178,8 +178,8 @@ export default function DirectingEffectsReference({ allowCustom = true }: Props)
                   const isSelected = selected === opt
                   const isCorrect = opt === problem.majorPosition
                   let style = 'border-border text-secondary hover:border-muted hover:text-primary'
-                  if (selected !== null && isCorrect) style = 'border-emerald-700/70 bg-emerald-950/25 text-emerald-700 dark:text-emerald-400'
-                  if (selected !== null && isSelected && !isCorrect) style = 'border-rose-700/70 bg-rose-950/25 text-rose-700 dark:text-rose-400'
+                  if (selected !== null && isCorrect) style = 'border-emerald-700/70 bg-emerald-950/25 text-success'
+                  if (selected !== null && isSelected && !isCorrect) style = 'border-rose-700/70 bg-rose-950/25 text-error'
                   return (
                     <button key={opt} disabled={selected !== null} onClick={() => setSelected(opt)}
                       className={`text-left px-4 py-2.5 rounded-sm border font-sans text-sm transition-colors ${style}`}>
@@ -191,7 +191,7 @@ export default function DirectingEffectsReference({ allowCustom = true }: Props)
 
               {selected !== null && (
                 <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
-                  className={`p-3 rounded-sm border text-sm font-sans ${selected === problem.majorPosition ? 'border-emerald-500 dark:border-emerald-700/50 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300' : 'border-rose-500 dark:border-rose-700/50 bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-300'}`}>
+                  className={`p-3 rounded-sm border text-sm font-sans ${selected === problem.majorPosition ? 'feedback-success text-success-strong' : 'feedback-error text-error-strong'}`}>
                   <span className="font-semibold">{selected === problem.majorPosition ? 'Correct. ' : `Incorrect — ${problem.majorPosition}. `}</span>
                   {problem.explanation}
                 </motion.div>

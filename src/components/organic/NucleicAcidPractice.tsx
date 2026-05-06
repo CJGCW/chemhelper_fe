@@ -91,9 +91,9 @@ export default function NucleicAcidPractice({ allowCustom: _allowCustom = true }
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.18 }}
           className={`rounded-sm border p-5 flex flex-col gap-4 transition-colors ${
-            !checked ? 'border-border' : correct ? 'border-emerald-500 dark:border-emerald-800/50' : 'border-rose-500 dark:border-rose-800/50'
+            !checked ? 'border-border' : correct ? 'border-success-border' : 'border-error-border'
           }`}
-          style={{ background: checked ? (correct ? 'rgba(16,185,129,0.05)' : 'rgba(239,68,68,0.05)') : 'rgb(var(--color-surface))' }}
+          style={{ background: checked ? (correct ? 'rgb(var(--color-success-bg) / 0.25)' : 'rgb(var(--color-error-bg) / 0.25)') : 'rgb(var(--color-surface))' }}
         >
           {question.smiles && (
             <div className="flex justify-center">
@@ -109,8 +109,8 @@ export default function NucleicAcidPractice({ allowCustom: _allowCustom = true }
               const isCorrect  = opt === question.answer
               let style: React.CSSProperties = { background: 'rgb(var(--color-raised))', border: '1px solid rgb(var(--color-border))', color: 'rgba(var(--overlay),0.6)' }
               if (checked) {
-                if (isCorrect) style = { background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.4)', color: '#34d399' }
-                else if (isSelected) style = { background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.35)', color: '#f87171' }
+                if (isCorrect) style = { background: 'rgb(var(--color-success-bg) / 0.35)', border: '1px solid rgb(var(--color-success-border) / 0.5)', color: 'rgb(var(--color-success))' }
+                else if (isSelected) style = { background: 'rgb(var(--color-error-bg) / 0.35)', border: '1px solid rgb(var(--color-error-border) / 0.4)', color: 'rgb(var(--color-error))' }
               } else if (isSelected) {
                 style = { background: activeTint, border: `1px solid ${activeBorder}`, color: 'var(--c-halogen)' }
               }
@@ -127,7 +127,7 @@ export default function NucleicAcidPractice({ allowCustom: _allowCustom = true }
 
           {checked && (
             <div className="flex flex-col gap-1.5">
-              <p className={`font-sans text-sm font-medium ${correct ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
+              <p className={`font-sans text-sm font-medium ${correct ? 'text-success' : 'text-error'}`}>
                 {correct ? '✓ Correct' : `✗ Incorrect — ${question.answer}`}
               </p>
               <p className="font-sans text-sm text-secondary leading-relaxed">{question.explanation}</p>

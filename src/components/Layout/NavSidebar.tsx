@@ -487,28 +487,17 @@ const NUCLEAR_GROUPS: NavTabGroup[] = [
 
 const SPECTROSCOPY_GROUPS: NavTabGroup[] = [
   {
-    label: 'IR Spectroscopy',
+    label: 'Spectroscopy',
     items: [
-      { tab: 'ref-ir',      label: 'IR Correlations', formula: 'cm⁻¹' },
-      { tab: 'ir-practice', label: 'IR Practice',     formula: '…'    },
+      { tab: 'ir-spectroscopy',  label: 'IR Spectroscopy',   formula: 'cm⁻¹' },
+      { tab: 'nmr-spectroscopy', label: 'NMR',               formula: 'δ ppm' },
+      { tab: 'ms-spectroscopy',  label: 'Mass Spectrometry', formula: 'm/z'   },
     ],
   },
   {
-    label: 'NMR',
+    label: 'Spectral Analysis',
     items: [
-      { tab: 'ref-hnmr',    label: '¹H NMR Shifts',   formula: 'δ ppm' },
-      { tab: 'ref-cnmr',    label: '¹³C NMR Shifts',   formula: '13C'   },
-      { tab: 'nmr-practice', label: 'NMR Practice',    formula: '…'    },
-    ],
-  },
-  {
-    label: 'Mass Spectrometry',
-    items: [
-      { tab: 'ref-ms',           label: 'MS Fragmentation',       formula: 'm/z'       },
-      { tab: 'ms-practice',      label: 'MS Practice',             formula: '…'         },
-      { tab: 'spectral-analysis', label: 'Upload & Analyze',       formula: '↑'         },
-      { tab: 'combined-practice', label: 'Combined Practice',      formula: 'IR+NMR+MS' },
-      { tab: 'estimator',         label: 'Estimate from Structure', formula: 'draw→spec' },
+      { tab: 'spectral-analysis-tools', label: 'Spectral Analysis', formula: '↑/draw' },
     ],
   },
 ]
@@ -722,6 +711,7 @@ interface SectionConfig {
   defaultTab: string
   defaultGroup: string
   groups: NavTabGroup[]
+  flat?: boolean  // render groups directly without an ExpandableSection wrapper
 }
 
 const SECTION_CONFIGS: SectionConfig[] = [
@@ -736,8 +726,8 @@ const SECTION_CONFIGS: SectionConfig[] = [
   { key: 'buffers',        icon: 'β',    label: 'Buffers & Solubility',  basePath: '/buffers',         groups: BUFFERS_GROUPS,        defaultTab: 'ref-buffer',           defaultGroup: 'Buffers'             },
   { key: 'thermodynamics', icon: 'ΔG',   label: 'Thermodynamics',        basePath: '/thermodynamics',  groups: THERMODYNAMICS_GROUPS, defaultTab: 'ref-entropy',          defaultGroup: 'Entropy'             },
   { key: 'nuclear',        icon: '⚛',   label: 'Nuclear Chemistry',     basePath: '/nuclear',         groups: NUCLEAR_GROUPS,        defaultTab: 'ref-decay',            defaultGroup: 'Nuclear Reactions'   },
-  { key: 'organic',        icon: 'C',    label: 'Organic Chemistry',     basePath: '/organic',         groups: ORGANIC_GROUPS,        defaultTab: 'ref-hydrocarbons',     defaultGroup: 'Hydrocarbons'        },
-  { key: 'spectroscopy',   icon: 'λ',   label: 'Spectroscopy',          basePath: '/spectral',        groups: SPECTROSCOPY_GROUPS,   defaultTab: 'ref-ir',               defaultGroup: 'IR Spectroscopy'     },
+  { key: 'organic',        icon: 'C',    label: 'Organic Chemistry',     basePath: '/organic',         groups: ORGANIC_GROUPS,        defaultTab: 'ref-hydrocarbons',     defaultGroup: 'Hydrocarbons',        flat: true },
+  { key: 'spectroscopy',   icon: 'λ',   label: 'Spectroscopy',          basePath: '/spectral',        groups: SPECTROSCOPY_GROUPS,   defaultTab: 'ir-spectroscopy',      defaultGroup: 'Spectroscopy'        },
 ]
 
 // ── Course groups — splits SECTION_CONFIGS into Gen Chem / Organic ────────────
@@ -1042,6 +1032,18 @@ export default function NavSidebar({ open, onClose, theme, onToggleTheme }: Prop
                             {cgSections.map(cfg => {
                               const hasVisible = cfg.groups.flatMap(g => g.items).some(i => isTabVisible(i.tab))
                               if (!hasVisible) return null
+                              if (cfg.flat) {
+                                return (
+                                  <GroupedNavSection
+                                    key={cfg.key}
+                                    groups={cfg.groups}
+                                    basePath={cfg.basePath}
+                                    defaultTab={cfg.defaultTab}
+                                    defaultGroup={cfg.defaultGroup}
+                                    onNavigate={onClose}
+                                  />
+                                )
+                              }
                               return (
                                 <ExpandableSection
                                   key={cfg.key}

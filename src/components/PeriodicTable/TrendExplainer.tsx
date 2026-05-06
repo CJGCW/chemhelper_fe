@@ -83,7 +83,7 @@ export default function TrendExplainer({ trendMode }: { trendMode: TrendMode }) 
         className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-surface/40 transition-colors"
       >
         <div className="w-2 h-2 rounded-full shrink-0" style={{ background: info.color }} />
-        <span className="font-mono text-[11px]" style={{ color: info.color }}>{info.name}</span>
+        <span className="font-mono text-xs" style={{ color: info.color }}>{info.name}</span>
         <span className="font-mono text-xs text-secondary">— why does this trend occur?</span>
         <motion.span
           animate={{ rotate: open ? 90 : 0 }}
@@ -136,7 +136,7 @@ export default function TrendExplainer({ trendMode }: { trendMode: TrendMode }) 
 
               {/* Extra note */}
               {info.extra && (
-                <p className="font-mono text-[11px] text-dim leading-relaxed border-t pt-2"
+                <p className="font-mono text-xs text-dim leading-relaxed border-t pt-2"
                   style={{ borderColor: 'rgba(var(--overlay),0.06)' }}>
                   {info.extra}
                 </p>

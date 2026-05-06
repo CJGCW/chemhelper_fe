@@ -128,7 +128,7 @@ export default function EquilibriumPredictor() {
                     <span className="text-xs text-secondary">{problem.acid}</span>
                   </>
                 )}
-                {checked && <span className="font-mono text-[11px] text-dim">pKₐ = {problem.pkaAcid}</span>}
+                {checked && <span className="font-mono text-xs text-dim">pKₐ = {problem.pkaAcid}</span>}
               </div>
               <span className="text-dim font-semibold">+</span>
               <div className="flex flex-col">
@@ -153,7 +153,7 @@ export default function EquilibriumPredictor() {
                     <span className="text-xs text-secondary">{problem.conjAcid}</span>
                   </>
                 )}
-                {checked && <span className="font-mono text-[11px] text-dim">pKₐ = {problem.pkaConjAcid}</span>}
+                {checked && <span className="font-mono text-xs text-dim">pKₐ = {problem.pkaConjAcid}</span>}
               </div>
               <span className="text-dim font-semibold">+</span>
               <div className="flex flex-col">
@@ -218,7 +218,7 @@ export default function EquilibriumPredictor() {
       <AnimatePresence>
         {checked && (
           <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className={`rounded-sm border px-4 py-2.5 font-sans text-sm font-semibold ${correct ? 'text-emerald-700 dark:text-emerald-400 border-emerald-500/30' : 'text-red-400 border-red-500/30'}`}
+            className={`rounded-sm border px-4 py-2.5 font-sans text-sm font-semibold ${correct ? 'text-success border-emerald-500/30' : 'text-red-400 border-red-500/30'}`}
             style={{ background: correct ? 'rgb(34 197 94 / 0.06)' : 'rgb(239 68 68 / 0.06)' }}>
             {correct ? '✓ Correct!' : `✗ Incorrect — equilibrium favors ${favorProducts ? 'products' : 'reactants'}.`}
           </motion.div>

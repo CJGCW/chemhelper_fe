@@ -124,7 +124,7 @@ export default function IsomerPractice({ allowCustom = true }: Props) {
 
           {checked && (
             <div className={`flex flex-col gap-3 p-4 rounded-sm border ${correct ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-red-500/30 bg-red-500/5'}`}>
-              <p className={`font-sans text-sm font-medium ${correct ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-400'}`}>
+              <p className={`font-sans text-sm font-medium ${correct ? 'text-success' : 'text-red-400'}`}>
                 {correct ? 'Correct!' : `Incorrect — the answer is: ${correctAnswer}`}
               </p>
               {showAnswers && (

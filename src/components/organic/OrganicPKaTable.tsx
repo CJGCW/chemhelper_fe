@@ -79,7 +79,7 @@ export default function OrganicPKaTable() {
                   <td className="px-3 py-1.5 text-primary font-medium">{e.type}</td>
                   <td className="px-3 py-1.5 font-mono text-primary">{e.example}</td>
                   <td className="px-3 py-1.5">
-                    <span className={`px-1.5 py-0.5 rounded font-mono font-semibold text-[11px] ${badge}`}>{e.pka}</span>
+                    <span className={`px-1.5 py-0.5 rounded font-mono font-semibold text-xs ${badge}`}>{e.pka}</span>
                   </td>
                   <td className="px-3 py-1.5 text-secondary">{e.conjugateBase}</td>
                   <td className="px-3 py-1.5 text-dim">{e.notes}</td>
@@ -90,7 +90,7 @@ export default function OrganicPKaTable() {
         </table>
       </div>
 
-      <p className="font-sans text-[11px] text-dim">
+      <p className="font-sans text-xs text-dim">
         * pKa values are approximate and solvent-dependent. Aqueous pKa values differ from DMSO values by as much as 10 units for C–H acids.
       </p>
     </div>

@@ -146,7 +146,7 @@ export default function CompoundInput({ onResolved }: Props) {
               <div className="flex gap-0 rounded-sm overflow-hidden border border-border self-start">
                 {(['formula', 'smiles'] as Mode[]).map(m => (
                   <button key={m} onClick={() => handleModeChange(m)}
-                    className="px-3 py-1 font-mono text-[11px] transition-colors"
+                    className="px-3 py-1 font-mono text-xs transition-colors"
                     style={{
                       background: mode === m ? 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))' : 'rgb(var(--color-raised))',
                       color: mode === m ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',

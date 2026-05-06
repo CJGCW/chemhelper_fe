@@ -100,7 +100,7 @@ export default function PercentYieldTool() {
         />
       </div>
 
-      {errorMsg && <p className="font-mono text-xs text-rose-700 dark:text-rose-400">{errorMsg}</p>}
+      {errorMsg && <p className="font-mono text-xs text-error">{errorMsg}</p>}
 
       <NumberField
         label="Your answer — optional, enter to check"

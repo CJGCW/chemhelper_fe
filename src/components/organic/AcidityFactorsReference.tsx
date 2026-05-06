@@ -44,7 +44,7 @@ export default function AcidityFactorsReference() {
             </tbody>
           </table>
         </div>
-        <p className="font-sans text-[11px] text-dim">Each Cl pulls electron density away from the carboxylate, stabilizing the negative charge.</p>
+        <p className="font-sans text-xs text-dim">Each Cl pulls electron density away from the carboxylate, stabilizing the negative charge.</p>
       </section>
 
       {/* Factor 2 */}

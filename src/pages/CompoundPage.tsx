@@ -180,7 +180,7 @@ export default function CompoundPage() {
             <button
               key={ex.input}
               onClick={() => handleExample(ex)}
-              className="font-mono text-[11px] px-2 py-0.5 rounded-sm border border-border
+              className="font-mono text-xs px-2 py-0.5 rounded-sm border border-border
                          text-secondary hover:text-primary hover:border-muted transition-colors"
             >
               {ex.label}

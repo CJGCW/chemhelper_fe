@@ -1161,8 +1161,8 @@ export default function TestSheet({ test, onBack }: Props) {
   function renderQuestion(q: TestQuestion) {
     const result: Result | undefined = results?.[q.id]
 
-    const bgClass = result === 'correct' ? 'border-emerald-500 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/20'
-      : (result === 'wrong' || result === 'wrong_sf') ? 'border-rose-500 dark:border-rose-800/50 bg-rose-50 dark:bg-rose-950/20'
+    const bgClass = result === 'correct' ? 'feedback-success'
+      : (result === 'wrong' || result === 'wrong_sf') ? 'feedback-error'
       : result === 'blank' ? 'border-amber-800/40 bg-amber-950/10'
       : 'border-border bg-surface'
 
@@ -1455,8 +1455,8 @@ export default function TestSheet({ test, onBack }: Props) {
           <span className="font-mono text-xs text-secondary border border-border px-2 py-0.5 rounded-sm">
             {q.topic}
           </span>
-          {result === 'correct'  && <span className="ml-auto font-mono text-sm text-emerald-700 dark:text-emerald-400">✓</span>}
-          {result === 'wrong'    && <span className="ml-auto font-mono text-sm text-rose-700 dark:text-rose-400">✗</span>}
+          {result === 'correct'  && <span className="ml-auto font-mono text-sm text-success">✓</span>}
+          {result === 'wrong'    && <span className="ml-auto font-mono text-sm text-error">✗</span>}
           {result === 'wrong_sf' && <span className="ml-auto font-sans text-xs text-orange-400">right value, check sig figs</span>}
           {result === 'blank'    && <span className="ml-auto font-mono text-xs text-amber-500">no answer</span>}
         </div>
@@ -1539,10 +1539,10 @@ export default function TestSheet({ test, onBack }: Props) {
                           return (
                             <td key={sp} className="border border-border p-1">
                               <div className="flex flex-col items-center gap-0.5 py-1 px-2">
-                                <span className={`text-sm font-mono ${isOk ? 'text-emerald-700 dark:text-emerald-300' : 'text-rose-700 dark:text-rose-300'}`}>
+                                <span className={`text-sm font-mono ${isOk ? 'text-success-strong' : 'text-error-strong'}`}>
                                   {cellVal || '—'}
                                 </span>
-                                {!isOk && <span className="text-xs text-emerald-700 dark:text-emerald-400">{fmtICECell(correct)}</span>}
+                                {!isOk && <span className="text-xs text-success">{fmtICECell(correct)}</span>}
                               </div>
                             </td>
                           )
@@ -1602,7 +1602,7 @@ export default function TestSheet({ test, onBack }: Props) {
               {submissions[q.id] ? 'Redraw →' : 'Open Editor →'}
             </button>
             {submissions[q.id]
-              ? <span className="font-mono text-xs text-emerald-700 dark:text-emerald-400">drawing submitted</span>
+              ? <span className="font-mono text-xs text-success">drawing submitted</span>
               : <span className="font-mono text-xs text-dim">not yet submitted</span>
             }
             {checked && (
@@ -1687,8 +1687,8 @@ export default function TestSheet({ test, onBack }: Props) {
                         placeholder-dim focus:outline-none focus:border-muted
                         disabled:cursor-not-allowed transition-colors
                         ${(empiricalP || atomicP?.isTextAnswer || lewisP?.isTextAnswer || vseprP?.isTextAnswer || stoichP?.isTextAnswer || redoxP?.isTextAnswer || balancingP) ? 'w-44' : 'w-36'}
-                        ${result === 'correct' ? 'border-emerald-500 dark:border-emerald-700/60 text-emerald-700 dark:text-emerald-300'
-                          : (result === 'wrong' || result === 'wrong_sf') ? 'border-rose-500 dark:border-rose-700/60 text-rose-700 dark:text-rose-300'
+                        ${result === 'correct' ? 'border-success-border text-success-strong'
+                          : (result === 'wrong' || result === 'wrong_sf') ? 'border-error-border text-error-strong'
                           : 'border-border text-bright'}`}
           />
           {molarP && (
@@ -1746,8 +1746,8 @@ export default function TestSheet({ test, onBack }: Props) {
               className={`w-20 bg-raised border rounded-sm px-3 py-1.5 font-mono text-base
                           placeholder-dim focus:outline-none focus:border-muted
                           disabled:cursor-not-allowed transition-colors
-                          ${result === 'correct' ? 'border-emerald-500 dark:border-emerald-700/60 text-emerald-700 dark:text-emerald-300'
-                            : result === 'wrong' ? 'border-rose-500 dark:border-rose-700/60 text-rose-700 dark:text-rose-300'
+                          ${result === 'correct' ? 'border-success-border text-success-strong'
+                            : result === 'wrong' ? 'border-error-border text-error-strong'
                             : 'border-border text-bright'}`}
             />
             <span className="font-mono text-sm text-secondary">π =</span>
@@ -1763,8 +1763,8 @@ export default function TestSheet({ test, onBack }: Props) {
               className={`w-20 bg-raised border rounded-sm px-3 py-1.5 font-mono text-base
                           placeholder-dim focus:outline-none focus:border-muted
                           disabled:cursor-not-allowed transition-colors
-                          ${result === 'correct' ? 'border-emerald-500 dark:border-emerald-700/60 text-emerald-700 dark:text-emerald-300'
-                            : result === 'wrong' ? 'border-rose-500 dark:border-rose-700/60 text-rose-700 dark:text-rose-300'
+                          ${result === 'correct' ? 'border-success-border text-success-strong'
+                            : result === 'wrong' ? 'border-error-border text-error-strong'
                             : 'border-border text-bright'}`}
             />
             {checked && (
@@ -1791,8 +1791,8 @@ export default function TestSheet({ test, onBack }: Props) {
               className={`bg-raised border rounded-sm px-3 py-1.5 font-mono text-base
                           placeholder-dim focus:outline-none focus:border-muted
                           disabled:cursor-not-allowed transition-colors w-36
-                          ${result === 'correct' ? 'border-emerald-500 dark:border-emerald-700/60 text-emerald-700 dark:text-emerald-300'
-                            : (result === 'wrong' || result === 'wrong_sf') ? 'border-rose-500 dark:border-rose-700/60 text-rose-700 dark:text-rose-300'
+                          ${result === 'correct' ? 'border-success-border text-success-strong'
+                            : (result === 'wrong' || result === 'wrong_sf') ? 'border-error-border text-error-strong'
                             : 'border-border text-bright'}`}
             />
             {numericP?.unit && (

@@ -77,7 +77,7 @@ export default function FischerReference() {
                     <td className="py-1.5 pr-4 text-primary">{name}</td>
                     <td className="py-1.5 pr-4 text-center" style={{ color: 'var(--c-halogen)' }}>{dl}</td>
                     <td className="py-1.5 pr-4 text-center text-dim">{rs}</td>
-                    <td className="py-1.5 text-dim text-[11px]">{note}</td>
+                    <td className="py-1.5 text-dim text-xs">{note}</td>
                   </tr>
                 ))}
               </tbody>

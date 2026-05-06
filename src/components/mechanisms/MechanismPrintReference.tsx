@@ -61,7 +61,7 @@ export default function MechanismPrintReference({ category }: Props) {
                 style={{ background: i % 2 === 0 ? 'rgb(var(--color-surface))' : 'rgb(var(--color-raised))' }}
                 className="border-b border-border/50 align-top">
                 <td className="px-2 py-1.5">
-                  <div className="font-semibold text-primary text-[11px]">{rxn.name}</div>
+                  <div className="font-semibold text-primary text-xs">{rxn.name}</div>
                   {rxn.brownRef && (
                     <div className="font-mono text-[9px] text-dim">{rxn.brownRef}</div>
                   )}

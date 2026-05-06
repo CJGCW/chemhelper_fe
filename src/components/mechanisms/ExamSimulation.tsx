@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { generateMixedQuestion, generateQuestion, checkMechAnswer, type MechQuestion } from '../../utils/mechanismQuestions'
 import type { MechanismCategory } from '../../data/mechanisms/types'
 import { CATEGORY_LABELS } from '../../data/mechanisms/types'
+import RenderableChoiceButton from '../shared/RenderableChoiceButton'
 
 // ── Exam presets ──────────────────────────────────────────────────────────────
 
@@ -185,13 +186,13 @@ export default function ExamSimulation() {
         <div className="rounded-sm border border-border p-5 flex flex-col gap-3" style={{ background: 'rgb(var(--color-surface))' }}>
           <h3 className="font-sans font-semibold text-primary text-sm">{preset.label} — Results</h3>
           <div className="flex items-end gap-2">
-            <span className="font-mono text-4xl font-bold" style={{ color: pct >= 70 ? '#34d399' : pct >= 50 ? '#f59e0b' : '#f87171' }}>
+            <span className="font-mono text-4xl font-bold" style={{ color: pct >= 70 ? 'rgb(var(--color-success))' : pct >= 50 ? 'rgb(var(--color-warning))' : 'rgb(var(--color-error))' }}>
               {correct}/{questions.length}
             </span>
             <span className="font-sans text-sm text-secondary mb-1">({pct}%)</span>
           </div>
           <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgb(var(--color-raised))' }}>
-            <motion.div className="h-full rounded-full" style={{ background: pct >= 70 ? '#34d399' : pct >= 50 ? '#f59e0b' : '#f87171' }}
+            <motion.div className="h-full rounded-full" style={{ background: pct >= 70 ? 'rgb(var(--color-success))' : pct >= 50 ? 'rgb(var(--color-warning))' : 'rgb(var(--color-error))' }}
               animate={{ width: `${pct}%` }} transition={{ duration: 0.6, delay: 0.2 }} />
           </div>
         </div>
@@ -228,7 +229,7 @@ export default function ExamSimulation() {
     <div className="flex flex-col gap-5 max-w-2xl">
       <div className="flex items-center justify-between print:hidden">
         <span className="font-mono text-sm text-secondary">{preset.label} · Q {current + 1}/{questions.length}</span>
-        <span className={`font-mono text-sm ${isUrgent ? 'text-rose-700 dark:text-rose-400' : 'text-dim'}`}>{formatTime(timeLeft)}</span>
+        <span className={`font-mono text-sm ${isUrgent ? 'text-error' : 'text-dim'}`}>{formatTime(timeLeft)}</span>
       </div>
       <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgb(var(--color-raised))' }}>
         <motion.div className="h-full rounded-full" style={{ background: 'var(--c-halogen)' }}
@@ -240,7 +241,7 @@ export default function ExamSimulation() {
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.18 }}
           className={`rounded-sm border p-5 flex flex-col gap-4 transition-colors ${
-            !confirmed ? 'border-border' : isCorrect ? 'border-emerald-500 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/20' : 'border-rose-500 dark:border-rose-800/50 bg-rose-50 dark:bg-rose-950/20'
+            !confirmed ? 'border-border' : isCorrect ? 'feedback-success' : 'feedback-error'
           }`}
           style={{ background: confirmed ? undefined : 'rgb(var(--color-surface))' }}
         >
@@ -252,28 +253,19 @@ export default function ExamSimulation() {
           <pre className="font-mono text-sm text-primary leading-relaxed whitespace-pre-wrap">{q.scenario}</pre>
           <p className="font-sans text-sm text-secondary font-medium">{q.question}</p>
           <div className="flex flex-col gap-2">
-            {q.choices.map(opt => {
-              const isSelected = selected === opt
-              const isOptCorrect = opt === q.answer
-              let style: React.CSSProperties = { background: 'rgb(var(--color-raised))', border: '1px solid rgb(var(--color-border))', color: 'rgba(var(--overlay),0.6)' }
-              if (confirmed) {
-                if (isOptCorrect) style = { background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.4)', color: '#34d399' }
-                else if (isSelected) style = { background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.35)', color: '#f87171' }
-              } else if (isSelected) {
-                style = { background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)', color: 'var(--c-halogen)' }
-              }
-              return (
-                <button key={opt} onClick={() => handleSelect(opt)} disabled={confirmed}
-                  className="px-4 py-2.5 rounded-sm font-sans text-sm text-left transition-colors disabled:cursor-not-allowed leading-snug"
-                  style={style}
-                >
-                  {opt}
-                </button>
-              )
-            })}
+            {q.choices.map(choice => (
+              <RenderableChoiceButton
+                key={choice.label}
+                choice={choice}
+                isSelected={selected === choice.label}
+                isCorrect={choice.label === q.answer}
+                isChecked={confirmed}
+                onSelect={() => handleSelect(choice.label)}
+              />
+            ))}
           </div>
           {confirmed && (
-            <p className={`font-sans text-sm font-medium ${isCorrect ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
+            <p className={`font-sans text-sm font-medium ${isCorrect ? 'text-success' : 'text-error'}`}>
               {isCorrect ? '✓ Correct' : `✗ Incorrect — ${q.answer}`}
             </p>
           )}

@@ -142,7 +142,7 @@ function TrendButton({
         className="w-2 h-2 rounded-full shrink-0"
         style={{ background: active ? color : "rgba(var(--overlay),0.2)" }}
       />
-      <span className="font-mono text-[11px]">{label}</span>
+      <span className="font-mono text-xs">{label}</span>
       <span className="font-sans text-[10px] opacity-60">{sublabel}</span>
     </button>
   );
@@ -332,7 +332,7 @@ export default function PeriodicTable() {
         >
           <div className="w-2 h-2 rounded-full shrink-0"
             style={{ background: compareMode ? '#60a5fa' : 'rgba(var(--overlay),0.2)' }} />
-          <span className="font-mono text-[11px]">Compare</span>
+          <span className="font-mono text-xs">Compare</span>
           <span className="font-sans text-[10px] opacity-60">A vs B</span>
         </button>
       </div>
@@ -474,7 +474,7 @@ export default function PeriodicTable() {
               style={{ background: GROUP_COLORS[cat] }}
             />
             <span
-              className="font-sans text-[11px] transition-colors"
+              className="font-sans text-xs transition-colors"
               style={{ color: "rgba(var(--overlay),0.4)" }}
             >
               {GROUP_LABELS[cat]}

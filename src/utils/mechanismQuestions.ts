@@ -2,16 +2,23 @@
 // All questions are derived from ALL_REACTIONS — no hardcoded pool.
 
 import { ALL_REACTIONS } from '../data/mechanisms/index'
-import type { ReactionDef, MechanismCategory } from '../data/mechanisms/types'
+import type { ReactionDef, MechanismCategory, ReactionParticipants, RenderableChoice } from '../data/mechanisms/types'
 
 export type QuestionType = 'predict-product' | 'identify-mechanism' | 'predict-regio' | 'predict-stereo' | 'identify-reagent'
 
 export interface MechQuestion {
   type: QuestionType
   reactionId: string
+  /** Plain-text scenario (always present, used as fallback). */
   scenario: string
+  /** Structured scenario data for visual rendering (present when reaction has species data). */
+  scenarioData?: {
+    reactants: ReactionParticipants
+    conditions: ReactionParticipants
+  }
   question: string
-  choices: string[]
+  /** Structured choices — label-only for non-structural answers, label+species for chemical species. */
+  choices: RenderableChoice[]
   answer: string
   explanation: string
   steps: string[]
@@ -42,12 +49,25 @@ function makeChoices<T>(correct: T, pool: T[]): T[] {
 function buildPredictProduct(r: ReactionDef, pool: ReactionDef[]): MechQuestion {
   const correctProduct = r.products
   const wrongProducts  = pool.filter(p => p.id !== r.id && p.products !== correctProduct).map(p => p.products)
-  const choices = makeChoices(correctProduct, wrongProducts)
+  const textChoices = makeChoices(correctProduct, wrongProducts)
+
+  // Structured choices: use productSpecies when available
+  const choices: RenderableChoice[] = textChoices.map(label => {
+    const match = pool.find(p => p.products === label)
+    if (match?.productSpecies) {
+      return { label, species: match.productSpecies.species }
+    }
+    return { label }
+  })
+
   return {
     type: 'predict-product',
     reactionId: r.id,
     category: r.category,
     scenario: `Reactants: ${r.reactants}\nConditions: ${r.conditions}`,
+    scenarioData: r.reactantSpecies && r.conditionSpecies
+      ? { reactants: r.reactantSpecies, conditions: r.conditionSpecies }
+      : undefined,
     question: 'What is the major product of this reaction?',
     choices,
     answer: correctProduct,
@@ -78,12 +98,17 @@ const REACTION_TYPE_LABELS: Record<string, string> = {
 function buildIdentifyMechanism(r: ReactionDef): MechQuestion {
   const correct = REACTION_TYPE_LABELS[r.reactionType] ?? r.reactionType
   const allTypes = Object.values(REACTION_TYPE_LABELS)
-  const choices  = makeChoices(correct, allTypes)
+  const textChoices = makeChoices(correct, allTypes)
+  // Mechanism type choices are always text-only (no species)
+  const choices: RenderableChoice[] = textChoices.map(label => ({ label }))
   return {
     type: 'identify-mechanism',
     reactionId: r.id,
     category: r.category,
     scenario: `Reaction: ${r.name}\nReactants: ${r.reactants} → ${r.products}\nConditions: ${r.conditions}`,
+    scenarioData: r.reactantSpecies && r.conditionSpecies
+      ? { reactants: r.reactantSpecies, conditions: r.conditionSpecies }
+      : undefined,
     question: 'What type of mechanism is this?',
     choices,
     answer: correct,
@@ -108,15 +133,19 @@ function buildPredictRegio(r: ReactionDef): MechQuestion | null {
   if (!r.regiochemistry) return null
   const correct = REGIO_LABELS[r.regiochemistry] ?? r.regiochemistry
   const wrong   = REGIO_ALL.filter(x => x !== correct)
-  const choices = shuffle([correct, ...wrong, REGIO_NONE]).slice(0, 4)
-  if (!choices.includes(correct)) choices[0] = correct
+  const textChoices = shuffle([correct, ...wrong, REGIO_NONE]).slice(0, 4)
+  if (!textChoices.includes(correct)) textChoices[0] = correct
+  const choices: RenderableChoice[] = shuffle(textChoices).map(label => ({ label }))
   return {
     type: 'predict-regio',
     reactionId: r.id,
     category: r.category,
     scenario: `Reaction: ${r.name}\nReactants: ${r.reactants}\nConditions: ${r.conditions}`,
+    scenarioData: r.reactantSpecies && r.conditionSpecies
+      ? { reactants: r.reactantSpecies, conditions: r.conditionSpecies }
+      : undefined,
     question: 'What regiochemistry is expected for this reaction?',
-    choices: shuffle(choices),
+    choices,
     answer: correct,
     explanation: `${r.name} follows ${correct}. ${r.summary}`,
     steps: [
@@ -141,15 +170,19 @@ function buildPredictStereo(r: ReactionDef): MechQuestion | null {
   if (!r.stereochemistry) return null
   const correct = STEREO_LABELS[r.stereochemistry] ?? r.stereochemistry
   const wrong   = STEREO_ALL.filter(x => x !== correct)
-  const choices = shuffle([correct, ...wrong.slice(0, 2), STEREO_NONE])
-  if (!choices.includes(correct)) choices[0] = correct
+  const textChoices = shuffle([correct, ...wrong.slice(0, 2), STEREO_NONE])
+  if (!textChoices.includes(correct)) textChoices[0] = correct
+  const choices: RenderableChoice[] = shuffle(textChoices).map(label => ({ label }))
   return {
     type: 'predict-stereo',
     reactionId: r.id,
     category: r.category,
     scenario: `Reaction: ${r.name}\nReactants: ${r.reactants}\nConditions: ${r.conditions}`,
+    scenarioData: r.reactantSpecies && r.conditionSpecies
+      ? { reactants: r.reactantSpecies, conditions: r.conditionSpecies }
+      : undefined,
     question: 'What stereochemical outcome is expected?',
-    choices: shuffle(choices),
+    choices,
     answer: correct,
     explanation: `${r.name} gives ${correct.toLowerCase()}. ${r.summary}`,
     steps: [
@@ -163,12 +196,25 @@ function buildPredictStereo(r: ReactionDef): MechQuestion | null {
 function buildIdentifyReagent(r: ReactionDef, pool: ReactionDef[]): MechQuestion {
   const correct = r.conditions
   const wrong   = pool.filter(p => p.id !== r.id && p.conditions !== correct).map(p => p.conditions)
-  const choices = makeChoices(correct, wrong)
+  const textChoices = makeChoices(correct, wrong)
+
+  // Structured choices: use conditionSpecies when available
+  const choices: RenderableChoice[] = textChoices.map(label => {
+    const match = pool.find(p => p.conditions === label)
+    if (match?.conditionSpecies) {
+      return { label, species: match.conditionSpecies.species }
+    }
+    return { label }
+  })
+
   return {
     type: 'identify-reagent',
     reactionId: r.id,
     category: r.category,
     scenario: `Transformation: ${r.reactants} → ${r.products}`,
+    scenarioData: r.reactantSpecies && r.productSpecies
+      ? { reactants: r.reactantSpecies, conditions: r.productSpecies }
+      : undefined,
     question: 'Which reagent(s) / conditions are needed for this transformation?',
     choices,
     answer: correct,
@@ -233,4 +279,9 @@ export function generateMixedQuestion(category: MechanismCategory | 'all' = 'all
 
 export function checkMechAnswer(q: MechQuestion, selected: string): boolean {
   return selected.trim() === q.answer.trim()
+}
+
+/** Extract the plain-text labels from a choices array for backward-compat rendering. */
+export function choiceLabels(choices: RenderableChoice[]): string[] {
+  return choices.map(c => c.label)
 }

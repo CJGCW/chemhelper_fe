@@ -24,6 +24,26 @@ export const ALKENE_REACTIONS: ReactionDef[] = [
     reactants: 'Alkene + H₂O (H₃O⁺ cat.)',
     products: 'Markovnikov alcohol',
     conditions: 'Dilute H₂SO₄ or H₃PO₄; aqueous solution; room temperature',
+    reactantSpecies: {
+      text: 'Alkene + H₂O',
+      species: [
+        { smiles: '[R]C=C[R]', label: 'Alkene' },
+        { smiles: 'O', label: 'H₂O', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'Markovnikov alcohol',
+      species: [
+        { smiles: '[R]C([R])(O)C[R]', label: 'Markovnikov alcohol' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Dilute H₂SO₄ or H₃PO₄; aqueous',
+      species: [
+        { smiles: '[H3O+]', label: 'H₃O⁺', showLonePairs: true, catalyst: true },
+        { smiles: 'O', label: 'H₂O', showLonePairs: true },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: 'markovnikov',
     stereochemistry: null,
@@ -90,6 +110,26 @@ export const ALKENE_REACTIONS: ReactionDef[] = [
     reactants: 'Alkene + ROH (H⁺ cat.)',
     products: 'Markovnikov ether',
     conditions: 'Dilute H₂SO₄ or TsOH; alcohol as solvent; excess ROH drives equilibrium',
+    reactantSpecies: {
+      text: 'Alkene + ROH',
+      species: [
+        { smiles: '[R]C=C[R]', label: 'Alkene' },
+        { smiles: '[R]O', label: 'ROH', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'Markovnikov ether',
+      species: [
+        { smiles: '[R]C([R])(OC[R])C[R]', label: 'Ether' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Dilute H₂SO₄ or TsOH',
+      species: [
+        { smiles: '[H3O+]', label: 'H₃O⁺', showLonePairs: true, catalyst: true },
+        { smiles: '[R]O', label: 'ROH', showLonePairs: true },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: 'markovnikov',
     stereochemistry: null,
@@ -156,6 +196,25 @@ export const ALKENE_REACTIONS: ReactionDef[] = [
     reactants: 'Alkene + HBr (or HCl, HI)',
     products: 'Markovnikov alkyl halide',
     conditions: 'Anhydrous HX gas or HX in acetic acid; no peroxides (for Markovnikov)',
+    reactantSpecies: {
+      text: 'Alkene + HBr',
+      species: [
+        { smiles: '[R]C=C[R]', label: 'Alkene' },
+        { smiles: 'Br', label: 'HBr' },
+      ],
+    },
+    productSpecies: {
+      text: 'Markovnikov alkyl halide',
+      species: [
+        { smiles: '[R]C([R])(Br)C[R]', label: 'R-Br (Markovnikov)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Anhydrous HX; no peroxides',
+      species: [
+        { smiles: 'Br', label: 'HBr' },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: 'markovnikov',
     stereochemistry: null,
@@ -221,6 +280,26 @@ export const ALKENE_REACTIONS: ReactionDef[] = [
     reactants: 'Alkene + Br₂ (or Cl₂)',
     products: 'Anti-dihalide',
     conditions: 'Br₂ or Cl₂ in CH₂Cl₂; no light or heat; CCl₄ or inert solvent preferred',
+    reactantSpecies: {
+      text: 'Alkene + Br₂',
+      species: [
+        { smiles: '[R]C=C[R]', label: 'Alkene' },
+        { smiles: 'BrBr', label: 'Br₂' },
+      ],
+    },
+    productSpecies: {
+      text: 'Anti-1,2-dihalide',
+      species: [
+        { smiles: '[R]C(Br)C([R])Br', label: 'anti-1,2-dibromide' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Br₂ or Cl₂ in CH₂Cl₂',
+      species: [
+        { smiles: 'BrBr', label: 'Br₂' },
+        { smiles: 'ClCl', label: 'Cl₂' },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: null,
     stereochemistry: 'anti',
@@ -283,6 +362,26 @@ export const ALKENE_REACTIONS: ReactionDef[] = [
     reactants: 'Alkene + Hg(OAc)₂ / H₂O; then NaBH₄',
     products: 'Markovnikov alcohol (anti addition)',
     conditions: 'Step 1: Hg(OAc)₂ in THF/H₂O; Step 2: NaBH₄ in NaOH',
+    reactantSpecies: {
+      text: 'Alkene + Hg(OAc)₂ / H₂O',
+      species: [
+        { smiles: '[R]C=C[R]', label: 'Alkene' },
+        { smiles: 'O', label: 'H₂O', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'Markovnikov alcohol',
+      species: [
+        { smiles: '[R]C([R])(O)C[R]', label: 'Markovnikov–OH' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Step 1: Hg(OAc)₂/THF; Step 2: NaBH₄/NaOH',
+      species: [
+        { smiles: 'OC(=O)C', label: 'Hg(OAc)₂', catalyst: true },
+        { smiles: '[BH4-]', label: 'NaBH₄' },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: 'markovnikov',
     stereochemistry: null,
@@ -347,6 +446,26 @@ export const ALKENE_REACTIONS: ReactionDef[] = [
     reactants: 'Alkene + BH₃ (in THF); then H₂O₂ / NaOH',
     products: 'Anti-Markovnikov alcohol (syn addition)',
     conditions: 'Step 1: BH₃·THF at 0 °C; Step 2: H₂O₂, NaOH, H₂O',
+    reactantSpecies: {
+      text: 'Alkene + BH₃·THF',
+      species: [
+        { smiles: '[R]C=C[R]', label: 'Alkene' },
+        { smiles: 'B', label: 'BH₃' },
+      ],
+    },
+    productSpecies: {
+      text: 'Anti-Markovnikov alcohol (syn)',
+      species: [
+        { smiles: '[R]C([R])([H])C([H])([R])O', label: 'syn-anti-Markovnikov–OH' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Step 1: BH₃·THF; Step 2: H₂O₂/NaOH',
+      species: [
+        { smiles: 'B', label: 'BH₃·THF' },
+        { smiles: 'OO', label: 'H₂O₂' },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: 'anti-markovnikov',
     stereochemistry: 'syn',
@@ -399,6 +518,25 @@ export const ALKENE_REACTIONS: ReactionDef[] = [
     reactants: 'Alkene + mCPBA (or RCO₃H)',
     products: 'Epoxide (oxirane)',
     conditions: 'mCPBA in CH₂Cl₂; 0 °C to RT; or m-chloroperoxybenzoic acid',
+    reactantSpecies: {
+      text: 'Alkene + mCPBA',
+      species: [
+        { smiles: '[R]C=C[R]', label: 'Alkene' },
+        { smiles: 'OC(=O)c1cccc(Cl)c1', label: 'mCPBA' },
+      ],
+    },
+    productSpecies: {
+      text: 'Epoxide (syn addition)',
+      species: [
+        { smiles: '[R]C1OC1[R]', label: 'Epoxide' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'mCPBA in CH₂Cl₂',
+      species: [
+        { smiles: 'OC(=O)c1cccc(Cl)c1', label: 'mCPBA' },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: null,
     stereochemistry: 'syn',
@@ -464,6 +602,26 @@ export const ALKENE_REACTIONS: ReactionDef[] = [
     reactants: 'Alkene + H₂ (Pt/Pd/Ni catalyst)',
     products: 'Alkane (syn addition product)',
     conditions: 'H₂ gas at 1–4 atm; Pd/C, PtO₂, or Raney Ni; EtOH or EtOAc solvent',
+    reactantSpecies: {
+      text: 'Alkene + H₂',
+      species: [
+        { smiles: '[R]C=C[R]', label: 'Alkene' },
+        { smiles: '[H][H]', label: 'H₂' },
+      ],
+    },
+    productSpecies: {
+      text: 'Alkane (syn addition)',
+      species: [
+        { smiles: '[R]CC[R]', label: 'Alkane' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'H₂; Pd/C or Pt catalyst',
+      species: [
+        { smiles: '[H][H]', label: 'H₂' },
+        { smiles: '[Pd]', label: 'Pd/C', catalyst: true },
+      ],
+    },
     reactionType: 'reduction',
     regiochemistry: null,
     stereochemistry: 'syn',
@@ -517,6 +675,27 @@ export const ALKENE_REACTIONS: ReactionDef[] = [
     reactants: 'Alkene + HBr + peroxide (ROOR)',
     products: 'Anti-Markovnikov alkyl bromide',
     conditions: 'HBr with ROOR (peroxide) initiator or hν; no acid catalyst',
+    reactantSpecies: {
+      text: 'Alkene + HBr + peroxide',
+      species: [
+        { smiles: '[R]C=C[R]', label: 'Alkene' },
+        { smiles: 'Br', label: 'HBr' },
+        { smiles: '[R]OO[R]', label: 'ROOR', catalyst: true },
+      ],
+    },
+    productSpecies: {
+      text: 'Anti-Markovnikov alkyl bromide',
+      species: [
+        { smiles: 'Br[R]', label: 'R–Br (anti-Markovnikov)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'HBr + peroxide or hν',
+      species: [
+        { smiles: 'Br', label: 'HBr' },
+        { smiles: '[R]OO[R]', label: 'ROOR' },
+      ],
+    },
     reactionType: 'radical',
     regiochemistry: 'anti-markovnikov',
     stereochemistry: null,

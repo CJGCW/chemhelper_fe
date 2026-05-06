@@ -31,11 +31,11 @@ function LegacyCard({ rxn }: { rxn: ReactionDef }) {
 
       <div className="px-4 py-2.5 border-t border-border flex flex-col gap-1.5" style={{ background: 'rgb(var(--color-surface))' }}>
         <div className="grid gap-x-3 items-start" style={{ gridTemplateColumns: 'max-content 1fr' }}>
-          <span className="font-mono text-[11px] text-dim pt-px">Reactants</span>
+          <span className="font-mono text-xs text-dim pt-px">Reactants</span>
           <span className="font-mono text-xs" style={{ color: 'var(--c-halogen)' }}>{rxn.reactants}</span>
-          <span className="font-mono text-[11px] text-dim pt-px">Conditions</span>
+          <span className="font-mono text-xs text-dim pt-px">Conditions</span>
           <span className="font-mono text-xs text-secondary">{rxn.conditions}</span>
-          <span className="font-mono text-[11px] text-dim pt-px">Product</span>
+          <span className="font-mono text-xs text-dim pt-px">Product</span>
           <span className="font-mono text-xs text-primary">{rxn.product}</span>
         </div>
       </div>
@@ -45,17 +45,17 @@ function LegacyCard({ rxn }: { rxn: ReactionDef }) {
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.18 }} style={{ overflow: 'hidden' }}>
             <div className="px-4 py-3 border-t border-border flex flex-col gap-1">
-              <span className="font-mono text-[11px] text-dim uppercase tracking-wider">Mechanism</span>
+              <span className="font-mono text-xs text-dim uppercase tracking-wider">Mechanism</span>
               <span className="font-sans text-sm text-secondary">{rxn.mechanismType}</span>
             </div>
             {rxn.intermediate && (
               <div className="px-4 py-3 border-t border-border flex flex-col gap-1">
-                <span className="font-mono text-[11px] text-dim uppercase tracking-wider">Intermediate</span>
+                <span className="font-mono text-xs text-dim uppercase tracking-wider">Intermediate</span>
                 <span className="font-sans text-sm text-secondary">{rxn.intermediate}</span>
               </div>
             )}
             <div className="px-4 py-3 border-t border-border flex flex-col gap-4">
-              <span className="font-mono text-[11px] text-dim uppercase tracking-wider">Mechanism Steps</span>
+              <span className="font-mono text-xs text-dim uppercase tracking-wider">Mechanism Steps</span>
               {rxn.steps.map((step, i) => (
                 <div key={i} className="flex flex-col gap-1.5">
                   <span className="font-sans text-sm font-semibold text-primary">{step.label}</span>
@@ -70,7 +70,7 @@ function LegacyCard({ rxn }: { rxn: ReactionDef }) {
               ))}
             </div>
             <div className="px-4 py-3 border-t border-border flex flex-col gap-2">
-              <span className="font-mono text-[11px] text-dim uppercase tracking-wider">Key Rules</span>
+              <span className="font-mono text-xs text-dim uppercase tracking-wider">Key Rules</span>
               <ul className="flex flex-col gap-1">
                 {rxn.keyRules.map((rule, i) => (
                   <li key={i} className="flex gap-2 items-start">

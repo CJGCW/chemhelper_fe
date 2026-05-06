@@ -31,9 +31,9 @@ export default function OrganicNamingPractice({ allowCustom = true }: Props) {
   const FAMILY_LABEL: Record<string, string> = { alkane: 'Alkane', alkene: 'Alkene', alkyne: 'Alkyne' }
 
   const borderClass = checkState === 'correct'
-    ? 'border-emerald-500 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/20'
+    ? 'feedback-success'
     : checkState === 'wrong'
-    ? 'border-rose-500 dark:border-rose-800/50 bg-rose-50 dark:bg-rose-950/20'
+    ? 'feedback-error'
     : 'border-border bg-surface'
 
   return (
@@ -90,8 +90,8 @@ export default function OrganicNamingPractice({ allowCustom = true }: Props) {
               className={`bg-raised border rounded-sm px-3 py-1.5 font-mono text-base w-48
                           placeholder-dim focus:outline-none focus:border-muted
                           disabled:cursor-not-allowed transition-colors
-                          ${checkState === 'correct' ? 'border-emerald-500 dark:border-emerald-700/60 text-emerald-700 dark:text-emerald-300'
-                          : checkState === 'wrong'   ? 'border-rose-500 dark:border-rose-700/60 text-rose-700 dark:text-rose-300'
+                          ${checkState === 'correct' ? 'border-success-border text-success-strong'
+                          : checkState === 'wrong'   ? 'border-error-border text-error-strong'
                           : 'border-border text-bright'}`}
             />
 
@@ -107,7 +107,7 @@ export default function OrganicNamingPractice({ allowCustom = true }: Props) {
               </button>
             ) : (
               <div className="flex flex-col gap-0.5">
-                <span className={`font-sans text-sm font-medium ${checkState === 'correct' ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
+                <span className={`font-sans text-sm font-medium ${checkState === 'correct' ? 'text-success' : 'text-error'}`}>
                   {checkState === 'correct' ? '✓ Correct' : '✗ Incorrect'}
                 </span>
                 {checkState === 'wrong' && (

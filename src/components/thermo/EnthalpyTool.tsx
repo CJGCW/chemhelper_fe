@@ -224,7 +224,7 @@ function ResultPanel({ result }: { result: Result }) {
             <div className="flex flex-col gap-0.5 pl-3 border-l-2 border-border">
               {result.steps.map((s, i) => (
                 <p key={i} className={`font-mono text-sm ${
-                  i === result.steps.length - 1 ? 'font-semibold text-emerald-700 dark:text-emerald-400' : 'text-primary'
+                  i === result.steps.length - 1 ? 'font-semibold text-success' : 'text-primary'
                 }`}>
                   {i === result.steps.length - 1 ? '∴ ' : ''}{s}
                 </p>

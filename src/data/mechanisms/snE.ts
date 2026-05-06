@@ -173,6 +173,26 @@ export const SN_E_REACTIONS: ReactionDef[] = [
     reactants: 'R-LG + Nu⁻',
     products: 'R-Nu + LG⁻',
     conditions: 'Polar aprotic solvent (DMF, DMSO, acetone); strong polarizable nucleophile; methyl or 1° alkyl halide',
+    reactantSpecies: {
+      text: 'R-LG + Nu⁻',
+      species: [
+        { smiles: '[R]C[LG]', label: 'R–LG' },
+        { smiles: '[Nu]', label: 'Nu⁻', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'R-Nu + LG⁻',
+      species: [
+        { smiles: '[R]C[Nu]', label: 'R–Nu' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Polar aprotic solvent (DMF, DMSO, acetone)',
+      species: [
+        { smiles: 'CN(C)C=O', label: 'DMF' },
+        { smiles: 'CS(C)=O', label: 'DMSO' },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: 'inversion',
@@ -226,6 +246,27 @@ export const SN_E_REACTIONS: ReactionDef[] = [
     reactants: 'R₃C-LG + Nu (3° substrate)',
     products: 'R₃C-Nu (racemic mixture)',
     conditions: 'Polar protic solvent (H₂O, ROH, AcOH); weak nucleophile or solvent; 3° or stabilized (allylic, benzylic) substrate',
+    reactantSpecies: {
+      text: 'R₃C-LG + Nu',
+      species: [
+        { smiles: '[R]C([R])([R])[LG]', label: 'R₃C–LG' },
+        { smiles: '[Nu]', label: 'Nu', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'R₃C-Nu (racemic mixture)',
+      species: [
+        { smiles: '[R]C([R])([R])[Nu]', label: 'R₃C–Nu' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Polar protic solvent (H₂O, ROH, AcOH)',
+      species: [
+        { smiles: 'O', label: 'H₂O', showLonePairs: true },
+        { smiles: '[R]O', label: 'ROH', showLonePairs: true },
+        { smiles: 'CC(=O)O', label: 'AcOH' },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: 'racemization',
@@ -292,6 +333,26 @@ export const SN_E_REACTIONS: ReactionDef[] = [
     reactants: 'R-CHR′-CHR″-LG + strong base (KOtBu, NaOEt)',
     products: 'Alkene + HB + LG⁻',
     conditions: 'Strong bulky base (NaOEt, KOtBu); polar aprotic or alcoholic solvent; elevated temperature',
+    reactantSpecies: {
+      text: 'R-CHR′-CHR″-LG + strong base',
+      species: [
+        { smiles: '[R]C([LG])C[R]', label: 'R–CHR–LG' },
+        { smiles: 'CC(C)(C)[O-]', label: 'KOtBu', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'Alkene + HB + LG⁻',
+      species: [
+        { smiles: '[R]C=C[R]', label: 'Alkene' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Strong bulky base (NaOEt, KOtBu)',
+      species: [
+        { smiles: 'CC(C)(C)[O-]', label: 'KOtBu' },
+        { smiles: 'CC[O-]', label: 'NaOEt' },
+      ],
+    },
     reactionType: 'elimination',
     regiochemistry: null,
     stereochemistry: 'anti',
@@ -346,6 +407,25 @@ export const SN_E_REACTIONS: ReactionDef[] = [
     reactants: 'R₃C-CHR-LG + weak base (or solvent)',
     products: 'R₂C=CHR (Zaitsev alkene)',
     conditions: 'Polar protic solvent; weak base (H₂O, ROH); 3° substrate; elevated temperature favors E1 over SN1',
+    reactantSpecies: {
+      text: 'R₃C-CHR-LG',
+      species: [
+        { smiles: '[R]C([R])([R])C[LG]', label: 'R₃C–CHR–LG' },
+      ],
+    },
+    productSpecies: {
+      text: 'R₂C=CHR (Zaitsev alkene)',
+      species: [
+        { smiles: '[R]C([R])=C[R]', label: 'R₂C=CHR' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Polar protic solvent; weak base (H₂O, ROH)',
+      species: [
+        { smiles: 'O', label: 'H₂O', showLonePairs: true },
+        { smiles: '[R]O', label: 'ROH', showLonePairs: true },
+      ],
+    },
     reactionType: 'elimination',
     regiochemistry: null,
     stereochemistry: null,
@@ -413,6 +493,26 @@ export const SN_E_REACTIONS: ReactionDef[] = [
     reactants: 'RO⁻ (alkoxide) + R′CH₂-X (methyl or 1° alkyl halide)',
     products: 'R-O-CH₂R′ (ether) + X⁻',
     conditions: 'Alkoxide salt (NaOR) in polar aprotic solvent; alkyl halide must be methyl or 1°',
+    reactantSpecies: {
+      text: 'RO⁻ + R′CH₂-X',
+      species: [
+        { smiles: '[R][O-]', label: 'RO⁻', showLonePairs: true },
+        { smiles: '[R]CC[X]', label: "R'CH₂–X" },
+      ],
+    },
+    productSpecies: {
+      text: 'R-O-CH₂R′',
+      species: [
+        { smiles: '[R]OCC[R]', label: "R–O–CH₂R'" },
+      ],
+    },
+    conditionSpecies: {
+      text: 'NaOR; polar aprotic solvent',
+      species: [
+        { smiles: 'CN(C)C=O', label: 'DMF' },
+        { smiles: 'CS(C)=O', label: 'DMSO' },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: 'inversion',
@@ -464,6 +564,27 @@ export const SN_E_REACTIONS: ReactionDef[] = [
     reactants: 'Epoxide + Nu (H₂O, ROH) + H⁺ (cat.)',
     products: 'Trans-diol or trans-ether (anti addition)',
     conditions: 'Aqueous acid (H₃O⁺) or BF₃; nucleophilic solvent',
+    reactantSpecies: {
+      text: 'Epoxide + Nu + H⁺ (cat.)',
+      species: [
+        { smiles: 'C1CO1', label: 'Epoxide' },
+        { smiles: 'O', label: 'H₂O', showLonePairs: true },
+        { smiles: '[H3O+]', label: 'H₃O⁺', showLonePairs: true, catalyst: true },
+      ],
+    },
+    productSpecies: {
+      text: 'Trans-diol (anti addition)',
+      species: [
+        { smiles: 'OCC(O)', label: 'Trans-diol' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'H₃O⁺ or BF₃; nucleophilic solvent',
+      species: [
+        { smiles: '[H3O+]', label: 'H₃O⁺', showLonePairs: true, catalyst: true },
+        { smiles: 'B(F)(F)F', label: 'BF₃', catalyst: true },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: 'markovnikov',
     stereochemistry: 'anti',
@@ -527,6 +648,26 @@ export const SN_E_REACTIONS: ReactionDef[] = [
     reactants: 'Epoxide + Nu⁻ (HO⁻, RO⁻, or RMgX)',
     products: 'Anti (trans)-alcohol product at less hindered carbon',
     conditions: 'Basic conditions (NaOH, NaOR); Grignard in Et₂O; no acid present',
+    reactantSpecies: {
+      text: 'Epoxide + Nu⁻',
+      species: [
+        { smiles: 'C1CO1', label: 'Epoxide' },
+        { smiles: '[Nu]', label: 'Nu⁻', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'Anti-alcohol (less substituted C)',
+      species: [
+        { smiles: '[Nu]CCO', label: 'Anti-product' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'NaOH, NaOR; basic conditions',
+      species: [
+        { smiles: '[OH-]', label: 'HO⁻', showLonePairs: true },
+        { smiles: '[R][O-]', label: 'RO⁻', showLonePairs: true },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: 'anti-markovnikov',
     stereochemistry: 'inversion',

@@ -57,8 +57,8 @@ export default function ReactionPredictorPractice({ allowCustom = true }: Props)
 
   const cardBorder = checked
     ? correct
-      ? 'border-emerald-500 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/20'
-      : 'border-rose-500 dark:border-rose-800/50 bg-rose-50 dark:bg-rose-950/20'
+      ? 'feedback-success'
+      : 'feedback-error'
     : 'border-border bg-surface'
 
   return (
@@ -131,8 +131,8 @@ export default function ReactionPredictorPractice({ allowCustom = true }: Props)
             const isChosen  = chosen === choice
             const isCorrect = choice === problem.answer
             let cls = 'border-border text-secondary hover:border-muted hover:text-primary'
-            if (checked && isCorrect)                cls = 'border-emerald-500 dark:border-emerald-700/60 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300'
-            if (checked && isChosen && !isCorrect)   cls = 'border-rose-500 dark:border-rose-700/60 bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-300'
+            if (checked && isCorrect)                cls = 'feedback-success text-success-strong'
+            if (checked && isChosen && !isCorrect)   cls = 'feedback-error text-error-strong'
             return (
               <button key={choice} disabled={checked} onClick={() => handleChoose(choice)}
                 className={`text-left px-4 py-2.5 rounded-sm border font-sans text-sm transition-colors disabled:cursor-default font-mono ${cls}`}>
@@ -145,7 +145,7 @@ export default function ReactionPredictorPractice({ allowCustom = true }: Props)
         {/* Feedback row */}
         {checked && (
           <div className="flex items-center gap-3">
-            <span className={`font-sans text-sm font-medium ${correct ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
+            <span className={`font-sans text-sm font-medium ${correct ? 'text-success' : 'text-error'}`}>
               {correct ? '✓ Correct' : '✗ Incorrect'}
             </span>
             <button onClick={() => setShowSteps(s => !s)}

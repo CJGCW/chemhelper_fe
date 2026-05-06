@@ -314,7 +314,7 @@ export default function EmpiricalTool() {
 
               <button
                 onClick={addRow}
-                className="self-start font-mono text-[11px] px-3 py-1 rounded-sm border transition-colors mt-1"
+                className="self-start font-mono text-xs px-3 py-1 rounded-sm border transition-colors mt-1"
                 style={{ borderColor: 'rgba(var(--overlay),0.12)', color: 'rgba(var(--overlay),0.4)' }}
               >
                 + add element

@@ -204,7 +204,7 @@ export default function LewisPage({ embedded = false }: { embedded?: boolean }) 
               <button
                 key={`${ex.input}${ex.charge ?? 0}`}
                 onClick={() => handleExample(ex)}
-                className="font-mono text-[11px] px-2 py-0.5 rounded-sm border transition-colors"
+                className="font-mono text-xs px-2 py-0.5 rounded-sm border transition-colors"
                 style={{
                   borderColor: input === ex.input && chargeRaw === String(ex.charge ?? 0)
                     ? 'color-mix(in srgb, var(--c-halogen) 50%, transparent)'
@@ -307,7 +307,7 @@ export default function LewisPage({ embedded = false }: { embedded?: boolean }) 
             <button
               key={`${ex.input}${ex.charge ?? 0}`}
               onClick={() => handleExample(ex)}
-              className="font-mono text-[11px] px-2 py-0.5 rounded-sm border border-border
+              className="font-mono text-xs px-2 py-0.5 rounded-sm border border-border
                          text-secondary hover:text-primary hover:border-muted transition-colors"
             >
               {ex.label}

@@ -703,7 +703,7 @@ export default function VseprVisualizer({
               exit={{ opacity:0, x:-10 }} transition={{ duration:0.18 }}
               className="flex flex-col gap-2">
 
-              <span className="font-mono text-[11px] text-secondary tracking-widest uppercase">
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase">
                 {STEP_LABEL[activeStep]}
               </span>
 

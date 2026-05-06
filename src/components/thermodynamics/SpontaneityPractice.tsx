@@ -138,7 +138,7 @@ export default function SpontaneityPractice({ allowCustom = true }: Props) {
 
       {verify && (
         <div className="flex flex-col gap-1">
-          <p className={`font-mono text-sm font-semibold ${verify === 'correct' ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-400'}`}>
+          <p className={`font-mono text-sm font-semibold ${verify === 'correct' ? 'text-success' : 'text-red-400'}`}>
             {verify === 'correct' ? '✓ Correct!' : `✗ Incorrect. Answer: ${problem.answer}${problem.crossoverT ? ` — Crossover T = ${problem.crossoverT.toFixed(1)} K` : ''}`}
           </p>
         </div>

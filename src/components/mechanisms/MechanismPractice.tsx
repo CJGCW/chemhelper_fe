@@ -35,9 +35,9 @@ export default function MechanismPractice({ allowCustom = true }: Props) {
   }
 
   const borderClass = checkState === 'correct'
-    ? 'border-emerald-500 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/20'
+    ? 'feedback-success'
     : checkState === 'wrong'
-    ? 'border-rose-500 dark:border-rose-800/50 bg-rose-50 dark:bg-rose-950/20'
+    ? 'feedback-error'
     : 'border-border'
 
   return (
@@ -90,15 +90,15 @@ export default function MechanismPractice({ allowCustom = true }: Props) {
               if (checkState !== 'idle') {
                 if (isCorrect) {
                   style = {
-                    background: 'rgba(16,185,129,0.08)',
-                    border: '1px solid rgba(16,185,129,0.4)',
-                    color: '#34d399',
+                    background: 'rgb(var(--color-success-bg) / 0.35)',
+                    border: '1px solid rgb(var(--color-success-border) / 0.5)',
+                    color: 'rgb(var(--color-success))',
                   }
                 } else if (isSelected && !isCorrect) {
                   style = {
-                    background: 'rgba(239,68,68,0.08)',
-                    border: '1px solid rgba(239,68,68,0.35)',
-                    color: '#f87171',
+                    background: 'rgb(var(--color-error-bg) / 0.35)',
+                    border: '1px solid rgb(var(--color-error-border) / 0.4)',
+                    color: 'rgb(var(--color-error))',
                   }
                 }
               } else if (isSelected) {
@@ -124,7 +124,7 @@ export default function MechanismPractice({ allowCustom = true }: Props) {
 
           {checkState !== 'idle' && (
             <div className="flex flex-col gap-1.5">
-              <p className={`font-sans text-sm font-medium ${checkState === 'correct' ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
+              <p className={`font-sans text-sm font-medium ${checkState === 'correct' ? 'text-success' : 'text-error'}`}>
                 {checkState === 'correct' ? `✓ Correct — ${problem.answer}` : `✗ Incorrect — ${problem.answer}`}
               </p>
               <p className="font-sans text-sm text-secondary leading-relaxed">{problem.explanation}</p>

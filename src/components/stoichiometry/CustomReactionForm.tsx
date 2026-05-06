@@ -105,7 +105,7 @@ export default function CustomReactionForm({ onApply }: Props) {
                     </div>
                     {customReactants.length > 1 && (
                       <button onClick={() => { setCustomReactants(r => r.filter((_, j) => j !== i)); setValidationResult(null) }}
-                        className="font-mono text-sm text-secondary hover:text-rose-700 dark:text-rose-400 transition-colors w-5 text-center shrink-0">
+                        className="font-mono text-sm text-secondary hover:text-error transition-colors w-5 text-center shrink-0">
                         −
                       </button>
                     )}
@@ -133,7 +133,7 @@ export default function CustomReactionForm({ onApply }: Props) {
                         className={inputBase + ' placeholder-dim'} />
                     </div>
                     <button onClick={() => { setCustomProducts(p => p.filter((_, j) => j !== i)); setValidationResult(null) }}
-                      className="font-mono text-sm text-secondary hover:text-rose-700 dark:text-rose-400 transition-colors w-5 text-center shrink-0">
+                      className="font-mono text-sm text-secondary hover:text-error transition-colors w-5 text-center shrink-0">
                       −
                     </button>
                   </div>
@@ -164,13 +164,13 @@ export default function CustomReactionForm({ onApply }: Props) {
 
                 {validationResult && (
                   <div className={`rounded-sm border px-3 py-2.5 flex flex-col gap-2 ${
-                    validationResult.status === 'balanced'   ? 'border-emerald-500 dark:border-emerald-700/50 bg-emerald-50 dark:bg-emerald-950/20'
-                    : validationResult.status === 'impossible' ? 'border-rose-500 dark:border-rose-700/50 bg-rose-50 dark:bg-rose-950/20'
+                    validationResult.status === 'balanced'   ? 'feedback-success'
+                    : validationResult.status === 'impossible' ? 'feedback-error'
                     : 'border-amber-700/50 bg-amber-950/20'
                   }`}>
                     <p className={`font-mono text-xs ${
-                      validationResult.status === 'balanced'   ? 'text-emerald-700 dark:text-emerald-400'
-                      : validationResult.status === 'impossible' ? 'text-rose-700 dark:text-rose-400'
+                      validationResult.status === 'balanced'   ? 'text-success'
+                      : validationResult.status === 'impossible' ? 'text-error'
                       : 'text-amber-400'
                     }`}>
                       {validationResult.status === 'balanced' ? '✓ ' : '✗ '}{validationResult.message}

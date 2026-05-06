@@ -318,13 +318,13 @@ export function MolesExample() {
       </svg>
 
       {/* Step caption */}
-      <p className="font-mono text-[11px] text-secondary text-center px-4 min-h-[18px]">
+      <p className="font-mono text-xs text-secondary text-center px-4 min-h-[18px]">
         {MOLES_STEPS[step] ?? ""}
       </p>
 
       <button
         onClick={start}
-        className="font-mono text-[11px] text-dim hover:text-secondary transition-colors"
+        className="font-mono text-xs text-dim hover:text-secondary transition-colors"
       >
         ↺ Replay
       </button>
@@ -589,13 +589,13 @@ export function MolarityExample() {
         </AnimatePresence>
       </svg>
 
-      <p className="font-mono text-[11px] text-secondary text-center px-4 min-h-[18px]">
+      <p className="font-mono text-xs text-secondary text-center px-4 min-h-[18px]">
         {MOL_STEPS[step] ?? ""}
       </p>
 
       <button
         onClick={start}
-        className="font-mono text-[11px] text-dim hover:text-secondary transition-colors"
+        className="font-mono text-xs text-dim hover:text-secondary transition-colors"
       >
         ↺ Replay
       </button>
@@ -1015,13 +1015,13 @@ export function MolalityExample() {
         </AnimatePresence>
       </svg>
 
-      <p className="font-mono text-[11px] text-secondary text-center px-4 min-h-[18px]">
+      <p className="font-mono text-xs text-secondary text-center px-4 min-h-[18px]">
         {MOLAL_STEPS[Math.min(step, MOLAL_STEPS.length - 1)] ?? ""}
       </p>
 
       <button
         onClick={start}
-        className="font-mono text-[11px] text-dim hover:text-secondary transition-colors"
+        className="font-mono text-xs text-dim hover:text-secondary transition-colors"
       >
         ↺ Replay
       </button>
@@ -1248,13 +1248,13 @@ export function ConcentrationExample() {
         </AnimatePresence>
       </svg>
 
-      <p className="font-mono text-[11px] text-secondary text-center px-4 min-h-[18px]">
+      <p className="font-mono text-xs text-secondary text-center px-4 min-h-[18px]">
         {CONC_STEPS[Math.min(step, CONC_STEPS.length - 1)] ?? ""}
       </p>
 
       <button
         onClick={start}
-        className="font-mono text-[11px] text-dim hover:text-secondary transition-colors"
+        className="font-mono text-xs text-dim hover:text-secondary transition-colors"
       >
         ↺ Replay
       </button>

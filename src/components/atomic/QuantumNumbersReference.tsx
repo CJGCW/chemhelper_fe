@@ -95,7 +95,7 @@ export default function QuantumNumbersReference() {
                 <p className="font-mono text-xs text-dim"
                   style={{ color: q.color, opacity: 0.85 }}>{q.values}</p>
                 <p className="font-sans text-sm text-primary leading-relaxed">{q.meaning}</p>
-                <p className="font-mono text-[11px] text-dim italic">{q.example}</p>
+                <p className="font-mono text-xs text-dim italic">{q.example}</p>
               </div>
             ))}
           </div>

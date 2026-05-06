@@ -114,7 +114,7 @@ export default function SigmaPiPractice({ allowCustom: _allowCustom = true }: Pr
                            bg-raised focus:outline-none transition-colors"
                 style={{
                   borderColor: answered
-                    ? (status === 'correct' || status === 'wrong-pi' ? '#34d399' : '#f87171')
+                    ? (status === 'correct' || status === 'wrong-pi' ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))')
                     : undefined,
                 }}
                 placeholder="?"
@@ -134,7 +134,7 @@ export default function SigmaPiPractice({ allowCustom: _allowCustom = true }: Pr
                            bg-raised focus:outline-none transition-colors"
                 style={{
                   borderColor: answered
-                    ? (status === 'correct' || status === 'wrong-sigma' ? '#34d399' : '#f87171')
+                    ? (status === 'correct' || status === 'wrong-sigma' ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))')
                     : undefined,
                 }}
                 placeholder="?"
@@ -173,29 +173,29 @@ export default function SigmaPiPractice({ allowCustom: _allowCustom = true }: Pr
       {answered && (
         <div className="rounded-sm border overflow-hidden"
           style={{
-            borderColor: status === 'correct' ? '#34d39950' : '#f8717150',
+            borderColor: status === 'correct' ? 'rgb(var(--color-success-border) / 0.35)' : 'rgb(var(--color-error-border) / 0.35)',
             background: status === 'correct'
-              ? 'color-mix(in srgb, #34d399 6%, rgb(var(--color-surface)))'
-              : 'color-mix(in srgb, #f87171 6%, rgb(var(--color-surface)))',
+              ? 'color-mix(in srgb, rgb(var(--color-success)) 6%, rgb(var(--color-surface)))'
+              : 'color-mix(in srgb, rgb(var(--color-error)) 6%, rgb(var(--color-surface)))',
           }}>
           <div className="px-4 py-2 border-b" style={{ borderColor: 'inherit' }}>
             {status === 'correct' && (
-              <span className="font-sans text-sm font-semibold" style={{ color: '#34d399' }}>
+              <span className="font-sans text-sm font-semibold" style={{ color: 'rgb(var(--color-success))' }}>
                 Correct — {problem.sigma}σ and {problem.pi}π
               </span>
             )}
             {status === 'wrong-both' && (
-              <span className="font-sans text-sm font-semibold" style={{ color: '#f87171' }}>
+              <span className="font-sans text-sm font-semibold" style={{ color: 'rgb(var(--color-error))' }}>
                 Not quite — correct answer: {problem.sigma}σ and {problem.pi}π
               </span>
             )}
             {status === 'wrong-sigma' && (
-              <span className="font-sans text-sm font-semibold" style={{ color: '#f87171' }}>
+              <span className="font-sans text-sm font-semibold" style={{ color: 'rgb(var(--color-error))' }}>
                 σ count wrong — correct: {problem.sigma}σ (π was right: {problem.pi}π)
               </span>
             )}
             {status === 'wrong-pi' && (
-              <span className="font-sans text-sm font-semibold" style={{ color: '#f87171' }}>
+              <span className="font-sans text-sm font-semibold" style={{ color: 'rgb(var(--color-error))' }}>
                 π count wrong — correct: {problem.pi}π (σ was right: {problem.sigma}σ)
               </span>
             )}

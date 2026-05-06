@@ -121,8 +121,8 @@ export default function IsotopeAbundancePractice({ allowCustom = true }: Props) 
                         disabled:cursor-not-allowed transition-colors
                         ${checked
                           ? correct
-                            ? 'border-emerald-500 dark:border-emerald-700/60 text-emerald-700 dark:text-emerald-300'
-                            : 'border-rose-500 dark:border-rose-700/60 text-rose-700 dark:text-rose-300'
+                            ? 'border-success-border text-success-strong'
+                            : 'border-error-border text-error-strong'
                           : 'border-border text-bright'}`}
           />
           <span className="font-mono text-sm text-secondary">{problem.answerUnit}</span>
@@ -143,7 +143,7 @@ export default function IsotopeAbundancePractice({ allowCustom = true }: Props) 
             </button>
           ) : (
             <>
-              <span className={`font-sans text-sm font-medium ${correct ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
+              <span className={`font-sans text-sm font-medium ${correct ? 'text-success' : 'text-error'}`}>
                 {correct ? '✓ Correct' : '✗ Incorrect'}
               </span>
               <button

@@ -42,7 +42,7 @@ function Slot({
           className="font-mono text-lg font-bold leading-none"
           style={{ color }}
         >{label}</span>
-        <span className="font-mono text-[11px] text-dim">click an element</span>
+        <span className="font-mono text-xs text-dim">click an element</span>
       </div>
     )
   }
@@ -54,7 +54,7 @@ function Slot({
       <span className="font-mono text-xl font-semibold leading-none" style={{ color: elColor }}>
         {element.symbol}
       </span>
-      <span className="font-mono text-[11px] text-secondary">{element.name}</span>
+      <span className="font-mono text-xs text-secondary">{element.name}</span>
       <span className="font-mono text-xs text-secondary">Z = {element.atomicNumber}</span>
     </div>
   )
@@ -124,7 +124,7 @@ export default function TrendCompare({ elementA, elementB, onClear }: Props) {
 
               return (
                 <tr key={row.label} className="border-t border-border">
-                  <td className="px-4 py-2 text-dim text-[11px] whitespace-nowrap">
+                  <td className="px-4 py-2 text-dim text-xs whitespace-nowrap">
                     {row.label}
                     {row.unit && <span className="text-[10px] ml-1 opacity-60">({row.unit})</span>}
                   </td>

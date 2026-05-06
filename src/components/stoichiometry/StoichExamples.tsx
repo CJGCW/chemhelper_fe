@@ -285,7 +285,7 @@ function CookieLimitingAnimation() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="font-sans text-sm font-semibold text-bright">Limiting Reagent — Baking Cookies</p>
-          <p className="font-mono text-[11px] text-secondary mt-0.5">
+          <p className="font-mono text-xs text-secondary mt-0.5">
             Recipe per batch: &nbsp;
             <span style={{ color:'#f5deb3' }}>egg ×1</span>
             {' + '}
@@ -414,7 +414,7 @@ function TheoreticalYieldCookies() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="font-sans text-sm font-semibold text-bright">Theoretical Yield — Maximum Possible Output</p>
-          <p className="font-mono text-[11px] text-secondary mt-0.5">
+          <p className="font-mono text-xs text-secondary mt-0.5">
             Limiting reagent (flour): 4 cups ÷ 2 per batch ={' '}
             <span style={{ color: 'var(--c-halogen)' }}>2 batches max</span>
           </p>
@@ -530,7 +530,7 @@ function PercentYieldCookies() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="font-sans text-sm font-semibold text-bright">Percent Yield — Actual vs. Theoretical</p>
-          <p className="font-mono text-[11px] text-secondary mt-0.5">
+          <p className="font-mono text-xs text-secondary mt-0.5">
             Theoretical: 2 cookies — but one burns in the oven 🔥
           </p>
         </div>

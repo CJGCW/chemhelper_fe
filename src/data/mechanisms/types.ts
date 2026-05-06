@@ -172,6 +172,38 @@ export interface MechanismFrame {
   shortLabel: string
 }
 
+// ── Structural species for rendered representations ────────────────────────────
+
+/** A single chemical entity rendered via the structure API. */
+export interface RenderableSpecies {
+  /** SMILES for the renderer. Use [R], [Nu], [X], [LG] for generic labels. */
+  smiles: string
+  /** Caption shown below or beside the structure. */
+  label: string
+  /** When true, lone pairs are drawn on heteroatoms. Default false. */
+  showLonePairs?: boolean
+  /** Marks a catalyst — frontend overlays a "cat." badge. Default false. */
+  catalyst?: boolean
+}
+
+/** A group of species shown together (with "+" between them). */
+export interface ReactionParticipants {
+  /** Each species in the group, rendered side-by-side. */
+  species: RenderableSpecies[]
+  /** Plain-text fallback / existing text field value. */
+  text: string
+}
+
+/** A multiple-choice option that may render as a structure or as plain text. */
+export interface RenderableChoice {
+  /** Display caption and comparison key. */
+  label: string
+  /** Optional sub-label shown beneath the primary label (e.g. stereochemical descriptor). */
+  secondaryLabel?: string
+  /** When set, the choice renders as structure(s). When absent, renders as text only. */
+  species?: RenderableSpecies[]
+}
+
 // ── Main reaction definition ───────────────────────────────────────────────────
 
 export interface ReactionDef {
@@ -190,6 +222,10 @@ export interface ReactionDef {
   brownRef: string
   relatedReactions: string[]
   tags: string[]
+  // NEW — structural species for rendered displays (optional for incremental adoption)
+  reactantSpecies?: ReactionParticipants
+  productSpecies?: ReactionParticipants
+  conditionSpecies?: ReactionParticipants
   // Frame-based model (new)
   frames?: MechanismFrame[]
   // Legacy animation model (snE.ts still uses these)

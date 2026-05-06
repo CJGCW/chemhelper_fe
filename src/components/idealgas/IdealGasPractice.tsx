@@ -119,7 +119,7 @@ export default function IdealGasPractice({ allowCustom = true }: Props) {
             <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
               className={`flex items-center gap-2 px-3 py-2 rounded-sm border ${
                 correct
-                  ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
+                  ? 'border-emerald-500/30 bg-emerald-500/10 text-success'
                   : 'border-red-500/30 bg-red-500/10 text-red-400'
               }`}
             >

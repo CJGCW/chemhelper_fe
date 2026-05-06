@@ -42,7 +42,7 @@ function GasVolumePanel({ onUse }: { onUse: (moles: string, note: string) => voi
   return (
     <div>
       <button onClick={() => setOpen(o => !o)}
-        className="flex items-center gap-1.5 font-mono text-[11px] transition-colors"
+        className="flex items-center gap-1.5 font-mono text-xs transition-colors"
         style={{ color: open ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)' }}>
         <motion.span animate={{ rotate: open ? 90 : 0 }} transition={{ duration: 0.15 }}
           className="inline-block text-[9px]">▶</motion.span>

@@ -50,7 +50,7 @@ export default function StereochemistryReference() {
                 <tr key={String(n)} className="border-b border-border/50">
                   <td className="py-1.5 pr-6 text-center">{n}</td>
                   <td className="py-1.5 pr-6 text-right" style={{ color: 'var(--c-halogen)' }}>{max}</td>
-                  <td className="py-1.5 text-dim text-[11px]">{ex}</td>
+                  <td className="py-1.5 text-dim text-xs">{ex}</td>
                 </tr>
               ))}
             </tbody>
@@ -100,7 +100,7 @@ export default function StereochemistryReference() {
                 <tr key={rel} className="border-b border-border/50">
                   <td className="py-1.5 pr-4 text-primary font-semibold">{rel}</td>
                   <td className="py-1.5 pr-4">{def}</td>
-                  <td className="py-1.5 text-dim text-[11px]">{same}</td>
+                  <td className="py-1.5 text-dim text-xs">{same}</td>
                 </tr>
               ))}
             </tbody>

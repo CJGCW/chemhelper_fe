@@ -175,7 +175,7 @@ export default function GasStoichPractice({ allowCustom = true }: Props) {
                   )}
 
                   <button onClick={() => setShowSteps(s => !s)}
-                    className="flex items-center gap-1.5 font-mono text-[11px] text-secondary hover:text-primary transition-colors self-start">
+                    className="flex items-center gap-1.5 font-mono text-xs text-secondary hover:text-primary transition-colors self-start">
                     <motion.span animate={{ rotate: showSteps ? 90 : 0 }} transition={{ duration: 0.15 }}
                       className="text-[9px]">▶</motion.span>
                     {showSteps ? 'Hide' : 'Show'} solution

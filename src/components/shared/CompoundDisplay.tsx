@@ -12,6 +12,8 @@ interface CompoundDisplayProps {
   width?: number
   /** Height in pixels. Default 150. */
   height?: number
+  /** When true, lone pairs are drawn on heteroatoms. Default false. */
+  showLonePairs?: boolean
 }
 
 // Module-level cache so the same SMILES is never fetched twice per session.
@@ -23,6 +25,7 @@ export default function CompoundDisplay({
   label,
   width = 200,
   height = 150,
+  showLonePairs = false,
 }: CompoundDisplayProps) {
   const [resolvedSvg, setResolvedSvg] = useState<string | null>(svgProp ?? null)
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>(
@@ -32,7 +35,7 @@ export default function CompoundDisplay({
   useEffect(() => {
     if (!smiles || svgProp) return
 
-    const key = `${smiles}|${width}|${height}`
+    const key = `${smiles}|${width}|${height}|${showLonePairs}`
     const cached = svgCache.get(key)
     if (cached) {
       setResolvedSvg(cached)
@@ -44,7 +47,7 @@ export default function CompoundDisplay({
     let cancelled = false
 
     client
-      .post<{ svg: string }>('/structure/render', { smiles, width, height })
+      .post<{ svg: string }>('/structure/render', { smiles, width, height, showLonePairs })
       .then(res => {
         if (!cancelled && res.data.svg) {
           svgCache.set(key, res.data.svg)
@@ -57,7 +60,7 @@ export default function CompoundDisplay({
       })
 
     return () => { cancelled = true }
-  }, [smiles, width, height, svgProp])
+  }, [smiles, width, height, showLonePairs, svgProp])
 
   if (resolvedSvg) {
     return (

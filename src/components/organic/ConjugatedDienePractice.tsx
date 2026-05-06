@@ -208,8 +208,8 @@ export default function ConjugatedDienePractice({ allowCustom = true }: Props) {
               const isSelected = selected === choice
               const isCorrect = choice === problem.answer
               let cls = 'border-border text-secondary hover:border-muted hover:text-primary'
-              if (checked && isCorrect)                    cls = 'border-emerald-500 dark:border-emerald-700/60 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300'
-              if (checked && isSelected && !isCorrect)     cls = 'border-rose-500 dark:border-rose-700/60 bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-300'
+              if (checked && isCorrect)                    cls = 'feedback-success text-success-strong'
+              if (checked && isSelected && !isCorrect)     cls = 'feedback-error text-error-strong'
               return (
                 <button key={choice} disabled={checked} onClick={() => handleSelect(choice)}
                   className={`text-left px-4 py-2.5 rounded-sm border font-sans text-sm transition-colors disabled:cursor-default ${cls}`}>
@@ -224,8 +224,8 @@ export default function ConjugatedDienePractice({ allowCustom = true }: Props) {
             <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
               className={`p-3 rounded-sm border font-sans text-sm leading-relaxed
                 ${selected === problem.answer
-                  ? 'border-emerald-500 dark:border-emerald-700/50 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300'
-                  : 'border-rose-500 dark:border-rose-700/50 bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-300'}`}>
+                  ? 'feedback-success text-success-strong'
+                  : 'feedback-error text-error-strong'}`}>
               <span className="font-semibold">{selected === problem.answer ? '✓ Correct. ' : `✗ Incorrect — ${problem.answer}. `}</span>
               {problem.explanation}
             </motion.div>

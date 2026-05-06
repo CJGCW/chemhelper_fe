@@ -82,8 +82,8 @@ export default function HeatTransferPractice({ allowCustom = true }: Props) {
             {problem.given.map(g => (
               <div key={g.label}
                 className="flex items-center gap-1.5 rounded-sm border border-border bg-raised px-2.5 py-1">
-                <span className="font-mono text-[11px] text-secondary">{g.label}</span>
-                <span className="font-mono text-[11px] text-bright">{g.value}</span>
+                <span className="font-mono text-xs text-secondary">{g.label}</span>
+                <span className="font-mono text-xs text-bright">{g.value}</span>
               </div>
             ))}
           </div>

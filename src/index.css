@@ -39,6 +39,20 @@
   --c-lanthanide:      #f472b6;
   --c-actinide:        #fb7185;
   --c-unknown:         #475569;
+
+  /* Feedback colors — semantic, theme-aware (dark mode defaults) */
+  --color-success:        52 211 153;   /* emerald-400 */
+  --color-success-strong: 110 231 183;  /* emerald-300 */
+  --color-success-bg:     12 22 24;     /* emerald-950/20 pre-blended on dark surface */
+  --color-success-border: 16 185 129;   /* emerald-500 */
+
+  --color-error:          248 113 113;  /* rose-400 */
+  --color-error-strong:   252 165 165;  /* rose-300 */
+  --color-error-bg:       26 14 23;     /* rose-950/20 pre-blended on dark surface */
+  --color-error-border:   244 63 94;    /* rose-500 */
+
+  --color-warning:        251 191 36;   /* amber-400 */
+  --color-warning-strong: 253 224 71;   /* yellow-300 */
 }
 
 /* ── Theme: light ────────────────────────────────────────────────────────────── */
@@ -73,6 +87,20 @@
   --c-lanthanide:      #be185d;
   --c-actinide:        #be123c;
   --c-unknown:         #475569;
+
+  /* Feedback colors — light mode overrides for contrast on white */
+  --color-success:        4 120 87;     /* emerald-700 */
+  --color-success-strong: 5 150 105;    /* emerald-600 */
+  --color-success-bg:     209 250 229;  /* emerald-100 */
+  --color-success-border: 16 185 129;   /* emerald-500 */
+
+  --color-error:          190 18 60;    /* rose-700 */
+  --color-error-strong:   225 29 72;    /* rose-600 */
+  --color-error-bg:       254 226 226;  /* rose-100 */
+  --color-error-border:   244 63 94;    /* rose-500 */
+
+  --color-warning:        180 83 9;     /* amber-700 */
+  --color-warning-strong: 217 119 6;    /* amber-600 */
 }
 
 /* ── Base styles ─────────────────────────────────────────────────────────────── */
@@ -259,6 +287,72 @@ body {
 [data-theme="light"] .divide-border > :not([hidden]) ~ :not([hidden]) {
   border-color: rgb(var(--color-border));
 }
+
+/* ── Feedback panel utility classes ─────────────────────────────────────── */
+/* Use .feedback-success / .feedback-error on bordered cards in place of     */
+/* emerald/rose Tailwind palette combos + dark: variants.                    */
+
+.feedback-success {
+  border-color: rgb(var(--color-success-border));
+  background:   rgb(var(--color-success-bg));
+}
+.feedback-error {
+  border-color: rgb(var(--color-error-border));
+  background:   rgb(var(--color-error-bg));
+}
+
+[data-theme="light"] .feedback-success {
+  background: rgb(var(--color-success-bg));  /* emerald-100 — full opacity, good on white */
+}
+[data-theme="light"] .feedback-error {
+  background: rgb(var(--color-error-bg));    /* rose-100 — full opacity, good on white */
+}
+
+/* ── Light mode: feedback colour overrides ───────────────────────────────── */
+/* Tailwind palette classes → semantic tokens so feedback stays legible on   */
+/* white backgrounds, including when OS dark-mode fires the dark: variants.  */
+
+/* Success text — all emerald shades → emerald-700 equivalent in light */
+[data-theme="light"] .text-emerald-300,
+[data-theme="light"] .text-emerald-400,
+[data-theme="light"] .text-emerald-500,
+[data-theme="light"] .text-emerald-600,
+[data-theme="light"] .text-emerald-700 { color: rgb(var(--color-success)); }
+
+[data-theme="light"] .dark\:text-emerald-300,
+[data-theme="light"] .dark\:text-emerald-400 { color: rgb(var(--color-success)) !important; }
+
+/* Error text — rose and red shades → rose-700 equivalent in light */
+[data-theme="light"] .text-rose-300,
+[data-theme="light"] .text-rose-400,
+[data-theme="light"] .text-rose-500,
+[data-theme="light"] .text-rose-600,
+[data-theme="light"] .text-rose-700,
+[data-theme="light"] .text-red-400,
+[data-theme="light"] .text-red-500 { color: rgb(var(--color-error)); }
+
+[data-theme="light"] .dark\:text-rose-300,
+[data-theme="light"] .dark\:text-rose-400 { color: rgb(var(--color-error)) !important; }
+
+/* Success backgrounds — restore light tint when dark-OS dark: bg fires */
+[data-theme="light"] .bg-emerald-950\/25 { background-color: rgb(var(--color-success-bg)); }
+[data-theme="light"] .dark\:bg-emerald-950\/20,
+[data-theme="light"] .dark\:bg-emerald-800\/50 { background-color: rgb(var(--color-success-bg)) !important; }
+
+/* Error backgrounds */
+[data-theme="light"] .bg-rose-950\/25 { background-color: rgb(var(--color-error-bg)); }
+[data-theme="light"] .dark\:bg-rose-950\/20,
+[data-theme="light"] .dark\:bg-rose-800\/50 { background-color: rgb(var(--color-error-bg)) !important; }
+
+/* Success borders */
+[data-theme="light"] .border-emerald-700\/70 { border-color: rgb(var(--color-success-border)); }
+[data-theme="light"] .dark\:border-emerald-700\/60,
+[data-theme="light"] .dark\:border-emerald-800\/50 { border-color: rgb(var(--color-success-border)) !important; }
+
+/* Error borders */
+[data-theme="light"] .border-rose-700\/70 { border-color: rgb(var(--color-error-border)); }
+[data-theme="light"] .dark\:border-rose-700\/60,
+[data-theme="light"] .dark\:border-rose-800\/50 { border-color: rgb(var(--color-error-border)) !important; }
 
 /* ── Scroll hint shadow for horizontal scroll containers ─────────────────────── */
 

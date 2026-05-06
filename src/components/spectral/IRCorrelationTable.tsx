@@ -29,9 +29,8 @@ const REGIONS = [
     ],
   },
   {
-    label: 'C=O Stretches — Most Diagnostic Region',
+    label: 'C=O Stretches',
     range: '1630–1815 cm⁻¹',
-    diagnostic: true,
     rows: [
       { group: 'Ketone',        range: '1705–1720', intensity: 'strong', shape: 'sharp', notes: '' },
       { group: 'Aldehyde',     range: '1720–1740', intensity: 'strong', shape: 'sharp', notes: 'Also shows C–H at 2700–2850' },
@@ -70,8 +69,7 @@ export default function IRCorrelationTable() {
       {REGIONS.map(region => (
         <div key={region.label} className="flex flex-col gap-2">
           <div className="flex items-baseline gap-3">
-            <h3 className={`font-sans font-semibold text-sm ${region.diagnostic ? '' : 'text-primary'}`}
-              style={region.diagnostic ? { color: 'var(--c-halogen)' } : undefined}>
+            <h3 className="font-sans font-semibold text-sm text-primary">
               {region.label}
             </h3>
             <span className="font-mono text-xs text-dim">{region.range}</span>

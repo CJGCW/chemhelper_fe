@@ -1,5 +1,6 @@
 import { PREDICT_PRODUCT_PROBLEMS } from '../data/organic/predictProductProblems'
 import type { PredictProductProblem, ProductChoice } from '../data/organic/predictProductProblems'
+import type { RenderableChoice } from '../data/mechanisms/types'
 
 export type { PredictProductProblem, ProductChoice }
 
@@ -25,7 +26,11 @@ export function checkPredictProductAnswer(problem: PredictProductProblem, choice
   return choice === problem.correctProduct.label
 }
 
-export function shuffleChoices(problem: PredictProductProblem): string[] {
-  const all = [problem.correctProduct.label, ...problem.distractors.map(d => d.label)]
+function toRenderable(c: ProductChoice): RenderableChoice {
+  return c.smiles ? { label: c.label, species: [{ smiles: c.smiles, label: c.label }] } : { label: c.label }
+}
+
+export function shuffleChoices(problem: PredictProductProblem): RenderableChoice[] {
+  const all = [problem.correctProduct, ...problem.distractors].map(toRenderable)
   return all.sort(() => Math.random() - 0.5)
 }

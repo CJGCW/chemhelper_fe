@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generateQuestion, checkMechAnswer, type MechQuestion } from '../../utils/mechanismQuestions'
 import type { MechanismCategory } from '../../data/mechanisms/types'
+import RenderableChoiceButton from '../shared/RenderableChoiceButton'
 
 interface Props { category?: MechanismCategory | 'all' }
 
@@ -51,7 +52,7 @@ export default function IdentifyMechanismPractice({ category = 'all' }: Props) {
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.18 }}
           className={`rounded-sm border p-5 flex flex-col gap-4 transition-colors ${
-            !checked ? 'border-border' : correct ? 'border-emerald-500 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/20' : 'border-rose-500 dark:border-rose-800/50 bg-rose-50 dark:bg-rose-950/20'
+            !checked ? 'border-border' : correct ? 'feedback-success' : 'feedback-error'
           }`}
           style={{ background: checked ? undefined : 'rgb(var(--color-surface))' }}
         >
@@ -59,30 +60,21 @@ export default function IdentifyMechanismPractice({ category = 'all' }: Props) {
           <p className="font-sans text-sm text-secondary font-medium">{q.question}</p>
 
           <div className="flex flex-col gap-2">
-            {q.choices.map(opt => {
-              const isSelected = selected === opt
-              const isCorrect  = opt === q.answer
-              let style: React.CSSProperties = { background: 'rgb(var(--color-raised))', border: '1px solid rgb(var(--color-border))', color: 'rgba(var(--overlay),0.6)' }
-              if (checked) {
-                if (isCorrect) style = { background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.4)', color: '#34d399' }
-                else if (isSelected) style = { background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.35)', color: '#f87171' }
-              } else if (isSelected) {
-                style = { background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)', color: 'var(--c-halogen)' }
-              }
-              return (
-                <button key={opt} onClick={() => handleSelect(opt)} disabled={checked}
-                  className="px-4 py-2.5 rounded-sm font-sans text-sm text-left transition-colors disabled:cursor-not-allowed"
-                  style={style}
-                >
-                  {opt}
-                </button>
-              )
-            })}
+            {q.choices.map(choice => (
+              <RenderableChoiceButton
+                key={choice.label}
+                choice={choice}
+                isSelected={selected === choice.label}
+                isCorrect={choice.label === q.answer}
+                isChecked={checked}
+                onSelect={() => handleSelect(choice.label)}
+              />
+            ))}
           </div>
 
           {checked && (
             <div className="flex flex-col gap-1.5">
-              <p className={`font-sans text-sm font-medium ${correct ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
+              <p className={`font-sans text-sm font-medium ${correct ? 'text-success' : 'text-error'}`}>
                 {correct ? '✓ Correct' : `✗ Incorrect — ${q.answer}`}
               </p>
               <p className="font-sans text-sm text-secondary leading-relaxed">{q.explanation}</p>

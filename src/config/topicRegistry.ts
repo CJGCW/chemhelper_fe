@@ -345,11 +345,11 @@ export const TOPICS: Topic[] = [
   { id: 'nuclear-dating',    label: 'Radiometric Dating',  sectionId: 'nuclear-applications', tabs: ['dating', 'dating-problems', 'ref-dating']                       },
 
   // ── Organic Chemistry ──────────────────────────────────────────────────────
-  { id: 'alkanes-alkenes',     label: 'Alkanes / Alkenes / Alkynes', sectionId: 'hydrocarbons',      tabs: ['hydrocarbons', 'hydrocarbons-problems', 'ref-hydrocarbons'] },
-  { id: 'isomers',             label: 'Isomers',                     sectionId: 'hydrocarbons',      tabs: ['isomers', 'isomers-problems', 'ref-isomers']                },
-  { id: 'organic-naming',      label: 'IUPAC Naming',                sectionId: 'hydrocarbons',      tabs: ['organic-naming', 'naming-problems', 'ref-organic-naming']  },
-  { id: 'functional-group-id', label: 'Functional Groups',           sectionId: 'functional-groups', tabs: ['func-groups', 'func-groups-problems', 'ref-func-groups']   },
-  { id: 'organic-reactions',   label: 'Common Reactions',            sectionId: 'functional-groups', tabs: ['organic-rxn', 'organic-rxn-problems', 'ref-organic-rxn']   },
+  { id: 'alkanes-alkenes',     label: 'Alkanes / Alkenes / Alkynes', sectionId: 'hydrocarbons',      tabs: ['ref-hydrocarbons', 'hydrocarbons', 'hydrocarbons-problems'] },
+  { id: 'isomers',             label: 'Isomers',                     sectionId: 'hydrocarbons',      tabs: ['ref-isomers', 'isomers', 'isomers-problems']                },
+  { id: 'organic-naming',      label: 'IUPAC Naming',                sectionId: 'hydrocarbons',      tabs: ['ref-organic-naming', 'organic-naming', 'naming-problems']  },
+  { id: 'functional-group-id', label: 'Functional Groups',           sectionId: 'functional-groups', tabs: ['ref-func-groups', 'func-groups', 'func-groups-problems']   },
+  { id: 'organic-reactions',   label: 'Common Reactions',            sectionId: 'functional-groups', tabs: ['ref-organic-rxn', 'organic-rxn', 'organic-rxn-problems']   },
   { id: 'predict-product',     label: 'Predict the Product',         sectionId: 'functional-groups', tabs: ['predict-practice', 'predict-problems']                        },
 
   // ── Organic Mechanisms ─────────────────────────────────────────────────────
@@ -403,11 +403,11 @@ export const TOPICS: Topic[] = [
   { id: 'nucleic-acids',         label: 'Nucleic Acids',             sectionId: 'org-nucleic-acids', tabs: ['ref-nucleobases', 'ref-nucleotides', 'ref-dna-rna'] },
 
   // ── Spectroscopy ──────────────────────────────────────────────────────────
-  { id: 'ir-spectroscopy',      label: 'IR Spectroscopy',         sectionId: 'spectral-methods', tabs: ['ref-ir', 'ir-practice']                             },
-  { id: 'nmr-spectroscopy',     label: 'NMR',                     sectionId: 'spectral-methods', tabs: ['ref-hnmr', 'ref-cnmr', 'nmr-practice']            },
-  { id: 'mass-spectrometry',    label: 'Mass Spec',               sectionId: 'spectral-methods', tabs: ['ref-ms', 'ms-practice']                            },
-  { id: 'spectral-analysis',    label: 'Spectral Analysis',       sectionId: 'spectral-methods', tabs: ['spectral-analysis', 'combined-practice']           },
-  { id: 'spectrum-estimator',   label: 'Estimate from Structure', sectionId: 'spectral-methods', tabs: ['estimator']                                        },
+  { id: 'spectroscopy-tool',       label: 'Spectroscopy',      sectionId: 'spectral-methods',
+    tabs: ['ir-spectroscopy', 'nmr-spectroscopy', 'ms-spectroscopy',
+           'spectroscopy-tool', 'ref-ir', 'ir-practice', 'ir-problems', 'ref-nmr', 'nmr-practice', 'nmr-problems', 'ref-ms', 'ms-practice', 'ms-problems'] },
+  { id: 'spectral-analysis-tools', label: 'Spectral Analysis', sectionId: 'spectral-methods',
+    tabs: ['spectral-analysis-tools', 'spectral-analysis', 'combined-practice', 'estimator'] },
 ]
 
 // ── Build-time Maps ───────────────────────────────────────────────────────────

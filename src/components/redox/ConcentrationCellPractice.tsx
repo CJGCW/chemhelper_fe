@@ -33,7 +33,7 @@ export default function ConcentrationCellPractice({ allowCustom = true }: Props)
   }
 
   const borderClass = checked
-    ? correct ? 'border-emerald-500 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/20' : 'border-rose-500 dark:border-rose-800/50 bg-rose-50 dark:bg-rose-950/20'
+    ? correct ? 'feedback-success' : 'feedback-error'
     : 'border-border bg-surface'
 
   return (
@@ -83,12 +83,12 @@ export default function ConcentrationCellPractice({ allowCustom = true }: Props)
                           placeholder-dim focus:outline-none transition-colors w-32
                           disabled:cursor-not-allowed
                           ${checked
-                            ? correct ? 'border-emerald-500 dark:border-emerald-700/60 text-emerald-700 dark:text-emerald-300' : 'border-rose-500 dark:border-rose-700/60 text-rose-700 dark:text-rose-300'
+                            ? correct ? 'border-success-border text-success-strong' : 'border-error-border text-error-strong'
                             : 'border-border text-bright'}`}
             />
             <span className={`flex items-center px-2 font-mono text-xs rounded-r-sm border border-l-0 shrink-0
                               ${checked
-                                ? correct ? 'border-emerald-500 dark:border-emerald-700/60 text-emerald-700 dark:text-emerald-400' : 'border-rose-500 dark:border-rose-700/60 text-rose-700 dark:text-rose-400'
+                                ? correct ? 'border-success-border text-success' : 'border-error-border text-error'
                                 : 'border-border text-dim'}`}
               style={{ background: 'rgb(var(--color-base))' }}>
               V
@@ -106,7 +106,7 @@ export default function ConcentrationCellPractice({ allowCustom = true }: Props)
               Check
             </button>
           ) : (
-            <span className={`font-sans text-sm font-medium ${correct ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
+            <span className={`font-sans text-sm font-medium ${correct ? 'text-success' : 'text-error'}`}>
               {correct ? '✓ Correct' : '✗ Incorrect'}
             </span>
           )}

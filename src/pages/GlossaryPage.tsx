@@ -177,7 +177,7 @@ export default function GlossaryPage() {
         <div className="flex flex-wrap gap-1.5">
           <button
             onClick={() => setActiveCategory(null)}
-            className="font-mono text-[11px] px-2.5 py-0.5 rounded-sm transition-colors"
+            className="font-mono text-xs px-2.5 py-0.5 rounded-sm transition-colors"
             style={pillStyle(activeCategory === null)}
           >
             All
@@ -186,7 +186,7 @@ export default function GlossaryPage() {
             <button
               key={cat}
               onClick={() => setActiveCategory(c => c === cat ? null : cat)}
-              className="font-mono text-[11px] px-2.5 py-0.5 rounded-sm transition-colors"
+              className="font-mono text-xs px-2.5 py-0.5 rounded-sm transition-colors"
               style={pillStyle(activeCategory === cat)}
             >
               {cat}

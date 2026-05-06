@@ -87,7 +87,7 @@ export default function GroupHeader({ groupNumber }: Props) {
 
               {/* Description */}
               <p
-                className="font-sans text-[11px] leading-relaxed"
+                className="font-sans text-xs leading-relaxed"
                 style={{ color: 'rgba(var(--overlay),0.5)' }}
               >
                 {info.description}

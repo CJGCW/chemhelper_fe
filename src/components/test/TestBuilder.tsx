@@ -672,7 +672,7 @@ export default function TestBuilder({ onGenerate }: Props) {
 
       if (t.kind === 'predict_product') {
         const prob = generatePredictProductProblem()
-        const choices = shuffleChoices(prob)
+        const choices = shuffleChoices(prob).map(c => c.label)
         const q = `Substrate: ${prob.substrate}\nReagent/Conditions: ${prob.reagent}${prob.conditions ? `\n${prob.conditions}` : ''}\n\nWhat is the major product?`
         return cls(q, prob.correctProduct.label, choices, [prob.hint, prob.explanation])
       }

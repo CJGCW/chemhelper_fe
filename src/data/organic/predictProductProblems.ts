@@ -1,5 +1,6 @@
 export interface ProductChoice {
   label: string
+  smiles?: string
   misconception?: string
 }
 

@@ -7,7 +7,7 @@ import {
 import type { UnitId, SectionId } from '../config/topicRegistry'
 
 const STORAGE_KEY = 'chemhelper-prefs'
-const CURRENT_VERSION = 1
+const CURRENT_VERSION = 2
 
 interface PersistedPrefs {
   version: number
@@ -256,14 +256,26 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => {
 
     setOrgChem1Preset() {
       mutate(() => {
-        // Hide everything, then un-hide only the organic unit + reaction-mechanisms
         const nextUnits    = new Set(UNITS.map(u => u.id))
         const nextSections = new Set(SECTIONS.map(s => s.id))
         const nextTopics   = new Set(TOPICS.map(t => t.id))
 
         nextUnits.delete('organic')
-        nextSections.delete('reaction-mechanisms')
-        nextTopics.delete('reaction-mechanisms')
+
+        const ORG_SECTIONS: SectionId[] = [
+          'hydrocarbons', 'functional-groups', 'reaction-mechanisms',
+          'sn-elimination', 'alkene-reactions',
+          'org-newman', 'org-chair', 'org-stereochem', 'org-aromaticity',
+          'org-acid-base', 'org-bonding', 'org-carbohydrates', 'org-synthesis',
+          'org-amino-acids', 'org-lipids', 'org-polymers', 'org-nucleic-acids',
+          'spectral-methods',
+        ]
+        for (const id of ORG_SECTIONS) nextSections.delete(id)
+
+        const orgTopicIds = TOPICS
+          .filter(t => ORG_SECTIONS.includes(t.sectionId as SectionId))
+          .map(t => t.id)
+        for (const id of orgTopicIds) nextTopics.delete(id)
 
         return { hiddenUnits: nextUnits, hiddenSections: nextSections, hiddenTopics: nextTopics }
       })

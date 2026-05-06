@@ -140,10 +140,10 @@ export default function MechanismStepwise({ category = 'all' }: Props) {
                 className="px-4 py-2.5 rounded-sm border text-left transition-colors disabled:cursor-default"
                 style={{
                   background: checked
-                    ? isStepCorrect ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)'
+                    ? isStepCorrect ? 'rgb(var(--color-success-bg) / 0.35)' : 'rgb(var(--color-error-bg) / 0.35)'
                     : 'rgb(var(--color-raised))',
                   border: checked
-                    ? `1px solid ${isStepCorrect ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.35)'}`
+                    ? `1px solid ${isStepCorrect ? 'rgb(var(--color-success-border) / 0.5)' : 'rgb(var(--color-error-border) / 0.4)'}`
                     : '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 }}
               >
@@ -159,9 +159,9 @@ export default function MechanismStepwise({ category = 'all' }: Props) {
 
       {checked && (
         <div className="rounded-sm border p-4 flex flex-col gap-2"
-          style={{ background: isCorrect ? 'rgba(16,185,129,0.05)' : 'rgba(239,68,68,0.05)', border: isCorrect ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(239,68,68,0.3)' }}
+          style={{ background: isCorrect ? 'rgb(var(--color-success-bg) / 0.25)' : 'rgb(var(--color-error-bg) / 0.25)', border: isCorrect ? '1px solid rgb(var(--color-success-border) / 0.35)' : '1px solid rgb(var(--color-error-border) / 0.35)' }}
         >
-          <p className={`font-sans text-sm font-semibold ${isCorrect ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
+          <p className={`font-sans text-sm font-semibold ${isCorrect ? 'text-success' : 'text-error'}`}>
             {isCorrect ? '✓ Correct order!' : '✗ Incorrect order'}
           </p>
           {!isCorrect && (

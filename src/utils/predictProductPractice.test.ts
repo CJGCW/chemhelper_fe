@@ -112,10 +112,11 @@ describe('shuffleChoices', () => {
     for (let i = 0; i < 20; i++) {
       const p = generatePredictProductProblem()
       const choices = shuffleChoices(p)
+      const labels = choices.map(c => c.label)
       expect(choices).toHaveLength(4)
-      expect(choices).toContain(p.correctProduct.label)
+      expect(labels).toContain(p.correctProduct.label)
       for (const d of p.distractors) {
-        expect(choices).toContain(d.label)
+        expect(labels).toContain(d.label)
       }
     }
   })
@@ -123,8 +124,8 @@ describe('shuffleChoices', () => {
   it('returns choices with no duplicates', () => {
     for (let i = 0; i < 20; i++) {
       const p = generatePredictProductProblem()
-      const choices = shuffleChoices(p)
-      expect(new Set(choices).size).toBe(4)
+      const labels = shuffleChoices(p).map(c => c.label)
+      expect(new Set(labels).size).toBe(4)
     }
   })
 })

@@ -122,7 +122,7 @@ function BondPanel({
               )}
             </div>
             {contrib !== null && row.count !== '' && (
-              <p className="font-mono text-[11px] text-secondary pl-1">
+              <p className="font-mono text-xs text-secondary pl-1">
                 {row.count} × {row.energy} = +{contrib.toFixed(0)} kJ
               </p>
             )}

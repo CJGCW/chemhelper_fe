@@ -183,7 +183,7 @@ export default function SolidTypesReference() {
 
             {/* Note */}
             <div className="px-4 py-3">
-              <span className="font-sans text-[11px] text-dim leading-relaxed italic">{t.notes}</span>
+              <span className="font-sans text-xs text-dim leading-relaxed italic">{t.notes}</span>
             </div>
           </div>
         ))}

@@ -280,11 +280,11 @@ export default function MechanismsPage() {
                 initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
                 transition={{ duration: 0.15 }}
               >
-                {practiceTab === 'predict-product'    && <PredictProductPractice    category={activeCategory === 'all' ? 'all' : activeCategory} />}
-                {practiceTab === 'identify-mechanism' && <IdentifyMechanismPractice category={activeCategory === 'all' ? 'all' : activeCategory} />}
-                {practiceTab === 'regio-stereo'       && <PredictRegioStereoPractice category={activeCategory === 'all' ? 'all' : activeCategory} />}
-                {practiceTab === 'identify-reagent'   && <IdentifyReagentPractice   category={activeCategory === 'all' ? 'all' : activeCategory} />}
-                {practiceTab === 'stepwise'           && <MechanismStepwise          category={activeCategory === 'all' ? 'all' : activeCategory} />}
+                {practiceTab === 'predict-product'    && <PredictProductPractice    key={activeCategory} category={activeCategory === 'all' ? 'all' : activeCategory} />}
+                {practiceTab === 'identify-mechanism' && <IdentifyMechanismPractice key={activeCategory} category={activeCategory === 'all' ? 'all' : activeCategory} />}
+                {practiceTab === 'regio-stereo'       && <PredictRegioStereoPractice key={activeCategory} category={activeCategory === 'all' ? 'all' : activeCategory} />}
+                {practiceTab === 'identify-reagent'   && <IdentifyReagentPractice   key={activeCategory} category={activeCategory === 'all' ? 'all' : activeCategory} />}
+                {practiceTab === 'stepwise'           && <MechanismStepwise          key={activeCategory} category={activeCategory === 'all' ? 'all' : activeCategory} />}
               </motion.div>
             </AnimatePresence>
           </motion.div>
@@ -330,7 +330,7 @@ export default function MechanismsPage() {
                 initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
                 transition={{ duration: 0.15 }}
               >
-                {problemsTab === 'quick-quiz' && <QuickQuiz category={activeCategory === 'all' ? 'all' : activeCategory} />}
+                {problemsTab === 'quick-quiz' && <QuickQuiz key={activeCategory} category={activeCategory === 'all' ? 'all' : activeCategory} />}
                 {problemsTab === 'exam-sim'   && <ExamSimulation />}
                 {problemsTab === 'custom-test' && (
                   <div className="flex flex-col gap-4 max-w-lg">

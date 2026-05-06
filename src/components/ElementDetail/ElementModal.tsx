@@ -175,7 +175,7 @@ function IonRow({
       {/* Info */}
       <div className="flex flex-col gap-0.5 flex-1 min-w-0">
         <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="font-mono text-[11px]" style={{ color: valenceColor }}>
+          <span className="font-mono text-xs" style={{ color: valenceColor }}>
             {sign}{absCharge}
           </span>
           {ion.common && (
@@ -189,7 +189,7 @@ function IonRow({
             </span>
           )}
         </div>
-        <p className="font-sans text-[11px] text-secondary leading-snug">{ion.note}</p>
+        <p className="font-sans text-xs text-secondary leading-snug">{ion.note}</p>
       </div>
     </div>
   )
@@ -266,13 +266,13 @@ function IsotopesTab({ el, color }: { el: NonNullable<Element>; color: string })
                         transition={{ duration: 0.2, ease: 'easeOut', delay: 0.05 }}
                       />
                     </div>
-                    <span className="font-mono text-[11px] text-primary w-16 text-right shrink-0">
+                    <span className="font-mono text-xs text-primary w-16 text-right shrink-0">
                       {fmtAbundance(iso.abundance!)}
                     </span>
                   </div>
                 </>
               ) : (
-                <span className="font-mono text-[11px] text-dim">no natural occurrence</span>
+                <span className="font-mono text-xs text-dim">no natural occurrence</span>
               )}
             </div>
 
@@ -397,7 +397,7 @@ function ElectronConfigTab({ el, color }: { el: Element; color: string }) {
             border: '1px solid color-mix(in srgb, #f59e0b 25%, transparent)',
           }}>
           <p className="font-mono text-[9px] tracking-wider mb-1" style={{ color: '#f59e0b' }}>AUFBAU EXCEPTION</p>
-          <p className="font-sans text-[11px]" style={{ color: 'rgba(245,158,11,0.8)' }}>{exception.note}</p>
+          <p className="font-sans text-xs" style={{ color: 'rgba(245,158,11,0.8)' }}>{exception.note}</p>
         </div>
       )}
 
@@ -510,7 +510,7 @@ export default function ElementModal() {
                   </motion.div>
 
                   <motion.div variants={heroRowVariants}
-                    className="mt-2 px-2 py-0.5 rounded-sm font-mono text-[11px] tracking-wider"
+                    className="mt-2 px-2 py-0.5 rounded-sm font-mono text-xs tracking-wider"
                     style={{
                       background: `color-mix(in srgb, ${color} 18%, transparent)`,
                       color,
@@ -527,7 +527,7 @@ export default function ElementModal() {
                   <button
                     key={t}
                     onClick={() => setTab(t)}
-                    className="flex-1 py-2.5 font-mono text-[11px] tracking-widest uppercase transition-colors"
+                    className="flex-1 py-2.5 font-mono text-xs tracking-widest uppercase transition-colors"
                     style={{ color: tab === t ? color : 'rgba(var(--overlay),0.3)' }}
                   >
                     {t === 'config' ? 'e⁻ config' : t}

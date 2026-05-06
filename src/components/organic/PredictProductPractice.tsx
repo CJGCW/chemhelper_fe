@@ -8,6 +8,8 @@ import {
   type PredictProductProblem,
 } from '../../utils/predictProductPractice'
 import CompoundDisplay from '../shared/CompoundDisplay'
+import RenderableChoiceButton from '../shared/RenderableChoiceButton'
+import type { RenderableChoice } from '../../data/mechanisms/types'
 
 interface Props { allowCustom?: boolean }
 
@@ -18,7 +20,7 @@ export default function PredictProductPractice({ allowCustom = true }: Props) {
   const [problem, setProblem] = useState<PredictProductProblem>(() =>
     generatePredictProductProblem(undefined),
   )
-  const [choices, setChoices] = useState<string[]>(() => shuffleChoices(problem))
+  const [choices, setChoices] = useState<RenderableChoice[]>(() => shuffleChoices(problem))
   const [selected, setSelected] = useState<string | null>(null)
   const [checked, setChecked] = useState(false)
   const [showHint, setShowHint] = useState(false)
@@ -37,10 +39,10 @@ export default function PredictProductPractice({ allowCustom = true }: Props) {
     setShowHint(false)
   }
 
-  function handleSelect(choice: string) {
+  function handleSelect(choiceLabel: string) {
     if (checked) return
-    setSelected(choice)
-    const isCorrect = checkPredictProductAnswer(problem, choice)
+    setSelected(choiceLabel)
+    const isCorrect = checkPredictProductAnswer(problem, choiceLabel)
     setChecked(true)
     setScore(s => ({ correct: s.correct + (isCorrect ? 1 : 0), total: s.total + 1 }))
   }
@@ -127,8 +129,8 @@ export default function PredictProductPractice({ allowCustom = true }: Props) {
             !checked
               ? 'border-border'
               : correct
-              ? 'border-emerald-500 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/20'
-              : 'border-rose-500 dark:border-rose-800/50 bg-rose-50 dark:bg-rose-950/20'
+              ? 'feedback-success'
+              : 'feedback-error'
           }`}
           style={{ background: checked ? undefined : 'rgb(var(--color-surface))' }}
         >
@@ -177,47 +179,16 @@ export default function PredictProductPractice({ allowCustom = true }: Props) {
 
           {/* Answer choices */}
           <div className="flex flex-col gap-2">
-            {choices.map(choice => {
-              const isSelected = selected === choice
-              const isCorrect = choice === problem.correctProduct.label
-              let style: React.CSSProperties = {
-                background: 'rgb(var(--color-raised))',
-                border: '1px solid rgb(var(--color-border))',
-                color: 'rgba(var(--overlay),0.6)',
-              }
-              if (checked) {
-                if (isCorrect) {
-                  style = {
-                    background: 'rgba(16,185,129,0.08)',
-                    border: '1px solid rgba(16,185,129,0.4)',
-                    color: '#34d399',
-                  }
-                } else if (isSelected) {
-                  style = {
-                    background: 'rgba(239,68,68,0.08)',
-                    border: '1px solid rgba(239,68,68,0.35)',
-                    color: '#f87171',
-                  }
-                }
-              } else if (isSelected) {
-                style = {
-                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
-                  color: 'var(--c-halogen)',
-                }
-              }
-              return (
-                <button
-                  key={choice}
-                  onClick={() => handleSelect(choice)}
-                  disabled={checked}
-                  className="px-4 py-2.5 rounded-sm font-mono text-sm text-left transition-colors disabled:cursor-not-allowed leading-snug"
-                  style={style}
-                >
-                  {choice}
-                </button>
-              )
-            })}
+            {choices.map(choice => (
+              <RenderableChoiceButton
+                key={choice.label}
+                choice={choice}
+                isSelected={selected === choice.label}
+                isCorrect={choice.label === problem.correctProduct.label}
+                isChecked={checked}
+                onSelect={() => handleSelect(choice.label)}
+              />
+            ))}
           </div>
 
           {/* Hint toggle (before submit) */}
@@ -238,7 +209,7 @@ export default function PredictProductPractice({ allowCustom = true }: Props) {
           {/* Result + explanation */}
           {checked && (
             <div className="flex flex-col gap-2">
-              <p className={`font-sans text-sm font-semibold ${correct ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
+              <p className={`font-sans text-sm font-semibold ${correct ? 'text-success' : 'text-error'}`}>
                 {correct ? '✓ Correct' : `✗ Incorrect — ${problem.correctProduct.label}`}
               </p>
               <p className="font-sans text-sm text-secondary leading-relaxed">{problem.explanation}</p>

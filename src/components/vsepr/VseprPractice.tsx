@@ -243,7 +243,7 @@ function CombinedSection() {
                 className="w-full rounded-md border-2 border-dashed flex flex-col items-center justify-center gap-1 transition-colors hover:border-secondary"
                 style={{ borderColor: 'rgb(var(--color-border))', aspectRatio: '1', color: 'rgb(var(--color-dim))' }}>
                 <span className="font-mono text-xl">✎</span>
-                <span className="font-mono text-[11px]">Draw</span>
+                <span className="font-mono text-xs">Draw</span>
               </button>
             </div>
           )}
