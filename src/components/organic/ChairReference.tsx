@@ -1,5 +1,6 @@
 import ChairConformationViewer from './ChairConformationViewer'
 import BoatConformationViewer from './BoatConformationViewer'
+import { ConformerComparisonStrip, ConformerEnergyDiagram } from './ConformerComparison'
 
 export default function ChairReference() {
   return (
@@ -14,6 +15,10 @@ export default function ChairReference() {
         </p>
 
         <ChairConformationViewer showLabels={true} />
+
+        <ConformerComparisonStrip />
+
+        <ConformerEnergyDiagram />
 
         <div className="flex flex-col gap-2">
           <p className="font-mono text-xs tracking-widest uppercase text-dim">A-Values (equatorial preference, kJ/mol)</p>
