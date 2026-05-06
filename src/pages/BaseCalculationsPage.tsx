@@ -397,8 +397,8 @@ export default function BaseCalculationsPage() {
                   {isActive && (
                     <motion.div layoutId="base-calc-mode-switch" className="absolute inset-0 rounded-full"
                       style={{
-                        background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                        border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                        background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                        border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                       }}
                       transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
                   )}
@@ -674,7 +674,7 @@ export default function BaseCalculationsPage() {
                         style={{
                           background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)',
                           color: 'var(--c-halogen)',
-                          border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)',
+                          border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                         }}
                       >
                         {r.sigFigs} sf
@@ -718,7 +718,7 @@ export default function BaseCalculationsPage() {
                         style={{
                           background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)',
                           color: 'var(--c-halogen)',
-                          border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)',
+                          border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                         }}
                       >
                         {ex.tag}
@@ -767,7 +767,7 @@ export default function BaseCalculationsPage() {
                         style={{
                           background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)',
                           color: 'var(--c-halogen)',
-                          border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)',
+                          border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                         }}>
                         {ex.sigFigs} sf
                       </span>

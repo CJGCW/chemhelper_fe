@@ -221,8 +221,8 @@ export default function KineticsPage() {
                 {isActive && (
                   <motion.div layoutId="kinetics-mode-switch" className="absolute inset-0 rounded-full"
                     style={{
-                      background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                      border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                      background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                      border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                     }}
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
                 )}
@@ -252,7 +252,7 @@ export default function KineticsPage() {
                         <motion.div
                           layoutId="kinetics-tab-pill"
                           className="absolute inset-0 rounded-sm"
-                          style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
+                          style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}
                           transition={{ type: 'spring', stiffness: 400, damping: 32 }}
                         />
                       )}

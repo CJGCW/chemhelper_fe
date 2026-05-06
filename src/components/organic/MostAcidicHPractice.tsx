@@ -1,10 +1,17 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import CompoundDisplay from '../shared/CompoundDisplay'
+
+interface Option {
+  label: string
+  pka: string
+  smiles: string
+}
 
 interface Problem {
   question: string
-  optionA: { label: string; pka: string; formula: string }
-  optionB: { label: string; pka: string; formula: string }
+  optionA: Option
+  optionB: Option
   correctAnswer: 'A' | 'B'
   explanation: string
   factor: string
@@ -13,80 +20,80 @@ interface Problem {
 const POOL: Problem[] = [
   {
     question: 'Which compound has the more acidic O–H proton?',
-    optionA: { label: 'Ethanol', formula: 'CH₃CH₂OH', pka: '16' },
-    optionB: { label: 'Acetic acid', formula: 'CH₃COOH', pka: '4.8' },
+    optionA: { label: 'Ethanol', smiles: 'CCO', pka: '16' },
+    optionB: { label: 'Acetic acid', smiles: 'CC(=O)O', pka: '4.8' },
     correctAnswer: 'B',
     factor: 'Resonance',
     explanation: 'Acetic acid (pKₐ 4.8) is far more acidic than ethanol (pKₐ 16). The carboxylate anion RCOO⁻ is stabilized by resonance — the negative charge is delocalized over two oxygens. The ethoxide anion RO⁻ has the charge localized on one oxygen.',
   },
   {
     question: 'Which compound has the more acidic C–H proton?',
-    optionA: { label: 'Propane (sp³ C–H)', formula: 'CH₃CH₂CH₃', pka: '~50' },
-    optionB: { label: 'Propyne (terminal alkyne C–H)', formula: 'CH₃C≡CH', pka: '~25' },
+    optionA: { label: 'Propane (sp³ C–H)', smiles: 'CCC', pka: '~50' },
+    optionB: { label: 'Propyne (terminal alkyne C–H)', smiles: 'CC#C', pka: '~25' },
     correctAnswer: 'B',
     factor: 'Hybridization (s-character)',
     explanation: 'The terminal alkyne C–H (pKₐ ~25) is much more acidic than an alkane C–H (pKₐ ~50). The sp-hybridized carbon has 50% s-character vs 25% for sp³. Higher s-character means the electrons in the C–C≡ bond are held closer to the nucleus, stabilizing the acetylide anion RC≡C⁻.',
   },
   {
     question: 'Which compound is a stronger acid?',
-    optionA: { label: 'Chloroacetic acid', formula: 'ClCH₂COOH', pka: '2.9' },
-    optionB: { label: 'Acetic acid', formula: 'CH₃COOH', pka: '4.8' },
+    optionA: { label: 'Chloroacetic acid', smiles: 'ClCC(=O)O', pka: '2.9' },
+    optionB: { label: 'Acetic acid', smiles: 'CC(=O)O', pka: '4.8' },
     correctAnswer: 'A',
     factor: 'Inductive effect',
     explanation: 'Chloroacetic acid (pKₐ 2.9) is stronger than acetic acid (pKₐ 4.8). The electronegative Cl atom withdraws electron density inductively from the carboxylate anion, stabilizing the negative charge. This is an inductive electron-withdrawing effect.',
   },
   {
     question: 'Which is more acidic?',
-    optionA: { label: 'Ethanol', formula: 'CH₃CH₂OH', pka: '16' },
-    optionB: { label: 'Phenol', formula: 'PhOH', pka: '10' },
+    optionA: { label: 'Ethanol', smiles: 'CCO', pka: '16' },
+    optionB: { label: 'Phenol', smiles: 'Oc1ccccc1', pka: '10' },
     correctAnswer: 'B',
     factor: 'Resonance',
     explanation: 'Phenol (pKₐ 10) is more acidic than ethanol (pKₐ 16). The phenoxide ion PhO⁻ is resonance-stabilized — the negative charge is delocalized into the aromatic ring (four resonance contributors). Ethoxide RO⁻ has the charge localized on one oxygen.',
   },
   {
     question: 'Which proton is more acidic?',
-    optionA: { label: 'Ammonia N–H', formula: 'NH₃', pka: '36' },
-    optionB: { label: 'Water O–H', formula: 'H₂O', pka: '15.7' },
+    optionA: { label: 'Ammonia N–H', smiles: 'N', pka: '36' },
+    optionB: { label: 'Water O–H', smiles: 'O', pka: '15.7' },
     correctAnswer: 'B',
     factor: 'Electronegativity (across period)',
     explanation: 'Water (pKₐ 15.7) is more acidic than ammonia (pKₐ 36). Both are in the same row (period 2). Oxygen (EN = 3.44) is more electronegative than nitrogen (EN = 3.04), so OH⁻ is more stable than NH₂⁻. Greater electronegativity = better charge stabilization.',
   },
   {
     question: 'Which is the stronger acid in water?',
-    optionA: { label: 'HF', formula: 'HF', pka: '3.2' },
-    optionB: { label: 'HI', formula: 'HI', pka: '~−10' },
+    optionA: { label: 'HF', smiles: 'F', pka: '3.2' },
+    optionB: { label: 'HI', smiles: 'I', pka: '~−10' },
     correctAnswer: 'B',
     factor: 'Atomic size (down group)',
     explanation: 'HI (pKₐ ≈ −10) is a much stronger acid than HF (pKₐ 3.2), even though F is more electronegative. I⁻ is a much larger ion — the negative charge is spread over a much larger volume, making it far more stable. Size beats electronegativity when comparing acids within the same group.',
   },
   {
     question: 'Which α–H is more acidic?',
-    optionA: { label: 'Ethyl acetate α–H', formula: 'CH₃COOEt', pka: '~25' },
-    optionB: { label: 'Ethyl acetoacetate α–H (β-keto ester)', formula: 'CH₃COCH₂COOEt', pka: '~11' },
+    optionA: { label: 'Ethyl acetate α–H', smiles: 'CCOC(C)=O', pka: '~25' },
+    optionB: { label: 'Ethyl acetoacetate α–H (β-keto ester)', smiles: 'CCOC(=O)CC(C)=O', pka: '~11' },
     correctAnswer: 'B',
     factor: 'Double resonance stabilization',
     explanation: 'The β-keto ester α–H (pKₐ ~11) is much more acidic than a simple ester α–H (pKₐ ~25). Removing the α–H of ethyl acetoacetate gives an enolate stabilized by TWO carbonyl groups simultaneously — both the ketone and the ester can delocalize the negative charge through resonance.',
   },
   {
     question: 'Which compound is more acidic?',
-    optionA: { label: 'Acetone α–H (simple ketone)', formula: 'CH₃COCH₃', pka: '~20' },
-    optionB: { label: 'Acetylacetone α–H (1,3-diketone)', formula: 'CH₃COCH₂COCH₃', pka: '~9' },
+    optionA: { label: 'Acetone α–H (simple ketone)', smiles: 'CC(C)=O', pka: '~20' },
+    optionB: { label: 'Acetylacetone α–H (1,3-diketone)', smiles: 'CC(=O)CC(C)=O', pka: '~9' },
     correctAnswer: 'B',
     factor: 'Double resonance stabilization',
     explanation: 'Acetylacetone (pKₐ ~9) is more acidic than acetone (pKₐ ~20). The enolate of acetylacetone is stabilized by resonance with BOTH flanking ketones, distributing the charge over more of the molecule. This is the same principle as β-keto esters.',
   },
   {
     question: 'Which alcohol is more acidic?',
-    optionA: { label: 'Trifluoroethanol', formula: 'CF₃CH₂OH', pka: '12.4' },
-    optionB: { label: 'Ethanol', formula: 'CH₃CH₂OH', pka: '16' },
+    optionA: { label: 'Trifluoroethanol', smiles: 'OCC(F)(F)F', pka: '12.4' },
+    optionB: { label: 'Ethanol', smiles: 'CCO', pka: '16' },
     correctAnswer: 'A',
     factor: 'Inductive effect',
     explanation: 'Trifluoroethanol (pKₐ 12.4) is much more acidic than ethanol (pKₐ 16). Three electronegative F atoms withdraw electron density inductively through the C–C bond, partially stabilizing the negative charge on the alkoxide oxygen. This shows that even through σ bonds, EWGs raise acidity.',
   },
   {
     question: 'Which C–H is more acidic?',
-    optionA: { label: 'Propene vinyl C–H (sp²)', formula: 'CH₂=CH–CH₃', pka: '~44' },
-    optionB: { label: 'Propyne terminal C–H (sp)', formula: 'CH₃C≡CH', pka: '~25' },
+    optionA: { label: 'Propene vinyl C–H (sp²)', smiles: 'CC=C', pka: '~44' },
+    optionB: { label: 'Propyne terminal C–H (sp)', smiles: 'CC#C', pka: '~25' },
     correctAnswer: 'B',
     factor: 'Hybridization (s-character)',
     explanation: 'The terminal alkyne C–H (pKₐ ~25) is more acidic than the vinyl C–H (pKₐ ~44). sp has 50% s-character vs 33% for sp². The sp carbon holds the electrons from the C–H bond closer to the nucleus when the proton is removed, giving a more stable acetylide anion.',
@@ -163,17 +170,17 @@ export default function MostAcidicHPractice({ allowCustom: _allowCustom = true }
           return (
             <button key={opt} onClick={() => !checked && setSelected(opt)}
               disabled={checked}
-              className="flex flex-col gap-2 p-4 rounded-sm border text-left transition-colors"
+              className="flex flex-col items-center gap-2 p-4 rounded-sm border text-left transition-colors"
               style={{ borderColor, background: bg }}>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 self-start">
                 <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded"
                   style={{ background: isSelected ? 'color-mix(in srgb, var(--c-halogen) 20%, transparent)' : 'rgb(var(--color-surface))',
                            color: isSelected ? 'var(--c-halogen)' : 'rgb(var(--overlay)/0.5)' }}>{opt}</span>
                 <span className="font-sans text-sm font-medium text-primary">{data.label}</span>
               </div>
-              <span className="font-mono text-base text-primary">{data.formula}</span>
+              <CompoundDisplay smiles={data.smiles} label={data.label} width={160} height={120} />
               {checked && (
-                <span className="font-mono text-xs text-secondary">pKₐ ≈ {data.pka}</span>
+                <span className="font-mono text-xs text-secondary self-start">pKₐ ≈ {data.pka}</span>
               )}
             </button>
           )
@@ -184,15 +191,15 @@ export default function MostAcidicHPractice({ allowCustom: _allowCustom = true }
         {!checked ? (
           <button onClick={handleCheck} disabled={!selected}
             className="px-4 py-1.5 rounded-sm text-sm font-sans font-medium transition-colors disabled:opacity-40"
-            style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                     color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}>
+            style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                     color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
             Check Answer
           </button>
         ) : (
           <button onClick={handleNext}
             className="px-4 py-1.5 rounded-sm text-sm font-sans font-medium transition-colors"
-            style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                     color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}>
+            style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                     color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
             Next Problem
           </button>
         )}

@@ -79,7 +79,7 @@ export default function SpectralPage() {
 
         {/* Heading */}
         <div className="flex items-center gap-3">
-          <h2 className="text-xl lg:text-2xl font-bold text-bright">Spectroscopy</h2>
+          <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Spectroscopy</h2>
         </div>
 
         {/* Tab navigation */}
@@ -96,8 +96,8 @@ export default function SpectralPage() {
                       onClick={() => setTab(t.id)}
                       className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-sans font-medium border transition-colors"
                       style={active ? {
-                        background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                        borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                        background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                        borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                         color: 'var(--c-halogen)',
                       } : {
                         background: 'transparent',

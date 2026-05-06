@@ -56,8 +56,8 @@ export default function NewmanProjectionViewer({ mode = 'butane' }: Props) {
     const tip = toXY(a, FRONT_BL + 16)
     return (
       <g key={i}>
-        <line x1={cx} y1={cy} x2={end.x} y2={end.y} stroke="rgb(var(--overlay)/0.7)" strokeWidth={2.5} strokeLinecap="round" />
-        <text x={tip.x} y={tip.y + 4} textAnchor="middle" fontSize={11} fill="rgb(var(--overlay)/0.9)" fontFamily="monospace">{lbl}</text>
+        <line x1={cx} y1={cy} x2={end.x} y2={end.y} stroke="rgba(var(--overlay), 0.7)" strokeWidth={2.5} strokeLinecap="round" />
+        <text x={tip.x} y={tip.y + 4} textAnchor="middle" fontSize={11} fill="rgba(var(--overlay), 0.9)" fontFamily="monospace">{lbl}</text>
       </g>
     )
   }
@@ -68,8 +68,8 @@ export default function NewmanProjectionViewer({ mode = 'butane' }: Props) {
     const tip   = toXY(a, CIRCLE_R + BACK_BL + 16)
     return (
       <g key={i}>
-        <line x1={start.x} y1={start.y} x2={end.x} y2={end.y} stroke="rgb(var(--overlay)/0.55)" strokeWidth={2.5} strokeLinecap="round" />
-        <text x={tip.x} y={tip.y + 4} textAnchor="middle" fontSize={11} fill="rgb(var(--overlay)/0.7)" fontFamily="monospace">{lbl}</text>
+        <line x1={start.x} y1={start.y} x2={end.x} y2={end.y} stroke="rgba(var(--overlay), 0.55)" strokeWidth={2.5} strokeLinecap="round" />
+        <text x={tip.x} y={tip.y + 4} textAnchor="middle" fontSize={11} fill="rgba(var(--overlay), 0.7)" fontFamily="monospace">{lbl}</text>
       </g>
     )
   }
@@ -80,11 +80,11 @@ export default function NewmanProjectionViewer({ mode = 'butane' }: Props) {
         {/* Back bonds behind circle */}
         {subs.map((s, i) => <BackBond key={i} a={FRONT_ANGLES[i] + angle} label={s.back} i={i} />)}
         {/* Back carbon circle (white fill to cover inner back bonds) */}
-        <circle cx={cx} cy={cy} r={CIRCLE_R} stroke="rgb(var(--overlay)/0.5)" strokeWidth={2} fill="rgb(var(--color-surface))" />
+        <circle cx={cx} cy={cy} r={CIRCLE_R} stroke="rgba(var(--overlay), 0.5)" strokeWidth={2} fill="rgb(var(--color-surface))" />
         {/* Front bonds over circle */}
         {subs.map((s, i) => <FrontBond key={i} a={FRONT_ANGLES[i]} label={s.front} i={i} />)}
         {/* Front carbon dot */}
-        <circle cx={cx} cy={cy} r={5} fill="rgb(var(--overlay)/0.9)" />
+        <circle cx={cx} cy={cy} r={5} fill="rgba(var(--overlay), 0.9)" />
         {/* Conformation label */}
         <text x={cx} y={160} textAnchor="middle" fontSize={12} fill="var(--c-halogen)" fontFamily="sans-serif" fontWeight={600}>{label}</text>
         {/* Energy diagram */}
@@ -92,10 +92,10 @@ export default function NewmanProjectionViewer({ mode = 'butane' }: Props) {
         <line x1={DX} y1={DY + DH} x2={DX + DW} y2={DY + DH} stroke="rgb(var(--color-border))" strokeWidth={1} />
         <circle cx={indicator.x} cy={indicator.y} r={4} fill="var(--c-halogen)" />
         {[0, 60, 120, 180, 240, 300, 360].map(d => (
-          <text key={d} x={DX + (d / 360) * DW} y={DY + DH + 11} textAnchor="middle" fontSize={8} fill="rgb(var(--overlay)/0.4)" fontFamily="monospace">{d}°</text>
+          <text key={d} x={DX + (d / 360) * DW} y={DY + DH + 11} textAnchor="middle" fontSize={8} fill="rgba(var(--overlay), 0.4)" fontFamily="monospace">{d}°</text>
         ))}
-        <text x={DX} y={DY - 3} fontSize={8} fill="rgb(var(--overlay)/0.4)" fontFamily="monospace">E(kJ/mol)</text>
-        <text x={DX + DW} y={DY + DH + 11} textAnchor="end" fontSize={8} fill="rgb(var(--overlay)/0.4)" fontFamily="monospace">φ →</text>
+        <text x={DX} y={DY - 3} fontSize={8} fill="rgba(var(--overlay), 0.4)" fontFamily="monospace">E(kJ/mol)</text>
+        <text x={DX + DW} y={DY + DH + 11} textAnchor="end" fontSize={8} fill="rgba(var(--overlay), 0.4)" fontFamily="monospace">φ →</text>
       </svg>
 
       <div className="flex items-center gap-2 w-full max-w-[300px]">

@@ -215,7 +215,7 @@ export default function SettingsPage() {
         {/* Heading */}
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col gap-1">
-            <h2 className="text-xl lg:text-2xl font-bold text-bright">Settings</h2>
+            <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Settings</h2>
             <p className="font-sans text-sm text-secondary">
               Control which topics appear in navigation and practice. Changes are saved automatically.
             </p>
@@ -279,7 +279,7 @@ export default function SettingsPage() {
                   onClick={() => setGenChemPreset(level)}
                   className="flex-1 flex flex-col items-center gap-0.5 px-3 py-2 transition-colors"
                   style={isActive ? {
-                    background: 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))',
+                    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                     color: 'var(--c-halogen)',
                   } : {
                     color: 'rgb(var(--color-secondary))',
@@ -296,7 +296,7 @@ export default function SettingsPage() {
               onClick={setOrgChem1Preset}
               className="flex-1 flex flex-col items-center gap-0.5 px-3 py-2 transition-colors"
               style={isOC1Active ? {
-                background: 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                 color: 'var(--c-halogen)',
               } : {
                 color: 'rgb(var(--color-secondary))',
@@ -326,8 +326,8 @@ export default function SettingsPage() {
               onClick={resetToDefaults}
               className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               }}
             >

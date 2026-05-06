@@ -196,7 +196,7 @@ export default function ChainedProblem({ scenario, steps, onComplete }: ChainedP
                                    disabled:opacity-30 disabled:cursor-not-allowed"
                         style={{
                           background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-                          border:     '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                          border:     '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                           color:      'var(--c-halogen)',
                         }}>
                         Check

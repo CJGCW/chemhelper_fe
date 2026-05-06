@@ -1,3 +1,13 @@
+import CompoundDisplay from '../shared/CompoundDisplay'
+
+const BASE_SMILES: { name: string; smiles: string }[] = [
+  { name: 'Adenine (A)',  smiles: 'Nc1ncnc2[nH]cnc12' },
+  { name: 'Guanine (G)',  smiles: 'Nc1nc2[nH]cnc2c(=O)[nH]1' },
+  { name: 'Cytosine (C)', smiles: 'Nc1cc[nH]c(=O)n1' },
+  { name: 'Thymine (T)',  smiles: 'Cc1c[nH]c(=O)[nH]c1=O' },
+  { name: 'Uracil (U)',   smiles: 'O=c1cc[nH]c(=O)[nH]1' },
+]
+
 export default function NucleotidesReference() {
   return (
     <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
@@ -65,6 +75,17 @@ export default function NucleotidesReference() {
           <p className="text-secondary mb-2">Configuration is always β (base and C4′–C5′ on the same face of the sugar ring).</p>
           <p className="text-secondary">The N-glycosidic bond can be hydrolyzed by strong acid (releases free base + sugar). This is how DNA is depurinated (purines released faster than pyrimidines). Spontaneous depurination at physiological temperature is a significant source of DNA damage.</p>
         </div>
+      </section>
+
+      {/* Nucleobase structures */}
+      <section className="flex flex-col gap-3">
+        <h4 className="font-sans font-semibold text-sm text-primary">Nucleobase Structures</h4>
+        <div className="flex flex-wrap gap-3">
+          {BASE_SMILES.map(b => (
+            <CompoundDisplay key={b.name} smiles={b.smiles} label={b.name} width={150} height={120} />
+          ))}
+        </div>
+        <p className="font-sans text-xs text-dim">Purines (A, G) have fused bicyclic rings. Pyrimidines (C, T, U) have a single ring. All nucleobases are planar and aromatic.</p>
       </section>
 
       {/* Naming table */}

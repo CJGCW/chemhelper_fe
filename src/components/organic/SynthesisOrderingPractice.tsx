@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { SYNTHESIS_PROBLEMS, ORDERING_PROBLEMS } from '../../data/organic/synthesisProblems'
+import CompoundDisplay from '../shared/CompoundDisplay'
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr]
@@ -82,13 +83,27 @@ export default function SynthesisOrderingPractice({ allowCustom: _allowCustom = 
           <div className="rounded-sm border border-border px-4 py-3 flex-1"
             style={{ background: 'rgb(var(--color-raised))' }}>
             <span className="font-mono text-[10px] text-dim uppercase tracking-widest block mb-0.5">Starting material</span>
-            <span className="font-sans text-sm font-medium text-primary">{base.startingMaterial.label}</span>
+            {base.startingMaterial.smiles ? (
+              <div className="flex flex-col items-start gap-1 mt-1">
+                <CompoundDisplay smiles={base.startingMaterial.smiles} label={base.startingMaterial.label} width={150} height={110} />
+                <span className="font-sans text-xs text-secondary">{base.startingMaterial.label}</span>
+              </div>
+            ) : (
+              <span className="font-sans text-sm font-medium text-primary">{base.startingMaterial.label}</span>
+            )}
           </div>
           <div className="flex items-center text-dim font-mono text-lg">→</div>
           <div className="rounded-sm border border-border px-4 py-3 flex-1"
             style={{ background: 'rgb(var(--color-raised))' }}>
             <span className="font-mono text-[10px] text-dim uppercase tracking-widest block mb-0.5">Target</span>
-            <span className="font-sans text-sm font-medium text-primary">{base.target.label}</span>
+            {base.target.smiles ? (
+              <div className="flex flex-col items-start gap-1 mt-1">
+                <CompoundDisplay smiles={base.target.smiles} label={base.target.label} width={150} height={110} />
+                <span className="font-sans text-xs text-secondary">{base.target.label}</span>
+              </div>
+            ) : (
+              <span className="font-sans text-sm font-medium text-primary">{base.target.label}</span>
+            )}
           </div>
         </div>
 
@@ -106,8 +121,8 @@ export default function SynthesisOrderingPractice({ allowCustom: _allowCustom = 
                 disabled={submitted}
                 className="px-3 py-1.5 rounded-sm border text-xs font-mono transition-colors"
                 style={isUsed ? {
-                  background: 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))',
-                  borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                   opacity: 0.6,
                 } : {
@@ -173,8 +188,8 @@ export default function SynthesisOrderingPractice({ allowCustom: _allowCustom = 
             disabled={selected.length !== correctOrder.length}
             className="px-4 py-1.5 rounded-sm text-sm font-sans font-medium border transition-colors disabled:opacity-40"
             style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-              borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+              borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
             }}>
             Check sequence
@@ -183,8 +198,8 @@ export default function SynthesisOrderingPractice({ allowCustom: _allowCustom = 
           <button onClick={handleNext}
             className="px-4 py-1.5 rounded-sm text-sm font-sans font-medium border transition-colors"
             style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-              borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+              borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
             }}>
             Next problem →

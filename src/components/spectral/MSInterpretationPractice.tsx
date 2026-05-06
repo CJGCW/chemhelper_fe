@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import SpectrumViewer, { type Peak } from './SpectrumViewer'
+import CompoundDisplay from '../shared/CompoundDisplay'
 
 interface MSQuestion {
   stem: string
@@ -14,6 +15,7 @@ interface MSProblem {
   title: string
   compound: string
   formula: string
+  smiles?: string
   peaks: Peak[]
   questions: MSQuestion[]
 }
@@ -27,6 +29,7 @@ const PROBLEMS: MSProblem[] = [
     title: 'Mass Spectrum — Unknown compound (MW = 58)',
     compound: 'Acetone (CH₃COCH₃)',
     formula: 'C₃H₆O',
+    smiles: 'CC(=O)C',
     peaks: [
       { x: 58,  y: 0.5,  label: 'M⁺ (58)', width: 0.5 },
       { x: 43,  y: 1.0,  label: 'base (43)', width: 0.5 },
@@ -56,6 +59,7 @@ const PROBLEMS: MSProblem[] = [
     title: 'Mass Spectrum — Compound with isotope pattern',
     compound: '1-Bromopropane (CH₃CH₂CH₂Br)',
     formula: 'C₃H₇Br',
+    smiles: 'CCCBr',
     peaks: [
       { x: 122, y: 0.5,  label: 'M⁺ (⁷⁹Br)', width: 0.5 },
       { x: 124, y: 0.5,  label: 'M+2 (⁸¹Br)', width: 0.5 },
@@ -81,6 +85,7 @@ const PROBLEMS: MSProblem[] = [
     title: 'Mass Spectrum — Nitrogen-containing compound (MW = 45)',
     compound: 'Ethylamine (CH₃CH₂NH₂)',
     formula: 'C₂H₇N',
+    smiles: 'CCN',
     peaks: [
       { x: 45, y: 0.4, label: 'M⁺ (45)', width: 0.5 },
       { x: 44, y: 1.0, label: 'base (M−1)', width: 0.5 },
@@ -105,6 +110,7 @@ const PROBLEMS: MSProblem[] = [
     title: 'Mass Spectrum — Aromatic compound (MW = 92)',
     compound: 'Toluene (C₆H₅CH₃)',
     formula: 'C₇H₈',
+    smiles: 'Cc1ccccc1',
     peaks: [
       { x: 92, y: 0.7, label: 'M⁺ (92)', width: 0.5 },
       { x: 91, y: 1.0, label: 'base (91, tropylium)', width: 0.5 },
@@ -194,6 +200,12 @@ export default function MSInterpretationPractice() {
         <p className="font-sans text-xs text-secondary">Formula: <span className="font-mono">{problem.formula}</span></p>
       </div>
 
+      {problem.smiles && (
+        <div className="flex justify-start">
+          <CompoundDisplay smiles={problem.smiles} label={problem.compound} width={180} height={130} />
+        </div>
+      )}
+
       <SpectrumViewer type="mass_spec" peaks={problem.peaks} width={520} height={200} />
 
       {/* Question */}
@@ -238,15 +250,15 @@ export default function MSInterpretationPractice() {
         {!checked ? (
           <button onClick={handleCheck} disabled={!answer}
             className="px-4 py-1.5 rounded-sm text-sm font-sans font-medium disabled:opacity-40"
-            style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                     color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}>
+            style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                     color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
             Check
           </button>
         ) : (
           <button onClick={handleNext}
             className="px-4 py-1.5 rounded-sm text-sm font-sans font-medium"
-            style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                     color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}>
+            style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                     color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
             {qIdx < problem.questions.length - 1 ? 'Next Question' : 'Next Problem'}
           </button>
         )}

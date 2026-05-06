@@ -148,7 +148,7 @@ export default function ExamSimulation() {
             <button key={p.id} onClick={() => setPreset(p)}
               className="px-4 py-3 rounded-sm border text-left transition-colors"
               style={preset.id === p.id
-                ? { background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }
+                ? { background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' }
                 : { background: 'rgb(var(--color-raised))', border: '1px solid rgb(var(--color-border))' }
               }
             >
@@ -159,7 +159,7 @@ export default function ExamSimulation() {
         </div>
         <button onClick={startExam}
           className="self-start px-5 py-2 rounded-sm font-sans text-sm font-medium border transition-colors"
-          style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)', color: 'var(--c-halogen)' }}
+          style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)', color: 'var(--c-halogen)' }}
         >
           Begin {preset.label}
         </button>
@@ -183,7 +183,7 @@ export default function ExamSimulation() {
     return (
       <div className="flex flex-col gap-6 max-w-xl">
         <div className="rounded-sm border border-border p-5 flex flex-col gap-3" style={{ background: 'rgb(var(--color-surface))' }}>
-          <h3 className="font-sans text-lg font-semibold text-bright">{preset.label} — Results</h3>
+          <h3 className="font-sans font-semibold text-primary text-sm">{preset.label} — Results</h3>
           <div className="flex items-end gap-2">
             <span className="font-mono text-4xl font-bold" style={{ color: pct >= 70 ? '#34d399' : pct >= 50 ? '#f59e0b' : '#f87171' }}>
               {correct}/{questions.length}
@@ -260,7 +260,7 @@ export default function ExamSimulation() {
                 if (isOptCorrect) style = { background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.4)', color: '#34d399' }
                 else if (isSelected) style = { background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.35)', color: '#f87171' }
               } else if (isSelected) {
-                style = { background: 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)', color: 'var(--c-halogen)' }
+                style = { background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)', color: 'var(--c-halogen)' }
               }
               return (
                 <button key={opt} onClick={() => handleSelect(opt)} disabled={confirmed}

@@ -153,8 +153,8 @@ export default function TransformDrill({ allowCustom: _allowCustom = true }: Pro
           <button onClick={next}
             className="px-4 py-1.5 rounded-sm text-sm font-sans font-medium border transition-colors"
             style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-              borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+              borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
             }}>
             Next →

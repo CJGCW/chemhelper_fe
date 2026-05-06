@@ -72,7 +72,7 @@ export default function SpontaneityTool() {
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 15%, transparent)',
             color: 'var(--c-halogen)',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           }}
         >
           Analyse
@@ -88,7 +88,7 @@ export default function SpontaneityTool() {
             className="p-4 rounded-sm border"
             style={{
               background: 'color-mix(in srgb, var(--c-halogen) 8%, rgb(var(--color-raised)))',
-              borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+              borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             }}
           >
             <p className="font-mono text-xs text-secondary mb-1">Classification</p>

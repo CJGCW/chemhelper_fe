@@ -222,15 +222,15 @@ function AnomerPractice() {
         {!checked ? (
           <button onClick={handleCheck} disabled={!answer}
             className="px-4 py-1.5 rounded-sm text-sm font-sans font-medium disabled:opacity-40"
-            style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                     color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}>
+            style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                     color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
             Check
           </button>
         ) : (
           <button onClick={handleNext}
             className="px-4 py-1.5 rounded-sm text-sm font-sans font-medium"
-            style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                     color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}>
+            style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                     color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
             Next
           </button>
         )}

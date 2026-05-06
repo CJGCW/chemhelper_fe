@@ -1,3 +1,120 @@
+type CurveType = 'SA_SB' | 'WA_SB' | 'SB_SA' | 'WB_SA'
+
+const EPS = 1e-9
+
+// pH at volume V mL of 0.1 M titrant added to 25 mL of 0.1 M analyte
+function titrationPH(type: CurveType, V: number): number {
+  const Va = 25, Veq = 25
+
+  if (type === 'SA_SB') {
+    if (V >= Veq) {
+      const excess = V - Veq
+      if (excess < 0.01) return 7
+      return 14 + Math.log10(Math.max(0.1 * excess / (Va + V), EPS))
+    }
+    return -Math.log10(Math.max(0.1 * (Veq - V) / (Va + V), EPS))
+  }
+
+  if (type === 'WA_SB') {
+    const pKa = 4.74
+    if (V <= 0) return 0.5 * (pKa + 1)        // initial weak-acid pH
+    if (V < Veq) return pKa + Math.log10(V / (Veq - V))   // Henderson-Hasselbalch
+    const excess = V - Veq
+    if (excess < 0.01) return 7 + 0.5 * pKa + 0.5 * Math.log10(0.05)  // ≈ 8.72
+    return 14 + Math.log10(Math.max(0.1 * excess / (Va + V), EPS))
+  }
+
+  if (type === 'SB_SA') {
+    if (V >= Veq) {
+      const excess = V - Veq
+      if (excess < 0.01) return 7
+      return -Math.log10(Math.max(0.1 * excess / (Va + V), EPS))
+    }
+    return 14 + Math.log10(Math.max(0.1 * (Veq - V) / (Va + V), EPS))
+  }
+
+  // WB_SA — NH3 + HCl
+  const pKb = 4.74
+  if (V <= 0) return 14 - 0.5 * (pKb + 1)    // initial weak-base pH ≈ 11.13
+  if (V < Veq) return 14 - pKb - Math.log10(V / (Veq - V))
+  const excess = V - Veq
+  if (excess < 0.01) return 7 - 0.5 * pKb + 0.5 * Math.log10(0.05)  // ≈ 3.98
+  return -Math.log10(Math.max(0.1 * excess / (Va + V), EPS))
+}
+
+function MiniTitrationCurve({ type, title, equivPH }: {
+  type: CurveType; title: string; equivPH: string
+}) {
+  const W = 232, H = 150, ML = 30, MR = 8, MT = 14, MB = 22
+  const PW = W - ML - MR, PH = H - MT - MB
+  const Veq = 25
+
+  const toX = (v: number) => ML + (v / 50) * PW
+  const toY = (ph: number) => MT + PH - (ph / 14) * PH
+
+  const N = 120
+  const pts = Array.from({ length: N }, (_, i) => {
+    const V = (i / (N - 1)) * 50
+    const ph = Math.max(0, Math.min(14, titrationPH(type, V)))
+    return { x: toX(V), y: toY(ph) }
+  })
+
+  // Break path at the equivalence-point inflection (sharp jump > 18 px)
+  const segs: string[] = []
+  let cur = `M ${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`
+  for (let i = 1; i < pts.length; i++) {
+    if (Math.abs(pts[i].y - pts[i - 1].y) > 18) {
+      segs.push(cur)
+      cur = `M ${pts[i].x.toFixed(1)},${pts[i].y.toFixed(1)}`
+    } else {
+      cur += ` L ${pts[i].x.toFixed(1)},${pts[i].y.toFixed(1)}`
+    }
+  }
+  segs.push(cur)
+
+  return (
+    <div className="flex flex-col gap-1">
+      <p className="font-mono text-xs" style={{ color: 'var(--c-halogen)' }}>{title}</p>
+      <svg width={W} height={H} className="block border border-border rounded-sm"
+        style={{ background: 'rgb(var(--color-surface))' }}>
+        {/* Horizontal grid at pH 0, 7, 14 */}
+        {[0, 7, 14].map(ph => (
+          <g key={ph}>
+            <line x1={ML} y1={toY(ph)} x2={ML + PW} y2={toY(ph)}
+              stroke={ph === 7 ? 'rgba(var(--overlay),0.12)' : 'rgba(var(--overlay),0.06)'}
+              strokeWidth={1} />
+            <text x={ML - 3} y={toY(ph) + 3} textAnchor="end" fontSize={8} fontFamily="monospace"
+              fill="rgba(var(--overlay),0.35)">{ph}</text>
+          </g>
+        ))}
+        {/* Axes */}
+        <line x1={ML} y1={MT} x2={ML} y2={MT + PH} stroke="rgba(var(--overlay),0.25)" strokeWidth={1} />
+        <line x1={ML} y1={MT + PH} x2={ML + PW} y2={MT + PH} stroke="rgba(var(--overlay),0.25)" strokeWidth={1} />
+        {/* x tick labels */}
+        {[0, 25, 50].map(v => (
+          <text key={v} x={toX(v)} y={MT + PH + 13} textAnchor="middle" fontSize={8}
+            fontFamily="monospace" fill="rgba(var(--overlay),0.35)">{v}</text>
+        ))}
+        {/* Axis labels */}
+        <text x={ML + PW / 2} y={H - 1} textAnchor="middle" fontSize={8} fontFamily="monospace"
+          fill="rgba(var(--overlay),0.4)">mL titrant</text>
+        <text x={9} y={MT + PH / 2} textAnchor="middle" fontSize={8} fontFamily="monospace"
+          fill="rgba(var(--overlay),0.4)" transform={`rotate(-90, 9, ${MT + PH / 2})`}>pH</text>
+        {/* Equivalence point dashed line */}
+        <line x1={toX(Veq)} y1={MT} x2={toX(Veq)} y2={MT + PH}
+          stroke="rgba(var(--overlay),0.2)" strokeWidth={1} strokeDasharray="3 2" />
+        <text x={toX(Veq) + 3} y={MT + 9} fontSize={7} fontFamily="monospace"
+          fill="rgba(var(--overlay),0.4)">{equivPH}</text>
+        {/* Titration curve — may be two segments split at equiv point */}
+        {segs.map((d, i) => (
+          <path key={i} d={d} stroke="var(--c-halogen)" strokeWidth={2} fill="none"
+            strokeLinecap="round" strokeLinejoin="round" />
+        ))}
+      </svg>
+    </div>
+  )
+}
+
 export default function TitrationCurveReference() {
   return (
     <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
@@ -8,6 +125,20 @@ export default function TitrationCurveReference() {
           strong or weak acid/base, the equivalence point pH, and the buffer region. They are essential for
           selecting the correct indicator and understanding the chemistry of neutralization.
         </p>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h3 className="font-mono text-xs tracking-widest text-secondary uppercase">Curve Shapes</h3>
+        <p className="font-sans text-sm text-secondary">
+          Each titration type produces a distinctive pH-vs-volume curve. The dashed line marks the
+          equivalence point (25 mL of 0.1 M titrant into 25 mL of 0.1 M analyte).
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <MiniTitrationCurve type="SA_SB" title="Strong Acid + Strong Base" equivPH="pH 7" />
+          <MiniTitrationCurve type="WA_SB" title="Weak Acid + Strong Base"   equivPH="pH > 7" />
+          <MiniTitrationCurve type="SB_SA" title="Strong Base + Strong Acid" equivPH="pH 7" />
+          <MiniTitrationCurve type="WB_SA" title="Weak Base + Strong Acid"   equivPH="pH < 7" />
+        </div>
       </section>
 
       <section className="flex flex-col gap-3">

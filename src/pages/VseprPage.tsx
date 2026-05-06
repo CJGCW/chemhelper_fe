@@ -322,7 +322,7 @@ export default function VseprPage() {
                 className="px-3.5 py-2 rounded-sm font-sans text-sm border transition-colors"
                 style={{
                   color: 'var(--c-halogen)',
-                  borderColor: 'color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                  borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   background: 'color-mix(in srgb, var(--c-halogen) 8%, transparent)',
                 }}
               >

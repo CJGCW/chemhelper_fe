@@ -149,9 +149,9 @@ export default function TitrationCurvePractice({ allowCustom = true }: Props) {
           disabled={!userAns}
           className="py-2 px-4 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-40"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
             color: 'var(--c-halogen)',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           }}
         >
           Check Answer

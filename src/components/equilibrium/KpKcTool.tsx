@@ -46,8 +46,8 @@ export default function KpKcTool() {
         <button onClick={() => setUseReaction(true)}
           className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
           style={{
-            background: useReaction ? 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))' : 'rgb(var(--color-raised))',
-            border: useReaction ? '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' : '1px solid rgb(var(--color-border))',
+            background: useReaction ? 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))' : 'rgb(var(--color-raised))',
+            border: useReaction ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '1px solid rgb(var(--color-border))',
             color: useReaction ? 'var(--c-halogen)' : 'rgb(var(--color-secondary))',
           }}>
           From reaction list
@@ -55,8 +55,8 @@ export default function KpKcTool() {
         <button onClick={() => setUseReaction(false)}
           className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
           style={{
-            background: !useReaction ? 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))' : 'rgb(var(--color-raised))',
-            border: !useReaction ? '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' : '1px solid rgb(var(--color-border))',
+            background: !useReaction ? 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))' : 'rgb(var(--color-raised))',
+            border: !useReaction ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '1px solid rgb(var(--color-border))',
             color: !useReaction ? 'var(--c-halogen)' : 'rgb(var(--color-secondary))',
           }}>
           Manual entry
@@ -91,8 +91,8 @@ export default function KpKcTool() {
                 <button key={t} onClick={() => setKnownType(t)}
                   className="px-4 py-1.5 rounded-sm font-mono text-sm transition-colors"
                   style={{
-                    background: knownType === t ? 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))' : 'rgb(var(--color-raised))',
-                    border: knownType === t ? '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' : '1px solid rgb(var(--color-border))',
+                    background: knownType === t ? 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))' : 'rgb(var(--color-raised))',
+                    border: knownType === t ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '1px solid rgb(var(--color-border))',
                     color: knownType === t ? 'var(--c-halogen)' : 'rgb(var(--color-secondary))',
                   }}>
                   {t}
@@ -110,8 +110,8 @@ export default function KpKcTool() {
                 <button key={t} onClick={() => setKnownType(t)}
                   className="px-4 py-1.5 rounded-sm font-mono text-sm transition-colors"
                   style={{
-                    background: knownType === t ? 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))' : 'rgb(var(--color-raised))',
-                    border: knownType === t ? '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' : '1px solid rgb(var(--color-border))',
+                    background: knownType === t ? 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))' : 'rgb(var(--color-raised))',
+                    border: knownType === t ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '1px solid rgb(var(--color-border))',
                     color: knownType === t ? 'var(--c-halogen)' : 'rgb(var(--color-secondary))',
                   }}>
                   {t}

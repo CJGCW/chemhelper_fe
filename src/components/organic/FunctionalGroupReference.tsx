@@ -1,11 +1,12 @@
 import { FUNCTIONAL_GROUPS } from '../../data/functionalGroups'
+import CompoundDisplay from '../shared/CompoundDisplay'
 
 export default function FunctionalGroupReference() {
   return (
     <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       <div className="flex flex-col gap-3">
-        <h3 className="font-sans font-semibold text-bright text-lg">Functional Groups in Organic Chemistry</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Functional Groups in Organic Chemistry</h3>
         <p className="font-sans text-sm text-secondary leading-relaxed">
           A functional group is an atom or group of atoms that determines the chemical properties of a compound.
           The general formula uses R to represent any carbon chain (alkyl group). The suffix shown is the IUPAC
@@ -43,26 +44,35 @@ export default function FunctionalGroupReference() {
 
       {/* Detail cards */}
       <div className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-bright text-lg">Group Details</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Group Details</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {FUNCTIONAL_GROUPS.map(g => (
             <div key={g.id} className="flex flex-col gap-2 p-4 rounded-sm border border-border bg-surface">
-              <div className="flex items-baseline gap-2">
-                <span className="font-sans font-semibold text-primary">{g.name}</span>
-                <span className="font-mono text-xs" style={{ color: 'var(--c-halogen)' }}>{g.generalFormula}</span>
-              </div>
-              <div className="flex flex-col gap-0.5">
-                <span className="font-mono text-xs text-secondary">Bond pattern: {g.bondPattern}</span>
-                <span className="font-mono text-xs text-secondary">Suffix: {g.suffix}</span>
-              </div>
-              <p className="font-sans text-xs text-dim leading-relaxed">{g.properties}</p>
-              <div className="flex flex-wrap gap-1 mt-1">
-                {g.examples.map(ex => (
-                  <span key={ex.name} className="font-mono text-[10px] px-1.5 py-0.5 rounded"
-                    style={{ background: 'rgb(var(--color-raised))', border: '1px solid rgb(var(--color-border))', color: 'rgba(var(--overlay),0.6)' }}>
-                    {ex.formula}
-                  </span>
-                ))}
+              <div className="flex items-start gap-3">
+                {g.examples[0]?.smiles && (
+                  <div className="shrink-0">
+                    <CompoundDisplay smiles={g.examples[0].smiles} label={g.examples[0].name} width={160} height={120} />
+                  </div>
+                )}
+                <div className="flex flex-col gap-1.5 min-w-0">
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-sans font-semibold text-primary">{g.name}</span>
+                    <span className="font-mono text-xs" style={{ color: 'var(--c-halogen)' }}>{g.generalFormula}</span>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="font-mono text-xs text-secondary">Bond pattern: {g.bondPattern}</span>
+                    <span className="font-mono text-xs text-secondary">Suffix: {g.suffix}</span>
+                  </div>
+                  <p className="font-sans text-xs text-dim leading-relaxed">{g.properties}</p>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {g.examples.map(ex => (
+                      <span key={ex.name} className="font-mono text-[10px] px-1.5 py-0.5 rounded"
+                        style={{ background: 'rgb(var(--color-raised))', border: '1px solid rgb(var(--color-border))', color: 'rgba(var(--overlay),0.6)' }}>
+                        {ex.formula}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           ))}

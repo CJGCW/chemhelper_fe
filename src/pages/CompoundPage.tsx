@@ -150,8 +150,8 @@ export default function CompoundPage() {
               <span
                 className="absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] px-1.5 py-0.5 rounded-sm"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                  border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                 }}
               >

@@ -358,8 +358,8 @@ function CrystalCanvas({ structureId }: { structureId: StructureId }) {
                 className="relative px-3.5 py-1 rounded-sm font-mono text-xs transition-colors"
                 style={{ color: active ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)' }}>
                 {active && <span className="absolute inset-0 rounded-sm" style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                  border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 }} />}
                 <span className="relative z-10">{n}×{n}×{n}</span>
               </button>
@@ -502,7 +502,7 @@ export default function UnitCellTool() {
               <button key={u} onClick={() => switchUnit(u)}
                 className="px-3 py-1.5 rounded-sm font-mono text-xs border transition-colors"
                 style={{
-                  borderColor: edgeUnit===u ? 'color-mix(in srgb, var(--c-halogen) 35%, transparent)' : 'rgb(var(--color-border))',
+                  borderColor: edgeUnit===u ? 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' : 'rgb(var(--color-border))',
                   background:  edgeUnit===u ? 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-surface)))' : 'rgb(var(--color-surface))',
                   color: edgeUnit===u ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
                 }}>{u}</button>

@@ -151,7 +151,7 @@ export default function IRInterpretationPractice() {
             else if (isPresent && !isSelected) { borderColor = 'rgb(234 179 8)'; bg = 'rgb(234 179 8 / 0.08)'; textColor = 'rgb(234 179 8)' }
             else if (!isPresent && isSelected) { borderColor = 'rgb(239 68 68)'; bg = 'rgb(239 68 68 / 0.08)'; textColor = 'rgb(239 68 68)' }
           } else if (isSelected) {
-            borderColor = 'var(--c-halogen)'; bg = 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))'; textColor = 'var(--c-halogen)'
+            borderColor = 'var(--c-halogen)'; bg = 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))'; textColor = 'var(--c-halogen)'
           }
           return (
             <button key={g} onClick={() => toggle(g)} disabled={checked}
@@ -168,8 +168,8 @@ export default function IRInterpretationPractice() {
           <>
             <button onClick={handleCheck} disabled={selected.size === 0}
               className="px-4 py-1.5 rounded-sm text-sm font-sans font-medium disabled:opacity-40"
-              style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                       color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}>
+              style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                       color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
               Check
             </button>
             <button onClick={() => setHintsOpen(o => !o)}
@@ -180,8 +180,8 @@ export default function IRInterpretationPractice() {
         ) : (
           <button onClick={handleNext}
             className="px-4 py-1.5 rounded-sm text-sm font-sans font-medium"
-            style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                     color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}>
+            style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                     color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
             Next Problem
           </button>
         )}

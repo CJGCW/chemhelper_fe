@@ -1,5 +1,6 @@
 import NewmanProjectionViewer from './NewmanProjectionViewer'
 import ChairConformationViewer from './ChairConformationViewer'
+import BoatConformationViewer from './BoatConformationViewer'
 
 export default function ConformationalReference() {
   return (
@@ -94,6 +95,36 @@ export default function ConformationalReference() {
           </ul>
         </div>
       </section>
+      <section className="flex flex-col gap-4">
+        <h3 className="font-mono text-xs tracking-widest uppercase text-secondary">Boat &amp; Twist-Boat Conformations</h3>
+        <p className="font-sans text-sm text-secondary leading-relaxed">
+          The boat conformation is significantly higher in energy than chair due to two factors:
+          flagpole hydrogen interaction at C1 and C4, plus eclipsing along C2–C3 and C5–C6.
+          The twist-boat (or "twist") relieves some flagpole strain via a small rotation; it sits
+          about 5 kJ/mol above chair and is a real local minimum. Boat itself is a transition state
+          between two twist-boat conformers.
+        </p>
+
+        <BoatConformationViewer showLabels={true} />
+
+        <div className="flex flex-col gap-2">
+          <p className="font-mono text-xs tracking-widest uppercase text-dim">Energy Comparison</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 font-sans text-sm">
+            {[
+              { name: 'Chair', energy: '0 kJ/mol', note: 'global minimum, all bonds staggered' },
+              { name: 'Twist-Boat', energy: '~5 kJ/mol', note: 'local minimum, partial relief of flagpole' },
+              { name: 'Boat', energy: '~29 kJ/mol', note: 'transition state, flagpole + eclipsing' },
+            ].map(row => (
+              <div key={row.name} className="flex flex-col gap-1 p-3 rounded-sm border border-border bg-surface">
+                <span className="font-mono text-xs text-dim">{row.name}</span>
+                <span className="font-medium" style={{ color: 'var(--c-halogen)' }}>{row.energy}</span>
+                <span className="text-xs text-secondary">{row.note}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
     </div>
   )
 }

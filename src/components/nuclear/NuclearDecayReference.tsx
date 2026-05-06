@@ -46,7 +46,7 @@ export default function NuclearDecayReference() {
     <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       <div className="flex flex-col gap-2">
-        <h3 className="font-sans font-semibold text-bright text-lg">Conservation Laws in Nuclear Reactions</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Conservation Laws in Nuclear Reactions</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
             { law: 'Mass number (A)', rule: 'Sum of A is equal on both sides' },
@@ -63,7 +63,7 @@ export default function NuclearDecayReference() {
       </div>
 
       <div className="flex flex-col gap-3">
-        <h3 className="font-sans font-semibold text-bright text-lg">Types of Radioactive Decay</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Types of Radioactive Decay</h3>
         <div className="overflow-x-auto rounded-sm border border-border">
           <table className="w-full text-sm font-sans border-collapse">
             <thead>
@@ -89,7 +89,7 @@ export default function NuclearDecayReference() {
       </div>
 
       <div className="flex flex-col gap-3">
-        <h3 className="font-sans font-semibold text-bright text-lg">Decay Equations & Examples</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Decay Equations & Examples</h3>
         {decayTypes.map(d => (
           <div key={d.type} className="flex flex-col gap-2 p-4 rounded-sm border border-border bg-surface">
             <div className="flex items-center justify-between flex-wrap gap-2">

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generateCrossCouplingProblem, checkCrossCouplingAnswer } from '../../utils/crossCouplingPractice'
 import type { CrossCouplingProblem, CrossCouplingProblemType } from '../../utils/crossCouplingPractice'
+import CompoundDisplay from '../shared/CompoundDisplay'
 
 interface Props { allowCustom?: boolean }
 
@@ -46,8 +47,8 @@ export default function CrossCouplingPractice({ allowCustom: _allowCustom = true
   }
 
   const correct = checked && selected != null ? checkCrossCouplingAnswer(question, selected) : false
-  const activeTint = 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))'
-  const activeBorder = 'color-mix(in srgb, var(--c-halogen) 30%, transparent)'
+  const activeTint = 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))'
+  const activeBorder = 'color-mix(in srgb, var(--c-halogen) 40%, transparent)'
 
   return (
     <div className="flex flex-col gap-5 max-w-2xl">
@@ -93,6 +94,11 @@ export default function CrossCouplingPractice({ allowCustom: _allowCustom = true
           }`}
           style={{ background: checked ? (correct ? 'rgba(16,185,129,0.05)' : 'rgba(239,68,68,0.05)') : 'rgb(var(--color-surface))' }}
         >
+          {question.substrateSmiles && (
+            <div className="flex items-center gap-3">
+              <CompoundDisplay smiles={question.substrateSmiles} label="Electrophile" width={180} height={140} />
+            </div>
+          )}
           <pre className="font-mono text-sm text-primary leading-relaxed whitespace-pre-wrap">{question.scenario}</pre>
           <p className="font-sans text-sm text-secondary font-medium">{question.question}</p>
 

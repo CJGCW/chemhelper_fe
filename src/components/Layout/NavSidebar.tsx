@@ -533,8 +533,8 @@ const ORGANIC_GROUPS: NavTabGroup[] = [
   {
     label: 'Conformations',
     items: [
-      { tab: 'ref-newman', label: 'Newman Projections', formula: 'φ'   },
-      { tab: 'ref-chair',  label: 'Chair Conformations', formula: '⬡'  },
+      { tab: 'ref-newman', label: 'Newman Projections',  formula: '↻' },
+      { tab: 'ref-chair',  label: 'Chair Conformations', formula: '⬡' },
     ],
   },
   {
@@ -556,8 +556,9 @@ const ORGANIC_GROUPS: NavTabGroup[] = [
     label: 'Acid-Base',
     items: [
       { tab: 'ref-acid-base',     label: 'pKₐ Table',         formula: 'pKₐ'  },
-      { tab: 'acid-base-practice', label: 'Most Acidic H',    formula: 'H⁺'   },
-      { tab: 'acidity-factors',   label: 'Equil. Predictor',  formula: '⇌'    },
+      { tab: 'acid-base-practice',       label: 'Most Acidic H',   formula: 'H⁺' },
+      { tab: 'acidity-ranking-practice', label: 'Acidity Ranking', formula: '↕'  },
+      { tab: 'acidity-factors',         label: 'Equil. Predictor', formula: '⇌'  },
     ],
   },
   {
@@ -736,7 +737,22 @@ const SECTION_CONFIGS: SectionConfig[] = [
   { key: 'thermodynamics', icon: 'ΔG',   label: 'Thermodynamics',        basePath: '/thermodynamics',  groups: THERMODYNAMICS_GROUPS, defaultTab: 'ref-entropy',          defaultGroup: 'Entropy'             },
   { key: 'nuclear',        icon: '⚛',   label: 'Nuclear Chemistry',     basePath: '/nuclear',         groups: NUCLEAR_GROUPS,        defaultTab: 'ref-decay',            defaultGroup: 'Nuclear Reactions'   },
   { key: 'organic',        icon: 'C',    label: 'Organic Chemistry',     basePath: '/organic',         groups: ORGANIC_GROUPS,        defaultTab: 'ref-hydrocarbons',     defaultGroup: 'Hydrocarbons'        },
-  { key: 'spectroscopy',  icon: 'λ',   label: 'Spectroscopy',          basePath: '/spectral',        groups: SPECTROSCOPY_GROUPS,   defaultTab: 'ref-ir',               defaultGroup: 'IR Spectroscopy'     },
+  { key: 'spectroscopy',   icon: 'λ',   label: 'Spectroscopy',          basePath: '/spectral',        groups: SPECTROSCOPY_GROUPS,   defaultTab: 'ref-ir',               defaultGroup: 'IR Spectroscopy'     },
+]
+
+// ── Course groups — splits SECTION_CONFIGS into Gen Chem / Organic ────────────
+
+const COURSE_GROUPS: { key: string; label: string; sectionKeys: string[] }[] = [
+  {
+    key: 'genchem',
+    label: 'General Chemistry',
+    sectionKeys: ['idealGas', 'molar', 'redox', 'stoich', 'thermo', 'kinetics', 'equilibrium', 'acidBase', 'buffers', 'thermodynamics', 'nuclear'],
+  },
+  {
+    key: 'organic',
+    label: 'Organic Chemistry',
+    sectionKeys: ['organic', 'spectroscopy'],
+  },
 ]
 
 // ── Top-level nav items ───────────────────────────────────────────────────────
@@ -854,6 +870,21 @@ export default function NavSidebar({ open, onClose, theme, onToggleTheme }: Prop
     currentPath === '/tools' || currentPath === '/compound' || currentPath === '/reference' || currentPath === '/settings'
   )
 
+  // Course group expansion (Gen Chem / Organic)
+  const [expandedCourseGroups, setExpandedCourseGroups] = useState<Set<string>>(() => {
+    const initial = new Set<string>(['genchem'])
+    if (currentPath === '/organic' || currentPath === '/spectral' || currentPath === '/mechanisms') initial.add('organic')
+    return initial
+  })
+
+  function toggleCourseGroup(key: string) {
+    setExpandedCourseGroups(prev => {
+      const next = new Set(prev)
+      if (next.has(key)) { next.delete(key) } else { next.add(key) }
+      return next
+    })
+  }
+
   // All topic expandables in one Set (key = SectionConfig.key or special key)
   const [expandedSections, setExpandedSections] = useState<Set<string>>(() => {
     const initial = new Set<string>()
@@ -937,7 +968,7 @@ export default function NavSidebar({ open, onClose, theme, onToggleTheme }: Prop
 
         {/* Normal nav — hidden during search */}
         {!query.trim() && (<>
-          {/* Topics */}
+          {/* Utility sections (always under Topics) */}
           <NavGroup label="Topics" expanded={refCalcOpen} onToggle={() => setRefCalcOpen(e => !e)} />
           <AnimatePresence initial={false}>
             {refCalcOpen && (
@@ -990,33 +1021,55 @@ export default function NavSidebar({ open, onClose, theme, onToggleTheme }: Prop
                   </ExpandableSection>
                 )}
 
-                <PracticeNavItem path="/reference?tab=solubility" icon="S/I" label="Solubility" onNavigate={onClose} />
-
-                {SECTION_CONFIGS.map(cfg => {
-                  const hasVisible = cfg.groups.flatMap(g => g.items.map(i => i.tab)).some(t => isTabVisible(t))
-                  if (!hasVisible) return null
+                {/* Gen Chem / Organic course groups */}
+                {COURSE_GROUPS.map(cg => {
+                  const cgSections = SECTION_CONFIGS.filter(cfg => cg.sectionKeys.includes(cfg.key))
+                  const hasSomethingVisible = cgSections.some(cfg =>
+                    cfg.groups.flatMap(g => g.items).some(i => isTabVisible(i.tab))
+                  )
+                  if (!hasSomethingVisible) return null
+                  const cgExpanded = expandedCourseGroups.has(cg.key)
                   return (
-                    <ExpandableSection
-                      key={cfg.key}
-                      icon={cfg.icon}
-                      label={cfg.label}
-                      isActive={currentPath === cfg.basePath}
-                      expanded={expandedSections.has(cfg.key)}
-                      onToggle={() => toggleSection(cfg.key)}
-                    >
-                      <GroupedNavSection
-                        groups={cfg.groups}
-                        basePath={cfg.basePath}
-                        defaultTab={cfg.defaultTab}
-                        defaultGroup={cfg.defaultGroup}
-                        onNavigate={onClose}
-                      />
-                    </ExpandableSection>
+                    <div key={cg.key}>
+                      <NavGroup label={cg.label} expanded={cgExpanded} onToggle={() => toggleCourseGroup(cg.key)} />
+                      <AnimatePresence initial={false}>
+                        {cgExpanded && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }}
+                            style={{ overflow: 'hidden' }}
+                          >
+                            {cgSections.map(cfg => {
+                              const hasVisible = cfg.groups.flatMap(g => g.items).some(i => isTabVisible(i.tab))
+                              if (!hasVisible) return null
+                              return (
+                                <ExpandableSection
+                                  key={cfg.key}
+                                  icon={cfg.icon}
+                                  label={cfg.label}
+                                  isActive={currentPath === cfg.basePath}
+                                  expanded={expandedSections.has(cfg.key)}
+                                  onToggle={() => toggleSection(cfg.key)}
+                                >
+                                  <GroupedNavSection
+                                    groups={cfg.groups}
+                                    basePath={cfg.basePath}
+                                    defaultTab={cfg.defaultTab}
+                                    defaultGroup={cfg.defaultGroup}
+                                    onNavigate={onClose}
+                                  />
+                                </ExpandableSection>
+                              )
+                            })}
+                            {cg.key === 'organic' && isTabVisible('reaction-mechanisms') && (
+                              <PracticeNavItem path="/mechanisms" icon="⚗" label="Reaction Mechanisms" onNavigate={onClose} />
+                            )}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   )
                 })}
-                {isTabVisible('reaction-mechanisms') && (
-                  <PracticeNavItem path="/mechanisms" icon="⚗" label="Reaction Mechanisms" onNavigate={onClose} />
-                )}
 
               </motion.div>
             )}

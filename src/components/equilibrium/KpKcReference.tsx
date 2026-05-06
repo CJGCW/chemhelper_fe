@@ -3,7 +3,7 @@ export default function KpKcReference() {
     <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       <section className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-primary text-lg">K<sub>p</sub> and K<sub>c</sub></h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">K<sub>p</sub> and K<sub>c</sub></h3>
         <p className="font-sans text-sm text-secondary leading-relaxed">
           For gas-phase reactions, equilibrium can be expressed using either molar concentrations (K<sub>c</sub>)
           or partial pressures (K<sub>p</sub>). They are related by:
@@ -27,7 +27,7 @@ export default function KpKcReference() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-primary text-lg">Computing \u0394n</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Computing \u0394n</h3>
         <p className="font-sans text-sm text-secondary leading-relaxed">
           \u0394n counts only <strong className="text-primary">gaseous</strong> species. Solids, liquids, and aqueous species are not counted.
         </p>
@@ -59,7 +59,7 @@ export default function KpKcReference() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-primary text-lg">When K<sub>p</sub> = K<sub>c</sub></h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">When K<sub>p</sub> = K<sub>c</sub></h3>
         <div className="rounded-sm p-4"
           style={{ background: 'rgb(var(--color-raised))', border: '1px solid rgb(var(--color-border))' }}>
           <p className="font-sans text-sm text-secondary leading-relaxed">
@@ -74,7 +74,7 @@ export default function KpKcReference() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-primary text-lg">Worked Example</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Worked Example</h3>
         <p className="font-sans text-sm text-secondary">
           For N₂O₄(g) ⇌ 2NO₂(g) at 25°C: K<sub>c</sub> = 4.63 × 10<sup>-3</sup>.
           Find K<sub>p</sub>.

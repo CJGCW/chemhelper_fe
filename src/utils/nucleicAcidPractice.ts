@@ -3,6 +3,7 @@ export type NucleicAcidProblemType = 'complement' | 'base-id' | 'dna-vs-rna'
 export interface NucleicAcidProblem {
   type: NucleicAcidProblemType
   scenario: string
+  smiles?: string
   question: string
   choices: string[]
   answer: string
@@ -91,17 +92,18 @@ function generateRnaComplementProblem(): NucleicAcidProblem {
 interface BaseIdEntry {
   name: string
   hint: string
+  smiles: string
   category: 'purine' | 'pyrimidine'
   foundIn: string
   pairsWith: string
 }
 
 const BASE_ID_POOL: BaseIdEntry[] = [
-  { name: 'Adenine (A)',  hint: 'A double-ring base (purine) that pairs with thymine in DNA and uracil in RNA. Found in both DNA and RNA.',                           category: 'purine',     foundIn: 'DNA and RNA', pairsWith: 'T (in DNA) or U (in RNA)' },
-  { name: 'Guanine (G)',  hint: 'A double-ring base (purine) with a carbonyl at C6. Forms 3 hydrogen bonds with cytosine. Found in DNA and RNA.',                    category: 'purine',     foundIn: 'DNA and RNA', pairsWith: 'C' },
-  { name: 'Cytosine (C)', hint: 'A single-ring base (pyrimidine) that pairs with guanine via 3 hydrogen bonds. Found in both DNA and RNA.',                          category: 'pyrimidine', foundIn: 'DNA and RNA', pairsWith: 'G' },
-  { name: 'Thymine (T)',  hint: 'A single-ring base (pyrimidine) with a methyl group at C5. Pairs with adenine. Found ONLY in DNA.',                                 category: 'pyrimidine', foundIn: 'DNA only',     pairsWith: 'A' },
-  { name: 'Uracil (U)',   hint: 'A single-ring base (pyrimidine) lacking the methyl group of thymine. Found ONLY in RNA. Pairs with adenine.',                       category: 'pyrimidine', foundIn: 'RNA only',     pairsWith: 'A' },
+  { name: 'Adenine (A)',  smiles: 'Nc1ncnc2[nH]cnc12',          hint: 'A double-ring base (purine) that pairs with thymine in DNA and uracil in RNA. Found in both DNA and RNA.',                           category: 'purine',     foundIn: 'DNA and RNA', pairsWith: 'T (in DNA) or U (in RNA)' },
+  { name: 'Guanine (G)',  smiles: 'Nc1nc2[nH]cnc2c(=O)[nH]1',  hint: 'A double-ring base (purine) with a carbonyl at C6. Forms 3 hydrogen bonds with cytosine. Found in DNA and RNA.',                    category: 'purine',     foundIn: 'DNA and RNA', pairsWith: 'C' },
+  { name: 'Cytosine (C)', smiles: 'Nc1cc[nH]c(=O)n1',           hint: 'A single-ring base (pyrimidine) that pairs with guanine via 3 hydrogen bonds. Found in both DNA and RNA.',                          category: 'pyrimidine', foundIn: 'DNA and RNA', pairsWith: 'G' },
+  { name: 'Thymine (T)',  smiles: 'Cc1c[nH]c(=O)[nH]c1=O',     hint: 'A single-ring base (pyrimidine) with a methyl group at C5. Pairs with adenine. Found ONLY in DNA.',                                 category: 'pyrimidine', foundIn: 'DNA only',     pairsWith: 'A' },
+  { name: 'Uracil (U)',   smiles: 'O=c1cc[nH]c(=O)[nH]1',      hint: 'A single-ring base (pyrimidine) lacking the methyl group of thymine. Found ONLY in RNA. Pairs with adenine.',                       category: 'pyrimidine', foundIn: 'RNA only',     pairsWith: 'A' },
 ]
 
 function generateBaseIdProblem(): NucleicAcidProblem {
@@ -118,6 +120,7 @@ function generateBaseIdProblem(): NucleicAcidProblem {
   return {
     type: 'base-id',
     scenario: `Nucleobase: ${entry.name}\n\n${entry.hint}`,
+    smiles: entry.smiles,
     question,
     choices,
     answer,

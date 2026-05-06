@@ -1338,9 +1338,9 @@ export default function CalorimetryTool() {
               className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
               style={{
                 color: active ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
-                background: active ? 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))' : 'rgb(var(--color-surface))',
+                background: active ? 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))' : 'rgb(var(--color-surface))',
                 border: active
-                  ? '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)'
+                  ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)'
                   : '1px solid rgb(var(--color-border))',
               }}>
               <span className="font-mono text-[10px] opacity-60">{m.formula}</span>

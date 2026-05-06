@@ -320,8 +320,8 @@ export default function HeatingCurveTool() {
               style={{ color: active ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)' }}>
               {active && (
                 <span className="absolute inset-0 rounded-full" style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                  border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 }} />
               )}
               <span className="relative z-10">{h ? 'Heating' : 'Cooling'}</span>
@@ -339,7 +339,7 @@ export default function HeatingCurveTool() {
               className="flex flex-col items-start px-3 py-2 rounded-sm border transition-colors text-left"
               style={subIdx === i ? {
                 borderColor: 'color-mix(in srgb, var(--c-halogen) 50%, transparent)',
-                background:  'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))',
+                background:  'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                 color: 'var(--c-halogen)',
               } : {
                 borderColor: 'rgb(var(--color-border))', background: 'rgb(var(--color-surface))',

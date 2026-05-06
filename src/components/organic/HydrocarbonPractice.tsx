@@ -7,6 +7,7 @@ import {
   type HydrocarbonProblem,
 } from '../../utils/organicPractice'
 import { useShowAnswers } from '../../stores/preferencesStore'
+import CompoundDisplay from '../shared/CompoundDisplay'
 
 interface Props { allowCustom?: boolean }
 
@@ -69,8 +70,9 @@ export default function HydrocarbonPractice({ allowCustom = true }: Props) {
           <p className="font-sans text-base text-primary leading-relaxed">
             Classify the hydrocarbon with molecular formula:
           </p>
-          <div className="text-center py-3">
-            <span className="font-mono text-2xl font-bold text-bright">{problem.formula}</span>
+          <div className="flex flex-col items-center gap-2 py-2">
+            <CompoundDisplay smiles={problem.smiles} label={problem.formula} width={220} height={150} />
+            <span className="font-mono text-xl font-bold text-bright">{problem.formula}</span>
           </div>
           <p className="font-sans text-sm text-secondary">
             C = {problem.C}, H = {problem.H}. Which family does this compound belong to?
@@ -87,7 +89,7 @@ export default function HydrocarbonPractice({ allowCustom = true }: Props) {
                 if (isCorrect) { bg = 'bg-emerald-500/10'; border = 'border-emerald-500/40'; textCol = 'text-emerald-400' }
                 else if (isSelected && !isCorrect) { bg = 'bg-red-500/10'; border = 'border-red-500/40'; textCol = 'text-red-400' }
               } else if (isSelected) {
-                bg = 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))'
+                bg = 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))'
                 border = 'border-accent/40'
                 textCol = 'text-primary'
               }
@@ -99,8 +101,8 @@ export default function HydrocarbonPractice({ allowCustom = true }: Props) {
                               ${bg} border-${border} ${textCol}
                               ${!checked ? 'hover:border-accent/30 hover:text-primary cursor-pointer' : 'cursor-default'}`}
                   style={isSelected && !checked ? {
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                    border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                    border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                     color: 'var(--c-halogen)',
                   } : {}}
                 >

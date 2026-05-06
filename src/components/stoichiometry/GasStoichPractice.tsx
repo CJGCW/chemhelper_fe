@@ -114,7 +114,7 @@ export default function GasStoichPractice({ allowCustom = true }: Props) {
               style={{
                 background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-surface)))',
                 color: 'var(--c-halogen)',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               }}>
               {problem.standard === 'custom' ? 'Custom T/P' : problem.standard}
             </span>

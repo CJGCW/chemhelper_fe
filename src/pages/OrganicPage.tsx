@@ -14,8 +14,12 @@ import FunctionalGroupReference from '../components/organic/FunctionalGroupRefer
 import FunctionalGroupPractice from '../components/organic/FunctionalGroupPractice'
 import OrganicReactionReference from '../components/organic/OrganicReactionReference'
 import OrganicReactionPractice from '../components/organic/OrganicReactionPractice'
-import ConformationalReference from '../components/organic/ConformationalReference'
-import ConformationalPractice from '../components/organic/ConformationalPractice'
+import NewmanReference from '../components/organic/NewmanReference'
+import ChairReference from '../components/organic/ChairReference'
+import NewmanPractice from '../components/organic/NewmanPractice'
+import ChairPractice from '../components/organic/ChairPractice'
+import NewmanProblems from '../components/organic/NewmanProblems'
+import ChairProblems from '../components/organic/ChairProblems'
 import StereochemistryReference from '../components/organic/StereochemistryReference'
 import RSAssignmentPractice from '../components/organic/RSAssignmentPractice'
 import StereoisomerClassifier from '../components/organic/StereoisomerClassifier'
@@ -28,11 +32,13 @@ import ConjugatedDieneReference from '../components/organic/ConjugatedDieneRefer
 import OrganicPKaTable from '../components/organic/OrganicPKaTable'
 import AcidityFactorsReference from '../components/organic/AcidityFactorsReference'
 import MostAcidicHPractice from '../components/organic/MostAcidicHPractice'
+import AcidityRankingPractice from '../components/organic/AcidityRankingPractice'
 import EquilibriumPredictor from '../components/organic/EquilibriumPredictor'
 import ResonanceStructures from '../components/organic/ResonanceStructures'
 import HybridizationAssigner from '../components/organic/HybridizationAssigner'
 import FormalChargeOrganic from '../components/organic/FormalChargeOrganic'
 import CurvedArrowReference from '../components/organic/CurvedArrowReference'
+import CurvedArrowPractice from '../components/organic/CurvedArrowPractice'
 import MonosaccharideReference from '../components/organic/MonosaccharideReference'
 import FischerHaworthConverter from '../components/organic/FischerHaworthConverter'
 import AnomersAndMutarotation from '../components/organic/AnomersAndMutarotation'
@@ -80,10 +86,11 @@ type Tab =
   | 'aromaticity-problems' | 'directing-problems' | 'conjugation-problems'
   // acid-base tabs
   | 'ref-acid-base' | 'pka-table' | 'acid-base-practice' | 'acidity-factors' | 'acid-base-problems'
+  | 'acidity-ranking-practice' | 'acidity-ranking-problems'
   // bonding tabs
   | 'ref-resonance' | 'ref-hybridization' | 'ref-curved-arrow'
-  | 'resonance-practice' | 'hybridization-practice' | 'formal-charge-practice'
-  | 'resonance-problems' | 'hybridization-problems' | 'formal-charge-problems'
+  | 'resonance-practice' | 'hybridization-practice' | 'formal-charge-practice' | 'curved-arrow-practice'
+  | 'resonance-problems' | 'hybridization-problems' | 'formal-charge-problems' | 'curved-arrow-problems'
   // carbohydrate tabs
   | 'ref-sugars' | 'fischer-haworth' | 'anomers-mutarotation' | 'sugar-reactions' | 'sugars-problems'
   // synthesis tabs
@@ -131,8 +138,8 @@ const REFERENCE_GROUPS: TabGroup[] = [
     id: 'rg3',
     label: 'Conformational Analysis',
     pills: [
-      { id: 'ref-newman', label: 'Newman Projections', formula: 'φ'   },
-      { id: 'ref-chair',  label: 'Chair Conformations', formula: '⬡'  },
+      { id: 'ref-newman', label: 'Newman Projections', formula: '↻' },
+      { id: 'ref-chair',  label: 'Chair Conformations', formula: '⬡' },
     ],
   },
   {
@@ -243,7 +250,7 @@ const PRACTICE_GROUPS: TabGroup[] = [
     id: 'pg3',
     label: 'Conformational Analysis',
     pills: [
-      { id: 'newman-practice', label: 'Newman Projections', formula: 'φ'  },
+      { id: 'newman-practice', label: 'Newman Projections', formula: '↻' },
       { id: 'chair-practice',  label: 'Chair Conformations', formula: '⬡' },
     ],
   },
@@ -269,18 +276,20 @@ const PRACTICE_GROUPS: TabGroup[] = [
     id: 'pg6',
     label: 'Acid-Base',
     pills: [
-      { id: 'pka-table',          label: 'pKₐ Lookup',         formula: 'pKₐ'  },
-      { id: 'acid-base-practice', label: 'Most Acidic H',      formula: 'H⁺'   },
-      { id: 'acidity-factors',    label: 'Equilibrium Pred.',  formula: '⇌'    },
+      { id: 'pka-table',                  label: 'pKₐ Lookup',        formula: 'pKₐ' },
+      { id: 'acid-base-practice',         label: 'Most Acidic H',     formula: 'H⁺'  },
+      { id: 'acidity-ranking-practice',   label: 'Acidity Ranking',   formula: '↕'   },
+      { id: 'acidity-factors',            label: 'Equilibrium Pred.', formula: '⇌'   },
     ],
   },
   {
     id: 'pg7',
     label: 'Structure & Bonding',
     pills: [
-      { id: 'resonance-practice',      label: 'Resonance',     formula: '↔'   },
-      { id: 'hybridization-practice',  label: 'Hybridization', formula: 'sp³' },
-      { id: 'formal-charge-practice',  label: 'Formal Charge', formula: 'FC'  },
+      { id: 'resonance-practice',      label: 'Resonance',      formula: '↔'   },
+      { id: 'hybridization-practice',  label: 'Hybridization',  formula: 'sp³' },
+      { id: 'curved-arrow-practice',   label: 'Curved Arrows',  formula: '⟶'  },
+      { id: 'formal-charge-practice',  label: 'Formal Charge',  formula: 'FC'  },
     ],
   },
   {
@@ -362,7 +371,7 @@ const PROBLEMS_GROUPS: TabGroup[] = [
     id: 'pg3',
     label: 'Conformational Analysis',
     pills: [
-      { id: 'newman-problems', label: 'Newman Projections', formula: 'φ'  },
+      { id: 'newman-problems', label: 'Newman Projections', formula: '↻' },
       { id: 'chair-problems',  label: 'Chair Conformations', formula: '⬡' },
     ],
   },
@@ -388,7 +397,8 @@ const PROBLEMS_GROUPS: TabGroup[] = [
     id: 'pp6',
     label: 'Acid-Base',
     pills: [
-      { id: 'acid-base-problems', label: 'Most Acidic H', formula: 'H⁺' },
+      { id: 'acid-base-problems',       label: 'Most Acidic H',   formula: 'H⁺' },
+      { id: 'acidity-ranking-problems', label: 'Acidity Ranking', formula: '↕'  },
     ],
   },
   {
@@ -397,6 +407,7 @@ const PROBLEMS_GROUPS: TabGroup[] = [
     pills: [
       { id: 'resonance-problems',     label: 'Resonance',     formula: '↔'   },
       { id: 'hybridization-problems', label: 'Hybridization', formula: 'sp³' },
+      { id: 'curved-arrow-problems',  label: 'Curved Arrows', formula: '⟶'  },
       { id: 'formal-charge-problems', label: 'Formal Charge', formula: 'FC'  },
     ],
   },
@@ -457,8 +468,8 @@ const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
   'ref-organic-naming': 'organic-naming',     'organic-naming': 'organic-naming',     'naming-problems':       'organic-naming',
   'ref-func-groups':    'functional-group-id','func-groups':    'functional-group-id','func-groups-problems':  'functional-group-id',
   'ref-organic-rxn':    'organic-reactions',  'organic-rxn':    'organic-reactions',  'organic-rxn-problems':  'organic-reactions',
-  'ref-newman':         'newman-projection',  'newman-practice':'newman-projection',  'newman-problems':       'newman-projection',
-  'ref-chair':          'chair-conformation', 'chair-practice': 'chair-conformation', 'chair-problems':        'chair-conformation',
+  'ref-newman': 'org-newman', 'newman-practice': 'org-newman', 'newman-problems': 'org-newman',
+  'ref-chair':  'org-chair',  'chair-practice':  'org-chair',  'chair-problems':  'org-chair',
   'ref-stereochem':     'stereochemistry',    'ref-fischer':    'stereochemistry',
   'rs-practice':        'rs-assignment',      'rs-problems':    'rs-assignment',
   'stereoisomer-practice':'stereoisomer',     'stereoisomer-problems':'stereoisomer',
@@ -468,9 +479,11 @@ const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
   'ref-conjugation':    'conjugated-diene',   'conjugation-practice':'conjugated-diene',  'conjugation-problems':'conjugated-diene',
   'ref-acid-base':      'organic-acid-base',  'pka-table':          'organic-acid-base',  'acid-base-practice':   'organic-acid-base',
   'acidity-factors':    'organic-acid-base',  'acid-base-problems': 'organic-acid-base',
+  'acidity-ranking-practice': 'organic-acid-base', 'acidity-ranking-problems': 'organic-acid-base',
   'ref-resonance':      'organic-resonance',  'resonance-practice': 'organic-resonance',  'resonance-problems':   'organic-resonance',
   'ref-hybridization':  'organic-hybridization', 'hybridization-practice': 'organic-hybridization', 'hybridization-problems': 'organic-hybridization',
-  'ref-curved-arrow':   'organic-formal-charge', 'formal-charge-practice': 'organic-formal-charge', 'formal-charge-problems': 'organic-formal-charge',
+  'ref-curved-arrow':   'organic-curved-arrow', 'curved-arrow-practice': 'organic-curved-arrow', 'curved-arrow-problems': 'organic-curved-arrow',
+  'formal-charge-practice': 'organic-formal-charge', 'formal-charge-problems': 'organic-formal-charge',
   'ref-sugars':         'carbohydrates',      'fischer-haworth':    'carbohydrates',      'anomers-mutarotation': 'carbohydrates',
   'sugar-reactions':    'carbohydrates',      'sugars-problems':    'carbohydrates',
   'ref-fgi':            'organic-synthesis',  'synthesis-fillin':   'organic-synthesis',  'synthesis-ordering': 'organic-synthesis',
@@ -491,8 +504,8 @@ const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
   'organic-naming':      { reference: 'ref-organic-naming', practice: 'organic-naming', problems: 'naming-problems'       },
   'functional-group-id': { reference: 'ref-func-groups',    practice: 'func-groups',    problems: 'func-groups-problems'  },
   'organic-reactions':   { reference: 'ref-organic-rxn',    practice: 'organic-rxn',    problems: 'organic-rxn-problems'  },
-  'newman-projection':   { reference: 'ref-newman',         practice: 'newman-practice', problems: 'newman-problems'      },
-  'chair-conformation':  { reference: 'ref-chair',          practice: 'chair-practice',  problems: 'chair-problems'       },
+  'org-newman':          { reference: 'ref-newman',  practice: 'newman-practice', problems: 'newman-problems' },
+  'org-chair':           { reference: 'ref-chair',   practice: 'chair-practice',  problems: 'chair-problems'  },
   'stereochemistry':     { reference: 'ref-stereochem',     practice: 'rs-practice',     problems: 'rs-problems'          },
   'rs-assignment':       { reference: 'ref-stereochem',     practice: 'rs-practice',     problems: 'rs-problems'          },
   'stereoisomer':        { reference: 'ref-stereochem',     practice: 'stereoisomer-practice', problems: 'stereoisomer-problems' },
@@ -503,6 +516,7 @@ const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
   'organic-acid-base':      { reference: 'ref-acid-base',     practice: 'acid-base-practice',     problems: 'acid-base-problems'      },
   'organic-resonance':      { reference: 'ref-resonance',     practice: 'resonance-practice',     problems: 'resonance-problems'      },
   'organic-hybridization':  { reference: 'ref-hybridization', practice: 'hybridization-practice', problems: 'hybridization-problems'  },
+  'organic-curved-arrow':   { reference: 'ref-curved-arrow',  practice: 'curved-arrow-practice',  problems: 'curved-arrow-problems'   },
   'organic-formal-charge':  { reference: 'ref-curved-arrow',  practice: 'formal-charge-practice', problems: 'formal-charge-problems'  },
   'carbohydrates':          { reference: 'ref-sugars',        practice: 'fischer-haworth',        problems: 'sugars-problems'         },
   'organic-synthesis':      { reference: 'ref-fgi',           practice: 'synthesis-fillin',       problems: 'synthesis-problems'      },
@@ -535,6 +549,127 @@ const PAGE_EXPLANATION: ExplanationContent = {
     'Start with the Reference tab to review the hydrocarbon families and functional group patterns.',
 }
 
+interface OrganicSubtopic { key: string; title: string; intro: string; tabs: string[] }
+
+const SUBTOPICS: OrganicSubtopic[] = [
+  {
+    key: 'foundations',
+    title: 'Hydrocarbons & Functional Groups',
+    intro: 'Hydrocarbons (alkanes, alkenes, alkynes, aromatics) and functional groups that define organic reactivity. IUPAC nomenclature, constitutional isomers, and major reaction classes.',
+    tabs: [
+      'ref-hydrocarbons', 'ref-isomers', 'ref-organic-naming', 'ref-func-groups', 'ref-organic-rxn',
+      'hydrocarbons', 'isomers', 'organic-naming', 'func-groups', 'organic-rxn', 'predict-practice',
+      'hydrocarbons-problems', 'isomers-problems', 'naming-problems', 'func-groups-problems', 'organic-rxn-problems', 'predict-problems',
+    ],
+  },
+  {
+    key: 'bonding-stereo',
+    title: 'Bonding & Stereochemistry',
+    intro: 'Resonance, hybridization, formal charges, and curved-arrow notation. R/S configuration, E/Z designation, Fischer projections, and stereoisomer relationships.',
+    tabs: [
+      'ref-resonance', 'ref-hybridization', 'ref-curved-arrow', 'ref-stereochem', 'ref-fischer',
+      'resonance-practice', 'hybridization-practice', 'curved-arrow-practice', 'formal-charge-practice', 'rs-practice', 'stereoisomer-practice', 'ez-practice',
+      'resonance-problems', 'hybridization-problems', 'curved-arrow-problems', 'formal-charge-problems', 'rs-problems', 'stereoisomer-problems', 'ez-problems',
+    ],
+  },
+  {
+    key: 'conformations',
+    title: 'Conformational Analysis',
+    intro: 'Newman projections for acyclic compounds, chair conformations of cyclohexane, ring flip, axial vs equatorial preference, and A-values.',
+    tabs: [
+      'ref-newman', 'ref-chair',
+      'newman-practice', 'chair-practice',
+      'newman-problems', 'chair-problems',
+    ],
+  },
+  {
+    key: 'acid-base',
+    title: 'Organic Acid-Base',
+    intro: 'pKa values for organic functional groups, the four factors controlling acidity (resonance, induction, hybridization, atom size), and equilibrium prediction.',
+    tabs: [
+      'ref-acid-base',
+      'pka-table', 'acid-base-practice', 'acidity-ranking-practice', 'acidity-factors',
+      'acid-base-problems', 'acidity-ranking-problems',
+    ],
+  },
+  {
+    key: 'aromaticity',
+    title: 'Aromaticity & Conjugation',
+    intro: 'Hückel\'s rule, aromatic vs non-aromatic vs antiaromatic. Activating and deactivating groups; ortho, para, meta directing effects. Conjugated dienes and 1,2 vs 1,4 addition.',
+    tabs: [
+      'ref-aromaticity', 'ref-directing', 'ref-conjugation',
+      'aromaticity-practice', 'directing-practice', 'conjugation-practice',
+      'aromaticity-problems', 'directing-problems', 'conjugation-problems',
+    ],
+  },
+  {
+    key: 'synthesis',
+    title: 'Synthesis & Retrosynthesis',
+    intro: 'Functional group interconversions (FGI), multi-step synthesis planning, retrosynthetic disconnection, transform drills, and transition-metal cross-coupling reactions.',
+    tabs: [
+      'ref-fgi',
+      'synthesis-fillin', 'synthesis-ordering', 'retro-disconnection', 'transform-drill', 'cross-coupling-practice',
+      'synthesis-problems', 'cross-coupling-problems',
+    ],
+  },
+  {
+    key: 'carbohydrates',
+    title: 'Carbohydrates',
+    intro: 'Monosaccharide structure, Fischer→Haworth projection conversion, anomers, mutarotation, and common sugar reactions (oxidation, reduction, glycoside formation).',
+    tabs: [
+      'ref-sugars',
+      'fischer-haworth', 'anomers-mutarotation', 'sugar-reactions',
+      'sugars-problems',
+    ],
+  },
+  {
+    key: 'amino-acids',
+    title: 'Amino Acids & Peptides',
+    intro: 'The 20 standard amino acids, pKa values, pI calculation, peptide bonds, and zwitterion forms. Appears in biochemistry and the final chapters of most Gen Chem courses.',
+    tabs: [
+      'ref-amino-acids', 'amino-acid-table', 'peptide-bonds',
+      'zwitterions-pi',
+      'amino-acid-problems',
+    ],
+  },
+  {
+    key: 'lipids',
+    title: 'Lipids',
+    intro: 'Fatty acids (saturated vs unsaturated), triglycerides, phospholipids, terpenes, and steroids. Key topic connecting organic chemistry to biological membranes and hormones.',
+    tabs: [
+      'ref-fatty-acids', 'ref-triglycerides', 'ref-phospholipids', 'ref-terpenes-steroids',
+      'lipids-practice',
+      'lipids-problems',
+    ],
+  },
+  {
+    key: 'polymers',
+    title: 'Polymers & Materials',
+    intro: 'Addition (chain-growth) and condensation (step-growth) polymerization. Common industrial polymers: polyethylene, PVC, nylon, polyester, Bakelite, Kevlar.',
+    tabs: [
+      'ref-polymerization', 'ref-common-polymers',
+      'polymerization-practice',
+      'polymerization-problems',
+    ],
+  },
+  {
+    key: 'nucleic-acids',
+    title: 'Nucleic Acids',
+    intro: 'Nucleobases (purines and pyrimidines), nucleotides, DNA double helix structure, base pairing rules, and RNA vs DNA differences.',
+    tabs: [
+      'ref-nucleobases', 'ref-nucleotides', 'ref-dna-rna',
+      'nucleic-acid-practice',
+      'nucleic-acid-problems',
+    ],
+  },
+]
+
+function getActiveSubtopic(tab: string): OrganicSubtopic {
+  return SUBTOPICS.find(s => s.tabs.includes(tab)) ?? {
+    key: 'organic', title: 'Organic Chemistry', intro: 'Select a topic from the sidebar.', tabs: [],
+  }
+}
+
 export default function OrganicPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [showExplanation, setShowExplanation] = useState(false)
@@ -551,15 +686,18 @@ export default function OrganicPage() {
 
   const { isTabVisible } = useTopicFilter()
 
-  const visibleReferenceGroups = REFERENCE_GROUPS
-    .map(g => ({ ...g, pills: g.pills.filter(p => isTabVisible(p.id)) }))
-    .filter(g => g.pills.length > 0)
-  const visiblePracticeGroups = PRACTICE_GROUPS
-    .map(g => ({ ...g, pills: g.pills.filter(p => isTabVisible(p.id)) }))
-    .filter(g => g.pills.length > 0)
-  const visibleProblemsGroups = PROBLEMS_GROUPS
-    .map(g => ({ ...g, pills: g.pills.filter(p => isTabVisible(p.id)) }))
-    .filter(g => g.pills.length > 0)
+  const subtopic = getActiveSubtopic(activeTab)
+  const subtopicTabSet = new Set<string>(subtopic.tabs)
+  const subtopicExplanation: ExplanationContent = { ...PAGE_EXPLANATION, title: subtopic.title, description: subtopic.intro }
+
+  const filterBySubtopic = (g: TabGroup): TabGroup | null => {
+    const pills = g.pills.filter(p => isTabVisible(p.id) && subtopicTabSet.has(p.id))
+    return pills.length > 0 ? { ...g, pills } : null
+  }
+
+  const visibleReferenceGroups = REFERENCE_GROUPS.map(filterBySubtopic).filter((g): g is TabGroup => g !== null)
+  const visiblePracticeGroups  = PRACTICE_GROUPS.map(filterBySubtopic).filter((g): g is TabGroup => g !== null)
+  const visibleProblemsGroups  = PROBLEMS_GROUPS.map(filterBySubtopic).filter((g): g is TabGroup => g !== null)
 
   const visiblePracticeTabIds = new Set<Tab>(visiblePracticeGroups.flatMap(g => g.pills.map(p => p.id)))
   const visibleProblemsTabIds = new Set<Tab>(visibleProblemsGroups.flatMap(g => g.pills.map(p => p.id)))
@@ -596,26 +734,29 @@ export default function OrganicPage() {
 
       {/* Header */}
       <div className="flex flex-col gap-3">
-        <div className="flex items-center gap-3 print:hidden">
-          <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Organic Chemistry</h2>
-          {activeMode === 'reference' && (
+        <div className="flex flex-col gap-0.5 print:hidden">
+          <p className="font-mono text-xs text-dim">Organic Chemistry</p>
+          <div className="flex items-center gap-3">
+            <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">{subtopic.title}</h2>
+            {activeMode === 'reference' && (
+              <button
+                onClick={() => window.print()}
+                className="flex items-center gap-2 px-3 py-1 rounded-sm font-sans text-sm border border-border
+                           text-secondary hover:text-primary hover:border-muted transition-colors"
+              >
+                <span>⎙</span>
+                <span>Print</span>
+              </button>
+            )}
             <button
-              onClick={() => window.print()}
-              className="flex items-center gap-2 px-3 py-1 rounded-sm font-sans text-sm border border-border
-                         text-secondary hover:text-primary hover:border-muted transition-colors"
+              onClick={() => setShowExplanation(true)}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm border border-border
+                         font-sans text-xs text-secondary hover:text-primary hover:border-muted transition-colors"
             >
-              <span>⎙</span>
-              <span>Print</span>
+              <span className="font-mono">?</span>
+              <span>What is this</span>
             </button>
-          )}
-          <button
-            onClick={() => setShowExplanation(true)}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm border border-border
-                       font-sans text-xs text-secondary hover:text-primary hover:border-muted transition-colors"
-          >
-            <span className="font-mono">?</span>
-            <span>What is this</span>
-          </button>
+          </div>
         </div>
 
         {/* Mode toggle */}
@@ -630,8 +771,8 @@ export default function OrganicPage() {
                 {isActive && (
                   <motion.div layoutId="organic-mode-switch" className="absolute inset-0 rounded-full"
                     style={{
-                      background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                      border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                      background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                      border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                     }}
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
                 )}
@@ -661,7 +802,7 @@ export default function OrganicPage() {
                         <motion.div
                           layoutId="organic-tab-pill"
                           className="absolute inset-0 rounded-sm"
-                          style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
+                          style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}
                           transition={{ type: 'spring', stiffness: 400, damping: 32 }}
                         />
                       )}
@@ -793,28 +934,28 @@ export default function OrganicPage() {
           <motion.div key="ref-newman"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <ConformationalReference />
+            <NewmanReference />
           </motion.div>
         )}
         {activeTab === 'ref-chair' && (
           <motion.div key="ref-chair"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <ConformationalReference />
+            <ChairReference />
           </motion.div>
         )}
         {(activeTab === 'newman-practice' || activeTab === 'newman-problems') && (
           <motion.div key={activeTab}
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <ConformationalPractice allowCustom={activeTab === 'newman-practice'} />
+            {activeTab === 'newman-practice' ? <NewmanPractice /> : <NewmanProblems />}
           </motion.div>
         )}
         {(activeTab === 'chair-practice' || activeTab === 'chair-problems') && (
           <motion.div key={activeTab}
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <ConformationalPractice allowCustom={activeTab === 'chair-practice'} />
+            {activeTab === 'chair-practice' ? <ChairPractice /> : <ChairProblems />}
           </motion.div>
         )}
         {activeTab === 'ref-stereochem' && (
@@ -900,6 +1041,11 @@ export default function OrganicPage() {
             <MostAcidicHPractice allowCustom={activeTab === 'acid-base-practice'} />
           </motion.div>
         )}
+        {(activeTab === 'acidity-ranking-practice' || activeTab === 'acidity-ranking-problems') && (
+          <motion.div key={activeTab} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <AcidityRankingPractice allowCustom={activeTab === 'acidity-ranking-practice'} />
+          </motion.div>
+        )}
         {activeTab === 'acidity-factors' && (
           <motion.div key="acidity-factors" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <EquilibriumPredictor />
@@ -920,6 +1066,11 @@ export default function OrganicPage() {
         {activeTab === 'ref-curved-arrow' && (
           <motion.div key="ref-curved-arrow" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <CurvedArrowReference />
+          </motion.div>
+        )}
+        {(activeTab === 'curved-arrow-practice' || activeTab === 'curved-arrow-problems') && (
+          <motion.div key={activeTab} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <CurvedArrowPractice allowCustom={activeTab === 'curved-arrow-practice'} />
           </motion.div>
         )}
         {(activeTab === 'formal-charge-practice' || activeTab === 'formal-charge-problems') && (
@@ -1086,7 +1237,7 @@ export default function OrganicPage() {
       </AnimatePresence>
 
       <ExplanationModal
-        content={PAGE_EXPLANATION}
+        content={subtopicExplanation}
         open={showExplanation}
         onClose={() => setShowExplanation(false)}
       />

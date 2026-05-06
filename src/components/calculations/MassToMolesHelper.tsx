@@ -144,7 +144,7 @@ export default function MassToMolesHelper({ onResolved, onClear }: Props) {
                 className="w-full py-2 rounded-sm font-sans font-medium text-sm transition-all"
                 style={{
                   background: 'color-mix(in srgb, var(--c-halogen) 14%, rgb(var(--color-surface)))',
-                  border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                 }}
               >

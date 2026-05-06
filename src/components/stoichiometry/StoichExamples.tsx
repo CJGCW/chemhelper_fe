@@ -663,8 +663,8 @@ export default function StoichExamples() {
                 <motion.div layoutId="ex-pill"
                   className="absolute inset-0 rounded-sm"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                    border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                    border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   }}
                   transition={{ type:'spring', stiffness:400, damping:32 }}/>
               )}

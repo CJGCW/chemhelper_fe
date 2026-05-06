@@ -180,8 +180,8 @@ export default function ZwitterionAndPI({ allowCustom = true }: { allowCustom?: 
         onClick={nextProblem}
         className="self-start px-4 py-2 rounded-sm text-sm font-sans border transition-colors"
         style={{
-          background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-          borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+          background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+          borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           color: 'var(--c-halogen)',
         }}
       >

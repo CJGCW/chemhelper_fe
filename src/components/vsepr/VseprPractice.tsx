@@ -332,7 +332,7 @@ function CombinedSection() {
             <div className="flex items-center justify-between px-5 py-3 border-b border-border shrink-0">
               <div className="flex flex-col">
                 <span className="font-mono text-xs text-secondary">Draw the structure of</span>
-                <span className="font-sans font-semibold text-bright text-lg">{entry.formula}</span>
+                <span className="font-sans font-semibold text-primary text-sm">{entry.formula}</span>
               </div>
               <button onClick={closeDraw}
                 className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-all"
@@ -558,8 +558,8 @@ export default function VseprPractice({ allowCustom = true }: Props) {
               {active && (
                 <motion.span layoutId="vsepr-subtab-pill" className="absolute inset-0 rounded-full"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                    border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                    border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   }}
                   transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
               )}

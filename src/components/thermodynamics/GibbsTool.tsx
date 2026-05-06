@@ -103,8 +103,8 @@ export default function GibbsTool() {
             onClick={() => { setMethod(m.id); clearResult() }}
             className="px-3 py-1.5 rounded-full font-sans text-sm border transition-all"
             style={method === m.id ? {
-              background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-              borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+              borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
             } : {
               borderColor: 'rgb(var(--color-border))',
@@ -180,7 +180,7 @@ export default function GibbsTool() {
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 15%, transparent)',
             color: 'var(--c-halogen)',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           }}>
           Calculate ΔG°
         </button>
@@ -194,7 +194,7 @@ export default function GibbsTool() {
         <div className="p-4 rounded-sm border"
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 8%, rgb(var(--color-raised)))',
-            borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+            borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           }}>
           <p className="font-mono text-xs text-secondary">ΔG°</p>
           <p className="font-mono text-2xl font-semibold mt-1" style={{ color: 'var(--c-halogen)' }}>

@@ -13,6 +13,7 @@ export type CrossCouplingProblemType = 'identify-coupling' | 'predict-product'
 export interface CrossCouplingProblem {
   type: CrossCouplingProblemType
   scenario: string
+  substrateSmiles?: string
   question: string
   choices: string[]
   answer: string
@@ -27,17 +28,18 @@ function shuffle<T>(arr: T[]): T[] {
 interface ArylHalide {
   formula: string
   name: string
+  smiles?: string
 }
 
 const ARYL_HALIDES: ArylHalide[] = [
-  { formula: 'PhBr',            name: 'bromobenzene' },
-  { formula: 'PhI',             name: 'iodobenzene' },
-  { formula: '4-MeO-C₆H₄Br',   name: '4-bromoanisole' },
-  { formula: '4-NO₂-C₆H₄Br',   name: '4-bromonitrobenzene' },
-  { formula: '3-CF₃-C₆H₄Br',   name: '3-(trifluoromethyl)bromobenzene' },
-  { formula: '2-Naphthyl-Br',   name: '2-bromonaphthalene' },
-  { formula: 'Vinyl-Br',        name: 'vinyl bromide (bromoethylene)' },
-  { formula: '4-Ac-C₆H₄Br',    name: '4-bromoacetophenone' },
+  { formula: 'PhBr',            name: 'bromobenzene',                        smiles: 'Brc1ccccc1'              },
+  { formula: 'PhI',             name: 'iodobenzene',                         smiles: 'Ic1ccccc1'               },
+  { formula: '4-MeO-C₆H₄Br',   name: '4-bromoanisole',                      smiles: 'Brc1ccc(OC)cc1'          },
+  { formula: '4-NO₂-C₆H₄Br',   name: '4-bromonitrobenzene',                 smiles: 'Brc1ccc([N+](=O)[O-])cc1'},
+  { formula: '3-CF₃-C₆H₄Br',   name: '3-(trifluoromethyl)bromobenzene',     smiles: 'Brc1cccc(C(F)(F)F)c1'    },
+  { formula: '2-Naphthyl-Br',   name: '2-bromonaphthalene',                  smiles: 'Brc1ccc2ccccc2c1'        },
+  { formula: 'Vinyl-Br',        name: 'vinyl bromide (bromoethylene)',        smiles: 'BrC=C'                   },
+  { formula: '4-Ac-C₆H₄Br',    name: '4-bromoacetophenone',                  smiles: 'Brc1ccc(C(C)=O)cc1'      },
 ]
 
 interface PartnerDef {
@@ -109,6 +111,7 @@ function generateIdentifyCoupling(): CrossCouplingProblem {
   return {
     type: 'identify-coupling',
     scenario,
+    substrateSmiles: aryl.smiles,
     question: 'Which Pd-catalyzed cross-coupling reaction is being described?',
     choices: shuffle([answer, ...wrong]),
     answer,
@@ -144,6 +147,7 @@ function generatePredictProduct(): CrossCouplingProblem {
   return {
     type: 'predict-product',
     scenario,
+    substrateSmiles: aryl.smiles,
     question: 'What is the major organic product of this cross-coupling reaction?',
     choices: shuffle([answer, ...wrong]),
     answer,

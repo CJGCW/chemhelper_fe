@@ -55,6 +55,50 @@ export default function IntegratedRateReference() {
         <p className="font-sans text-sm text-secondary">
           The slope of the linear plot gives ±k (check sign for the order).
         </p>
+
+        {/* Mini linear-form plots — each order has exactly one straight-line transform */}
+        <div className="flex flex-wrap gap-3">
+          {[
+            { label: 'Zero order',   yLabel: '[A] vs t',   slope: 'slope = −k', pts: [[0, 1.0], [10, 0.0]], xMax: 10, yMin: 0,    yMax: 1   },
+            { label: 'First order',  yLabel: 'ln[A] vs t', slope: 'slope = −k', pts: [[0, 0.0], [5, -2.5]], xMax: 5,  yMin: -2.5, yMax: 0   },
+            { label: 'Second order', yLabel: '1/[A] vs t', slope: 'slope = +k', pts: [[0, 1.0], [5, 3.5]],  xMax: 5,  yMin: 1,    yMax: 3.5 },
+          ].map(({ label, yLabel, slope, pts, xMax, yMin, yMax }) => {
+            const W = 192, H = 132, ML = 38, MR = 10, MT = 14, MB = 24
+            const PW = W - ML - MR, PH = H - MT - MB
+            const toX = (x: number) => ML + (x / xMax) * PW
+            const toY = (y: number) => MT + PH - ((y - yMin) / (yMax - yMin)) * PH
+            const a = pts[0], b = pts[1]
+            return (
+              <div key={label} className="flex flex-col gap-1">
+                <p className="font-mono text-xs" style={{ color: 'var(--c-halogen)' }}>{label}</p>
+                <svg width={W} height={H} className="block border border-border rounded-sm"
+                  style={{ background: 'rgb(var(--color-surface))' }}>
+                  {[0, 0.5, 1].map(frac => {
+                    const ys = MT + frac * PH
+                    const yv = (yMax - frac * (yMax - yMin)).toFixed(1)
+                    return (
+                      <g key={frac}>
+                        <line x1={ML} y1={ys} x2={ML + PW} y2={ys} stroke="rgba(var(--overlay),0.07)" strokeWidth={1} />
+                        <text x={ML - 3} y={ys + 3} textAnchor="end" fontSize={8} fontFamily="monospace" fill="rgba(var(--overlay),0.35)">{yv}</text>
+                      </g>
+                    )
+                  })}
+                  <line x1={ML} y1={MT} x2={ML} y2={MT + PH} stroke="rgba(var(--overlay),0.25)" strokeWidth={1} />
+                  <line x1={ML} y1={MT + PH} x2={ML + PW} y2={MT + PH} stroke="rgba(var(--overlay),0.25)" strokeWidth={1} />
+                  {[0, xMax / 2, xMax].map(x => (
+                    <text key={x} x={toX(x)} y={MT + PH + 13} textAnchor="middle" fontSize={8} fontFamily="monospace" fill="rgba(var(--overlay),0.35)">{x}</text>
+                  ))}
+                  <text x={ML + PW / 2} y={H - 1} textAnchor="middle" fontSize={8} fontFamily="monospace" fill="rgba(var(--overlay),0.4)">t (s)</text>
+                  <text x={10} y={MT + PH / 2} textAnchor="middle" fontSize={8} fontFamily="monospace" fill="rgba(var(--overlay),0.4)"
+                    transform={`rotate(-90, 10, ${MT + PH / 2})`}>{yLabel}</text>
+                  <line x1={toX(a[0])} y1={toY(a[1])} x2={toX(b[0])} y2={toY(b[1])} stroke="var(--c-halogen)" strokeWidth={2} strokeLinecap="round" />
+                  <text x={ML + 4} y={MT + 11} fontSize={9} fontFamily="sans-serif" fill="rgba(var(--overlay),0.65)">{yLabel}</text>
+                  <text x={ML + PW * 0.55} y={MT + PH * 0.25} fontSize={8} fontFamily="monospace" fill="rgba(var(--overlay),0.5)">{slope}</text>
+                </svg>
+              </div>
+            )
+          })}
+        </div>
       </section>
 
       <section className="flex flex-col gap-4">

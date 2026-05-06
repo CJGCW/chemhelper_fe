@@ -88,8 +88,8 @@ export default function ElectrolysisTool() {
             <button key={o.id} onClick={() => { setSolveFor(o.id); reset() }}
               className="flex flex-col items-start px-3 py-2 rounded-sm font-sans text-sm font-medium transition-colors text-left"
               style={isActive ? {
-                background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               } : {
                 background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))', color: 'rgba(var(--overlay),0.45)',
@@ -187,8 +187,8 @@ export default function ElectrolysisTool() {
           onClick={handleCalculate}
           className="self-start px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           }}
         >

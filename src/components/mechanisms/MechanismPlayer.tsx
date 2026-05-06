@@ -671,8 +671,8 @@ function StaticMechanismView({ reaction }: { reaction: ReactionDef }) {
 function ViewModePill() {
   const viewMode = usePreferencesStore(s => s.mechanismViewMode)
   const setViewMode = usePreferencesStore(s => s.setMechanismViewMode)
-  const activeTint   = 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))'
-  const activeBorder = 'color-mix(in srgb, var(--c-halogen) 30%, transparent)'
+  const activeTint   = 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))'
+  const activeBorder = 'color-mix(in srgb, var(--c-halogen) 40%, transparent)'
   return (
     <div
       className="flex items-center gap-0.5 p-0.5 rounded-full self-start print:hidden"
@@ -749,9 +749,9 @@ function FramePlayer({ reaction, compact }: { reaction: ReactionDef; compact: bo
   }
 
   const viewMode     = usePreferencesStore(s => s.mechanismViewMode)
-  const activeTint   = 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))'
-  const activeBorder = 'color-mix(in srgb, var(--c-halogen) 30%, transparent)'
-  const playBg       = 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))'
+  const activeTint   = 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))'
+  const activeBorder = 'color-mix(in srgb, var(--c-halogen) 40%, transparent)'
+  const playBg       = 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))'
 
   if (viewMode === 'static') {
     return (
@@ -999,9 +999,9 @@ function LegacyPlayer({ reaction, scene, steps, compact }: {
     setCurrentStep(i)
   }
 
-  const activeTint   = 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))'
-  const activeBorder = 'color-mix(in srgb, var(--c-halogen) 30%, transparent)'
-  const playBg       = 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))'
+  const activeTint   = 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))'
+  const activeBorder = 'color-mix(in srgb, var(--c-halogen) 40%, transparent)'
+  const playBg       = 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))'
 
   return (
     <div className="flex flex-col gap-3">

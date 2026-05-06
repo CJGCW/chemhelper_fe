@@ -250,8 +250,8 @@ export function MolesExample() {
               width={108}
               height={48}
               rx="5"
-              fill="color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))"
-              stroke="color-mix(in srgb, var(--c-halogen) 30%, transparent)"
+              fill="color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))"
+              stroke="color-mix(in srgb, var(--c-halogen) 40%, transparent)"
               strokeWidth="1"
             />
             {/* mol label small */}

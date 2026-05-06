@@ -220,8 +220,8 @@ export default function ChainedYieldTool({ allowCustom = true }: Props) {
                     <button key={u} onClick={() => setUnit(u)}
                       className="px-2 py-1 rounded-sm font-mono text-xs font-medium transition-colors"
                       style={unit === u ? {
-                        background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                        border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                        background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                        border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                         color: 'var(--c-halogen)',
                       } : {
                         background: 'rgb(var(--color-raised))',
@@ -257,7 +257,7 @@ export default function ChainedYieldTool({ allowCustom = true }: Props) {
                        disabled:opacity-30 disabled:cursor-not-allowed"
             style={{
               background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-              border:     '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+              border:     '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color:      'var(--c-halogen)',
             }}>
             {allowCustom ? 'Start chain' : 'New problem'}

@@ -12,7 +12,7 @@ export default function AcidityFactorsReference() {
       <section className="flex flex-col gap-3">
         <h4 className="font-sans font-semibold text-sm text-primary flex items-center gap-2">
           <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold"
-            style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))', color: 'var(--c-halogen)' }}>1</span>
+            style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', color: 'var(--c-halogen)' }}>1</span>
           Inductive Effects (Electronegativity of Nearby Groups)
         </h4>
         <p className="font-sans text-xs text-secondary leading-relaxed">
@@ -51,7 +51,7 @@ export default function AcidityFactorsReference() {
       <section className="flex flex-col gap-3">
         <h4 className="font-sans font-semibold text-sm text-primary flex items-center gap-2">
           <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold"
-            style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))', color: 'var(--c-halogen)' }}>2</span>
+            style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', color: 'var(--c-halogen)' }}>2</span>
           Resonance Stabilization
         </h4>
         <p className="font-sans text-xs text-secondary leading-relaxed">
@@ -87,7 +87,7 @@ export default function AcidityFactorsReference() {
       <section className="flex flex-col gap-3">
         <h4 className="font-sans font-semibold text-sm text-primary flex items-center gap-2">
           <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold"
-            style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))', color: 'var(--c-halogen)' }}>3</span>
+            style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', color: 'var(--c-halogen)' }}>3</span>
           Hybridization (s-Character)
         </h4>
         <p className="font-sans text-xs text-secondary leading-relaxed">
@@ -115,7 +115,7 @@ export default function AcidityFactorsReference() {
       <section className="flex flex-col gap-3">
         <h4 className="font-sans font-semibold text-sm text-primary flex items-center gap-2">
           <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold"
-            style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))', color: 'var(--c-halogen)' }}>4</span>
+            style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', color: 'var(--c-halogen)' }}>4</span>
           Atomic Electronegativity (Same Row — Across Period)
         </h4>
         <p className="font-sans text-xs text-secondary leading-relaxed">
@@ -132,7 +132,7 @@ export default function AcidityFactorsReference() {
       <section className="flex flex-col gap-3">
         <h4 className="font-sans font-semibold text-sm text-primary flex items-center gap-2">
           <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold"
-            style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))', color: 'var(--c-halogen)' }}>5</span>
+            style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', color: 'var(--c-halogen)' }}>5</span>
           Atomic Size (Same Group — Down Column)
         </h4>
         <p className="font-sans text-xs text-secondary leading-relaxed">
@@ -151,7 +151,7 @@ export default function AcidityFactorsReference() {
 
       {/* Summary box */}
       <div className="rounded-sm border p-4 flex flex-col gap-2"
-        style={{ background: 'color-mix(in srgb, var(--c-halogen) 5%, rgb(var(--color-raised)))', borderColor: 'color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
+        style={{ background: 'color-mix(in srgb, var(--c-halogen) 5%, rgb(var(--color-raised)))', borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
         <p className="font-sans font-semibold text-sm text-primary">Quick Decision Rule</p>
         <p className="font-sans text-xs text-secondary leading-relaxed">
           1. Different elements as the acidic atom? Use <strong className="text-primary">electronegativity (across)</strong> or <strong className="text-primary">size (down)</strong>.<br />

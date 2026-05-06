@@ -18,7 +18,7 @@ export default function BindingEnergyReference() {
 
       {/* Formulas */}
       <div className="flex flex-col gap-3">
-        <h3 className="font-sans font-semibold text-bright text-lg">Nuclear Binding Energy</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Nuclear Binding Energy</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
             { label: 'Mass defect', formula: 'Δm = Z·m_H + N·m_n − m_atom', note: 'All masses in amu (atomic mass units)' },
@@ -59,7 +59,7 @@ export default function BindingEnergyReference() {
 
       {/* BE/A table for stable nuclides in the dataset */}
       <div className="flex flex-col gap-3">
-        <h3 className="font-sans font-semibold text-bright text-lg">Calculated Binding Energies (Stable Nuclides)</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Calculated Binding Energies (Stable Nuclides)</h3>
         <div className="overflow-x-auto rounded-sm border border-border">
           <table className="w-full text-sm font-sans border-collapse">
             <thead>

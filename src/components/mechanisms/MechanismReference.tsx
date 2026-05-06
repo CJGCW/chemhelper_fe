@@ -62,7 +62,7 @@ function LegacyCard({ rxn }: { rxn: ReactionDef }) {
                   <p className="font-sans text-sm text-secondary leading-relaxed whitespace-pre-line">{step.description}</p>
                   {step.note && (
                     <p className="font-sans text-xs text-dim italic leading-relaxed pl-3 border-l-2 mt-0.5"
-                      style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 35%, transparent)' }}>
+                      style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
                       {step.note}
                     </p>
                   )}
@@ -114,7 +114,7 @@ export default function MechanismReference({ initialCategory = null }: Props) {
   return (
     <div className="flex flex-col gap-6 max-w-3xl print:max-w-none">
       <div className="flex flex-col gap-2">
-        <h3 className="font-sans font-semibold text-bright text-lg">Organic Reaction Mechanisms</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Organic Reaction Mechanisms</h3>
         <p className="font-sans text-sm text-secondary leading-relaxed">
           Step-by-step mechanisms, stereochemical outcomes, and key rules for named reactions.
           Click any card to expand the full mechanism. Reference: Brown, Iverson &amp; Anslyn, <em>Organic Chemistry</em> 9e.
@@ -135,8 +135,8 @@ export default function MechanismReference({ initialCategory = null }: Props) {
           onClick={() => setActiveCategory(null)}
           className="px-3 py-1 rounded-full font-sans text-xs font-medium border transition-colors"
           style={activeCategory === null ? {
-            background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           } : { background: 'rgb(var(--color-surface))', borderColor: 'rgb(var(--color-border))', color: 'rgb(var(--color-secondary))' }}
         >
@@ -149,8 +149,8 @@ export default function MechanismReference({ initialCategory = null }: Props) {
             <button key={cat} onClick={() => setActiveCategory(cat === activeCategory ? null : cat)}
               className="px-3 py-1 rounded-full font-sans text-xs font-medium border transition-colors"
               style={isActive ? {
-                background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               } : { background: 'rgb(var(--color-surface))', borderColor: 'rgb(var(--color-border))', color: 'rgb(var(--color-secondary))' }}
             >

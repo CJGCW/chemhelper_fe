@@ -158,7 +158,7 @@ export default function MechanismPractice({ allowCustom = true }: Props) {
                       className="px-4 py-2 rounded-sm font-sans text-sm transition-colors"
                       style={selected === String(i + 1) ? {
                         background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-                        border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                        border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                         color: 'var(--c-halogen)',
                       } : { border: '1px solid rgba(var(--overlay),0.15)', color: 'rgba(var(--overlay),0.5)' }}>
                       Step {i + 1}
@@ -214,8 +214,8 @@ export default function MechanismPractice({ allowCustom = true }: Props) {
                   disabled={question === 'slowStep' ? !selected : !textAnswer.trim()}
                   className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-30"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                    border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                    border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                     color: 'var(--c-halogen)',
                   }}>
                   Check

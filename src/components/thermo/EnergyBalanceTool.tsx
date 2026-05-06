@@ -191,8 +191,8 @@ export default function EnergyBalanceTool({ allowCustom = true }: Props) {
               {active && (
                 <motion.div layoutId="eb-mode-switch" className="absolute inset-0 rounded-full"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                    border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                    border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   }}
                   transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
               )}
@@ -259,7 +259,7 @@ export default function EnergyBalanceTool({ allowCustom = true }: Props) {
                        disabled:opacity-30 disabled:cursor-not-allowed"
             style={{
               background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-              border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+              border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
             }}>
             Solve step by step
@@ -292,7 +292,7 @@ export default function EnergyBalanceTool({ allowCustom = true }: Props) {
                      disabled:opacity-30 disabled:cursor-not-allowed"
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           }}>
           Show me the steps

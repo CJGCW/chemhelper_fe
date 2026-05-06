@@ -124,8 +124,8 @@ export default function FunctionalGroupInterconversion() {
                 <button key={f.id} onClick={() => { setFilter(f.id); setFromFilter('all') }}
                   className="px-3 py-1 rounded-full text-xs font-sans font-medium border transition-colors"
                   style={active ? {
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                    borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                    borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                     color: 'var(--c-halogen)',
                   } : {
                     background: 'transparent',
@@ -147,8 +147,8 @@ export default function FunctionalGroupInterconversion() {
               <button onClick={() => setFromFilter('all')}
                 className="px-3 py-1 rounded-full text-xs font-sans border transition-colors"
                 style={fromFilter === 'all' ? {
-                  background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                  borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                 } : { background: 'transparent', borderColor: 'rgba(var(--overlay),0.15)', color: 'rgb(var(--overlay)/0.5)' }}>
                 All
@@ -157,8 +157,8 @@ export default function FunctionalGroupInterconversion() {
                 <button key={fg} onClick={() => setFromFilter(fg)}
                   className="px-3 py-1 rounded-full text-xs font-sans border transition-colors"
                   style={fromFilter === fg ? {
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                    borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                    borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                     color: 'var(--c-halogen)',
                   } : { background: 'transparent', borderColor: 'rgba(var(--overlay),0.15)', color: 'rgb(var(--overlay)/0.5)' }}>
                   {FG_LABELS[fg]}

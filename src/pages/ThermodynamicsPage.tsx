@@ -175,8 +175,8 @@ export default function ThermodynamicsPage() {
 
   // Pill UI helpers
   const PILL_ACTIVE_STYLE = {
-    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-    borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+    borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
     color: 'var(--c-halogen)',
   }
   const PILL_INACTIVE_CLASS = 'border-border text-secondary hover:text-primary'
@@ -229,7 +229,7 @@ export default function ThermodynamicsPage() {
     <PageShell>
       {/* Heading row */}
       <div className="flex items-center gap-3 print:hidden">
-        <h2 className="text-xl lg:text-2xl font-bold text-bright">Thermodynamics</h2>
+        <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Thermodynamics</h2>
         <button
           onClick={() => setShowExplanation(true)}
           className="flex items-center gap-1 px-2 py-0.5 rounded-sm border border-border font-mono text-[10px] text-secondary hover:text-primary transition-colors"

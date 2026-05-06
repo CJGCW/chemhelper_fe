@@ -1,3 +1,5 @@
+import CompoundDisplay from '../shared/CompoundDisplay'
+
 export default function PhospholipidsReference() {
   return (
     <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
@@ -12,6 +14,11 @@ export default function PhospholipidsReference() {
       {/* Structure */}
       <section className="flex flex-col gap-3">
         <h4 className="font-sans font-semibold text-sm text-primary">General Structure (Glycerophospholipids)</h4>
+        <div className="flex flex-wrap gap-4 items-start">
+          <CompoundDisplay smiles="OCC(O)CO" label="glycerol backbone" width={160} height={120} />
+          <CompoundDisplay smiles="NCCO" label="ethanolamine (PE head)" width={140} height={120} />
+          <CompoundDisplay smiles="CC(=O)OCCO" label="acetylcholine analog" width={160} height={120} />
+        </div>
         <div className="rounded-sm border border-border p-4 font-mono text-xs text-secondary" style={{ background: 'rgb(var(--color-raised))' }}>
           <p className="text-primary font-semibold mb-2">Glycerol + 2 fatty acids + phosphate + polar head group</p>
           <p>sn-1: CH₂–O–CO–R₁   (usually saturated FA)</p>

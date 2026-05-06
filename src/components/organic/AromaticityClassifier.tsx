@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import CompoundDisplay from '../shared/CompoundDisplay'
 
 type Classification = 'Aromatic' | 'Antiaromatic' | 'Nonaromatic'
 
 interface Problem {
   compound: string
+  smiles: string
   description: string
   piElectrons: number
   classification: Classification
@@ -14,6 +16,7 @@ interface Problem {
 const PROBLEMS: Problem[] = [
   {
     compound: 'Benzene',
+    smiles: 'c1ccccc1',
     description: 'Planar, 6-membered fully conjugated ring with 3 double bonds.',
     piElectrons: 6,
     classification: 'Aromatic',
@@ -21,6 +24,7 @@ const PROBLEMS: Problem[] = [
   },
   {
     compound: 'Cyclobutadiene',
+    smiles: 'C1=CC=C1',
     description: 'Planar, 4-membered fully conjugated ring with 2 double bonds.',
     piElectrons: 4,
     classification: 'Antiaromatic',
@@ -28,6 +32,7 @@ const PROBLEMS: Problem[] = [
   },
   {
     compound: 'Cyclopentadienyl anion (Cp⁻)',
+    smiles: '[CH-]1C=CC=C1',
     description: 'Cyclopentadiene loses an H⁺ from sp³ CH₂. The resulting carbanion has an sp² carbon with a lone pair in the p orbital.',
     piElectrons: 6,
     classification: 'Aromatic',
@@ -35,6 +40,7 @@ const PROBLEMS: Problem[] = [
   },
   {
     compound: 'Cyclopentadienyl cation (Cp⁺)',
+    smiles: '[CH+]1C=CC=C1',
     description: 'Cyclopentadienyl cation — one carbon is sp² with an empty p orbital.',
     piElectrons: 4,
     classification: 'Antiaromatic',
@@ -42,6 +48,7 @@ const PROBLEMS: Problem[] = [
   },
   {
     compound: 'Pyrrole',
+    smiles: 'c1cc[nH]c1',
     description: 'Five-membered ring with one nitrogen; N is sp² hybridized with its lone pair in the p orbital (pointing into the ring).',
     piElectrons: 6,
     classification: 'Aromatic',
@@ -49,6 +56,7 @@ const PROBLEMS: Problem[] = [
   },
   {
     compound: 'Pyridine',
+    smiles: 'c1ccncc1',
     description: 'Six-membered ring with one nitrogen; the N lone pair is in an sp² orbital perpendicular to the ring (NOT in the p orbital).',
     piElectrons: 6,
     classification: 'Aromatic',
@@ -56,6 +64,7 @@ const PROBLEMS: Problem[] = [
   },
   {
     compound: 'Furan',
+    smiles: 'c1ccoc1',
     description: 'Five-membered ring with one oxygen; O is sp² with one lone pair in the ring p orbital.',
     piElectrons: 6,
     classification: 'Aromatic',
@@ -63,6 +72,7 @@ const PROBLEMS: Problem[] = [
   },
   {
     compound: 'Cyclooctatetraene (COT, tub-shaped)',
+    smiles: 'C1=CC=CC=CC=C1',
     description: '8-membered ring with 4 double bonds, but it adopts a non-planar tub shape.',
     piElectrons: 8,
     classification: 'Nonaromatic',
@@ -70,6 +80,7 @@ const PROBLEMS: Problem[] = [
   },
   {
     compound: 'Tropylium cation (cycloheptatrienyl cation)',
+    smiles: '[CH+]1C=CC=CC=C1',
     description: '7-membered ring with 3 double bonds; the cationic carbon is sp² with an empty p orbital.',
     piElectrons: 6,
     classification: 'Aromatic',
@@ -77,6 +88,7 @@ const PROBLEMS: Problem[] = [
   },
   {
     compound: 'Cyclopropenyl anion',
+    smiles: '[CH-]1C=C1',
     description: '3-membered ring with 1 double bond; one sp² carbanion with a lone pair in the p orbital.',
     piElectrons: 4,
     classification: 'Antiaromatic',
@@ -84,6 +96,7 @@ const PROBLEMS: Problem[] = [
   },
   {
     compound: '1,3-Cyclohexadiene',
+    smiles: 'C1CC=CC=C1',
     description: '6-membered ring with 2 double bonds — NOT fully conjugated (one sp³ CH₂ breaks the conjugation).',
     piElectrons: 4,
     classification: 'Nonaromatic',
@@ -91,6 +104,7 @@ const PROBLEMS: Problem[] = [
   },
   {
     compound: '[18]Annulene',
+    smiles: 'C1=CC=CC=CC=CC=CC=CC=CC=CC=C1',
     description: 'An 18-membered ring with 9 double bonds, large enough to be roughly planar.',
     piElectrons: 18,
     classification: 'Aromatic',
@@ -154,12 +168,17 @@ export default function AromaticityClassifier({ allowCustom = true }: Props) {
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}
           className="flex flex-col gap-4">
-          <div className="p-4 rounded-sm border border-border bg-surface flex flex-col gap-2">
-            <p className="font-mono text-sm font-semibold text-primary">{problem.compound}</p>
-            <p className="font-sans text-sm text-secondary leading-relaxed">{problem.description}</p>
-            {!checked && (
-              <p className="font-mono text-xs text-dim">Classify: is this compound aromatic, antiaromatic, or nonaromatic?</p>
-            )}
+          <div className="p-4 rounded-sm border border-border bg-surface flex flex-col gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+              <CompoundDisplay smiles={problem.smiles} label={problem.compound} width={180} height={150} />
+              <div className="flex flex-col gap-2 flex-1">
+                <p className="font-mono text-sm font-semibold text-primary">{problem.compound}</p>
+                <p className="font-sans text-sm text-secondary leading-relaxed">{problem.description}</p>
+                {!checked && (
+                  <p className="font-mono text-xs text-dim">Classify: aromatic, antiaromatic, or nonaromatic?</p>
+                )}
+              </div>
+            </div>
           </div>
 
           {checked && (
@@ -199,8 +218,8 @@ export default function AromaticityClassifier({ allowCustom = true }: Props) {
         <button onClick={nextProblem}
           className="self-start px-4 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           }}>
           Next Problem →

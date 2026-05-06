@@ -157,7 +157,7 @@ export default function VaporPressureTool() {
               className="flex flex-col items-start px-3 py-1.5 rounded-sm border transition-colors text-left"
               style={substanceId === s.name ? {
                 borderColor: 'color-mix(in srgb, var(--c-halogen) 50%, transparent)',
-                background:  'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))',
+                background:  'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                 color: 'var(--c-halogen)',
               } : {
                 borderColor: 'rgb(var(--color-border))', background: 'rgb(var(--color-surface))',
@@ -171,7 +171,7 @@ export default function VaporPressureTool() {
             className="flex flex-col items-start px-3 py-1.5 rounded-sm border transition-colors text-left"
             style={isCustom ? {
               borderColor: 'color-mix(in srgb, var(--c-halogen) 50%, transparent)',
-              background:  'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))',
+              background:  'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
               color: 'var(--c-halogen)',
             } : {
               borderColor: 'rgb(var(--color-border))', background: 'rgb(var(--color-surface))',

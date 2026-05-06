@@ -72,7 +72,7 @@ export default function PredictProductPractice({ category = 'all' }: Props) {
                 if (isCorrect) style = { background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.4)', color: '#34d399' }
                 else if (isSelected) style = { background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.35)', color: '#f87171' }
               } else if (isSelected) {
-                style = { background: 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)', color: 'var(--c-halogen)' }
+                style = { background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)', color: 'var(--c-halogen)' }
               }
               return (
                 <button key={opt} onClick={() => handleSelect(opt)} disabled={checked}

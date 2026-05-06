@@ -144,7 +144,7 @@ export default function MechanismStepwise({ category = 'all' }: Props) {
                     : 'rgb(var(--color-raised))',
                   border: checked
                     ? `1px solid ${isStepCorrect ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.35)'}`
-                    : '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                    : '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 }}
               >
                 <span className="font-mono text-xs mr-2" style={{ color: 'rgba(var(--overlay),0.35)' }}>{i + 1}.</span>
@@ -182,7 +182,7 @@ export default function MechanismStepwise({ category = 'all' }: Props) {
         {!checked && order.length === q.steps.length && (
           <button onClick={checkAnswer}
             className="px-4 py-2 rounded-sm font-sans text-sm border font-medium transition-colors"
-            style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)', color: 'var(--c-halogen)' }}
+            style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)', color: 'var(--c-halogen)' }}
           >
             Check Order
           </button>

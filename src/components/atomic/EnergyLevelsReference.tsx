@@ -30,29 +30,9 @@ function wavelengthLabel(nm: number): string {
   return 'IR'
 }
 
-// ── Sub-components ────────────────────────────────────────────────────────────
-
-function LevelBar({ n, active, ni, nf }: { n: number; active: boolean; ni: number; nf: number }) {
-  const isTransition = n === ni || n === nf
-  return (
-    <div className="flex items-center gap-3">
-      <span className="font-mono text-xs text-dim w-5 text-right shrink-0">n={n}</span>
-      <div
-        className="flex-1 h-px transition-colors"
-        style={{
-          background: isTransition
-            ? 'var(--c-halogen)'
-            : active
-            ? 'rgba(var(--overlay),0.3)'
-            : 'rgba(var(--overlay),0.12)',
-        }}
-      />
-      <span className="font-mono text-xs w-24 text-right shrink-0"
-        style={{ color: isTransition ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)' }}>
-        {fmt(E(n), 3)} eV
-      </span>
-    </div>
-  )
+// Photon color for UV/IR transitions not visible in the spectrum
+function arrowFallback(nm: number): string {
+  return nm < 380 ? '#a855f7' : '#ef4444'
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
@@ -126,44 +106,93 @@ export default function EnergyLevelsReference() {
         </div>
       </div>
 
-      {/* Energy level diagram */}
+      {/* Energy level SVG diagram — 1/n visual spacing so higher levels are readable */}
       <div className="flex flex-col gap-2">
         <h3 className="font-mono text-xs text-secondary tracking-widest uppercase">
           Energy Diagram
-          <span className="normal-case text-dim font-normal"> — levels not to scale</span>
+          <span className="normal-case text-dim font-normal"> — 1/n visual spacing</span>
         </h3>
-        <div className="rounded-sm border border-border bg-surface px-4 py-5 flex flex-col gap-3">
-          {/* n=∞ */}
-          <div className="flex items-center gap-3">
-            <span className="font-mono text-xs text-dim w-5 text-right shrink-0">∞</span>
-            <div className="flex-1 h-px border-t border-dashed border-border" />
-            <span className="font-mono text-xs text-dim w-24 text-right shrink-0">0 eV (ionization)</span>
-          </div>
+        {(() => {
+          const W = 340, H = 260
+          const ML = 50, MR = 16, MT = 20, MB = 16
+          const PW = W - ML - MR
+          const PH_svg = H - MT - MB
+          const lineEnd = ML + Math.round(PW * 0.68)
+          const arrowX = ML + Math.round(PW * 0.50)
 
-          {/* n=6 down to n=2 — tightly spaced */}
-          {[6, 5, 4, 3, 2].map(n => (
-            <LevelBar key={n} n={n} active ni={ni} nf={nf} />
-          ))}
+          // 1/n vertical scale: n=1 at bottom, n=∞ at top
+          const levelY = (n: number) => MT + PH_svg / n
+          const infY = MT + 4
 
-          {/* Visual gap between n=2 and n=1 */}
-          <div className="flex items-center gap-3 my-2">
-            <span className="w-5" />
-            <div className="flex-1 flex items-center gap-1">
-              <div className="w-4 h-px bg-border" />
-              <span className="font-mono text-xs text-secondary">large gap</span>
-              <div className="flex-1 h-px border-t border-dashed border-border opacity-30" />
-            </div>
-          </div>
+          const arrowColor = color ?? (lambda !== null ? arrowFallback(lambda) : '#888')
+          const seriesLabel =
+            nf === 1 ? 'Lyman (UV)' :
+            nf === 2 ? 'Balmer' :
+            nf === 3 ? 'Paschen (IR)' : `n=${nf} series`
 
-          <LevelBar n={1} active ni={ni} nf={nf} />
+          return (
+            <svg width={W} height={H} className="block border border-border rounded-sm"
+              style={{ background: 'rgb(var(--color-surface))' }}>
+              {/* n=∞ ionization limit */}
+              <line x1={ML} y1={infY} x2={lineEnd} y2={infY}
+                stroke="rgba(var(--overlay),0.2)" strokeWidth={1} strokeDasharray="4 2" />
+              <text x={ML - 5} y={infY + 3} textAnchor="end" fontSize={9} fontFamily="monospace"
+                fill="rgba(var(--overlay),0.4)">∞</text>
+              <text x={lineEnd + 4} y={infY + 3} textAnchor="start" fontSize={8} fontFamily="monospace"
+                fill="rgba(var(--overlay),0.25)">0 eV</text>
 
-          {/* Transition arrow annotation */}
-          {ni !== nf && (
-            <p className="font-mono text-xs text-secondary mt-1">
-              {isEmission ? '↓' : '↑'} n={ni} → n={nf} highlighted · {isEmission ? 'emission' : 'absorption'}
-            </p>
-          )}
-        </div>
+              {/* Energy levels n=6 down to n=1 */}
+              {[6, 5, 4, 3, 2, 1].map(n => {
+                const y = levelY(n)
+                const isActive = n === ni || n === nf
+                return (
+                  <g key={n}>
+                    <line x1={ML} y1={y} x2={lineEnd} y2={y}
+                      stroke={isActive ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.3)'}
+                      strokeWidth={isActive ? 2 : 1} />
+                    <text x={ML - 5} y={y + 3} textAnchor="end" fontSize={9} fontFamily="monospace"
+                      fill={isActive ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.5)'}>n={n}</text>
+                    <text x={lineEnd + 4} y={y + 3} textAnchor="start" fontSize={7.5} fontFamily="monospace"
+                      fill="rgba(var(--overlay),0.25)">{fmt(E(n), 2)}</text>
+                  </g>
+                )
+              })}
+
+              {/* Transition arrow — visible only when ni ≠ nf */}
+              {(() => {
+                if (ni === nf) return null
+                const y1 = levelY(ni)
+                const y2 = levelY(nf)
+                const isEmit = ni > nf   // electron drops to lower n
+                const midY = (y1 + y2) / 2
+                const headSize = 6
+                return (
+                  <g>
+                    <line x1={arrowX} y1={y1} x2={arrowX} y2={y2}
+                      stroke={arrowColor} strokeWidth={2.5} strokeLinecap="round" />
+                    {isEmit ? (
+                      // Arrow head points down (toward smaller n = bottom of diagram)
+                      <polygon
+                        points={`${arrowX},${y2} ${arrowX - 4},${y2 - headSize} ${arrowX + 4},${y2 - headSize}`}
+                        fill={arrowColor} />
+                    ) : (
+                      // Arrow head points up (toward larger n = top of diagram)
+                      <polygon
+                        points={`${arrowX},${y2} ${arrowX - 4},${y2 + headSize} ${arrowX + 4},${y2 + headSize}`}
+                        fill={arrowColor} />
+                    )}
+                    <text x={arrowX + 12} y={midY - 3} fontSize={9} fontFamily="sans-serif"
+                      fill={arrowColor}>{seriesLabel}</text>
+                    {lambda !== null && (
+                      <text x={arrowX + 12} y={midY + 10} fontSize={8} fontFamily="monospace"
+                        fill="rgba(var(--overlay),0.55)">{Math.round(lambda)} nm</text>
+                    )}
+                  </g>
+                )
+              })()}
+            </svg>
+          )
+        })()}
       </div>
 
       {/* Transition calculator */}

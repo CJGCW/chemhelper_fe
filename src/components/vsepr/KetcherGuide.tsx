@@ -94,7 +94,7 @@ export default function KetcherGuide() {
       {/* Header */}
       <div className="flex flex-col gap-1">
         <span className="font-mono text-xs text-secondary tracking-widest uppercase">Editor Reference</span>
-        <h3 className="font-sans font-semibold text-bright text-lg">Ketcher Structure Editor</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Ketcher Structure Editor</h3>
         <p className="font-sans text-sm text-secondary mt-0.5">
           Ketcher is an open-source 2D molecular structure editor. The toolbar runs along the left side of the canvas.
         </p>
@@ -172,8 +172,8 @@ export default function KetcherGuide() {
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-sm font-sans text-xs font-medium transition-colors"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               }}
             >

@@ -29,10 +29,10 @@ interface EstimateResult {
 type SpecTab = 'ir' | '1h' | '13c' | 'ms'
 
 const SPEC_TABS: { id: SpecTab; label: string; formula: string }[] = [
-  { id: 'ir',  label: 'IR',   formula: 'cm⁻¹' },
-  { id: '1h',  label: '¹H NMR', formula: 'δ ppm' },
-  { id: '13c', label: '¹³C NMR', formula: '13C'  },
-  { id: 'ms',  label: 'MS',   formula: 'm/z'  },
+  { id: 'ir',  label: 'IR',      formula: 'cm⁻¹' },
+  { id: '1h',  label: '¹H NMR',  formula: 'δ ppm' },
+  { id: '13c', label: '¹³C NMR', formula: '13C'   },
+  { id: 'ms',  label: 'MS',      formula: 'm/z'   },
 ]
 
 function tabPeaks(result: EstimateResult, tab: SpecTab): Peak[] {
@@ -53,129 +53,148 @@ function tabViewerType(tab: SpecTab): 'ir' | '1h_nmr' | '13c_nmr' | 'mass_spec' 
   }
 }
 
-// ── Minimal Ketcher canvas handle ─────────────────────────────────────────────
+// ── Ketcher canvas ────────────────────────────────────────────────────────────
 
 interface KetcherCanvasHandle {
   getSmiles(): Promise<string | null>
   getSvgDataUrl(): Promise<string | null>
 }
 
-const KetcherCanvas = forwardRef<KetcherCanvasHandle>(function KetcherCanvas(_, ref) {
-  const ketcherRef = useRef<Ketcher | null>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [ready, setReady] = useState(false)
+interface KetcherCanvasProps {
+  width?: number
+  height?: number
+}
 
-  useImperativeHandle(ref, () => ({
-    async getSmiles(): Promise<string | null> {
-      const k = ketcherRef.current
-      if (!k) return null
-      try {
-        const smiles = await k.getSmiles()
-        return smiles || null
-      } catch {
-        return null
-      }
-    },
+const KetcherCanvas = forwardRef<KetcherCanvasHandle, KetcherCanvasProps>(
+  function KetcherCanvas({ width, height }, ref) {
+    const ketcherRef = useRef<Ketcher | null>(null)
+    const containerRef = useRef<HTMLDivElement>(null)
+    const [ready, setReady] = useState(false)
 
-    async getSvgDataUrl(): Promise<string | null> {
-      const k = ketcherRef.current
-      if (!k) return null
-      try {
-        const molfile = await k.getMolfile()
-        const atomCount = parseInt((molfile.split('\n')[3] ?? '').substring(0, 3).trim(), 10) || 0
-        if (atomCount === 0) return null
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const blob: Blob = await (k as any).generateImage(molfile, { outputFormat: 'image/svg+xml' })
-        const arr = new Uint8Array(await blob.arrayBuffer())
-        let binary = ''
-        arr.forEach(b => { binary += String.fromCharCode(b) })
-        return `data:${blob.type || 'image/svg+xml'};base64,${btoa(binary)}`
-      } catch {
-        // Fallback: grab largest SVG from DOM
+    useImperativeHandle(ref, () => ({
+      async getSmiles(): Promise<string | null> {
+        const k = ketcherRef.current
+        if (!k) return null
         try {
-          const container = containerRef.current
-          if (!container) return null
-          let largest: SVGSVGElement | null = null
-          let maxArea = 0
-          container.querySelectorAll<SVGSVGElement>('svg').forEach(s => {
-            const r = s.getBoundingClientRect()
-            const area = r.width * r.height
-            if (area > maxArea) { maxArea = area; largest = s }
-          })
-          if (!largest) return null
-          const el = largest as SVGSVGElement
-          const clone = el.cloneNode(true) as SVGSVGElement
-          const { width, height } = el.getBoundingClientRect()
-          clone.setAttribute('width', String(width))
-          clone.setAttribute('height', String(height))
-          const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-          bg.setAttribute('width', '100%'); bg.setAttribute('height', '100%'); bg.setAttribute('fill', 'white')
-          clone.insertBefore(bg, clone.firstChild)
-          const svgStr = new XMLSerializer().serializeToString(clone)
-          const encoded = new TextEncoder().encode(svgStr)
-          let binary2 = ''
-          encoded.forEach(b => { binary2 += String.fromCharCode(b) })
-          return `data:image/svg+xml;base64,${btoa(binary2)}`
+          const smiles = await k.getSmiles()
+          return smiles || null
         } catch {
           return null
         }
+      },
+
+      async getSvgDataUrl(): Promise<string | null> {
+        const k = ketcherRef.current
+        if (!k) return null
+        try {
+          const molfile = await k.getMolfile()
+          const atomCount = parseInt((molfile.split('\n')[3] ?? '').substring(0, 3).trim(), 10) || 0
+          if (atomCount === 0) return null
+
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const blob: Blob = await (k as any).generateImage(molfile, { outputFormat: 'image/svg+xml' })
+          const arr = new Uint8Array(await blob.arrayBuffer())
+          let binary = ''
+          arr.forEach(b => { binary += String.fromCharCode(b) })
+          return `data:${blob.type || 'image/svg+xml'};base64,${btoa(binary)}`
+        } catch {
+          // Fallback: grab largest SVG from DOM
+          try {
+            const container = containerRef.current
+            if (!container) return null
+            let largest: SVGSVGElement | null = null
+            let maxArea = 0
+            container.querySelectorAll<SVGSVGElement>('svg').forEach(s => {
+              const r = s.getBoundingClientRect()
+              const area = r.width * r.height
+              if (area > maxArea) { maxArea = area; largest = s }
+            })
+            if (!largest) return null
+            const el = largest as SVGSVGElement
+            const clone = el.cloneNode(true) as SVGSVGElement
+            const { width: w, height: h } = el.getBoundingClientRect()
+            clone.setAttribute('width', String(w))
+            clone.setAttribute('height', String(h))
+            const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+            bg.setAttribute('width', '100%'); bg.setAttribute('height', '100%'); bg.setAttribute('fill', 'white')
+            clone.insertBefore(bg, clone.firstChild)
+            const svgStr = new XMLSerializer().serializeToString(clone)
+            const encoded = new TextEncoder().encode(svgStr)
+            let binary2 = ''
+            encoded.forEach(b => { binary2 += String.fromCharCode(b) })
+            return `data:image/svg+xml;base64,${btoa(binary2)}`
+          } catch {
+            return null
+          }
+        }
+      },
+    }))
+
+    useEffect(() => {
+      if (!document.getElementById(KETCHER_ESTIMATOR_CSS_ID)) {
+        const style = document.createElement('style')
+        style.id = KETCHER_ESTIMATOR_CSS_ID
+        style.textContent = `@layer ketcher { ${ketcherCss} }`
+        document.head.appendChild(style)
       }
-    },
-  }))
+      if (!document.getElementById(KETCHER_OVERRIDES_CSS_ID)) {
+        const style = document.createElement('style')
+        style.id = KETCHER_OVERRIDES_CSS_ID
+        style.textContent = KETCHER_OVERRIDES_CSS
+        document.head.appendChild(style)
+      }
+    }, [])
 
-  useEffect(() => {
-    if (!document.getElementById(KETCHER_ESTIMATOR_CSS_ID)) {
-      const style = document.createElement('style')
-      style.id = KETCHER_ESTIMATOR_CSS_ID
-      style.textContent = `@layer ketcher { ${ketcherCss} }`
-      document.head.appendChild(style)
-    }
-    if (!document.getElementById(KETCHER_OVERRIDES_CSS_ID)) {
-      const style = document.createElement('style')
-      style.id = KETCHER_OVERRIDES_CSS_ID
-      style.textContent = KETCHER_OVERRIDES_CSS
-      document.head.appendChild(style)
-    }
-  }, [])
-
-  return (
-    <div
-      ref={containerRef}
-      className="rounded-sm border border-border overflow-hidden"
-      style={{ height: 420, position: 'relative' }}
-    >
-      {!ready && (
-        <div className="absolute inset-0 flex items-center justify-center z-10"
-          style={{ background: 'rgb(var(--color-surface))' }}>
-          <span className="font-mono text-xs text-dim animate-pulse">Loading editor…</span>
-        </div>
-      )}
-      <Editor
-        staticResourcesUrl=""
-        structServiceProvider={getStructServiceProvider()}
-        errorHandler={(msg) => console.error('Ketcher:', msg)}
-        buttons={VSEPR_HIDDEN_BUTTONS as never}
-        disableMacromoleculesEditor
-        onInit={(k: Ketcher) => {
-          ketcherRef.current = k
-          setReady(true)
-        }}
-      />
-    </div>
-  )
-})
+    return (
+      <div
+        ref={containerRef}
+        className="rounded-sm border border-border overflow-hidden"
+        style={{ height: height ?? 420, width: width, position: 'relative' }}
+      >
+        {!ready && (
+          <div className="absolute inset-0 flex items-center justify-center z-10"
+            style={{ background: 'rgb(var(--color-surface))' }}>
+            <span className="font-mono text-xs text-dim animate-pulse">Loading editor…</span>
+          </div>
+        )}
+        <Editor
+          staticResourcesUrl=""
+          structServiceProvider={getStructServiceProvider()}
+          errorHandler={(msg) => console.error('Ketcher:', msg)}
+          buttons={VSEPR_HIDDEN_BUTTONS as never}
+          disableMacromoleculesEditor
+          onInit={(k: Ketcher) => {
+            ketcherRef.current = k
+            setReady(true)
+          }}
+        />
+      </div>
+    )
+  }
+)
 
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function SpectrumEstimator() {
   const canvasRef = useRef<KetcherCanvasHandle>(null)
+  const outerRef = useRef<HTMLDivElement>(null)
   const [result, setResult] = useState<EstimateResult | null>(null)
   const [activeTab, setActiveTab] = useState<SpecTab>('ir')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [printing, setPrinting] = useState(false)
   const [structureSvg, setStructureSvg] = useState<string | null>(null)
+  const [containerWidth, setContainerWidth] = useState(800)
+
+  useEffect(() => {
+    const el = outerRef.current
+    if (!el) return
+    const ro = new ResizeObserver(entries => {
+      setContainerWidth(Math.floor(entries[0].contentRect.width))
+    })
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
   async function estimate() {
     if (!canvasRef.current) return
@@ -214,55 +233,22 @@ export default function SpectrumEstimator() {
   return (
     <>
       {/* On-screen tool */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 print:hidden">
+      <div ref={outerRef} className="flex flex-col gap-4 print:hidden">
 
-        {/* Left: Ketcher canvas */}
-        <div className="flex flex-col gap-3">
-          <p className="text-xs text-secondary">
-            Draw a compound, then click <strong>Estimate</strong> to generate estimated IR, NMR, and MS spectra based on standard correlation tables.
-          </p>
+        {/* Disclaimer */}
+        <p className="text-xs text-secondary">
+          Draw a compound, then click <strong>Estimate</strong> to generate estimated IR, NMR, and MS spectra based on standard correlation tables.
+        </p>
 
-          <KetcherCanvas ref={canvasRef} />
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={estimate}
-              disabled={loading}
-              className="px-4 py-2 rounded-sm text-sm font-medium font-sans transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
-                color: 'var(--c-halogen)',
-              }}
-            >
-              {loading ? 'Estimating…' : 'Estimate spectra'}
-            </button>
-
-            {result && (
-              <button
-                onClick={handlePrint}
-                className="px-3 py-2 rounded-sm text-sm font-medium font-sans transition-colors"
-                style={{
-                  background: 'rgb(var(--color-raised))',
-                  border: '1px solid rgba(var(--overlay),0.15)',
-                  color: 'rgb(var(--overlay)/0.6)',
-                }}
-              >
-                ⎙ Print all spectra
-              </button>
-            )}
+        {/* Top row: structure (fixed width) + metadata + actions */}
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="shrink-0">
+            <KetcherCanvas ref={canvasRef} width={360} height={280} />
           </div>
 
-          {error && (
-            <p className="text-sm font-mono" style={{ color: '#f87171' }}>{error}</p>
-          )}
-        </div>
-
-        {/* Right: results panel */}
-        <div className="flex flex-col gap-4">
-          {result ? (
-            <>
-              {/* Molecule summary */}
+          <div className="flex flex-col gap-3 flex-1 min-w-0">
+            {/* Molecule summary */}
+            {result ? (
               <div
                 className="rounded-sm border border-border p-3 flex flex-wrap gap-x-5 gap-y-1 text-xs font-mono"
                 style={{ background: 'rgb(var(--color-raised))' }}
@@ -270,98 +256,135 @@ export default function SpectrumEstimator() {
                 <span><span className="text-dim">formula</span> {result.molecular_formula}</span>
                 <span><span className="text-dim">MW</span> {result.molecular_weight.toFixed(2)}</span>
                 <span><span className="text-dim">DoU</span> {result.degrees_unsaturation}</span>
-                <span className="text-dim truncate max-w-xs" title={result.smiles}>
-                  SMILES: {result.smiles.length > 30 ? result.smiles.slice(0, 28) + '…' : result.smiles}
-                </span>
               </div>
-
-              {/* Disclaimer */}
-              <p className="text-xs text-secondary">
-                Estimated spectra based on standard correlation tables (Brown & Foote). Real spectra may differ slightly from these ranges.
-              </p>
-
-              {/* Spectrum tabs */}
-              <div className="flex gap-1.5 flex-wrap print:hidden">
-                {SPEC_TABS.map(t => {
-                  const active = t.id === activeTab
-                  return (
-                    <motion.button
-                      key={t.id}
-                      onClick={() => setActiveTab(t.id)}
-                      className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-sans font-medium border transition-colors"
-                      style={active ? {
-                        background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                        borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
-                        color: 'var(--c-halogen)',
-                      } : {
-                        background: 'transparent',
-                        borderColor: 'rgba(var(--overlay),0.15)',
-                        color: 'rgb(var(--overlay)/0.5)',
-                      }}
-                      whileTap={{ scale: 0.97 }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 32 }}
-                    >
-                      <span className="font-mono text-[9px]">{t.formula}</span>
-                      {t.label}
-                    </motion.button>
-                  )
-                })}
+            ) : (
+              <div
+                className="rounded-sm border border-border p-3 text-xs font-mono text-dim"
+                style={{ background: 'rgb(var(--color-raised))' }}
+              >
+                Draw a molecule and click Estimate to see formula, MW, and degree of unsaturation.
               </div>
+            )}
 
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeTab}
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -4 }}
-                  transition={{ duration: 0.12 }}
-                  className="flex flex-col gap-3"
+            {/* Action buttons */}
+            <div className="flex items-center gap-2 mt-auto">
+              <button
+                onClick={estimate}
+                disabled={loading}
+                className="px-4 py-2 rounded-sm text-sm font-medium font-sans transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
+                  color: 'var(--c-halogen)',
+                }}
+              >
+                {loading ? 'Estimating…' : 'Estimate spectra'}
+              </button>
+
+              {result && (
+                <button
+                  onClick={handlePrint}
+                  className="px-3 py-2 rounded-sm text-sm font-medium font-sans transition-colors"
+                  style={{
+                    background: 'rgb(var(--color-raised))',
+                    border: '1px solid rgba(var(--overlay),0.15)',
+                    color: 'rgba(var(--overlay),0.6)',
+                  }}
                 >
-                  <SpectrumViewer
-                    type={tabViewerType(activeTab)}
-                    peaks={peaks}
-                    width={520}
-                    height={220}
-                  />
-
-                  {/* Peak assignment list */}
-                  {peaks.length > 0 && (
-                    <div className="flex flex-col gap-0.5 max-h-48 overflow-y-auto">
-                      {peaks.map((p, i) => (
-                        <div key={i} className="flex items-baseline gap-2 text-xs font-mono">
-                          <span className="text-secondary w-16 shrink-0 text-right">
-                            {activeTab === 'ir'
-                              ? `${Math.round(p.x)} cm⁻¹`
-                              : activeTab === 'ms'
-                              ? `${Math.round(p.x)} m/z`
-                              : `${p.x.toFixed(1)} ppm`}
-                          </span>
-                          {p.splitting && (
-                            <span className="text-dim">
-                              ({p.splitting}{p.integration ? `, ${p.integration}H` : ''})
-                            </span>
-                          )}
-                          <span className="text-primary">{p.label}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {result.warnings && result.warnings.length > 0 && (
-                    <p className="text-xs text-secondary italic">
-                      Note: {result.warnings.join('; ')}
-                    </p>
-                  )}
-                </motion.div>
-              </AnimatePresence>
-            </>
-          ) : (
-            <div className="flex items-center justify-center h-64 text-sm text-dim font-mono rounded-sm border border-border"
-              style={{ background: 'rgb(var(--color-raised))' }}>
-              Spectra appear here after estimating
+                  ⎙ Print all spectra
+                </button>
+              )}
             </div>
-          )}
+
+            {error && (
+              <p className="text-sm font-mono" style={{ color: '#f87171' }}>{error}</p>
+            )}
+          </div>
         </div>
+
+        {/* Bottom: spectrum tabs + viewer + assignments (full width) */}
+        {result && (
+          <div className="flex flex-col gap-3">
+            <p className="text-xs text-secondary">
+              Estimated spectra based on standard correlation tables (Brown &amp; Foote). Real spectra may differ slightly.
+            </p>
+
+            {/* Spectrum tabs */}
+            <div className="flex gap-1.5 flex-wrap print:hidden">
+              {SPEC_TABS.map(t => {
+                const active = t.id === activeTab
+                return (
+                  <motion.button
+                    key={t.id}
+                    onClick={() => setActiveTab(t.id)}
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-sans font-medium border transition-colors"
+                    style={active ? {
+                      background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                      borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
+                      color: 'var(--c-halogen)',
+                    } : {
+                      background: 'transparent',
+                      borderColor: 'rgba(var(--overlay),0.15)',
+                      color: 'rgba(var(--overlay),0.5)',
+                    }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                  >
+                    <span className="font-mono text-[9px]">{t.formula}</span>
+                    {t.label}
+                  </motion.button>
+                )
+              })}
+            </div>
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.12 }}
+                className="flex flex-col gap-3"
+              >
+                <SpectrumViewer
+                  type={tabViewerType(activeTab)}
+                  peaks={peaks}
+                  width={containerWidth}
+                  height={360}
+                />
+
+                {/* Peak assignment list */}
+                {peaks.length > 0 && (
+                  <div className="flex flex-col gap-0.5">
+                    {peaks.map((p, i) => (
+                      <div key={i} className="flex items-baseline gap-2 text-xs font-mono">
+                        <span className="text-secondary w-16 shrink-0 text-right">
+                          {activeTab === 'ir'
+                            ? `${Math.round(p.x)} cm⁻¹`
+                            : activeTab === 'ms'
+                            ? `${Math.round(p.x)} m/z`
+                            : `${p.x.toFixed(1)} ppm`}
+                        </span>
+                        {p.splitting && (
+                          <span className="text-dim">
+                            ({p.splitting}{p.integration ? `, ${p.integration}H` : ''})
+                          </span>
+                        )}
+                        <span className="text-primary">{p.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {result.warnings && result.warnings.length > 0 && (
+                  <p className="text-xs text-secondary italic">
+                    Note: {result.warnings.join('; ')}
+                  </p>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        )}
       </div>
 
       {/* Print sheet — hidden on screen, shown only when printing */}

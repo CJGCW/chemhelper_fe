@@ -238,8 +238,8 @@ export default function GasDensityTool() {
             {toolMode === m && (
               <motion.div layoutId="gas-density-tool-mode" className="absolute inset-0 rounded-full"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                  border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 }}
                 transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
             )}
@@ -297,7 +297,7 @@ export default function GasDensityTool() {
           className="shrink-0 px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           }}>
           {isVerify ? 'Verify' : 'Calculate'}

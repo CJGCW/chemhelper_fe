@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genNamingProblem, checkNamingAnswer } from '../../utils/organicPractice'
 import type { OrganicNamingProblem } from '../../data/functionalGroups'
+import CompoundDisplay from '../shared/CompoundDisplay'
 
 type CheckState = 'idle' | 'correct' | 'wrong'
 
@@ -62,10 +63,14 @@ export default function OrganicNamingPractice({ allowCustom = true }: Props) {
           exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}
           className={`rounded-sm border p-5 flex flex-col gap-4 transition-colors ${borderClass}`}
         >
-          <div className="flex items-center gap-3">
-            <span className="font-mono text-2xl font-semibold" style={{ color: 'var(--c-halogen)' }}>
-              {problem.formula}
-            </span>
+          <div className="flex items-center gap-3 flex-wrap">
+            {problem.smiles ? (
+              <CompoundDisplay smiles={problem.smiles} label={problem.formula} width={200} height={150} />
+            ) : (
+              <span className="font-mono text-2xl font-semibold" style={{ color: 'var(--c-halogen)' }}>
+                {problem.formula}
+              </span>
+            )}
             <span className="font-sans text-sm text-secondary px-2 py-0.5 rounded"
               style={{ background: 'rgb(var(--color-raised))', border: '1px solid rgb(var(--color-border))' }}>
               {FAMILY_LABEL[problem.family]}
@@ -94,8 +99,8 @@ export default function OrganicNamingPractice({ allowCustom = true }: Props) {
               <button onClick={handleCheck} disabled={!answer.trim()}
                 className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-30"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                  border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                 }}>
                 Check

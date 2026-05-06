@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import CompoundDisplay from '../shared/CompoundDisplay'
 
 interface EZProblem {
   alkene: string
+  smiles: string
   description: string
   config: 'E' | 'Z'
   explanation: string
@@ -10,49 +12,57 @@ interface EZProblem {
 
 const PROBLEMS: EZProblem[] = [
   {
-    alkene: '2-butene',
+    alkene: 'cis-2-butene',
+    smiles: 'C/C=C\\C',
     description: 'C1: CH₃ (higher) and H (lower). C2: CH₃ (higher) and H (lower). The two CH₃ groups are on the SAME side of the double bond.',
     config: 'Z',
     explanation: 'Higher-priority groups (CH₃ > H on each carbon) on the SAME side = Z (zusammen = together).',
   },
   {
-    alkene: '2-butene',
+    alkene: 'trans-2-butene',
+    smiles: 'C/C=C/C',
     description: 'C1: CH₃ (higher) and H (lower). C2: CH₃ (higher) and H (lower). The two CH₃ groups are on OPPOSITE sides of the double bond.',
     config: 'E',
     explanation: 'Higher-priority groups (CH₃) on OPPOSITE sides = E (entgegen = opposite).',
   },
   {
-    alkene: '2-bromo-2-butene',
+    alkene: 'Z-2-bromo-2-butene',
+    smiles: 'C/C(Br)=C\\C',
     description: 'C2: Br (higher, Z=35) and CH₃ (lower). C3: CH₃ (higher) and H (lower). Br and CH₃(C3) are on the SAME side.',
     config: 'Z',
     explanation: 'C2: Br > CH₃. C3: CH₃ > H. The high-priority groups (Br on C2, CH₃ on C3) are on the same side → Z.',
   },
   {
-    alkene: '1-bromo-2-chloroethene',
+    alkene: 'Z-1-bromo-2-chloroethene',
+    smiles: 'Br/C=C\\Cl',
     description: 'C1: Br (Z=35) and H. C2: Cl (Z=17) and H. Br and Cl are on the SAME side.',
     config: 'Z',
     explanation: 'C1: Br(1) > H(2). C2: Cl(1) > H(2). Br and Cl on same side → same-side priorities → Z.',
   },
   {
-    alkene: '1-bromo-2-chloroethene',
+    alkene: 'E-1-bromo-2-chloroethene',
+    smiles: 'Br/C=C/Cl',
     description: 'C1: Br (Z=35) and H. C2: Cl (Z=17) and H. Br and Cl are on OPPOSITE sides.',
     config: 'E',
     explanation: 'Br on C1 (higher priority) and Cl on C2 (higher priority) are on opposite sides → E.',
   },
   {
-    alkene: '2-pentenedioic acid',
+    alkene: 'maleic acid (Z-butenedioic acid)',
+    smiles: 'OC(=O)/C=C\\C(=O)O',
     description: 'C2: COOH and H. C3: COOH and H. Both COOH groups are on the SAME side. (This is maleic acid.)',
     config: 'Z',
     explanation: 'COOH > H on each carbon. Both COOH groups on the same side = Z (cis-butenedioic acid = maleic acid).',
   },
   {
-    alkene: '2-pentenedioic acid',
+    alkene: 'fumaric acid (E-butenedioic acid)',
+    smiles: 'OC(=O)/C=C/C(=O)O',
     description: 'C2: COOH and H. C3: COOH and H. The two COOH groups are on OPPOSITE sides. (This is fumaric acid.)',
     config: 'E',
     explanation: 'COOH groups on opposite sides = E (trans-butenedioic acid = fumaric acid). Fumaric is more stable (fewer steric clashes).',
   },
   {
     alkene: '2-methyl-2-butenenitrile',
+    smiles: 'CC(=CC)C#N',
     description: 'C2: CN (higher, N at first atom) and CH₃ (lower). C3: CH₃ (higher) and H (lower). CN and H are on the SAME side.',
     config: 'E',
     explanation: 'C2: CN(1, N then C) > CH₃(2). C3: CH₃(1) > H(2). The high-priority groups (CN on C2, CH₃ on C3) are on OPPOSITE sides (CN is with H, not with CH₃) → E.',
@@ -113,9 +123,14 @@ export default function EZPractice({ allowCustom = true }: Props) {
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}
           className="flex flex-col gap-4">
-          <div className="p-4 rounded-sm border border-border bg-surface flex flex-col gap-2">
-            <p className="font-mono text-xs text-dim">{problem.alkene}</p>
-            <p className="font-sans text-sm text-primary leading-relaxed">{problem.description}</p>
+          <div className="p-4 rounded-sm border border-border bg-surface flex flex-col gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+              <CompoundDisplay smiles={problem.smiles} label={problem.alkene} width={200} height={150} />
+              <div className="flex flex-col gap-1 flex-1">
+                <p className="font-mono text-xs text-dim">{problem.alkene}</p>
+                <p className="font-sans text-sm text-primary leading-relaxed">{problem.description}</p>
+              </div>
+            </div>
           </div>
 
           <div className="flex gap-3">
@@ -146,8 +161,8 @@ export default function EZPractice({ allowCustom = true }: Props) {
         <button onClick={nextProblem}
           className="self-start px-4 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           }}>
           Next Problem →

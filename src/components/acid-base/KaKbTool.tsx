@@ -83,8 +83,8 @@ export default function KaKbTool() {
             className="relative px-3 py-1.5 rounded-full font-mono text-xs font-medium transition-colors"
             style={{
               color: mode === m.id ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
-              background: mode === m.id ? 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))' : 'transparent',
-              border: mode === m.id ? '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' : '1px solid transparent',
+              background: mode === m.id ? 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))' : 'transparent',
+              border: mode === m.id ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '1px solid transparent',
             }}
           >
             {m.label}
@@ -104,8 +104,8 @@ export default function KaKbTool() {
           onClick={handleCalculate}
           className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           }}
         >

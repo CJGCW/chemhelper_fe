@@ -1,67 +1,73 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import CompoundDisplay from '../shared/CompoundDisplay'
 
 type Relationship = 'Enantiomers' | 'Diastereomers' | 'Meso compound' | 'Identical'
 
+interface Compound {
+  label: string
+  smiles: string
+}
+
 interface Problem {
-  molA: string
-  molB: string
+  molA: Compound
+  molB: Compound
   relationship: Relationship
   explanation: string
 }
 
 const PROBLEMS: Problem[] = [
   {
-    molA: '(R)-2-bromobutane',
-    molB: '(S)-2-bromobutane',
+    molA: { label: '(R)-2-bromobutane', smiles: 'CC[C@H](Br)C' },
+    molB: { label: '(S)-2-bromobutane', smiles: 'CC[C@@H](Br)C' },
     relationship: 'Enantiomers',
     explanation: 'Same connectivity, opposite configuration at the only stereocenter (C2). Non-superimposable mirror images = enantiomers.',
   },
   {
-    molA: '(2R,3R)-2,3-dibromobutane',
-    molB: '(2S,3S)-2,3-dibromobutane',
+    molA: { label: '(2R,3R)-2,3-dibromobutane', smiles: 'C[C@H](Br)[C@H](Br)C' },
+    molB: { label: '(2S,3S)-2,3-dibromobutane', smiles: 'C[C@@H](Br)[C@@H](Br)C' },
     relationship: 'Enantiomers',
     explanation: 'Both stereocenters are inverted (R,R → S,S) — this is the mirror image relationship = enantiomers.',
   },
   {
-    molA: '(2R,3R)-2,3-dibromobutane',
-    molB: '(2R,3S)-2,3-dibromobutane',
+    molA: { label: '(2R,3R)-2,3-dibromobutane', smiles: 'C[C@H](Br)[C@H](Br)C' },
+    molB: { label: '(2R,3S)-2,3-dibromobutane', smiles: 'C[C@H](Br)[C@@H](Br)C' },
     relationship: 'Diastereomers',
     explanation: 'They have the same formula and connectivity but differ at C3 (R vs S) while C2 is the same (R). Different configuration at SOME (not all) stereocenters = diastereomers.',
   },
   {
-    molA: '(2R,3S)-2,3-dibromobutane',
-    molB: '(2S,3R)-2,3-dibromobutane',
-    relationship: 'Meso compound',
-    explanation: 'Wait — (2R,3S) and (2S,3R) are both descriptions of the same meso compound (it has an internal plane of symmetry). Comparing the meso compound to itself: identical. But comparing (2R,3R) to (2R,3S): they are diastereomers.',
+    molA: { label: '(2R,3S)-2,3-dibromobutane (meso)', smiles: 'C[C@H](Br)[C@@H](Br)C' },
+    molB: { label: '(2S,3R)-2,3-dibromobutane (meso)', smiles: 'C[C@@H](Br)[C@H](Br)C' },
+    relationship: 'Identical',
+    explanation: '(2R,3S) and (2S,3R) are both descriptions of the same meso compound — it has an internal plane of symmetry. The two structures are superimposable = identical.',
   },
   {
-    molA: '(2R,3R)-tartaric acid',
-    molB: '(2S,3S)-tartaric acid',
+    molA: { label: '(2R,3R)-tartaric acid', smiles: 'OC(=O)[C@H](O)[C@H](O)C(=O)O' },
+    molB: { label: '(2S,3S)-tartaric acid', smiles: 'OC(=O)[C@@H](O)[C@@H](O)C(=O)O' },
     relationship: 'Enantiomers',
     explanation: 'Mirror images with all stereocenters inverted (R,R → S,S). Same physical properties except opposite optical rotation.',
   },
   {
-    molA: '(2R,3S)-tartaric acid (meso)',
-    molB: 'its mirror image',
+    molA: { label: 'meso-tartaric acid', smiles: 'OC(=O)[C@H](O)[C@@H](O)C(=O)O' },
+    molB: { label: 'meso-tartaric acid (mirror image)', smiles: 'OC(=O)[C@@H](O)[C@H](O)C(=O)O' },
     relationship: 'Identical',
     explanation: 'The meso compound is superimposable on its mirror image due to its internal plane of symmetry. The "mirror image" is identical to the original.',
   },
   {
-    molA: '(R)-CHFClBr',
-    molB: '(S)-CHFClBr',
+    molA: { label: '(R)-CHFClBr', smiles: '[C@H](F)(Cl)Br' },
+    molB: { label: '(S)-CHFClBr', smiles: '[C@@H](F)(Cl)Br' },
     relationship: 'Enantiomers',
     explanation: 'Opposite configuration at the only stereocenter. Classic enantiomers.',
   },
   {
-    molA: '(1R,2S)-1-bromo-2-methylcyclohexane',
-    molB: '(1S,2R)-1-bromo-2-methylcyclohexane',
+    molA: { label: '(1R,2S)-1-bromo-2-methylcyclohexane', smiles: 'C[C@H]1CCCC[C@@H]1Br' },
+    molB: { label: '(1S,2R)-1-bromo-2-methylcyclohexane', smiles: 'C[C@@H]1CCCC[C@H]1Br' },
     relationship: 'Enantiomers',
     explanation: 'All stereocenters inverted (cis-isomer pair that are mirror images of each other) = enantiomers.',
   },
   {
-    molA: '(1R,2R)-1-bromo-2-methylcyclohexane',
-    molB: '(1R,2S)-1-bromo-2-methylcyclohexane',
+    molA: { label: '(1R,2R)-1-bromo-2-methylcyclohexane', smiles: 'C[C@H]1CCCC[C@H]1Br' },
+    molB: { label: '(1R,2S)-1-bromo-2-methylcyclohexane', smiles: 'C[C@H]1CCCC[C@@H]1Br' },
     relationship: 'Diastereomers',
     explanation: 'C1 is R in both, but C2 differs (R vs S). They have the same connectivity and formula, different stereochemistry at one center = diastereomers. The cis/trans pair in a ring are always diastereomers.',
   },
@@ -89,7 +95,7 @@ export default function StereoisomerClassifier({ allowCustom = true }: Props) {
 
   function nextProblem() {
     let next: Problem
-    do { next = randomProblem() } while (next.molA === problem.molA && PROBLEMS.length > 1)
+    do { next = randomProblem() } while (next.molA.label === problem.molA.label && PROBLEMS.length > 1)
     setProblem(next)
     setSelected(null)
   }
@@ -120,20 +126,18 @@ export default function StereoisomerClassifier({ allowCustom = true }: Props) {
       )}
 
       <AnimatePresence mode="wait">
-        <motion.div key={problem.molA + problem.molB}
+        <motion.div key={problem.molA.label + problem.molB.label}
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}
           className="flex flex-col gap-4">
           <p className="font-mono text-xs text-dim uppercase tracking-wider">What is the relationship between these two compounds?</p>
           <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 rounded-sm border border-border bg-surface">
-              <p className="font-mono text-[10px] text-dim mb-1">Compound A</p>
-              <p className="font-sans text-sm text-primary">{problem.molA}</p>
-            </div>
-            <div className="p-3 rounded-sm border border-border bg-surface">
-              <p className="font-mono text-[10px] text-dim mb-1">Compound B</p>
-              <p className="font-sans text-sm text-primary">{problem.molB}</p>
-            </div>
+            {([problem.molA, problem.molB] as const).map((mol, idx) => (
+              <div key={idx} className="p-3 rounded-sm border border-border bg-surface flex flex-col items-center gap-2">
+                <p className="font-mono text-[10px] text-dim self-start">Compound {idx === 0 ? 'A' : 'B'}</p>
+                <CompoundDisplay smiles={mol.smiles} label={mol.label} width={180} height={150} />
+              </div>
+            ))}
           </div>
 
           <div className="grid grid-cols-2 gap-2">
@@ -166,8 +170,8 @@ export default function StereoisomerClassifier({ allowCustom = true }: Props) {
         <button onClick={nextProblem}
           className="self-start px-4 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           }}>
           Next Problem →

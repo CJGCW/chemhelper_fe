@@ -203,7 +203,7 @@ export default function PercentCompositionTool() {
           <button key={m} onClick={() => handleModeChange(m)}
             className="px-3 py-1.5 font-mono text-xs transition-colors"
             style={{
-              background: mode === m ? 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))' : 'rgb(var(--color-raised))',
+              background: mode === m ? 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))' : 'rgb(var(--color-raised))',
               color: mode === m ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
               borderRight: m === 'formula' ? '1px solid rgb(var(--color-border))' : 'none',
             }}>

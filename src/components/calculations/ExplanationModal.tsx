@@ -43,7 +43,7 @@ export default function ExplanationModal({ content, open, onClose }: Props) {
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
               <div>
-                <h2 className="font-sans font-semibold text-bright text-lg">{content.title}</h2>
+                <h2 className="font-sans font-semibold text-primary text-sm">{content.title}</h2>
                 {content.formula && (
                   <p className="font-mono text-sm mt-0.5" style={{ color: 'var(--c-halogen)' }}>
                     {content.formula}
@@ -100,7 +100,7 @@ export default function ExplanationModal({ content, open, onClose }: Props) {
                   <div className="p-4 rounded-sm border border-border bg-raised flex flex-col gap-3">
                     <p className="font-sans text-sm text-primary">{content.example.scenario}</p>
                     <div className="flex flex-col gap-1.5 pl-3 border-l-2"
-                      style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 35%, transparent)' }}>
+                      style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
                       {content.example.steps.map((step, i) => (
                         <div key={i} className="flex gap-2">
                           <span className="font-mono text-xs text-secondary shrink-0 mt-0.5">{i + 1}.</span>

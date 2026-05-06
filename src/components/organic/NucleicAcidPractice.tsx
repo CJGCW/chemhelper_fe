@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generateNucleicAcidProblem, checkNucleicAcidAnswer } from '../../utils/nucleicAcidPractice'
 import type { NucleicAcidProblem, NucleicAcidProblemType } from '../../utils/nucleicAcidPractice'
+import CompoundDisplay from '../shared/CompoundDisplay'
 
 interface Props { allowCustom?: boolean }
 
@@ -47,8 +48,8 @@ export default function NucleicAcidPractice({ allowCustom: _allowCustom = true }
   }
 
   const correct = checked && selected != null ? checkNucleicAcidAnswer(question, selected) : false
-  const activeTint = 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))'
-  const activeBorder = 'color-mix(in srgb, var(--c-halogen) 30%, transparent)'
+  const activeTint = 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))'
+  const activeBorder = 'color-mix(in srgb, var(--c-halogen) 40%, transparent)'
 
   return (
     <div className="flex flex-col gap-5 max-w-2xl">
@@ -94,6 +95,11 @@ export default function NucleicAcidPractice({ allowCustom: _allowCustom = true }
           }`}
           style={{ background: checked ? (correct ? 'rgba(16,185,129,0.05)' : 'rgba(239,68,68,0.05)') : 'rgb(var(--color-surface))' }}
         >
+          {question.smiles && (
+            <div className="flex justify-center">
+              <CompoundDisplay smiles={question.smiles} label="" width={220} height={180} />
+            </div>
+          )}
           <pre className="font-mono text-sm text-primary leading-relaxed whitespace-pre-wrap">{question.scenario}</pre>
           <p className="font-sans text-sm text-secondary font-medium">{question.question}</p>
 

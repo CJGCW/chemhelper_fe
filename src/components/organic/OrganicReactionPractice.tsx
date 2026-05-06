@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   genOrganicReactionProblem, checkReactionTypeAnswer, type OrganicReactionProblem,
 } from '../../utils/organicPractice'
+import CompoundDisplay from '../shared/CompoundDisplay'
 
 type CheckState = 'idle' | 'correct' | 'wrong'
 
@@ -62,6 +63,11 @@ export default function OrganicReactionPractice({ allowCustom = true }: Props) {
           exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}
           className={`rounded-sm border p-5 flex flex-col gap-4 transition-colors ${borderClass}`}
         >
+          {problem.reactantSmiles && (
+            <div className="flex items-center gap-3 mb-1">
+              <CompoundDisplay smiles={problem.reactantSmiles} label={problem.reactantLabel ?? ''} width={160} height={120} />
+            </div>
+          )}
           <p className="font-mono text-sm text-primary leading-relaxed">{problem.scenario}</p>
 
           <p className="font-sans text-sm text-secondary">What type of reaction is this?</p>

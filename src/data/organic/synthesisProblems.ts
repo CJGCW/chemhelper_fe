@@ -13,8 +13,8 @@ export interface SynthesisProblem {
   id: string
   difficulty: 'easy' | 'medium' | 'hard'
   exam?: 'org1' | 'org2'
-  startingMaterial: { label: string }
-  target: { label: string }
+  startingMaterial: { label: string; smiles?: string }
+  target: { label: string; smiles?: string }
   steps: SynthesisStep[]
   hint?: string
 }
@@ -30,8 +30,8 @@ const EASY: SynthesisProblem[] = [
   {
     id: 'butanol-to-butanoic-acid',
     difficulty: 'easy', exam: 'org2',
-    startingMaterial: { label: '1-butanol' },
-    target:           { label: 'butanoic acid' },
+    startingMaterial: { label: '1-butanol', smiles: 'CCCCO' },
+    target:           { label: 'butanoic acid', smiles: 'CCCC(=O)O' },
     steps: [
       {
         reagents: 'CrO₃, H₂SO₄ (Jones reagent)',
@@ -44,8 +44,8 @@ const EASY: SynthesisProblem[] = [
   {
     id: 'butanol-to-butanal',
     difficulty: 'easy', exam: 'org2',
-    startingMaterial: { label: '1-butanol' },
-    target:           { label: 'butanal' },
+    startingMaterial: { label: '1-butanol', smiles: 'CCCCO' },
+    target:           { label: 'butanal', smiles: 'CCCC=O' },
     steps: [
       {
         reagents: 'PCC',
@@ -58,8 +58,8 @@ const EASY: SynthesisProblem[] = [
   {
     id: '2-butanol-to-2-butanone',
     difficulty: 'easy', exam: 'org2',
-    startingMaterial: { label: '2-butanol' },
-    target:           { label: '2-butanone' },
+    startingMaterial: { label: '2-butanol', smiles: 'CCC(O)C' },
+    target:           { label: '2-butanone', smiles: 'CCC(=O)C' },
     steps: [
       {
         reagents: 'PCC',
@@ -72,8 +72,8 @@ const EASY: SynthesisProblem[] = [
   {
     id: '1-bromopropane-to-1-propanol',
     difficulty: 'easy', exam: 'org1',
-    startingMaterial: { label: '1-bromopropane' },
-    target:           { label: '1-propanol' },
+    startingMaterial: { label: '1-bromopropane', smiles: 'CCCBr' },
+    target:           { label: '1-propanol', smiles: 'CCCO' },
     steps: [
       {
         reagents: 'NaOH (aq)',
@@ -86,8 +86,8 @@ const EASY: SynthesisProblem[] = [
   {
     id: 'cyclohexanol-to-cyclohexene',
     difficulty: 'easy', exam: 'org1',
-    startingMaterial: { label: 'cyclohexanol' },
-    target:           { label: 'cyclohexene' },
+    startingMaterial: { label: 'cyclohexanol', smiles: 'OC1CCCCC1' },
+    target:           { label: 'cyclohexene', smiles: 'C1=CCCCC1' },
     steps: [
       {
         reagents: 'H₂SO₄, Δ',
@@ -100,8 +100,8 @@ const EASY: SynthesisProblem[] = [
   {
     id: 'ethyl-bromide-to-diethylether',
     difficulty: 'easy', exam: 'org1',
-    startingMaterial: { label: 'bromoethane' },
-    target:           { label: 'diethyl ether' },
+    startingMaterial: { label: 'bromoethane', smiles: 'CCBr' },
+    target:           { label: 'diethyl ether', smiles: 'CCOCC' },
     steps: [
       {
         reagents: 'NaOEt (sodium ethoxide)',
@@ -114,8 +114,8 @@ const EASY: SynthesisProblem[] = [
   {
     id: 'cyclohexene-to-cyclohexane',
     difficulty: 'easy', exam: 'org1',
-    startingMaterial: { label: 'cyclohexene' },
-    target:           { label: 'cyclohexane' },
+    startingMaterial: { label: 'cyclohexene', smiles: 'C1=CCCCC1' },
+    target:           { label: 'cyclohexane', smiles: 'C1CCCCC1' },
     steps: [
       {
         reagents: 'H₂, Pt',
@@ -128,8 +128,8 @@ const EASY: SynthesisProblem[] = [
   {
     id: 'benzene-to-nitrobenzene',
     difficulty: 'easy', exam: 'org2',
-    startingMaterial: { label: 'benzene' },
-    target:           { label: 'nitrobenzene' },
+    startingMaterial: { label: 'benzene', smiles: 'c1ccccc1' },
+    target:           { label: 'nitrobenzene', smiles: 'O=[N+]([O-])c1ccccc1' },
     steps: [
       {
         reagents: 'HNO₃, H₂SO₄',
@@ -142,8 +142,8 @@ const EASY: SynthesisProblem[] = [
   {
     id: 'propanoic-acid-to-propanol',
     difficulty: 'easy', exam: 'org2',
-    startingMaterial: { label: 'propanoic acid' },
-    target:           { label: '1-propanol' },
+    startingMaterial: { label: 'propanoic acid', smiles: 'CCC(=O)O' },
+    target:           { label: '1-propanol', smiles: 'CCCO' },
     steps: [
       {
         reagents: 'LiAlH₄, then H₂O',
@@ -156,8 +156,8 @@ const EASY: SynthesisProblem[] = [
   {
     id: 'hex-1-ene-to-2-bromohexane',
     difficulty: 'easy', exam: 'org1',
-    startingMaterial: { label: '1-hexene' },
-    target:           { label: '2-bromohexane' },
+    startingMaterial: { label: '1-hexene', smiles: 'C=CCCCC' },
+    target:           { label: '2-bromohexane', smiles: 'CC(Br)CCCC' },
     steps: [
       {
         reagents: 'HBr',
@@ -175,8 +175,8 @@ const MEDIUM: SynthesisProblem[] = [
   {
     id: 'benzene-to-meta-bromonitrobenzene',
     difficulty: 'medium', exam: 'org2',
-    startingMaterial: { label: 'benzene' },
-    target:           { label: 'm-bromonitrobenzene' },
+    startingMaterial: { label: 'benzene', smiles: 'c1ccccc1' },
+    target:           { label: 'm-bromonitrobenzene', smiles: 'O=[N+]([O-])c1cccc(Br)c1' },
     steps: [
       {
         reagents: 'HNO₃, H₂SO₄',
@@ -195,8 +195,8 @@ const MEDIUM: SynthesisProblem[] = [
   {
     id: 'cyclohexene-to-trans-diol',
     difficulty: 'medium', exam: 'org2',
-    startingMaterial: { label: 'cyclohexene' },
-    target:           { label: 'trans-1,2-cyclohexanediol' },
+    startingMaterial: { label: 'cyclohexene', smiles: 'C1=CCCCC1' },
+    target:           { label: 'trans-1,2-cyclohexanediol', smiles: 'O[C@@H]1CCCC[C@H]1O' },
     steps: [
       {
         reagents: 'mCPBA',
@@ -215,8 +215,8 @@ const MEDIUM: SynthesisProblem[] = [
   {
     id: 'cyclohexene-to-cis-diol',
     difficulty: 'medium', exam: 'org2',
-    startingMaterial: { label: 'cyclohexene' },
-    target:           { label: 'cis-1,2-cyclohexanediol' },
+    startingMaterial: { label: 'cyclohexene', smiles: 'C1=CCCCC1' },
+    target:           { label: 'cis-1,2-cyclohexanediol', smiles: 'O[C@H]1CCCC[C@H]1O' },
     steps: [
       {
         reagents: 'OsO₄, then NaHSO₃',
@@ -229,8 +229,8 @@ const MEDIUM: SynthesisProblem[] = [
   {
     id: '1-bromopropane-to-butanenitrile',
     difficulty: 'medium', exam: 'org2',
-    startingMaterial: { label: '1-bromopropane' },
-    target:           { label: 'butanenitrile' },
+    startingMaterial: { label: '1-bromopropane', smiles: 'CCCBr' },
+    target:           { label: 'butanenitrile', smiles: 'CCCC#N' },
     steps: [
       {
         reagents: 'NaCN, DMSO',
@@ -243,8 +243,8 @@ const MEDIUM: SynthesisProblem[] = [
   {
     id: 'benzaldehyde-to-benzyl-alcohol',
     difficulty: 'medium', exam: 'org2',
-    startingMaterial: { label: 'benzaldehyde' },
-    target:           { label: 'benzyl alcohol' },
+    startingMaterial: { label: 'benzaldehyde', smiles: 'O=Cc1ccccc1' },
+    target:           { label: 'benzyl alcohol', smiles: 'OCc1ccccc1' },
     steps: [
       {
         reagents: 'NaBH₄, MeOH',
@@ -257,8 +257,8 @@ const MEDIUM: SynthesisProblem[] = [
   {
     id: 'cyclohexanone-to-methylenecyclohexane',
     difficulty: 'medium', exam: 'org2',
-    startingMaterial: { label: 'cyclohexanone' },
-    target:           { label: 'methylenecyclohexane' },
+    startingMaterial: { label: 'cyclohexanone', smiles: 'O=C1CCCCC1' },
+    target:           { label: 'methylenecyclohexane', smiles: 'C=C1CCCCC1' },
     steps: [
       {
         reagents: 'Ph₃P=CH₂ (Wittig)',
@@ -271,8 +271,8 @@ const MEDIUM: SynthesisProblem[] = [
   {
     id: 'bromobenzene-to-phenylamine',
     difficulty: 'medium', exam: 'org2',
-    startingMaterial: { label: 'nitrobenzene' },
-    target:           { label: 'aniline' },
+    startingMaterial: { label: 'nitrobenzene', smiles: 'O=[N+]([O-])c1ccccc1' },
+    target:           { label: 'aniline', smiles: 'Nc1ccccc1' },
     steps: [
       {
         reagents: 'H₂, Pd/C',
@@ -285,8 +285,8 @@ const MEDIUM: SynthesisProblem[] = [
   {
     id: 'propan-1-ol-to-propanal-to-propanoic-acid',
     difficulty: 'medium', exam: 'org2',
-    startingMaterial: { label: '1-propanol' },
-    target:           { label: 'propanoic acid' },
+    startingMaterial: { label: '1-propanol', smiles: 'CCCO' },
+    target:           { label: 'propanoic acid', smiles: 'CCC(=O)O' },
     steps: [
       {
         reagents: 'PCC',
@@ -304,8 +304,8 @@ const MEDIUM: SynthesisProblem[] = [
   {
     id: 'hex1ene-to-1-hexanol-antimarkovnikov',
     difficulty: 'medium', exam: 'org2',
-    startingMaterial: { label: '1-hexene' },
-    target:           { label: '1-hexanol' },
+    startingMaterial: { label: '1-hexene', smiles: 'C=CCCCC' },
+    target:           { label: '1-hexanol', smiles: 'CCCCCCO' },
     steps: [
       {
         reagents: '(1) BH₃·THF',
@@ -324,8 +324,8 @@ const MEDIUM: SynthesisProblem[] = [
   {
     id: 'phenol-to-methoxybenzene',
     difficulty: 'medium', exam: 'org2',
-    startingMaterial: { label: 'phenol' },
-    target:           { label: 'anisole (methoxybenzene)' },
+    startingMaterial: { label: 'phenol', smiles: 'Oc1ccccc1' },
+    target:           { label: 'anisole (methoxybenzene)', smiles: 'COc1ccccc1' },
     steps: [
       {
         reagents: '(1) NaH, (2) CH₃I',
@@ -343,8 +343,8 @@ const HARD: SynthesisProblem[] = [
   {
     id: 'benzene-to-ortho-bromoaniline',
     difficulty: 'hard', exam: 'org2',
-    startingMaterial: { label: 'benzene' },
-    target:           { label: 'o-bromoaniline' },
+    startingMaterial: { label: 'benzene', smiles: 'c1ccccc1' },
+    target:           { label: 'o-bromoaniline', smiles: 'Nc1ccccc1Br' },
     steps: [
       {
         reagents: 'HNO₃, H₂SO₄',
@@ -367,8 +367,8 @@ const HARD: SynthesisProblem[] = [
   {
     id: 'cyclohexanone-to-1-methylcyclohexanol',
     difficulty: 'hard', exam: 'org2',
-    startingMaterial: { label: 'cyclohexanone' },
-    target:           { label: '1-methylcyclohexanol' },
+    startingMaterial: { label: 'cyclohexanone', smiles: 'O=C1CCCCC1' },
+    target:           { label: '1-methylcyclohexanol', smiles: 'OC1(C)CCCCC1' },
     steps: [
       {
         reagents: 'CH₃MgBr (methylmagnesium bromide), then H₃O⁺',
@@ -381,8 +381,8 @@ const HARD: SynthesisProblem[] = [
   {
     id: 'hex-1-yne-to-hex-1-en-1-yl',
     difficulty: 'hard', exam: 'org2',
-    startingMaterial: { label: 'hex-1-yne' },
-    target:           { label: '(Z)-hex-1-ene (cis-1-hexene)' },
+    startingMaterial: { label: 'hex-1-yne', smiles: 'C#CCCCC' },
+    target:           { label: '(Z)-hex-1-ene (cis-1-hexene)', smiles: 'C=CCCCC' },
     steps: [
       {
         reagents: 'H₂, Lindlar catalyst',
@@ -396,8 +396,8 @@ const HARD: SynthesisProblem[] = [
   {
     id: 'ethyl-propanoate-to-propan-1-ol',
     difficulty: 'hard', exam: 'org2',
-    startingMaterial: { label: 'ethyl propanoate' },
-    target:           { label: '1-propanol (from ester carbonyl C)' },
+    startingMaterial: { label: 'ethyl propanoate', smiles: 'CCC(=O)OCC' },
+    target:           { label: '1-propanol (from ester carbonyl C)', smiles: 'CCCO' },
     steps: [
       {
         reagents: 'LiAlH₄, then H₂O',
@@ -410,8 +410,8 @@ const HARD: SynthesisProblem[] = [
   {
     id: 'propan-1-ol-to-butane-1-4-diol',
     difficulty: 'hard', exam: 'org2',
-    startingMaterial: { label: '3-bromopropan-1-ol' },
-    target:           { label: '4-hydroxybutanenitrile' },
+    startingMaterial: { label: '3-bromopropan-1-ol', smiles: 'OCCCBr' },
+    target:           { label: '4-hydroxybutanenitrile', smiles: 'N#CCCCO' },
     steps: [
       {
         reagents: 'NaCN',
@@ -424,8 +424,8 @@ const HARD: SynthesisProblem[] = [
   {
     id: '2-methyl-propan-2-ol-to-2-methylpropene',
     difficulty: 'hard', exam: 'org1',
-    startingMaterial: { label: '2-methylpropan-2-ol (tert-butanol)' },
-    target:           { label: '2-methylpropene (isobutylene)' },
+    startingMaterial: { label: '2-methylpropan-2-ol (tert-butanol)', smiles: 'CC(C)(C)O' },
+    target:           { label: '2-methylpropene (isobutylene)', smiles: 'C=C(C)C' },
     steps: [
       {
         reagents: 'H₂SO₄, Δ',
@@ -438,8 +438,8 @@ const HARD: SynthesisProblem[] = [
   {
     id: 'acetaldehyde-to-lactic-acid',
     difficulty: 'hard', exam: 'org2',
-    startingMaterial: { label: 'acetaldehyde' },
-    target:           { label: '2-hydroxypropanenitrile (cyanohydrin) then lactic acid' },
+    startingMaterial: { label: 'acetaldehyde', smiles: 'CC=O' },
+    target:           { label: '2-hydroxypropanenitrile (cyanohydrin) then lactic acid', smiles: 'CC(O)C(=O)O' },
     steps: [
       {
         reagents: 'HCN',
@@ -457,8 +457,8 @@ const HARD: SynthesisProblem[] = [
   {
     id: 'benzene-to-styrene',
     difficulty: 'hard', exam: 'org2',
-    startingMaterial: { label: 'benzene' },
-    target:           { label: 'styrene (vinylbenzene)' },
+    startingMaterial: { label: 'benzene', smiles: 'c1ccccc1' },
+    target:           { label: 'styrene (vinylbenzene)', smiles: 'C=Cc1ccccc1' },
     steps: [
       {
         reagents: 'CH₃CH₂Cl, AlCl₃ (Friedel-Crafts)',
@@ -481,8 +481,8 @@ const HARD: SynthesisProblem[] = [
   {
     id: 'acetone-to-4-methyl-2-pentanol',
     difficulty: 'hard', exam: 'org2',
-    startingMaterial: { label: 'acetone' },
-    target:           { label: '4-methyl-2-pentanol' },
+    startingMaterial: { label: 'acetone', smiles: 'CC(=O)C' },
+    target:           { label: '4-methyl-2-pentanol', smiles: 'CC(O)CC(C)C' },
     steps: [
       {
         reagents: '(CH₃)₂CHMgBr (isopropylmagnesium bromide), then H₃O⁺',
@@ -495,8 +495,8 @@ const HARD: SynthesisProblem[] = [
   {
     id: 'propanal-to-3-hydroxy-2-methylpropanal',
     difficulty: 'hard', exam: 'org2',
-    startingMaterial: { label: 'acetaldehyde (×2)' },
-    target:           { label: '3-hydroxybutanal (aldol product)' },
+    startingMaterial: { label: 'acetaldehyde (×2)', smiles: 'CC=O' },
+    target:           { label: '3-hydroxybutanal (aldol product)', smiles: 'CC(O)CC=O' },
     steps: [
       {
         reagents: 'NaOH (aq, dilute)',

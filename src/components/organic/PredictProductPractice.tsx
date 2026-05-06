@@ -7,6 +7,7 @@ import {
   shuffleChoices,
   type PredictProductProblem,
 } from '../../utils/predictProductPractice'
+import CompoundDisplay from '../shared/CompoundDisplay'
 
 interface Props { allowCustom?: boolean }
 
@@ -84,8 +85,8 @@ export default function PredictProductPractice({ allowCustom = true }: Props) {
                   layoutId="predict-product-difficulty"
                   className="absolute inset-0 rounded-sm"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                    border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                    border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   }}
                   transition={{ type: 'spring', stiffness: 400, damping: 32 }}
                 />
@@ -153,9 +154,16 @@ export default function PredictProductPractice({ allowCustom = true }: Props) {
           </div>
 
           {/* Substrate + reagent display */}
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-2">
             <p className="font-mono text-xs text-dim uppercase tracking-wider">Substrate</p>
-            <p className="font-mono text-sm text-primary">{problem.substrate}</p>
+            {problem.substrateSmiles ? (
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                <CompoundDisplay smiles={problem.substrateSmiles} label={problem.substrate} width={180} height={140} />
+                <p className="font-mono text-xs text-secondary">{problem.substrate}</p>
+              </div>
+            ) : (
+              <p className="font-mono text-sm text-primary">{problem.substrate}</p>
+            )}
           </div>
           <div className="flex flex-col gap-1">
             <p className="font-mono text-xs text-dim uppercase tracking-wider">Reagent / Conditions</p>
@@ -193,7 +201,7 @@ export default function PredictProductPractice({ allowCustom = true }: Props) {
                 }
               } else if (isSelected) {
                 style = {
-                  background: 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                   border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                 }

@@ -153,7 +153,7 @@ const baseEpoxideScene = (() => {
   sb.bond('o-c1',   'o_ep', 'c1', 1)
   sb.bond('o-c2',   'o_ep', 'c2', 1)
   sb.bond('c1-c2',  'c1',   'c2', 1)
-  sb.bond('c1-me',  'c1',   'me', 1)
+  sb.bond('c1-me',  'c1',   'me', 1, 'wedge')
   sb.bond('c2-h2a', 'c2',   'h2a', 1, 'wedge')
   sb.bond('c2-h2b', 'c2',   'h2b', 1)
   return sb.build()

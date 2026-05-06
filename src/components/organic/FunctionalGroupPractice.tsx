@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   genFunctionalGroupProblem, checkFunctionalGroupAnswer, type FunctionalGroupProblem,
 } from '../../utils/organicPractice'
+import CompoundDisplay from '../shared/CompoundDisplay'
 
 type CheckState = 'idle' | 'correct' | 'wrong'
 
@@ -62,6 +63,11 @@ export default function FunctionalGroupPractice({ allowCustom = true }: Props) {
           exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}
           className={`rounded-sm border p-5 flex flex-col gap-4 transition-colors ${borderClass}`}
         >
+          {problem.exampleSmiles && (
+            <div className="flex items-center gap-3">
+              <CompoundDisplay smiles={problem.exampleSmiles} label={problem.exampleName ?? ''} width={200} height={150} />
+            </div>
+          )}
           <p className="font-sans text-base text-bright leading-relaxed">{problem.description}</p>
 
           <div className="grid grid-cols-2 gap-2">

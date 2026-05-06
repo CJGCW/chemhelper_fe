@@ -220,7 +220,7 @@ export default function SigFigPractice({ allowCustom = true }: Props) {
                     : 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-surface)))',
                   border: correct === total
                     ? '1px solid color-mix(in srgb, #22c55e 30%, transparent)'
-                    : '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                    : '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 }}
               >
                 <span className="font-mono font-bold text-xl"

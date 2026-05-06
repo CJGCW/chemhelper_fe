@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import CompoundDisplay from '../shared/CompoundDisplay'
 
 // ── Reference table ────────────────────────────────────────────────────────────
 
@@ -65,7 +66,9 @@ function HybridizationReference() {
 // ── Practice ──────────────────────────────────────────────────────────────────
 
 interface HybProblem {
-  molecule: string; formula: string
+  molecule: string
+  formula: string
+  smiles: string
   targetAtom: string
   options: ('sp³' | 'sp²' | 'sp')[]
   correct: 'sp³' | 'sp²' | 'sp'
@@ -73,25 +76,25 @@ interface HybProblem {
 }
 
 const PROBLEMS: HybProblem[] = [
-  { molecule: 'Methane', formula: 'CH₄', targetAtom: 'carbon', options: ['sp³', 'sp²', 'sp'],
+  { molecule: 'Methane', formula: 'CH₄', smiles: 'C', targetAtom: 'carbon', options: ['sp³', 'sp²', 'sp'],
     correct: 'sp³', explanation: 'C in CH₄ has 4 bonds (to 4 H) and no lone pairs. 4 regions → sp³, tetrahedral, 109.5°.' },
-  { molecule: 'Ethene (ethylene)', formula: 'CH₂=CH₂', targetAtom: 'each C of C=C', options: ['sp³', 'sp²', 'sp'],
+  { molecule: 'Ethene (ethylene)', formula: 'CH₂=CH₂', smiles: 'C=C', targetAtom: 'each C of C=C', options: ['sp³', 'sp²', 'sp'],
     correct: 'sp²', explanation: 'Each alkene C has 3 regions: one C=C (counts as 1) + 2 C–H. 3 regions → sp², trigonal planar, 120°. The C=C has 1 σ + 1 π bond.' },
-  { molecule: 'Ethyne (acetylene)', formula: 'HC≡CH', targetAtom: 'each C of C≡C', options: ['sp³', 'sp²', 'sp'],
+  { molecule: 'Ethyne (acetylene)', formula: 'HC≡CH', smiles: 'C#C', targetAtom: 'each C of C≡C', options: ['sp³', 'sp²', 'sp'],
     correct: 'sp', explanation: 'Each alkyne C has 2 regions: one C≡C (counts as 1) + one C–H. 2 regions → sp, linear, 180°. The C≡C has 1 σ + 2 π bonds.' },
-  { molecule: 'Acetaldehyde', formula: 'CH₃CHO', targetAtom: 'carbonyl carbon (CHO)', options: ['sp³', 'sp²', 'sp'],
+  { molecule: 'Acetaldehyde', formula: 'CH₃CHO', smiles: 'CC=O', targetAtom: 'carbonyl carbon (CHO)', options: ['sp³', 'sp²', 'sp'],
     correct: 'sp²', explanation: 'The carbonyl C has 3 regions: C=O (1 region) + C–H + C–CH₃. 3 regions → sp², trigonal planar, 120°. Same as alkene carbon.' },
-  { molecule: 'Acetonitrile', formula: 'CH₃C≡N', targetAtom: 'nitrile nitrogen (C≡N)', options: ['sp³', 'sp²', 'sp'],
+  { molecule: 'Acetonitrile', formula: 'CH₃C≡N', smiles: 'CC#N', targetAtom: 'nitrile nitrogen (C≡N)', options: ['sp³', 'sp²', 'sp'],
     correct: 'sp', explanation: 'The nitrile N has 2 regions: the C≡N triple bond (1) + 1 lone pair. 2 regions → sp, linear, 180°.' },
-  { molecule: 'Dimethyl ether', formula: 'CH₃–O–CH₃', targetAtom: 'oxygen', options: ['sp³', 'sp²', 'sp'],
+  { molecule: 'Dimethyl ether', formula: 'CH₃–O–CH₃', smiles: 'COC', targetAtom: 'oxygen', options: ['sp³', 'sp²', 'sp'],
     correct: 'sp³', explanation: 'The ether O has 4 regions: 2 C–O bonds + 2 lone pairs. 4 regions → sp³, bent (~109°).' },
-  { molecule: 'Trimethylamine', formula: '(CH₃)₃N', targetAtom: 'nitrogen', options: ['sp³', 'sp²', 'sp'],
+  { molecule: 'Trimethylamine', formula: '(CH₃)₃N', smiles: 'CN(C)C', targetAtom: 'nitrogen', options: ['sp³', 'sp²', 'sp'],
     correct: 'sp³', explanation: 'N in a simple amine has 4 regions: 3 C–N bonds + 1 lone pair. 4 regions → sp³, pyramidal (~107°). The lone pair occupies an sp³ orbital.' },
-  { molecule: 'N,N-dimethylacetamide', formula: 'CH₃CON(CH₃)₂', targetAtom: 'nitrogen', options: ['sp³', 'sp²', 'sp'],
+  { molecule: 'N,N-dimethylacetamide', formula: 'CH₃CON(CH₃)₂', smiles: 'CC(=O)N(C)C', targetAtom: 'nitrogen', options: ['sp³', 'sp²', 'sp'],
     correct: 'sp²', explanation: 'Amide N is sp² due to resonance donation of the lone pair into the C=O. The lone pair is in a p orbital (not sp³). This makes the C–N bond have partial double bond character and forces planarity.' },
-  { molecule: 'Formaldehyde', formula: 'H₂C=O', targetAtom: 'carbonyl oxygen', options: ['sp³', 'sp²', 'sp'],
+  { molecule: 'Formaldehyde', formula: 'H₂C=O', smiles: 'C=O', targetAtom: 'carbonyl oxygen', options: ['sp³', 'sp²', 'sp'],
     correct: 'sp²', explanation: 'The carbonyl O has 3 regions: C=O (1) + 2 lone pairs. Wait — 2 lone pairs in C=O oxygen. Actually: the bonded O in C=O has 2 lone pairs + 1 double bond = 3 electron regions → sp². The lone pairs are in sp² and p orbitals.' },
-  { molecule: 'Propyne', formula: 'CH₃C≡CH', targetAtom: 'terminal C (≡CH)', options: ['sp³', 'sp²', 'sp'],
+  { molecule: 'Propyne', formula: 'CH₃C≡CH', smiles: 'CC#C', targetAtom: 'terminal C (≡CH)', options: ['sp³', 'sp²', 'sp'],
     correct: 'sp', explanation: 'The terminal alkyne C has 2 regions: C≡C (1) + C–H (1). 2 regions → sp, linear, 180°.' },
 ]
 
@@ -131,14 +134,19 @@ function HybridizationPractice({ allowCustom: _allowCustom }: { allowCustom: boo
         </div>
       )}
 
-      <div className="rounded-sm border border-border p-4 flex flex-col gap-2" style={{ background: 'rgb(var(--color-raised))' }}>
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-base text-primary">{problem.formula}</span>
-          <span className="font-sans text-sm text-secondary">({problem.molecule})</span>
+      <div className="rounded-sm border border-border p-4 flex flex-col gap-3" style={{ background: 'rgb(var(--color-raised))' }}>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <CompoundDisplay smiles={problem.smiles} label={problem.molecule} width={160} height={130} />
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-base text-primary">{problem.formula}</span>
+              <span className="font-sans text-sm text-secondary">({problem.molecule})</span>
+            </div>
+            <p className="font-sans text-sm text-primary font-medium">
+              What is the hybridization of the <strong>{problem.targetAtom}</strong>?
+            </p>
+          </div>
         </div>
-        <p className="font-sans text-sm text-primary font-medium">
-          What is the hybridization of the <strong>{problem.targetAtom}</strong>?
-        </p>
       </div>
 
       <div className="grid grid-cols-3 gap-3">
@@ -168,15 +176,15 @@ function HybridizationPractice({ allowCustom: _allowCustom }: { allowCustom: boo
         {!checked ? (
           <button onClick={handleCheck} disabled={!selected}
             className="px-4 py-1.5 rounded-sm text-sm font-sans font-medium disabled:opacity-40"
-            style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                     color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}>
+            style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                     color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
             Check
           </button>
         ) : (
           <button onClick={handleNext}
             className="px-4 py-1.5 rounded-sm text-sm font-sans font-medium"
-            style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                     color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}>
+            style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                     color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
             Next
           </button>
         )}

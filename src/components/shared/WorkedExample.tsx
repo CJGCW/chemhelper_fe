@@ -39,7 +39,7 @@ export default function WorkedExample({ generate }: { generate: () => ExampleDat
         className="self-start flex items-center gap-2 px-3 py-1.5 rounded-sm font-sans text-sm transition-colors border"
         style={{
           color: 'var(--c-halogen)',
-          borderColor: 'color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+          borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           background: 'color-mix(in srgb, var(--c-halogen) 8%, transparent)',
         }}
       >

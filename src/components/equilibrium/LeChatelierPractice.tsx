@@ -172,7 +172,7 @@ export default function LeChatelierPractice({ allowCustom = true }: Props) {
                 const isSelected = selected === opt.id
                 const isCorrectAnswer = opt.id === scenario.answer
                 let borderColor = isSelected ? 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' : 'rgb(var(--color-border))'
-                let bgColor = isSelected ? 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))' : 'rgb(var(--color-raised))'
+                let bgColor = isSelected ? 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))' : 'rgb(var(--color-raised))'
                 let textColor = isSelected ? 'var(--c-halogen)' : 'rgb(var(--color-secondary))'
 
                 if (checkState !== 'idle') {
@@ -204,8 +204,8 @@ export default function LeChatelierPractice({ allowCustom = true }: Props) {
             <button onClick={handleCheck} disabled={!selected}
               className="self-start px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-30"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               }}>
               Check

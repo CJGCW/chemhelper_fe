@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import CompoundDisplay from '../shared/CompoundDisplay'
 
 interface PolyProblem {
   monomer: string
+  monomerSmiles?: string  // SMILES for single-monomer problems; omitted for two-component systems
   question: string
   options: string[]
   correctIndex: number
@@ -12,6 +14,7 @@ interface PolyProblem {
 const PROBLEMS: PolyProblem[] = [
   {
     monomer: 'Ethylene (CH₂=CH₂)',
+    monomerSmiles: 'C=C',
     question: 'What type of polymerization produces polyethylene from ethylene?',
     options: ['Addition (chain-growth)', 'Condensation (step-growth)', 'Ring-opening'],
     correctIndex: 0,
@@ -28,6 +31,7 @@ const PROBLEMS: PolyProblem[] = [
   },
   {
     monomer: 'Styrene (CH₂=CHC₆H₅)',
+    monomerSmiles: 'C=Cc1ccccc1',
     question: 'Polystyrene is made by radical polymerization. What is the correct repeat unit?',
     options: ['–CH₂–CH(C₆H₅)–', '–CH₂–CH₂–', '–CO–C₆H₄–CO–O–CH₂–CH₂–O–'],
     correctIndex: 0,
@@ -44,6 +48,7 @@ const PROBLEMS: PolyProblem[] = [
   },
   {
     monomer: 'Isobutylene (CH₂=C(CH₃)₂)',
+    monomerSmiles: 'C=C(C)C',
     question: 'Isobutylene cannot be polymerized by radical initiation — why? What method works?',
     options: ['Radical works fine; cationic is just faster', 'Radical gives poor yields; cationic polymerization (BF₃, H⁺) works because the 2° carbocation is stabilized', 'Anionic polymerization is required'],
     correctIndex: 1,
@@ -60,6 +65,7 @@ const PROBLEMS: PolyProblem[] = [
   },
   {
     monomer: 'Methyl methacrylate (CH₂=C(CH₃)COOCH₃)',
+    monomerSmiles: 'C=C(C)C(=O)OC',
     question: 'Which initiation method gives a "living" polymer of PMMA with narrow MW distribution?',
     options: ['Radical initiation (AIBN)', 'Anionic initiation (BuLi)', 'Cationic initiation (BF₃)'],
     correctIndex: 1,
@@ -68,6 +74,7 @@ const PROBLEMS: PolyProblem[] = [
   },
   {
     monomer: 'Propylene (CH₂=CHCH₃)',
+    monomerSmiles: 'CC=C',
     question: 'A Ziegler-Natta catalyst is used to polymerize propylene. What is the tacticity of the product?',
     options: ['Atactic (random R-group orientation)', 'Isotactic (all CH₃ on same side)', 'Syndiotactic (alternating CH₃)'],
     correctIndex: 1,
@@ -128,10 +135,15 @@ export default function PolymerizationPractice({ allowCustom = true }: { allowCu
       )}
 
       <div className="rounded-sm border border-border p-5 flex flex-col gap-4" style={{ background: 'rgb(var(--color-raised))' }}>
-        <div>
-          <p className="text-xs font-sans text-secondary mb-1">Monomer(s):</p>
-          <p className="font-mono text-sm text-primary font-semibold mb-3">{problem.monomer}</p>
-          <p className="font-sans text-sm text-primary">{problem.question}</p>
+        <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+          {problem.monomerSmiles && (
+            <CompoundDisplay smiles={problem.monomerSmiles} label={problem.monomer} width={160} height={130} />
+          )}
+          <div className="flex flex-col gap-2 flex-1">
+            <p className="text-xs font-sans text-secondary">Monomer(s):</p>
+            <p className="font-mono text-sm text-primary font-semibold">{problem.monomer}</p>
+            <p className="font-sans text-sm text-primary">{problem.question}</p>
+          </div>
         </div>
 
         <div className="flex flex-col gap-2">
@@ -169,8 +181,8 @@ export default function PolymerizationPractice({ allowCustom = true }: { allowCu
         onClick={next}
         className="self-start px-4 py-2 rounded-sm text-sm font-sans border transition-colors"
         style={{
-          background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-          borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+          background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+          borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           color: 'var(--c-halogen)',
         }}
       >

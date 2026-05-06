@@ -177,8 +177,8 @@ export default function PeriodicTrendsReference() {
               style={{ color: active ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.45)' }}>
               {active && (
                 <span className="absolute inset-0 rounded-full" style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                  border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 }} />
               )}
               <span className="relative z-10">{p.label}</span>

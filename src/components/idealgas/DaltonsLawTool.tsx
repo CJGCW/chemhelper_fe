@@ -86,8 +86,8 @@ function ModeCard({ active, onClick, title, sub }: { active: boolean; onClick: (
     <button onClick={onClick}
       className="flex flex-col items-start px-4 py-3 rounded-sm font-sans text-sm font-medium transition-colors text-left flex-1"
       style={active ? {
-        background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-        border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+        background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+        border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
         color: 'var(--c-halogen)',
       } : {
         background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))', color: 'rgba(var(--overlay),0.45)',
@@ -522,7 +522,7 @@ export default function DaltonsLawTool() {
               style={{
                 background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)',
                 color: 'var(--c-halogen)',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               }}>REQUIRED</span>
           )}
         </div>

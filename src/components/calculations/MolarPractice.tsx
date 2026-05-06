@@ -128,8 +128,8 @@ export default function MolarPractice({ allowCustom = true }: Props) {
                     layoutId="practice-type-bg"
                     className="absolute inset-0 rounded-sm"
                     style={{
-                      background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                      border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                      background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                      border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                     }}
                     transition={{ type: 'spring', stiffness: 400, damping: 32 }}
                   />
@@ -158,8 +158,8 @@ export default function MolarPractice({ allowCustom = true }: Props) {
                     layoutId="practice-style-bg"
                     className="absolute inset-0 rounded-sm"
                     style={{
-                      background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                      border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                      background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                      border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                     }}
                     transition={{ type: 'spring', stiffness: 400, damping: 32 }}
                   />
@@ -253,8 +253,8 @@ export default function MolarPractice({ allowCustom = true }: Props) {
                 className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors
                            disabled:opacity-30 disabled:cursor-not-allowed"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                  border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                 }}
               >

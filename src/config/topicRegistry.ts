@@ -61,7 +61,8 @@ export type SectionId =
   | 'sn-elimination'
   | 'alkene-reactions'
   | 'reaction-mechanisms'
-  | 'org-conformations'
+  | 'org-newman'
+  | 'org-chair'
   | 'org-stereochem'
   | 'org-aromaticity'
   | 'org-acid-base'
@@ -116,7 +117,7 @@ export const UNITS: Unit[] = [
   { id: 'buffers-ksp',   label: 'Buffers & Solubility',    route: '/buffers',           level: 2, sections: ['buffer-systems', 'titration-curves', 'solubility-product'] },
   { id: 'thermodynamics', label: 'Thermodynamics',         route: '/thermodynamics',    level: 2, sections: ['entropy', 'gibbs-energy']                       },
   { id: 'nuclear',       label: 'Nuclear Chemistry',       route: '/nuclear',           level: 2, sections: ['nuclear-reactions', 'nuclear-applications']     },
-  { id: 'organic',       label: 'Organic Chemistry',       route: '/organic',           level: 2, sections: ['hydrocarbons', 'functional-groups', 'reaction-mechanisms', 'org-conformations', 'org-stereochem', 'org-aromaticity', 'org-acid-base', 'org-bonding', 'org-carbohydrates', 'org-synthesis', 'org-amino-acids', 'org-lipids', 'org-polymers', 'org-nucleic-acids'] },
+  { id: 'organic',       label: 'Organic Chemistry',       route: '/organic',           level: 2, sections: ['hydrocarbons', 'functional-groups', 'reaction-mechanisms', 'org-newman', 'org-chair', 'org-stereochem', 'org-aromaticity', 'org-acid-base', 'org-bonding', 'org-carbohydrates', 'org-synthesis', 'org-amino-acids', 'org-lipids', 'org-polymers', 'org-nucleic-acids'] },
   { id: 'org-mechanisms', label: 'Organic Mechanisms',    route: '/mechanisms',         level: 2, sections: ['sn-elimination', 'alkene-reactions']              },
   { id: 'spectroscopy',   label: 'Spectroscopy',          route: '/spectral',            level: 2, sections: ['spectral-methods']                                   },
 ]
@@ -161,7 +162,8 @@ export const SECTIONS: Section[] = [
   { id: 'sn-elimination',       label: 'SN/E Reactions',        unitId: 'org-mechanisms' },
   { id: 'alkene-reactions',     label: 'Alkene Reactions',      unitId: 'org-mechanisms' },
   { id: 'reaction-mechanisms',  label: 'Reaction Mechanisms',   unitId: 'organic'        },
-  { id: 'org-conformations',    label: 'Conformational Analysis', unitId: 'organic'      },
+  { id: 'org-newman',           label: 'Newman Projections',     unitId: 'organic'      },
+  { id: 'org-chair',            label: 'Chair Conformations',    unitId: 'organic'      },
   { id: 'org-stereochem',       label: 'Stereochemistry',         unitId: 'organic'      },
   { id: 'org-aromaticity',      label: 'Aromaticity & Conjugation', unitId: 'organic'    },
   { id: 'org-acid-base',        label: 'Acid-Base (Organic)',        unitId: 'organic'    },
@@ -359,8 +361,8 @@ export const TOPICS: Topic[] = [
   { id: 'reaction-mechanisms', label: 'Reaction Mechanisms', sectionId: 'reaction-mechanisms', tabs: ['reaction-mechanisms'] },
 
   // ── Conformational Analysis ────────────────────────────────────────────────
-  { id: 'newman-projection',  label: 'Newman Projections',    sectionId: 'org-conformations', tabs: ['ref-newman',  'newman-practice',  'newman-problems']       },
-  { id: 'chair-conformation', label: 'Chair Conformations',   sectionId: 'org-conformations', tabs: ['ref-chair',   'chair-practice',   'chair-problems']        },
+  { id: 'org-newman',         label: 'Newman Projections',     sectionId: 'org-newman', tabs: ['ref-newman', 'newman-practice', 'newman-problems'] },
+  { id: 'org-chair',          label: 'Chair Conformations',    sectionId: 'org-chair',  tabs: ['ref-chair',  'chair-practice',  'chair-problems']  },
 
   // ── Stereochemistry ───────────────────────────────────────────────────────
   { id: 'stereochemistry',    label: 'Stereochemistry',        sectionId: 'org-stereochem',   tabs: ['ref-stereochem', 'ref-fischer']                            },
@@ -374,12 +376,13 @@ export const TOPICS: Topic[] = [
   { id: 'conjugated-diene',   label: 'Conjugated Dienes',      sectionId: 'org-aromaticity',  tabs: ['ref-conjugation', 'conjugation-practice', 'conjugation-problems'] },
 
   // ── Organic Acid-Base ─────────────────────────────────────────────────────
-  { id: 'organic-acid-base',     label: 'pKₐ & Acidity',      sectionId: 'org-acid-base',     tabs: ['ref-acid-base', 'pka-table', 'acid-base-practice', 'acidity-factors', 'acid-base-problems'] },
+  { id: 'organic-acid-base',     label: 'pKₐ & Acidity',      sectionId: 'org-acid-base',     tabs: ['ref-acid-base', 'pka-table', 'acid-base-practice', 'acidity-factors', 'acid-base-problems', 'acidity-ranking-practice', 'acidity-ranking-problems'] },
 
   // ── Structure & Bonding (Organic) ────────────────────────────────────────
   { id: 'organic-resonance',     label: 'Resonance',           sectionId: 'org-bonding',       tabs: ['ref-resonance', 'resonance-practice', 'resonance-problems'] },
   { id: 'organic-hybridization', label: 'Hybridization',       sectionId: 'org-bonding',       tabs: ['ref-hybridization', 'hybridization-practice', 'hybridization-problems'] },
-  { id: 'organic-formal-charge', label: 'Formal Charge',       sectionId: 'org-bonding',       tabs: ['ref-curved-arrow', 'formal-charge-practice', 'formal-charge-problems'] },
+  { id: 'organic-curved-arrow',  label: 'Curved Arrows',       sectionId: 'org-bonding',       tabs: ['ref-curved-arrow', 'curved-arrow-practice', 'curved-arrow-problems'] },
+  { id: 'organic-formal-charge', label: 'Formal Charge',       sectionId: 'org-bonding',       tabs: ['formal-charge-practice', 'formal-charge-problems'] },
 
   // ── Carbohydrates ─────────────────────────────────────────────────────────
   { id: 'carbohydrates',         label: 'Carbohydrates',       sectionId: 'org-carbohydrates', tabs: ['ref-sugars', 'fischer-haworth', 'anomers-mutarotation', 'sugar-reactions', 'sugars-problems'] },

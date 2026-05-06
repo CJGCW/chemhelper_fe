@@ -219,7 +219,7 @@ export function EditorAtomNode({ id, data, selected }: NodeProps<AtomNodeType>) 
             : 'rgba(var(--overlay),0.13)'}`,
           borderRadius: 2,
           boxShadow: selected
-            ? '0 0 0 2px color-mix(in srgb, var(--c-halogen) 35%, transparent)'
+            ? '0 0 0 2px color-mix(in srgb, var(--c-halogen) 40%, transparent)'
             : undefined,
           display: 'flex',
           alignItems: 'center',

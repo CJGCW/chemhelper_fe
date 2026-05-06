@@ -128,8 +128,8 @@ export default function LewisDrawChallenge() {
             onClick={nextProblem}
             className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
             style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-              border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+              border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
             }}
           >

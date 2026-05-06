@@ -28,7 +28,7 @@ export default function NumberField({
             style={{
               background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)',
               color: 'var(--c-halogen)',
-              border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+              border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             }}
           >
             SOLVING FOR

@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import SpectrumViewer, { type Peak } from './SpectrumViewer'
+import CompoundDisplay from '../shared/CompoundDisplay'
 
 interface CombinedProblem {
   title: string
   compound: string
   formula: string
+  smiles?: string
   mw: number
   dou: number
   irPeaks: Peak[]
@@ -24,6 +26,7 @@ const PROBLEMS: CombinedProblem[] = [
     title: 'Identify the compound from combined spectral data',
     compound: 'Ethanol (CH₃CH₂OH)',
     formula: 'C₂H₆O',
+    smiles: 'CCO',
     mw: 46,
     dou: 0,
     irPeaks: [
@@ -56,6 +59,7 @@ const PROBLEMS: CombinedProblem[] = [
     title: 'Identify the compound from combined spectral data',
     compound: 'Acetone (CH₃COCH₃)',
     formula: 'C₃H₆O',
+    smiles: 'CC(=O)C',
     mw: 58,
     dou: 1,
     irPeaks: [
@@ -150,9 +154,9 @@ export default function CombinedSpectralPractice() {
             <button key={s.id} onClick={() => setStep(s.id)}
               className="px-3 py-1 rounded-sm text-xs font-sans font-medium transition-colors"
               style={isActive ? {
-                background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                 color: 'var(--c-halogen)',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               } : { color: 'rgb(var(--overlay)/0.4)' }}>
               {s.label}
             </button>
@@ -225,16 +229,16 @@ export default function CombinedSpectralPractice() {
                 {!checked ? (
                   <button onClick={handleCheck} disabled={!answer}
                     className="px-4 py-1.5 rounded-sm text-sm font-sans font-medium disabled:opacity-40"
-                    style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                             color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}>
+                    style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                             color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
                     Identify
                   </button>
                 ) : (
                   <>
                     <button onClick={handleNext}
                       className="px-4 py-1.5 rounded-sm text-sm font-sans font-medium"
-                      style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                               color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}>
+                      style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                               color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
                       Next
                     </button>
                     <button onClick={() => setWorkflowOpen(o => !o)}
@@ -248,9 +252,14 @@ export default function CombinedSpectralPractice() {
               <AnimatePresence>
                 {checked && (
                   <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                    className={`rounded-sm border px-4 py-2.5 font-sans text-sm font-semibold ${correct ? 'text-emerald-400 border-emerald-500/30' : 'text-red-400 border-red-500/30'}`}
+                    className={`rounded-sm border px-4 py-3 flex flex-col gap-3 font-sans text-sm font-semibold ${correct ? 'text-emerald-400 border-emerald-500/30' : 'text-red-400 border-red-500/30'}`}
                     style={{ background: correct ? 'rgb(34 197 94 / 0.06)' : 'rgb(239 68 68 / 0.06)' }}>
                     {correct ? '✓ Correct!' : `✗ The compound is ${problem.correct}`}
+                    {problem.smiles && (
+                      <div className="flex justify-start">
+                        <CompoundDisplay smiles={problem.smiles} label={problem.compound} width={180} height={130} />
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>

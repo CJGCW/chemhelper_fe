@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generateLipidProblem, checkLipidAnswer, makeDistractors, LIPID_CLASS_LABELS } from '../../utils/lipidPractice'
 import type { LipidClass } from '../../utils/lipidPractice'
+import CompoundDisplay from '../shared/CompoundDisplay'
 
 interface Props { allowCustom?: boolean }
 
@@ -67,6 +68,9 @@ export default function LipidIdentificationPractice({ allowCustom: _allowCustom 
           {problem.commonName && (
             <span className="font-mono text-xs text-dim">{problem.commonName}</span>
           )}
+          {problem.smiles && (
+            <CompoundDisplay smiles={problem.smiles} label={problem.commonName ?? problem.id} width={280} height={180} />
+          )}
           <pre className="font-mono text-sm text-primary leading-relaxed whitespace-pre-wrap">{problem.scenario}</pre>
 
           <p className="font-sans text-sm text-secondary font-medium">What class of lipid is this?</p>
@@ -80,7 +84,7 @@ export default function LipidIdentificationPractice({ allowCustom: _allowCustom 
                 if (isCorrect) style = { background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.4)', color: '#34d399' }
                 else if (isSelected) style = { background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.35)', color: '#f87171' }
               } else if (isSelected) {
-                style = { background: 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)', color: 'var(--c-halogen)' }
+                style = { background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)', color: 'var(--c-halogen)' }
               }
               return (
                 <button key={c} onClick={() => handleSelect(c)} disabled={checked}

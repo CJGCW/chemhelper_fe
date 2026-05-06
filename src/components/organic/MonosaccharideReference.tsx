@@ -1,3 +1,5 @@
+import CompoundDisplay from '../shared/CompoundDisplay'
+
 export default function MonosaccharideReference() {
   return (
     <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
@@ -102,6 +104,21 @@ export default function MonosaccharideReference() {
               ))}
             </tbody>
           </table>
+        </div>
+      </section>
+
+      {/* Key ring structures */}
+      <section className="flex flex-col gap-3">
+        <h4 className="font-sans font-semibold text-sm text-primary">Key Ring Structures</h4>
+        <div className="flex flex-wrap gap-4">
+          {[
+            { name: 'α-D-Glucose (pyranose)', smiles: 'OC[C@H]1O[C@@H](O)[C@H](O)[C@@H](O)[C@@H]1O' },
+            { name: 'D-Galactose (pyranose)', smiles: 'OC[C@H]1O[C@@H](O)[C@@H](O)[C@H](O)[C@@H]1O' },
+            { name: 'D-Fructose (furanose)',  smiles: 'OC[C@@H]1OC(O)(CO)[C@@H](O)[C@H]1O' },
+            { name: 'D-Ribose (furanose)',    smiles: 'OC[C@@H]1OC(O)[C@H](O)[C@@H]1O' },
+          ].map(s => (
+            <CompoundDisplay key={s.name} smiles={s.smiles} label={s.name} width={160} height={130} />
+          ))}
         </div>
       </section>
 

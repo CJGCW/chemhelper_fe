@@ -193,8 +193,8 @@ export default function FormalChargeTool({ allowCustom = true }: Props) {
                   {active && (
                     <motion.div layoutId="fc-diff-pill" className="absolute inset-0 rounded-full"
                       style={{
-                        background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                        border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                        background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                        border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                       }}
                       transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
                   )}
@@ -309,7 +309,7 @@ export default function FormalChargeTool({ allowCustom = true }: Props) {
                         ? 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-surface)))'
                         : 'rgb(var(--color-surface))',
                       border: isSelected
-                        ? '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)'
+                        ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)'
                         : '1px solid rgb(var(--color-border))',
                       color: isSelected ? 'var(--c-halogen)'
                         : hasVal ? 'rgba(var(--overlay),0.7)'
@@ -332,7 +332,7 @@ export default function FormalChargeTool({ allowCustom = true }: Props) {
                          disabled:opacity-30 disabled:cursor-not-allowed"
               style={{
                 background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               }}>
               Check answers
@@ -401,7 +401,7 @@ export default function FormalChargeTool({ allowCustom = true }: Props) {
                   className="self-start px-5 py-2 rounded-sm font-sans text-sm font-medium transition-all"
                   style={{
                     background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-                    border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                    border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                     color: 'var(--c-halogen)',
                   }}>
                   Next exercise →

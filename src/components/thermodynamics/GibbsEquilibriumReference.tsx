@@ -10,7 +10,7 @@ export default function GibbsEquilibriumReference() {
             <polygon
               points="160,20 30,230 290,230"
               fill="color-mix(in srgb, var(--c-halogen) 6%, transparent)"
-              stroke="color-mix(in srgb, var(--c-halogen) 30%, transparent)"
+              stroke="color-mix(in srgb, var(--c-halogen) 40%, transparent)"
               strokeWidth="2"
             />
             {/* Vertices labels */}

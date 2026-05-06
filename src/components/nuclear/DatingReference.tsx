@@ -4,7 +4,7 @@ export default function DatingReference() {
 
       {/* Formulas */}
       <div className="flex flex-col gap-3">
-        <h3 className="font-sans font-semibold text-bright text-lg">Radiometric Dating</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Radiometric Dating</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
             { label: 'Age from activity', formula: 't = (t½ / ln 2) × ln(A₀ / A)', note: 'A = current activity, A₀ = original activity' },
@@ -35,7 +35,7 @@ export default function DatingReference() {
 
       {/* Assumptions */}
       <div className="flex flex-col gap-3">
-        <h3 className="font-sans font-semibold text-bright text-lg">Key Assumptions</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Key Assumptions</h3>
         <ul className="flex flex-col gap-2">
           {[
             { title: 'Constant atmospheric ratio', body: 'The ¹⁴C/¹²C ratio in the atmosphere has been approximately constant over the period of interest. In practice, calibration curves correct for small variations.' },
@@ -53,7 +53,7 @@ export default function DatingReference() {
 
       {/* Worked example */}
       <div className="flex flex-col gap-3">
-        <h3 className="font-sans font-semibold text-bright text-lg">Worked Example</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Worked Example</h3>
         <div className="flex flex-col gap-0 rounded-sm border border-border overflow-hidden">
           <div className="px-4 py-3" style={{ background: 'rgb(var(--color-raised))' }}>
             <p className="font-sans text-sm text-primary">

@@ -103,7 +103,7 @@ export default function MechanismPractice({ allowCustom = true }: Props) {
                 }
               } else if (isSelected) {
                 style = {
-                  background: 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                   border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                 }

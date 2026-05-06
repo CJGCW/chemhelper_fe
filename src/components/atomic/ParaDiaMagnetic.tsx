@@ -197,7 +197,7 @@ export default function ParaDiaMagnetic() {
                   ? 'color-mix(in srgb, var(--c-halogen) 60%, transparent)'
                   : 'rgb(var(--color-border))',
                 background: charge === c
-                  ? 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))'
+                  ? 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))'
                   : 'rgb(var(--color-surface))',
                 color: charge === c ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.45)',
               }}>

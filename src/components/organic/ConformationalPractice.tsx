@@ -1,8 +1,24 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import NewmanProjectionInline from './NewmanProjectionInline'
+import ChairConformationInline from './ChairConformationInline'
+import type { ChairPosition } from './ChairConformationInline'
+
+interface NewmanSpec {
+  front: [string, string, string]
+  back: [string, string, string]
+  dihedral: number
+}
+
+interface ChairSpec {
+  positions: ChairPosition[]
+  flipped?: boolean
+}
 
 interface Problem {
   question: string
+  newman?: NewmanSpec
+  chair?: ChairSpec
   options: string[]
   answer: string
   explanation: string
@@ -10,25 +26,29 @@ interface Problem {
 
 const NEWMAN_PROBLEMS: Problem[] = [
   {
-    question: 'A Newman projection of butane (C2–C3) is drawn with CH₃ at the top (front) and CH₃ at the bottom (back). The dihedral angle is 180°. What conformation is this?',
+    question: 'What conformation is shown?',
+    newman: { front: ['CH₃', 'H', 'H'], back: ['CH₃', 'H', 'H'], dihedral: 180 },
     options: ['Anti', 'Gauche', 'Eclipsed', 'Totally Eclipsed'],
     answer: 'Anti',
     explanation: 'φ = 180° places the two CH₃ groups on opposite sides — this is the anti conformation, the most stable for butane (0 kJ/mol relative energy).',
   },
   {
-    question: 'In a Newman projection, the front and back bonds overlap perfectly (φ = 0°). The large group on the front eclipses the large group on the back. What is this conformation called?',
+    question: 'What conformation of butane is shown? The large groups on front and back overlap perfectly.',
+    newman: { front: ['CH₃', 'H', 'H'], back: ['CH₃', 'H', 'H'], dihedral: 0 },
     options: ['Totally Eclipsed', 'Anti', 'Gauche', 'Staggered'],
     answer: 'Totally Eclipsed',
-    explanation: 'φ = 0° with large groups overlapping = totally eclipsed. For butane this is the highest-energy conformation (~19 kJ/mol above anti).',
+    explanation: 'φ = 0° with CH₃ groups overlapping = totally eclipsed. For butane this is the highest-energy conformation (~19 kJ/mol above anti).',
   },
   {
-    question: 'Which dihedral angle gives the gauche conformation of butane?',
-    options: ['φ = 60°', 'φ = 120°', 'φ = 180°', 'φ = 0°'],
-    answer: 'φ = 60°',
-    explanation: 'The gauche conformation occurs at φ = 60° (and 300°). It places the two CH₃ groups 60° apart, with ~3.8 kJ/mol of gauche strain.',
+    question: 'What conformation of butane is shown?',
+    newman: { front: ['CH₃', 'H', 'H'], back: ['CH₃', 'H', 'H'], dihedral: 60 },
+    options: ['Gauche', 'Anti', 'Eclipsed (H/CH₃)', 'Totally Eclipsed'],
+    answer: 'Gauche',
+    explanation: 'φ = 60° places the two CH₃ groups 60° apart — gauche conformation (~3.8 kJ/mol above anti).',
   },
   {
     question: 'Rank the following butane conformations from MOST to LEAST stable: anti, gauche, eclipsed (H/CH₃), totally eclipsed (CH₃/CH₃).',
+    newman: { front: ['CH₃', 'H', 'H'], back: ['CH₃', 'H', 'H'], dihedral: 180 },
     options: [
       'Anti > Gauche > Eclipsed > Totally Eclipsed',
       'Gauche > Anti > Eclipsed > Totally Eclipsed',
@@ -39,7 +59,8 @@ const NEWMAN_PROBLEMS: Problem[] = [
     explanation: 'Staggered conformations are always more stable than eclipsed. Among staggered: anti (0) > gauche (3.8 kJ/mol). Among eclipsed: H/CH₃ eclipsed (16) < CH₃/CH₃ eclipsed (19 kJ/mol).',
   },
   {
-    question: 'In a Newman projection of ethane, what is the energy difference between the staggered and eclipsed conformations?',
+    question: 'The Newman projection shown is of ethane in a staggered conformation. What is the approximate rotational barrier to reach the eclipsed form?',
+    newman: { front: ['H', 'H', 'H'], back: ['H', 'H', 'H'], dihedral: 60 },
     options: ['~12 kJ/mol', '~3 kJ/mol', '~19 kJ/mol', '~50 kJ/mol'],
     answer: '~12 kJ/mol',
     explanation: 'Ethane has a rotational barrier of ~12 kJ/mol due to torsional (eclipsing) strain between H–H pairs. This is much less than butane\'s totally eclipsed barrier because H is smaller than CH₃.',
@@ -48,7 +69,8 @@ const NEWMAN_PROBLEMS: Problem[] = [
 
 const CHAIR_PROBLEMS: Problem[] = [
   {
-    question: 'A methylcyclohexane has the CH₃ group in the axial position. Which statement is true?',
+    question: 'The chair shown has CH₃ in the axial position. Which statement is true?',
+    chair: { positions: [{ ringC: 1, bond: 'axial', substituent: 'CH₃' }] },
     options: [
       'The equatorial conformer is more stable by ~7.6 kJ/mol',
       'The axial conformer is more stable because axial bonds are stronger',
@@ -59,7 +81,8 @@ const CHAIR_PROBLEMS: Problem[] = [
     explanation: 'The A-value for CH₃ is 7.6 kJ/mol. This is the free energy difference favoring the equatorial conformer, due to 1,3-diaxial interactions with axial H atoms in the ring.',
   },
   {
-    question: 'A tert-butylcyclohexane (tBu group) undergoes ring flip. Which conformer is observed?',
+    question: 'The chair shown has a tBu group in equatorial position. After a ring flip, which conformer is observed?',
+    chair: { positions: [{ ringC: 1, bond: 'equatorial', substituent: 'tBu' }] },
     options: [
       'Overwhelmingly equatorial tBu (~100%)',
       '50% axial, 50% equatorial',
@@ -67,10 +90,16 @@ const CHAIR_PROBLEMS: Problem[] = [
       'Cannot ring flip due to steric bulk',
     ],
     answer: 'Overwhelmingly equatorial tBu (~100%)',
-    explanation: 'The tBu group has an A-value of 22.8 kJ/mol — far too large to be axial. The equatorial conformer is so much more stable that it represents essentially 100% of the population at room temperature.',
+    explanation: 'The tBu group has an A-value of 22.8 kJ/mol — far too large to be axial. The equatorial conformer represents essentially 100% of the population at room temperature. The ring CAN flip; it just strongly disfavors the axial product.',
   },
   {
-    question: 'In trans-1,4-dimethylcyclohexane, both CH₃ groups are in equatorial positions. What happens after a ring flip?',
+    question: 'The chair shown has both CH₃ groups equatorial. What happens after a ring flip?',
+    chair: {
+      positions: [
+        { ringC: 1, bond: 'equatorial', substituent: 'CH₃' },
+        { ringC: 4, bond: 'equatorial', substituent: 'CH₃' },
+      ],
+    },
     options: [
       'Both CH₃ groups become axial',
       'One CH₃ becomes axial, one stays equatorial',
@@ -78,13 +107,19 @@ const CHAIR_PROBLEMS: Problem[] = [
       'The ring cannot flip with trans substituents',
     ],
     answer: 'Both CH₃ groups become axial',
-    explanation: 'In trans-1,4-dimethylcyclohexane, both methyl groups are in equatorial positions in the more stable conformer. A ring flip converts all axial→equatorial and equatorial→axial, so both methyls become axial. The diequatorial conformer is strongly preferred.',
+    explanation: 'A ring flip converts all axial→equatorial and equatorial→axial simultaneously. Both equatorial methyls become axial. The diequatorial conformer shown is strongly preferred.',
   },
   {
-    question: 'Which relationship between substituents in a 1,2-disubstituted cyclohexane allows BOTH groups to be equatorial?',
+    question: 'The chair shown has two substituents on C1 and C2, both equatorial. What is their stereochemical relationship?',
+    chair: {
+      positions: [
+        { ringC: 1, bond: 'equatorial', substituent: 'R' },
+        { ringC: 2, bond: 'equatorial', substituent: 'R' },
+      ],
+    },
     options: ['trans', 'cis', 'geminal', 'Neither — one must always be axial in 1,2-disubstituted'],
     answer: 'trans',
-    explanation: 'In trans-1,2-disubstituted cyclohexane, the two groups can both occupy equatorial positions in the more stable chair conformer. In cis-1,2, one group is always axial.',
+    explanation: 'In trans-1,2-disubstituted cyclohexane, both groups can occupy equatorial positions in the more stable chair. In cis-1,2, one group is always axial.',
   },
 ]
 
@@ -143,9 +178,22 @@ export default function ConformationalPractice({ allowCustom = true }: Props) {
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}
           className="flex flex-col gap-4">
-          <div className="p-4 rounded-sm border border-border bg-surface">
+
+          <div className="p-4 rounded-sm border border-border bg-surface flex flex-col gap-3">
+            {/* Newman or chair diagram */}
+            {problem.newman && (
+              <div className="flex justify-center">
+                <NewmanProjectionInline {...problem.newman} width={200} height={124} />
+              </div>
+            )}
+            {problem.chair && (
+              <div className="flex justify-center">
+                <ChairConformationInline {...problem.chair} width={280} height={156} />
+              </div>
+            )}
             <p className="font-sans text-sm text-primary leading-relaxed">{problem.question}</p>
           </div>
+
           <div className="flex flex-col gap-2">
             {problem.options.map(opt => {
               const isSelected = selected === opt
@@ -162,6 +210,7 @@ export default function ConformationalPractice({ allowCustom = true }: Props) {
               )
             })}
           </div>
+
           {checked && (
             <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
               className={`p-3 rounded-sm border text-sm font-sans ${correct ? 'border-emerald-700/50 bg-emerald-950/20 text-emerald-300' : 'border-rose-700/50 bg-rose-950/20 text-rose-300'}`}>
@@ -176,8 +225,8 @@ export default function ConformationalPractice({ allowCustom = true }: Props) {
         <button onClick={nextProblem}
           className="self-start px-4 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           }}>
           Next Problem →

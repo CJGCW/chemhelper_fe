@@ -76,8 +76,8 @@ export default function CommonIonTool() {
             onClick={() => { setIsCation(false); reset() }}
             className="px-3 py-1.5 rounded-sm font-mono text-sm border transition-colors"
             style={!isCation ? {
-              background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-              borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+              borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
             } : { borderColor: 'rgb(var(--color-border))', color: 'rgb(var(--color-secondary))' }}
           >
@@ -87,8 +87,8 @@ export default function CommonIonTool() {
             onClick={() => { setIsCation(true); reset() }}
             className="px-3 py-1.5 rounded-sm font-mono text-sm border transition-colors"
             style={isCation ? {
-              background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-              borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+              borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
             } : { borderColor: 'rgb(var(--color-border))', color: 'rgb(var(--color-secondary))' }}
           >
@@ -110,9 +110,9 @@ export default function CommonIonTool() {
           onClick={handleCalculate}
           className="flex-1 py-2 px-4 rounded-sm font-sans text-sm font-medium transition-colors"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
             color: 'var(--c-halogen)',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           }}
         >
           Calculate

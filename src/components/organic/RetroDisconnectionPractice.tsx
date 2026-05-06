@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { RETRO_PROBLEMS, type RetroProblem } from '../../data/organic/retroProblems'
+import CompoundDisplay from '../shared/CompoundDisplay'
 
 function pickRandom(): RetroProblem {
   return RETRO_PROBLEMS[Math.floor(Math.random() * RETRO_PROBLEMS.length)]
@@ -53,7 +54,14 @@ export default function RetroDisconnectionPractice({ allowCustom: _allowCustom =
       <div className="rounded-sm border border-border p-4 flex flex-col gap-2"
         style={{ background: 'rgb(var(--color-raised))' }}>
         <span className="font-mono text-[10px] text-dim uppercase tracking-widest">Target molecule</span>
-        <p className="font-sans text-sm font-medium text-primary">{problem.target.label}</p>
+        {problem.target.smiles ? (
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <CompoundDisplay smiles={problem.target.smiles} label={problem.target.label} width={200} height={150} />
+            <p className="font-sans text-sm font-medium text-primary">{problem.target.label}</p>
+          </div>
+        ) : (
+          <p className="font-sans text-sm font-medium text-primary">{problem.target.label}</p>
+        )}
         <p className="font-sans text-xs text-secondary mt-1">Which bond should be disconnected in a retrosynthetic analysis?</p>
       </div>
 
@@ -156,8 +164,8 @@ export default function RetroDisconnectionPractice({ allowCustom: _allowCustom =
           <button onClick={handleSubmit} disabled={!selected}
             className="px-4 py-1.5 rounded-sm text-sm font-sans font-medium border transition-colors disabled:opacity-40"
             style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-              borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+              borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
             }}>
             Check
@@ -166,8 +174,8 @@ export default function RetroDisconnectionPractice({ allowCustom: _allowCustom =
           <button onClick={handleNext}
             className="px-4 py-1.5 rounded-sm text-sm font-sans font-medium border transition-colors"
             style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-              borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+              borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
             }}>
             Next problem →

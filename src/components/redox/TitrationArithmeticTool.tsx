@@ -31,8 +31,8 @@ function ModeToggle({ mode, setMode }: { mode: TMode; setMode: (m: TMode) => voi
             {active && (
               <motion.div layoutId="titration-mode" className="absolute inset-0 rounded-full"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                  border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
             )}
@@ -50,8 +50,8 @@ function UnitBtn({ u, cur, set }: { u: string; cur: string; set: (v: string) => 
     <button onClick={() => set(u)}
       className="px-3 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
       style={active ? {
-        background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-        border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+        background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+        border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
         color: 'var(--c-halogen)',
       } : {
         background: 'rgb(var(--color-raised))',
@@ -169,7 +169,7 @@ function AcidBasePractice() {
           className="shrink-0 px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-            border:     '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            border:     '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color:      'var(--c-halogen)',
           }}>
           Calculate
@@ -296,7 +296,7 @@ function RedoxPracticeMode() {
           className="shrink-0 px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-            border:     '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            border:     '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color:      'var(--c-halogen)',
           }}>
           Calculate
@@ -382,7 +382,7 @@ function ProblemsMode() {
             className="shrink-0 px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
             style={{
               background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-              border:     '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+              border:     '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color:      'var(--c-halogen)',
             }}>
             Check

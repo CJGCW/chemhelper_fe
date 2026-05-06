@@ -147,7 +147,7 @@ export default function SpectrumViewer({ type, peaks, width = 560, height = 240 
           {peak.label && (
             <text x={cx} y={MARGIN.top + plotH - peakH - 6}
               textAnchor="middle" fontSize={9} fontFamily="monospace"
-              fill="rgb(var(--overlay)/0.6)">{peak.label}</text>
+              fill="rgba(var(--overlay),0.6)">{peak.label}</text>
           )}
         </g>
       )
@@ -174,7 +174,7 @@ export default function SpectrumViewer({ type, peaks, width = 560, height = 240 
           {(isBase || isMPlus || peak.label) && (
             <text x={px} y={MARGIN.top + plotH - barH - 4}
               textAnchor="middle" fontSize={9} fontFamily="monospace"
-              fill="rgb(var(--overlay)/0.7)">
+              fill="rgba(var(--overlay),0.7)">
               {isBase ? 'base' : isMPlus ? 'M⁺' : peak.label}
             </text>
           )}

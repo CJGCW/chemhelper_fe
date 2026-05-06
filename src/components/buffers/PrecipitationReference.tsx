@@ -60,7 +60,7 @@ export default function PrecipitationReference() {
             Will BaSO₄ precipitate when 10.0 mL of 2.0×10⁻⁴ M BaCl₂ is mixed with 10.0 mL of
             2.0×10⁻⁴ M Na₂SO₄? (Ksp = 1.1×10⁻¹⁰)
           </p>
-          <div className="flex flex-col gap-1.5 pl-3 border-l-2" style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 35%, transparent)' }}>
+          <div className="flex flex-col gap-1.5 pl-3 border-l-2" style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
             {[
               'After mixing, total volume = 20.0 mL',
               '[Ba²⁺] = 2.0×10⁻⁴ × (10.0/20.0) = 1.0×10⁻⁴ M',

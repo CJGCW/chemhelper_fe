@@ -1,3 +1,5 @@
+import CompoundDisplay from '../shared/CompoundDisplay'
+
 export default function TriglyceridesReference() {
   return (
     <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
@@ -12,6 +14,11 @@ export default function TriglyceridesReference() {
       {/* Structure */}
       <section className="flex flex-col gap-3">
         <h4 className="font-sans font-semibold text-sm text-primary">Structure</h4>
+        <div className="flex flex-wrap gap-4 items-start">
+          <CompoundDisplay smiles="OCC(O)CO" label="glycerol" width={160} height={120} />
+          <CompoundDisplay smiles="CCCC(=O)O" label="butyric acid (C4 FA)" width={160} height={120} />
+          <CompoundDisplay smiles="CCCC(=O)OCC(COC(=O)CCC)OC(=O)CCC" label="tributyrin (simple TG)" width={200} height={140} />
+        </div>
         <div className="rounded-sm border border-border p-4 font-mono text-xs text-secondary" style={{ background: 'rgb(var(--color-raised))' }}>
           <p className="text-primary font-semibold mb-2">Glycerol backbone + 3 fatty acids (as esters)</p>
           <p>CH₂–O–CO–R₁   ← sn-1 position</p>

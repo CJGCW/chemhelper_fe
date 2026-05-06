@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import SpectrumViewer, { type Peak } from './SpectrumViewer'
+import CompoundDisplay from '../shared/CompoundDisplay'
 
 interface NMRQuestion {
   stem: string
@@ -13,6 +14,7 @@ interface NMRQuestion {
 interface NMRProblem {
   title: string
   compound: string
+  smiles?: string
   peaks: Peak[]
   questions: NMRQuestion[]
 }
@@ -21,6 +23,7 @@ const PROBLEMS: NMRProblem[] = [
   {
     title: '¹H NMR — Ethyl acetate (CH₃COOCH₂CH₃)',
     compound: 'Ethyl acetate',
+    smiles: 'CCOC(=O)C',
     peaks: [
       { x: 4.12, y: 0.8, label: '–OCH₂–', width: 0.06, splitting: 'quartet', integration: 2 },
       { x: 2.05, y: 0.8, label: 'CH₃CO–', width: 0.06, splitting: 'singlet', integration: 3 },
@@ -42,6 +45,7 @@ const PROBLEMS: NMRProblem[] = [
   {
     title: '¹H NMR — 1-Bromopropane (BrCH₂CH₂CH₃)',
     compound: '1-Bromopropane',
+    smiles: 'CCCBr',
     peaks: [
       { x: 3.40, y: 0.8, label: 'BrCH₂–', width: 0.06, splitting: 'triplet', integration: 2 },
       { x: 1.88, y: 0.8, label: '–CH₂–', width: 0.06, splitting: 'multiplet', integration: 2 },
@@ -63,6 +67,7 @@ const PROBLEMS: NMRProblem[] = [
   {
     title: '¹H NMR — Diethyl ether ((CH₃CH₂)₂O)',
     compound: 'Diethyl ether',
+    smiles: 'CCOCC',
     peaks: [
       { x: 3.47, y: 0.8, label: '–OCH₂–', width: 0.06, splitting: 'quartet', integration: 4 },
       { x: 1.21, y: 0.8, label: '–CH₃', width: 0.06, splitting: 'triplet', integration: 6 },
@@ -90,6 +95,7 @@ const PROBLEMS: NMRProblem[] = [
   {
     title: '¹H NMR — Acetaldehyde (CH₃CHO)',
     compound: 'Acetaldehyde',
+    smiles: 'CC=O',
     peaks: [
       { x: 9.80, y: 0.8, label: 'CHO', width: 0.06, splitting: 'quartet', integration: 1 },
       { x: 2.20, y: 0.8, label: 'CH₃–', width: 0.06, splitting: 'doublet', integration: 3 },
@@ -181,6 +187,12 @@ export default function NMRInterpretationPractice() {
         </div>
       </div>
 
+      {problem.smiles && (
+        <div className="flex justify-start">
+          <CompoundDisplay smiles={problem.smiles} label={problem.compound} width={180} height={130} />
+        </div>
+      )}
+
       <SpectrumViewer type="1h_nmr" peaks={problem.peaks} width={520} height={200} />
 
       {/* Question */}
@@ -228,15 +240,15 @@ export default function NMRInterpretationPractice() {
         {!checked ? (
           <button onClick={handleCheck} disabled={!answer}
             className="px-4 py-1.5 rounded-sm text-sm font-sans font-medium disabled:opacity-40"
-            style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                     color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}>
+            style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                     color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
             Check
           </button>
         ) : (
           <button onClick={handleNext}
             className="px-4 py-1.5 rounded-sm text-sm font-sans font-medium"
-            style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                     color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}>
+            style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                     color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
             {qIdx < problem.questions.length - 1 ? 'Next Question' : 'Next Problem'}
           </button>
         )}

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SYNTHESIS_PROBLEMS, type SynthesisProblem } from '../../data/organic/synthesisProblems'
 import { checkReagent } from '../../utils/synthesisCheck'
+import CompoundDisplay from '../shared/CompoundDisplay'
 
 type Difficulty = 'all' | 'easy' | 'medium' | 'hard'
 
@@ -74,8 +75,8 @@ export default function SynthesisFillInPractice({ allowCustom: _allowCustom = tr
             <button key={d} onClick={() => setDifficulty(d)}
               className="px-3 py-1 rounded-full text-xs font-sans capitalize border transition-colors"
               style={active ? {
-                background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               } : { background: 'transparent', borderColor: 'rgba(var(--overlay),0.15)', color: 'rgb(var(--overlay)/0.5)' }}>
               {d}
@@ -98,7 +99,14 @@ export default function SynthesisFillInPractice({ allowCustom: _allowCustom = tr
           <div className="rounded-sm border border-border px-4 py-3 self-start"
             style={{ background: 'rgb(var(--color-raised))' }}>
             <span className="font-mono text-xs text-dim block mb-0.5">Starting material</span>
-            <span className="font-sans text-sm font-medium text-primary">{problem.startingMaterial.label}</span>
+            {problem.startingMaterial.smiles ? (
+              <div className="flex flex-col items-start gap-1 mt-1">
+                <CompoundDisplay smiles={problem.startingMaterial.smiles} label={problem.startingMaterial.label} width={160} height={120} />
+                <span className="font-sans text-xs text-secondary">{problem.startingMaterial.label}</span>
+              </div>
+            ) : (
+              <span className="font-sans text-sm font-medium text-primary">{problem.startingMaterial.label}</span>
+            )}
           </div>
 
           {/* Steps */}
@@ -158,7 +166,14 @@ export default function SynthesisFillInPractice({ allowCustom: _allowCustom = tr
               borderColor: allCorrect ? 'rgb(34 197 94)' : 'rgba(var(--overlay),0.15)',
             }}>
             <span className="font-mono text-xs text-dim block mb-0.5">Target</span>
-            <span className="font-sans text-sm font-medium text-primary">{problem.target.label}</span>
+            {problem.target.smiles ? (
+              <div className="flex flex-col items-start gap-1 mt-1">
+                <CompoundDisplay smiles={problem.target.smiles} label={problem.target.label} width={160} height={120} />
+                <span className="font-sans text-xs text-secondary">{problem.target.label}</span>
+              </div>
+            ) : (
+              <span className="font-sans text-sm font-medium text-primary">{problem.target.label}</span>
+            )}
           </div>
         </div>
       </div>
@@ -182,8 +197,8 @@ export default function SynthesisFillInPractice({ allowCustom: _allowCustom = tr
             <button onClick={handleSubmit}
               className="px-4 py-1.5 rounded-sm text-sm font-sans font-medium border transition-colors"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               }}>
               Check answers
@@ -200,8 +215,8 @@ export default function SynthesisFillInPractice({ allowCustom: _allowCustom = tr
           <button onClick={handleNext}
             className="px-4 py-1.5 rounded-sm text-sm font-sans font-medium border transition-colors"
             style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-              borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+              borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
             }}>
             Next problem →

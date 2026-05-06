@@ -22,6 +22,7 @@ export const LIPID_CLASS_LABELS: Record<LipidClass, string> = {
 export interface LipidProblem {
   id: string
   scenario: string
+  smiles?: string
   lipidClass: LipidClass
   commonName?: string
   explanation: string
@@ -32,6 +33,7 @@ const POOL: LipidProblem[] = [
   {
     id: 'palmitic',
     scenario: 'CH₃(CH₂)₁₄COOH — a straight-chain carboxylic acid with 16 carbons, no double bonds.',
+    smiles: 'CCCCCCCCCCCCCCCC(=O)O',
     lipidClass: 'saturated-fatty-acid',
     commonName: 'Palmitic acid (16:0)',
     explanation: 'Palmitic acid (C16:0) is a saturated fatty acid — a straight-chain carboxylic acid with no C=C double bonds. Shorthand: 16:0 (16 carbons, 0 double bonds).',
@@ -44,6 +46,7 @@ const POOL: LipidProblem[] = [
   {
     id: 'stearic',
     scenario: 'CH₃(CH₂)₁₆COOH — an 18-carbon straight-chain carboxylic acid, all single bonds.',
+    smiles: 'CCCCCCCCCCCCCCCCCC(=O)O',
     lipidClass: 'saturated-fatty-acid',
     commonName: 'Stearic acid (18:0)',
     explanation: 'Stearic acid (C18:0) is a saturated fatty acid. It is solid at room temperature because saturated chains pack tightly.',
@@ -56,6 +59,7 @@ const POOL: LipidProblem[] = [
   {
     id: 'oleic',
     scenario: 'An 18-carbon fatty acid with one cis C=C double bond between C9 and C10 (18:1 Δ9).',
+    smiles: 'CCCCCCCC/C=C\\CCCCCCCC(=O)O',
     lipidClass: 'unsaturated-fatty-acid',
     commonName: 'Oleic acid (18:1 Δ9)',
     explanation: 'Oleic acid is a monounsaturated fatty acid (one C=C). The cis geometry creates a kink, lowering its melting point.',
@@ -163,6 +167,7 @@ const POOL: LipidProblem[] = [
   {
     id: 'isoprene',
     scenario: 'A 10-carbon hydrocarbon (C₁₀H₁₆) made of two isoprene units (2-methylbuta-1,3-diene). It is found in essential oils such as limonene.',
+    smiles: 'CC1=CCC(CC1)C(C)=C',
     lipidClass: 'terpene',
     commonName: 'Monoterpene (e.g., limonene)',
     explanation: 'Terpenes are built from isoprene (C₅) units. 2 isoprene units = monoterpene (C₁₀), 3 = sesquiterpene (C₁₅), 4 = diterpene (C₂₀), 8 = tetraterpene (C₄₀).',
@@ -175,6 +180,7 @@ const POOL: LipidProblem[] = [
   {
     id: 'geraniol',
     scenario: 'A C₁₀ acyclic alcohol with two isoprene units, found in rose and geranium oils. Formula: (E)-3,7-dimethylocta-2,6-dien-1-ol.',
+    smiles: 'CC(=CCC/C(=C/CO)C)C',
     lipidClass: 'terpene',
     commonName: 'Geraniol (monoterpene)',
     explanation: 'Geraniol is a monoterpene alcohol (C₁₀), built from two isoprene units. Its characteristic rose scent makes it a common fragrance ingredient.',

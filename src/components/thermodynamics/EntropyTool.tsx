@@ -183,7 +183,7 @@ export default function EntropyTool() {
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 15%, transparent)',
             color: 'var(--c-halogen)',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           }}
         >
           Calculate ΔS°
@@ -200,7 +200,7 @@ export default function EntropyTool() {
           className="p-4 rounded-sm border"
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 8%, rgb(var(--color-raised)))',
-            borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+            borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           }}
         >
           <p className="font-mono text-sm text-secondary">ΔS°rxn</p>

@@ -251,8 +251,8 @@ export default function EmpiricalPractice({ allowCustom = true }: Props) {
               {difficulty === d && (
                 <motion.div layoutId="practice-diff-bg" className="absolute inset-0 rounded-sm"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                    border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                    border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   }}
                   transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
               )}
@@ -287,7 +287,7 @@ export default function EmpiricalPractice({ allowCustom = true }: Props) {
                 </span>
                 {problemIsDynamic && (
                   <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
-                    style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
+                    style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
                     generated
                   </span>
                 )}

@@ -1,3 +1,5 @@
+import CompoundDisplay from '../shared/CompoundDisplay'
+
 export default function FattyAcidsReference() {
   const commonFAs = [
     { name: 'Palmitic acid',    abbrev: '16:0',          class: 'Saturated',       formula: 'C₁₆H₃₂O₂', mp: '63 °C',  occurrence: 'Palm oil, animal fat; most common saturated FA in mammals' },
@@ -40,22 +42,33 @@ export default function FattyAcidsReference() {
               icon: '═',
               body: 'No C=C double bonds. All single bonds. Straight, extended chain — can pack tightly in a solid lattice. High melting point. Solid at room temperature. Common in animal fats.',
               color: 'var(--c-alkane)',
+              smiles: 'CCCC(=O)O',
+              exLabel: 'butyric acid (4:0)',
             },
             {
               title: 'Monounsaturated',
               icon: '⊃',
               body: 'One cis C=C double bond. The cis geometry introduces a "kink." Less tight packing → lower melting point. Liquid at room T. Olive oil is ~70% oleic acid (18:1).',
               color: 'var(--c-alkene)',
+              smiles: 'CCCCC/C=C\\CCCC(=O)O',
+              exLabel: 'undec-5-enoic acid (cis)',
             },
             {
               title: 'Polyunsaturated',
               icon: '≋',
               body: 'Two or more cis C=C bonds. Multiple kinks → very low melting point. Liquid even when cold. Essential fatty acids (body cannot synthesize Δ12 and Δ15 bonds).',
               color: 'var(--c-alcohol)',
+              smiles: 'CCC/C=C\\C/C=C\\CCCCC(=O)O',
+              exLabel: 'trideca-5,8-dienoic acid (cis)',
             },
           ].map(item => (
             <div key={item.title} className="rounded-sm border border-border p-3" style={{ background: 'rgb(var(--color-raised))' }}>
-              <p className="font-sans text-sm font-semibold text-primary mb-2">{item.title}</p>
+              <p className="font-sans text-sm font-semibold text-primary mb-1">{item.title}</p>
+              {item.smiles && (
+                <div className="mb-2">
+                  <CompoundDisplay smiles={item.smiles} label={item.exLabel} width={160} height={110} />
+                </div>
+              )}
               <p className="font-sans text-xs text-secondary leading-relaxed">{item.body}</p>
             </div>
           ))}

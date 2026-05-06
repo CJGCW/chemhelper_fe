@@ -197,8 +197,8 @@ function MetalRow({ metal, selected, onClick }: {
       onClick={onClick}
       className="w-full flex items-center gap-3 px-3 py-2 rounded-sm text-left transition-colors group"
       style={isSelected ? {
-        background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-        border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+        background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+        border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
       } : {
         border: '1px solid transparent',
       }}
@@ -239,8 +239,8 @@ function HalogenRow({ halogen, selected, onClick }: {
       onClick={onClick}
       className="w-full flex items-center gap-3 px-3 py-2 rounded-sm text-left transition-colors"
       style={isSelected ? {
-        background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-        border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+        background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+        border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
       } : {
         border: '1px solid transparent',
       }}

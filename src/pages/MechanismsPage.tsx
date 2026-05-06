@@ -97,15 +97,15 @@ export default function MechanismsPage() {
 
   const visibleCategories = CATEGORY_ORDER.filter(cat => (categoryCounts[cat] ?? 0) > 0)
 
-  const activeTint = 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))'
-  const activeBorder = 'color-mix(in srgb, var(--c-halogen) 30%, transparent)'
+  const activeTint = 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))'
+  const activeBorder = 'color-mix(in srgb, var(--c-halogen) 40%, transparent)'
 
   return (
     <PageShell>
 
       {/* Heading row */}
       <div className="flex items-center gap-3 flex-wrap print:hidden">
-        <h2 className="font-sans font-bold text-bright text-xl lg:text-2xl">Reaction Mechanisms</h2>
+        <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Reaction Mechanisms</h2>
 
         <button
           onClick={() => setShowExplanation(true)}
@@ -340,7 +340,7 @@ export default function MechanismsPage() {
                     <Link
                       to="/test"
                       className="self-start flex items-center gap-2 px-4 py-2 rounded-sm font-sans text-sm border transition-colors"
-                      style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)', color: 'var(--c-halogen)' }}
+                      style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)', color: 'var(--c-halogen)' }}
                     >
                       Open Test Builder →
                     </Link>

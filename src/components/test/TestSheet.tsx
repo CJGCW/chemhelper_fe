@@ -1594,8 +1594,8 @@ export default function TestSheet({ test, onBack }: Props) {
               onClick={() => setDrawModal({ q, review: false })}
               className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               }}
             >
@@ -1913,8 +1913,8 @@ export default function TestSheet({ test, onBack }: Props) {
                 className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors
                            disabled:opacity-30 disabled:cursor-not-allowed"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                  border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                 }}
               >
@@ -1950,7 +1950,7 @@ export default function TestSheet({ test, onBack }: Props) {
 
       {/* Test title */}
       <div>
-        <h3 className="font-sans font-semibold text-bright text-lg">{test.title}</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">{test.title}</h3>
         <p className="font-mono text-xs text-dim mt-0.5">
           {test.questions.length} questions ·{' '}
           {test.generatedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -1971,8 +1971,8 @@ export default function TestSheet({ test, onBack }: Props) {
             className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors
                        disabled:opacity-30 disabled:cursor-not-allowed"
             style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-              border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+              border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
             }}
           >

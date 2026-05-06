@@ -93,8 +93,8 @@ export default function GibbsEquilibriumTool() {
           <button key={m.id} onClick={() => { setMode(m.id); clearResult() }}
             className="px-3 py-1.5 rounded-full font-sans text-sm border transition-all"
             style={mode === m.id ? {
-              background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-              borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+              borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
             } : { borderColor: 'rgb(var(--color-border))', color: 'rgb(var(--color-secondary))' }}>
             {m.label}
@@ -116,7 +116,7 @@ export default function GibbsEquilibriumTool() {
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 15%, transparent)',
             color: 'var(--c-halogen)',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           }}>
           Convert
         </button>
@@ -135,7 +135,7 @@ export default function GibbsEquilibriumTool() {
             <div key={item.label} className="p-3 rounded-sm border"
               style={{
                 background: 'color-mix(in srgb, var(--c-halogen) 8%, rgb(var(--color-raised)))',
-                borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               }}>
               <p className="font-mono text-xs text-secondary">{item.label}</p>
               <p className="font-mono text-lg mt-1 font-semibold" style={{ color: 'var(--c-halogen)' }}>{item.value}</p>

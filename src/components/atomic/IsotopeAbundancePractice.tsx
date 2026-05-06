@@ -100,7 +100,7 @@ export default function IsotopeAbundancePractice({ allowCustom = true }: Props) 
         {/* Type badge */}
         <span className="self-start font-mono text-[10px] px-2 py-0.5 rounded-full border"
           style={{
-            borderColor: 'color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+            borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'rgba(var(--overlay),0.5)',
           }}>
           {problem.type === 'forward' ? 'Ā = Σ mᵢfᵢ' : 'find abundance'}
@@ -134,8 +134,8 @@ export default function IsotopeAbundancePractice({ allowCustom = true }: Props) 
               className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors
                          disabled:opacity-30 disabled:cursor-not-allowed"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               }}
             >

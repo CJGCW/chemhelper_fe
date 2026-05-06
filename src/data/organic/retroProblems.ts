@@ -8,7 +8,7 @@ export interface RetroBond {
 
 export interface RetroProblem {
   id: string
-  target: { label: string }
+  target: { label: string; smiles?: string }
   bonds: RetroBond[]
   correctBondId: string
   synthons: { nucleophile: string; electrophile: string }
@@ -21,7 +21,7 @@ export interface RetroProblem {
 export const RETRO_PROBLEMS: RetroProblem[] = [
   {
     id: 'methyl-isopropyl-ether',
-    target: { label: 'methyl isopropyl ether (methoxypropane)' },
+    target: { label: 'methyl isopropyl ether (methoxypropane)', smiles: 'COC(C)C' },
     bonds: [
       { id: 'methyl-O',    description: 'CH₃ — O bond (methyl side)' },
       { id: 'O-isopropyl', description: 'O — CH(CH₃)₂ bond (isopropyl side)' },
@@ -37,7 +37,7 @@ export const RETRO_PROBLEMS: RetroProblem[] = [
   },
   {
     id: 'mesityl-oxide',
-    target: { label: '4-methylpent-3-en-2-one (mesityl oxide)' },
+    target: { label: '4-methylpent-3-en-2-one (mesityl oxide)', smiles: 'CC(=O)C=C(C)C' },
     bonds: [
       { id: 'alpha-beta-CC', description: 'C=C between α and β carbons (the enone double bond)' },
       { id: 'methyl-CO',     description: 'CH₃ — C(=O) bond (terminal methyl on carbonyl)' },
@@ -53,7 +53,7 @@ export const RETRO_PROBLEMS: RetroProblem[] = [
   },
   {
     id: '1-methylcyclohexanol',
-    target: { label: '1-methylcyclohexanol' },
+    target: { label: '1-methylcyclohexanol', smiles: 'OC1(C)CCCCC1' },
     bonds: [
       { id: 'C-CH3',    description: 'C — CH₃ bond (methyl to ring C)' },
       { id: 'C-OH',     description: 'C — OH bond (hydroxy group)' },
@@ -70,7 +70,7 @@ export const RETRO_PROBLEMS: RetroProblem[] = [
   },
   {
     id: 'trans-2-bromocyclohexanol',
-    target: { label: 'trans-2-bromocyclohexanol' },
+    target: { label: 'trans-2-bromocyclohexanol', smiles: 'O[C@@H]1CCCC[C@H]1Br' },
     bonds: [
       { id: 'C-Br',  description: 'C — Br bond (at C2)' },
       { id: 'C-OH',  description: 'C — OH bond (at C1)' },
@@ -85,7 +85,7 @@ export const RETRO_PROBLEMS: RetroProblem[] = [
   },
   {
     id: 'ethyl-hexanoate',
-    target: { label: 'ethyl hexanoate' },
+    target: { label: 'ethyl hexanoate', smiles: 'CCCCCC(=O)OCC' },
     bonds: [
       { id: 'ester-O-Et',  description: 'O — CH₂CH₃ bond (ethoxy side)' },
       { id: 'ester-CO',    description: 'C(=O) — O bond (carbonyl–oxygen)' },
@@ -100,7 +100,7 @@ export const RETRO_PROBLEMS: RetroProblem[] = [
   },
   {
     id: 'n-butylamine',
-    target: { label: 'n-butylamine (butan-1-amine)' },
+    target: { label: 'n-butylamine (butan-1-amine)', smiles: 'CCCCN' },
     bonds: [
       { id: 'C-N',        description: 'C — NH₂ bond' },
       { id: 'N-H-first',  description: 'N — H bond (deprotonation)' },
@@ -115,7 +115,7 @@ export const RETRO_PROBLEMS: RetroProblem[] = [
   },
   {
     id: 'phenyl-2-hydroxyethyl-ketone',
-    target: { label: '1-phenyl-2-hydroxyethan-1-one (2-hydroxy acetophenone)' },
+    target: { label: '1-phenyl-2-hydroxyethan-1-one (2-hydroxy acetophenone)', smiles: 'OCC(=O)c1ccccc1' },
     bonds: [
       { id: 'C-CO-Ph',   description: 'Ph — C(=O) bond' },
       { id: 'alpha-C-OH', description: 'α-C — OH bond' },
@@ -130,7 +130,7 @@ export const RETRO_PROBLEMS: RetroProblem[] = [
   },
   {
     id: 'diethylether',
-    target: { label: 'diethyl ether' },
+    target: { label: 'diethyl ether', smiles: 'CCOCC' },
     bonds: [
       { id: 'C1-O',  description: 'First C — O bond' },
       { id: 'O-C2',  description: 'Second C — O bond' },
@@ -145,7 +145,7 @@ export const RETRO_PROBLEMS: RetroProblem[] = [
   },
   {
     id: 'benzyl-methyl-ether',
-    target: { label: 'benzyl methyl ether' },
+    target: { label: 'benzyl methyl ether', smiles: 'COCc1ccccc1' },
     bonds: [
       { id: 'BnCH2-O',  description: 'PhCH₂ — O bond (benzyl side)' },
       { id: 'O-CH3',    description: 'O — CH₃ bond (methyl side)' },
@@ -160,7 +160,7 @@ export const RETRO_PROBLEMS: RetroProblem[] = [
   },
   {
     id: 'sec-butyl-phenyl-ketone',
-    target: { label: 'pentan-2-one (sec-butyl methyl ketone)' },
+    target: { label: 'pentan-2-one (sec-butyl methyl ketone)', smiles: 'CCCC(=O)C' },
     bonds: [
       { id: 'CO-CH3',   description: 'C(=O) — CH₃ bond (methyl side)' },
       { id: 'CO-sBu',   description: 'C(=O) — CH₂CH₂CH₃ bond (propyl side)' },
@@ -175,7 +175,7 @@ export const RETRO_PROBLEMS: RetroProblem[] = [
   },
   {
     id: 'propyl-cyanide',
-    target: { label: 'butanenitrile (propyl cyanide)' },
+    target: { label: 'butanenitrile (propyl cyanide)', smiles: 'CCCC#N' },
     bonds: [
       { id: 'C-CN',  description: 'C — CN bond' },
       { id: 'CN-N',  description: 'C ≡ N (internal nitrile bond)' },
@@ -190,7 +190,7 @@ export const RETRO_PROBLEMS: RetroProblem[] = [
   },
   {
     id: 'hexan-1-ol-from-alkene',
-    target: { label: 'hexan-1-ol (anti-Markovnikov)' },
+    target: { label: 'hexan-1-ol (anti-Markovnikov)', smiles: 'CCCCCCO' },
     bonds: [
       { id: 'C1-OH',  description: 'C1 — OH bond (terminal OH)' },
       { id: 'C2-OH',  description: 'C2 — OH bond (internal OH)' },
@@ -205,7 +205,7 @@ export const RETRO_PROBLEMS: RetroProblem[] = [
   },
   {
     id: 'N-ethylacetamide',
-    target: { label: 'N-ethylacetamide' },
+    target: { label: 'N-ethylacetamide', smiles: 'CCNC(=O)C' },
     bonds: [
       { id: 'C=O-N',   description: 'C(=O) — N bond' },
       { id: 'N-Et',    description: 'N — CH₂CH₃ bond' },
@@ -220,7 +220,7 @@ export const RETRO_PROBLEMS: RetroProblem[] = [
   },
   {
     id: 'hex-2-yne-retro',
-    target: { label: 'hex-2-yne (internal alkyne)' },
+    target: { label: 'hex-2-yne (internal alkyne)', smiles: 'CC#CCCC' },
     bonds: [
       { id: 'C1-C2-triple',  description: 'C1 — C2 bond adjacent to C≡C (ethyl side)' },
       { id: 'C2-C3-triple',  description: 'C3 — C4 bond adjacent to C≡C (1-propynyl side)' },
@@ -235,7 +235,7 @@ export const RETRO_PROBLEMS: RetroProblem[] = [
   },
   {
     id: 'grignard-alcohol-3',
-    target: { label: '2-methylpentan-2-ol' },
+    target: { label: '2-methylpentan-2-ol', smiles: 'CC(C)(O)CCC' },
     bonds: [
       { id: 'C-CH3-quat',   description: 'C(OH) — CH₃ bond (methyl substituent)' },
       { id: 'C-nPr-quat',   description: 'C(OH) — nPr bond (propyl substituent)' },
@@ -252,7 +252,7 @@ export const RETRO_PROBLEMS: RetroProblem[] = [
   },
   {
     id: 'retro-gabriel',
-    target: { label: 'pentylamine (pentan-1-amine)' },
+    target: { label: 'pentylamine (pentan-1-amine)', smiles: 'CCCCCN' },
     bonds: [
       { id: 'C5-NH2',  description: 'C5 — NH₂ bond' },
     ],
@@ -264,7 +264,7 @@ export const RETRO_PROBLEMS: RetroProblem[] = [
   },
   {
     id: 'aldol-product',
-    target: { label: '3-hydroxybutanal (aldol product from acetaldehyde)' },
+    target: { label: '3-hydroxybutanal (aldol product from acetaldehyde)', smiles: 'CC(O)CC=O' },
     bonds: [
       { id: 'C2-C3-OH',   description: 'α-C — β-C bond (between the two acetaldehyde units)' },
       { id: 'C-OH-only',  description: 'C3 — OH bond' },
@@ -279,7 +279,7 @@ export const RETRO_PROBLEMS: RetroProblem[] = [
   },
   {
     id: 'methyl-butanoate',
-    target: { label: 'methyl butanoate' },
+    target: { label: 'methyl butanoate', smiles: 'CCCC(=O)OC' },
     bonds: [
       { id: 'ester-CO-O',  description: 'C(=O) — O bond' },
       { id: 'O-CH3',       description: 'O — CH₃ bond' },
@@ -294,7 +294,7 @@ export const RETRO_PROBLEMS: RetroProblem[] = [
   },
   {
     id: 'williamson-2',
-    target: { label: 'tert-butyl methyl ether' },
+    target: { label: 'tert-butyl methyl ether', smiles: 'CC(C)(C)OC' },
     bonds: [
       { id: 'C-tBu-O',   description: 'tBu — O bond' },
       { id: 'O-Me',      description: 'O — CH₃ bond' },
@@ -309,7 +309,7 @@ export const RETRO_PROBLEMS: RetroProblem[] = [
   },
   {
     id: 'wittig-product',
-    target: { label: '(Z)-stilbene (cis-1,2-diphenylethylene)' },
+    target: { label: '(Z)-stilbene (cis-1,2-diphenylethylene)', smiles: 'c1ccc(/C=C\\c2ccccc2)cc1' },
     bonds: [
       { id: 'C=C-bond',    description: 'C=C double bond between the two phenyl-bearing carbons' },
     ],
