@@ -137,7 +137,7 @@ export default function MassToMolesHelper({ onResolved, onClear }: Props) {
                 </div>
               </div>
 
-              {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+              {error && <p className="font-mono text-xs text-error">{error}</p>}
 
               <button
                 onClick={compute}

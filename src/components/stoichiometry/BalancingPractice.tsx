@@ -22,7 +22,7 @@ function BalanceViz({ leftAtoms, rightAtoms }: { leftAtoms: number; rightAtoms: 
   const total       = leftAtoms + rightAtoms
   const targetAngle = total > 0 ? Math.max(-20, Math.min(20, (diff / total) * 32)) : 0
   const isBalanced  = total > 0 && diff === 0
-  const beamColor   = isBalanced ? '#4ade80' : 'rgba(var(--overlay),0.38)'
+  const beamColor   = isBalanced ? 'rgb(var(--color-success))' : 'rgba(var(--overlay),0.38)'
 
   const springAngle = useSpring(0, { stiffness: 180, damping: 26 })
   const gRef        = useRef<SVGGElement>(null)
@@ -78,7 +78,7 @@ const DIFFICULTIES: { id: Difficulty | 'all'; label: string }[] = [
 const DIFF_COLORS: Record<Difficulty, string> = {
   easy:   '#86efac',
   medium: '#fbbf24',
-  hard:   '#f87171',
+  hard:   'rgb(var(--color-error))',
 }
 
 // ── Equation display with inputs ──────────────────────────────────────────────
@@ -115,7 +115,7 @@ function CoeffInput({ value, onChange, correct, disabled, inputRef, onEnter }: C
                  [&::-webkit-inner-spin-button]:appearance-none"
       style={{
         border: `1px solid ${borderColor}`,
-        color: correct === true ? '#6ee7b7' : correct === false ? '#fca5a5' : 'var(--c-bright)',
+        color: correct === true ? 'rgb(var(--color-success))' : correct === false ? 'rgb(var(--color-error))' : 'rgb(var(--color-bright))',
       }}
     />
   )

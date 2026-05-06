@@ -50,7 +50,7 @@ export default function HeatTransferPractice({ allowCustom = true }: Props) {
         <div className="flex items-center gap-3">
           <div className="flex-1 h-1.5 rounded-full bg-raised overflow-hidden">
             <motion.div
-              className="h-full rounded-full bg-emerald-500"
+              className="h-full rounded-full" style={{ background: 'rgb(var(--color-success))' }}
               animate={{ width: `${(score.correct / score.total) * 100}%` }}
               transition={{ duration: 0.4 }}
             />
@@ -129,7 +129,7 @@ export default function HeatTransferPractice({ allowCustom = true }: Props) {
                 style={{
                   background: 'color-mix(in srgb, #34d399 18%, rgb(var(--color-surface)))',
                   border: '1px solid color-mix(in srgb, #34d399 40%, transparent)',
-                  color: '#34d399',
+                  color: 'rgb(var(--color-success))',
                 }}>
                 Next →
               </button>
@@ -140,7 +140,7 @@ export default function HeatTransferPractice({ allowCustom = true }: Props) {
                   style={{
                     background: 'color-mix(in srgb, #f87171 18%, rgb(var(--color-surface)))',
                     border: '1px solid color-mix(in srgb, #f87171 40%, transparent)',
-                    color: '#f87171',
+                    color: 'rgb(var(--color-error))',
                   }}>
                   Try Again
                 </button>
@@ -157,7 +157,7 @@ export default function HeatTransferPractice({ allowCustom = true }: Props) {
             <motion.p
               initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               className="font-mono text-sm"
-              style={{ color: correct ? '#34d399' : '#f87171' }}>
+              style={{ color: correct ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
               {correct
                 ? `✓ Correct! ${problem.solveFor} = ${problem.answer} ${problem.answerUnit}`
                 : showAnswers ? `✗ Incorrect. Answer: ${problem.answer} ${problem.answerUnit}` : '✗ Incorrect — try again'}

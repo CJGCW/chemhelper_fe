@@ -121,7 +121,7 @@ export default function KaKbTool() {
         )}
       </div>
 
-      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      {error && <p className="font-mono text-xs text-error">{error}</p>}
 
       {stepsOpen && result && (
         <div className="flex flex-col gap-1 p-3 rounded-sm border border-border"

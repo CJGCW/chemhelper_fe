@@ -313,7 +313,7 @@ function classify(a: Compound, b: Compound): ReactionResult {
 
 const TYPE_COLOR: Record<ReactionType, string> = {
   precipitation: '#60a5fa',   // blue
-  acid_base:     '#4ade80',   // green
+  acid_base:     'rgb(var(--color-success))',   // green
   gas_forming:   '#fbbf24',   // amber
   redox:         '#f472b6',   // pink
   no_reaction:   '#6b7280',   // gray

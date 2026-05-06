@@ -110,7 +110,7 @@ export default function TitrationCurvePractice({ allowCustom = true }: Props) {
     }))
   }
 
-  const verifyColor = verified === 'correct' ? '#4ade80' : verified === 'sig_fig_warning' ? '#facc15' : '#f87171'
+  const verifyColor = verified === 'correct' ? 'rgb(var(--color-success))' : verified === 'sig_fig_warning' ? '#facc15' : 'rgb(var(--color-error))'
 
   return (
     <div className="flex flex-col gap-5 max-w-lg">

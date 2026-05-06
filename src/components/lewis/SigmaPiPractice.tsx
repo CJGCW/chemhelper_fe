@@ -59,7 +59,7 @@ export default function SigmaPiPractice({ allowCustom: _allowCustom = true }: Pr
       {score.total > 0 && (
         <div className="flex items-center gap-3">
           <div className="flex-1 h-1.5 rounded-full bg-raised overflow-hidden">
-            <motion.div className="h-full rounded-full bg-emerald-500"
+            <motion.div className="h-full rounded-full" style={{ background: 'rgb(var(--color-success))' }}
               animate={{ width: `${(score.correct / score.total) * 100}%` }}
               transition={{ duration: 0.4 }} />
           </div>

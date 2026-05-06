@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import CompoundDisplay from '../shared/CompoundDisplay'
+import RenderableChoiceButton from '../shared/RenderableChoiceButton'
 
 type Relationship = 'Enantiomers' | 'Diastereomers' | 'Meso compound' | 'Identical'
 
@@ -141,19 +142,16 @@ export default function StereoisomerClassifier({ allowCustom = true }: Props) {
           </div>
 
           <div className="grid grid-cols-2 gap-2">
-            {OPTIONS.map(opt => {
-              const isSelected = selected === opt
-              const isCorrect = opt === problem.relationship
-              let style = 'border-border text-secondary hover:border-muted hover:text-primary'
-              if (checked && isCorrect) style = 'border-emerald-700/70 bg-emerald-950/25 text-success'
-              if (checked && isSelected && !isCorrect) style = 'border-rose-700/70 bg-rose-950/25 text-error'
-              return (
-                <button key={opt} disabled={checked} onClick={() => handleSelect(opt)}
-                  className={`text-left px-3 py-2.5 rounded-sm border font-sans text-sm transition-colors ${style}`}>
-                  {opt}
-                </button>
-              )
-            })}
+            {OPTIONS.map(opt => (
+              <RenderableChoiceButton
+                key={opt}
+                choice={{ label: opt }}
+                isSelected={selected === opt}
+                isCorrect={opt === problem.relationship}
+                isChecked={checked}
+                onSelect={() => handleSelect(opt)}
+              />
+            ))}
           </div>
 
           {checked && (

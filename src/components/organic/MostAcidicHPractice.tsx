@@ -136,7 +136,7 @@ export default function MostAcidicHPractice({ allowCustom: _allowCustom = true }
       {score.total > 0 && (
         <div className="flex items-center gap-3">
           <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgb(var(--color-raised))' }}>
-            <motion.div className="h-full rounded-full bg-emerald-500"
+            <motion.div className="h-full rounded-full" style={{ background: 'rgb(var(--color-success))' }}
               animate={{ width: `${(score.correct / score.total) * 100}%` }} transition={{ duration: 0.4 }} />
           </div>
           <span className="font-mono text-xs text-secondary shrink-0">{score.correct} / {score.total}</span>
@@ -161,8 +161,8 @@ export default function MostAcidicHPractice({ allowCustom: _allowCustom = true }
           let borderColor = 'rgb(var(--color-border))'
           let bg = 'rgb(var(--color-raised))'
           if (checked) {
-            if (isCorrect) { borderColor = 'rgb(34 197 94)'; bg = 'rgb(34 197 94 / 0.06)' }
-            else if (isSelected && !isCorrect) { borderColor = 'rgb(239 68 68)'; bg = 'rgb(239 68 68 / 0.06)' }
+            if (isCorrect) { borderColor = 'rgb(var(--color-success))'; bg = 'rgb(var(--color-success-bg) / 0.06)' }
+            else if (isSelected && !isCorrect) { borderColor = 'rgb(var(--color-error))'; bg = 'rgb(var(--color-error-bg) / 0.06)' }
           } else if (isSelected) {
             borderColor = 'var(--c-halogen)'
             bg = 'color-mix(in srgb, var(--c-halogen) 8%, rgb(var(--color-raised)))'
@@ -214,8 +214,8 @@ export default function MostAcidicHPractice({ allowCustom: _allowCustom = true }
       <AnimatePresence>
         {checked && (
           <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className={`rounded-sm border px-4 py-2.5 font-sans text-sm font-semibold ${correct ? 'text-success border-emerald-500/30' : 'text-red-400 border-red-500/30'}`}
-            style={{ background: correct ? 'rgb(34 197 94 / 0.06)' : 'rgb(239 68 68 / 0.06)' }}>
+            className={`rounded-sm border px-4 py-2.5 font-sans text-sm font-semibold ${correct ? 'text-success feedback-success' : 'text-error feedback-error'}`}
+            style={{ background: correct ? 'rgb(var(--color-success-bg) / 0.06)' : 'rgb(var(--color-error-bg) / 0.06)' }}>
             {correct ? '✓ Correct!' : `✗ Incorrect — ${problem.correctAnswer === 'A' ? optA.label : optB.label} (pKₐ ${problem.correctAnswer === 'A' ? optA.pka : optB.pka}) is more acidic.`}
           </motion.div>
         )}

@@ -55,7 +55,7 @@ export default function UnitCellReference() {
                   <td className="px-3 py-2 font-semibold text-primary">{c.name}</td>
                   <td className="px-3 py-2 text-primary">{c.atoms}</td>
                   <td className="px-3 py-2 text-primary">{c.coordination}</td>
-                  <td className="px-3 py-2" style={{ color: '#4ade80' }}>{c.packing}</td>
+                  <td className="px-3 py-2" style={{ color: 'rgb(var(--color-success))' }}>{c.packing}</td>
                   <td className="px-3 py-2 text-secondary">{c.edgeRadius}</td>
                   <td className="px-3 py-2 text-secondary">{c.example}</td>
                 </tr>

@@ -140,9 +140,9 @@ export default function VanDerWaalsTool() {
   }
 
   const devColor = result
-    ? Math.abs(result.deviationPct) < 2  ? '#4ade80'
+    ? Math.abs(result.deviationPct) < 2  ? 'rgb(var(--color-success))'
     : Math.abs(result.deviationPct) < 10 ? '#fbbf24'
-    : '#f87171'
+    : 'rgb(var(--color-error))'
     : 'var(--c-halogen)'
 
   return (
@@ -205,7 +205,7 @@ export default function VanDerWaalsTool() {
         unit={<span className="font-mono text-sm text-secondary px-2">atm</span>}
       />
 
-      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      {error && <p className="font-mono text-xs text-error">{error}</p>}
 
       {/* Buttons */}
       <div className="flex items-stretch gap-2">

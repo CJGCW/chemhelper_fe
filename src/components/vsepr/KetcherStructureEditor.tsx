@@ -428,7 +428,7 @@ function KetcherStructureEditor({ correctStructure, onValidated, resetKey, showC
           <div className="flex items-center gap-2">
             <span style={{ fontSize: 18 }}>{result.passed ? '✓' : '✗'}</span>
             <span className="font-sans font-semibold text-sm"
-              style={{ color: result.passed ? '#4ade80' : '#f87171' }}>
+              style={{ color: result.passed ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
               {result.passed ? 'Correct! Great work.' : 'Not quite — see details below.'}
             </span>
           </div>
@@ -436,7 +436,7 @@ function KetcherStructureEditor({ correctStructure, onValidated, resetKey, showC
             {result.checks.map((check, i) => (
               <div key={i} className="flex items-start gap-2">
                 <span className="font-mono text-xs shrink-0 w-3"
-                  style={{ color: check.passed ? '#4ade80' : '#f87171', marginTop: 1 }}>
+                  style={{ color: check.passed ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))', marginTop: 1 }}>
                   {check.passed ? '✓' : '✗'}
                 </span>
                 <div>

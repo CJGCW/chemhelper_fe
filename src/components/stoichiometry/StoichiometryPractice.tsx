@@ -157,9 +157,9 @@ export default function StoichiometryPractice({ allowCustom = true }: Props) {
                     className="px-5 py-2 rounded-sm font-mono text-base font-semibold transition-colors disabled:cursor-default"
                     style={
                       isCorrectChoice
-                        ? { background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.5)', color: '#6ee7b7' }
+                        ? { background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.5)', color: 'rgb(var(--color-success-strong))' }
                         : isWrongChoice
-                        ? { background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.4)', color: '#fca5a5' }
+                        ? { background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.4)', color: 'rgb(var(--color-error-strong))' }
                         : isSelected && !checked
                         ? { background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 45%, transparent)', color: 'var(--c-halogen)' }
                         : { background: 'transparent', border: '1px solid rgba(var(--overlay),0.15)', color: 'rgba(var(--overlay),0.6)' }

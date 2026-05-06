@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import RenderableChoiceButton from '../shared/RenderableChoiceButton'
 
 const DIRECTING_DATA = [
   { sub: '-NH₂, -NHR, -NR₂',     type: 'EDG', director: 'ortho/para', strength: 'Strong activator',      example: 'Aniline',              mechanism: 'Lone pair on N donates into ring via resonance → + charge ortho/para' },
@@ -134,11 +135,11 @@ export default function DirectingEffectsReference({ allowCustom = true }: Props)
                   <tr key={row.sub} className="border-b border-border/50 group">
                     <td className="py-2 pr-3 text-primary font-medium">{row.sub}</td>
                     <td className="py-2 pr-3">
-                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${row.type === 'EDG' ? 'bg-emerald-950/40 text-success' : 'bg-rose-950/40 text-error'}`}>
+                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${row.type === 'EDG' ? 'bg-success-bg text-success' : 'bg-error-bg text-error'}`}>
                         {row.type}
                       </span>
                     </td>
-                    <td className="py-2 pr-3" style={{ color: row.director === 'meta' ? '#f87171' : 'var(--c-halogen)' }}>
+                    <td className="py-2 pr-3" style={{ color: row.director === 'meta' ? 'rgb(var(--color-error))' : 'var(--c-halogen)' }}>
                       {row.director}
                     </td>
                     <td className="py-2 pr-3 text-dim text-xs">{row.strength}</td>
@@ -174,19 +175,16 @@ export default function DirectingEffectsReference({ allowCustom = true }: Props)
               </div>
 
               <div className="flex flex-col gap-2">
-                {options.map(opt => {
-                  const isSelected = selected === opt
-                  const isCorrect = opt === problem.majorPosition
-                  let style = 'border-border text-secondary hover:border-muted hover:text-primary'
-                  if (selected !== null && isCorrect) style = 'border-emerald-700/70 bg-emerald-950/25 text-success'
-                  if (selected !== null && isSelected && !isCorrect) style = 'border-rose-700/70 bg-rose-950/25 text-error'
-                  return (
-                    <button key={opt} disabled={selected !== null} onClick={() => setSelected(opt)}
-                      className={`text-left px-4 py-2.5 rounded-sm border font-sans text-sm transition-colors ${style}`}>
-                      {opt}
-                    </button>
-                  )
-                })}
+                {options.map(opt => (
+                  <RenderableChoiceButton
+                    key={opt}
+                    choice={{ label: opt }}
+                    isSelected={selected === opt}
+                    isCorrect={opt === problem.majorPosition}
+                    isChecked={selected !== null}
+                    onSelect={() => setSelected(opt)}
+                  />
+                ))}
               </div>
 
               {selected !== null && (

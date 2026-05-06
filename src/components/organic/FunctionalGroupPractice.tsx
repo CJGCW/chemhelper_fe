@@ -4,6 +4,7 @@ import {
   genFunctionalGroupProblem, checkFunctionalGroupAnswer, type FunctionalGroupProblem,
 } from '../../utils/organicPractice'
 import CompoundDisplay from '../shared/CompoundDisplay'
+import RenderableChoiceButton from '../shared/RenderableChoiceButton'
 
 type CheckState = 'idle' | 'correct' | 'wrong'
 
@@ -71,41 +72,16 @@ export default function FunctionalGroupPractice({ allowCustom = true }: Props) {
           <p className="font-sans text-base text-bright leading-relaxed">{problem.description}</p>
 
           <div className="grid grid-cols-2 gap-2">
-            {problem.options.map(option => {
-              const isSelected = selected === option
-              const isCorrect = option === problem.correctId
-              let optStyle: Record<string, string> = {
-                background: 'rgb(var(--color-raised))',
-                border: '1px solid rgb(var(--color-border))',
-                color: 'rgba(var(--overlay),0.6)',
-              }
-              if (checkState !== 'idle') {
-                if (isCorrect) {
-                  optStyle = {
-                    background: 'rgba(16,185,129,0.08)',
-                    border: '1px solid rgba(16,185,129,0.4)',
-                    color: '#34d399',
-                  }
-                } else if (isSelected && !isCorrect) {
-                  optStyle = {
-                    background: 'rgba(239,68,68,0.08)',
-                    border: '1px solid rgba(239,68,68,0.35)',
-                    color: '#f87171',
-                  }
-                }
-              }
-              return (
-                <button
-                  key={option}
-                  onClick={() => handleSelect(option)}
-                  disabled={checkState !== 'idle'}
-                  className="px-4 py-2.5 rounded-sm font-sans text-sm font-medium transition-colors text-left disabled:cursor-not-allowed"
-                  style={optStyle}
-                >
-                  {option}
-                </button>
-              )
-            })}
+            {problem.options.map(option => (
+              <RenderableChoiceButton
+                key={option}
+                choice={{ label: option }}
+                isSelected={selected === option}
+                isCorrect={option === problem.correctId}
+                isChecked={checkState !== 'idle'}
+                onSelect={() => handleSelect(option)}
+              />
+            ))}
           </div>
 
           {checkState !== 'idle' && (

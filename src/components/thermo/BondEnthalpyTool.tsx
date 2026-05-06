@@ -118,7 +118,7 @@ function BondPanel({
               />
               {rows.length > 1 && (
                 <button onClick={() => onRemove(row.id)}
-                  className="font-mono text-xs text-dim hover:text-red-400 transition-colors">×</button>
+                  className="font-mono text-xs text-dim hover:text-error transition-colors">×</button>
               )}
             </div>
             {contrib !== null && row.count !== '' && (
@@ -206,7 +206,7 @@ export default function BondEnthalpyTool() {
             setBrokenRows([newRow('H-H'), newRow('Cl-Cl')])
             setFormedRows([newRow('H-Cl')])
           }}
-          className="self-start font-mono text-xs text-dim hover:text-red-400 transition-colors"
+          className="self-start font-mono text-xs text-dim hover:text-error transition-colors"
         >
           Reset
         </button>
@@ -225,7 +225,7 @@ export default function BondEnthalpyTool() {
             </p>
             <p className="font-mono text-sm">
               ΔH ≈ <span className="font-bold text-xl"
-                style={{ color: dh < 0 ? '#34d399' : dh > 0 ? '#f87171' : 'rgba(var(--overlay),0.6)' }}>
+                style={{ color: dh < 0 ? 'rgb(var(--color-success))' : dh > 0 ? 'rgb(var(--color-error))' : 'rgba(var(--overlay),0.6)' }}>
                 {dh >= 0 ? '+' : ''}{dh.toFixed(0)} kJ
               </span>
               <span className="ml-3 text-xs text-dim">

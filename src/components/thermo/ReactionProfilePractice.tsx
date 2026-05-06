@@ -46,7 +46,7 @@ function clamp(y: number) { return Math.max(14, Math.min(H - 16, y)) }
 function ProfileDiagram({ problem }: { problem: ProfileProblem }) {
   const { dh, ea, reactantE, showValues } = problem
   const isExo = dh < 0
-  const accent = isExo ? '#34d399' : '#f87171'
+  const accent = isExo ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))'
 
   const effEa   = Math.max(ea, dh > 0 ? dh + 10 : 0, 8)
   const rY      = BASE_Y
@@ -281,13 +281,13 @@ export default function ReactionProfilePractice({ allowCustom = true }: Props) {
                   style = {
                     background: 'color-mix(in srgb, #34d399 15%, rgb(var(--color-raised)))',
                     border: '1px solid color-mix(in srgb, #34d399 50%, transparent)',
-                    color: '#34d399',
+                    color: 'rgb(var(--color-success))',
                   }
                 } else if (isSelected && !correct) {
                   style = {
                     background: 'color-mix(in srgb, #f87171 15%, rgb(var(--color-raised)))',
                     border: '1px solid color-mix(in srgb, #f87171 50%, transparent)',
-                    color: '#f87171',
+                    color: 'rgb(var(--color-error))',
                   }
                 } else if (!isSelected && checked && isCorrectAnswer) {
                   style = {

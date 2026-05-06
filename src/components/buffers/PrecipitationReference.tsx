@@ -21,7 +21,7 @@ export default function PrecipitationReference() {
             {
               condition: 'Q < Ksp',
               verdict: 'No precipitate',
-              color: '#4ade80',
+              color: 'rgb(var(--color-success))',
               explanation: 'Solution is unsaturated. More salt can dissolve.',
             },
             {
@@ -33,7 +33,7 @@ export default function PrecipitationReference() {
             {
               condition: 'Q > Ksp',
               verdict: 'Precipitate forms',
-              color: '#f87171',
+              color: 'rgb(var(--color-error))',
               explanation: 'Solution is supersaturated. Salt precipitates until Q = Ksp.',
             },
           ].map(row => (
@@ -71,7 +71,7 @@ export default function PrecipitationReference() {
               <p key={i} className="font-mono text-sm text-primary">{step}</p>
             ))}
           </div>
-          <p className="font-mono text-sm font-semibold" style={{ color: '#f87171' }}>
+          <p className="font-mono text-sm font-semibold" style={{ color: 'rgb(var(--color-error))' }}>
             {'∴ Q > Ksp → BaSO₄ precipitates'}
           </p>
         </div>

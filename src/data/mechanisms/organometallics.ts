@@ -47,6 +47,26 @@ export const ORGANOMETALLIC_REACTIONS: ReactionDef[] = [
     reactants: 'RMgX + H₂C=O (formaldehyde)',
     products: 'RCH₂OH (1° alcohol)',
     conditions: 'Anhydrous ether or THF; −78 °C to rt; then H₃O⁺ workup',
+    reactantSpecies: {
+      text: 'RMgX + H₂C=O (formaldehyde)',
+      species: [
+        { smiles: '[R][Mg]Br', label: 'Grignard (RMgX)' },
+        { smiles: 'C=O', label: 'Formaldehyde' },
+      ],
+    },
+    productSpecies: {
+      text: 'RCH₂OH (1° alcohol)',
+      species: [
+        { smiles: '[R]CO', label: '1° Alcohol (RCH₂OH)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Anhydrous ether or THF; −78 °C to rt; then H₃O⁺ workup',
+      species: [
+        { smiles: 'CCOCC', label: 'Et₂O (anhydrous)', catalyst: true },
+        { smiles: '[H+]', label: 'H₃O⁺ (workup)' },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: null,
     stereochemistry: null,
@@ -124,6 +144,26 @@ export const ORGANOMETALLIC_REACTIONS: ReactionDef[] = [
     reactants: 'RMgX + R′CHO',
     products: 'R′CH(OH)R (2° alcohol)',
     conditions: 'Anhydrous ether or THF; rt; then H₃O⁺ workup',
+    reactantSpecies: {
+      text: 'RMgX + R′CHO',
+      species: [
+        { smiles: '[R][Mg]Br', label: 'Grignard (RMgX)' },
+        { smiles: "[R]C=O", label: "Aldehyde (R'CHO)" },
+      ],
+    },
+    productSpecies: {
+      text: 'R′CH(OH)R (2° alcohol)',
+      species: [
+        { smiles: "[R]C(O)[R]", label: '2° Alcohol' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Anhydrous ether or THF; rt; then H₃O⁺ workup',
+      species: [
+        { smiles: 'CCOCC', label: 'Et₂O (anhydrous)', catalyst: true },
+        { smiles: '[H+]', label: 'H₃O⁺ (workup)' },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: null,
     stereochemistry: null,
@@ -203,6 +243,26 @@ export const ORGANOMETALLIC_REACTIONS: ReactionDef[] = [
     reactants: 'RMgX + R′COR′′',
     products: 'R′R′′C(OH)R (3° alcohol)',
     conditions: 'Anhydrous ether or THF; rt (slower than with aldehydes); then H₃O⁺ workup',
+    reactantSpecies: {
+      text: 'RMgX + R′COR′′',
+      species: [
+        { smiles: '[R][Mg]Br', label: 'Grignard (RMgX)' },
+        { smiles: "[R]C(=O)[R]", label: "Ketone (R'COR'')" },
+      ],
+    },
+    productSpecies: {
+      text: 'R′R′′C(OH)R (3° alcohol)',
+      species: [
+        { smiles: '[R]C(O)([R])[R]', label: '3° Alcohol' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Anhydrous ether or THF; rt (slower than with aldehydes); then H₃O⁺ workup',
+      species: [
+        { smiles: 'CCOCC', label: 'Et₂O (anhydrous)', catalyst: true },
+        { smiles: '[H+]', label: 'H₃O⁺ (workup)' },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: null,
     stereochemistry: null,
@@ -282,6 +342,26 @@ export const ORGANOMETALLIC_REACTIONS: ReactionDef[] = [
     reactants: 'RMgX + CO₂ (dry ice)',
     products: 'RCOOH (carboxylic acid, +1C)',
     conditions: 'Pour Grignard solution over dry ice (solid CO₂); then H₃O⁺ workup; anhydrous',
+    reactantSpecies: {
+      text: 'RMgX + CO₂ (dry ice)',
+      species: [
+        { smiles: '[R][Mg]Br', label: 'Grignard (RMgX)' },
+        { smiles: 'O=C=O', label: 'CO₂ (dry ice)' },
+      ],
+    },
+    productSpecies: {
+      text: 'RCOOH (carboxylic acid, +1C)',
+      species: [
+        { smiles: '[R]C(=O)O', label: 'Carboxylic acid (RCOOH)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Pour Grignard solution over dry ice (solid CO₂); then H₃O⁺ workup; anhydrous',
+      species: [
+        { smiles: 'O=C=O', label: 'CO₂ (dry ice)' },
+        { smiles: '[H+]', label: 'H₃O⁺ (workup)' },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: null,
     stereochemistry: null,
@@ -351,6 +431,26 @@ export const ORGANOMETALLIC_REACTIONS: ReactionDef[] = [
     reactants: '2 RMgX + R′COOR′′',
     products: 'R′R₂COH (3° alcohol, 2 identical R groups)',
     conditions: 'Excess RMgX (≥ 2 eq), anhydrous ether or THF; then H₃O⁺ workup',
+    reactantSpecies: {
+      text: '2 RMgX + R′COOR′′',
+      species: [
+        { smiles: '[R][Mg]Br', label: 'Grignard (RMgX, 2 eq)' },
+        { smiles: "[R]C(=O)OC", label: "Ester (R'COOR'')" },
+      ],
+    },
+    productSpecies: {
+      text: 'R′R₂COH (3° alcohol, 2 identical R groups)',
+      species: [
+        { smiles: '[R]C(O)([R])[R]', label: '3° Alcohol (2× R from Grignard)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Excess RMgX (≥ 2 eq), anhydrous ether or THF; then H₃O⁺ workup',
+      species: [
+        { smiles: 'CCOCC', label: 'Et₂O (anhydrous)', catalyst: true },
+        { smiles: '[H+]', label: 'H₃O⁺ (workup)' },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: null,
     stereochemistry: null,
@@ -425,6 +525,26 @@ export const ORGANOMETALLIC_REACTIONS: ReactionDef[] = [
     reactants: 'RMgX + epoxide',
     products: 'Alcohol (chain extended by 2C with OH at β-position)',
     conditions: 'Anhydrous ether or THF; rt; then H₃O⁺ workup; BF₃ catalyst possible for 2,3-epoxides',
+    reactantSpecies: {
+      text: 'RMgX + epoxide',
+      species: [
+        { smiles: '[R][Mg]Br', label: 'Grignard (RMgX)' },
+        { smiles: 'C1CO1', label: 'Epoxide' },
+      ],
+    },
+    productSpecies: {
+      text: 'Alcohol (chain extended by 2C with OH at β-position)',
+      species: [
+        { smiles: '[R]CCO', label: 'β-Hydroxy product' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Anhydrous ether or THF; rt; then H₃O⁺ workup; BF₃ catalyst possible for 2,3-epoxides',
+      species: [
+        { smiles: 'CCOCC', label: 'Et₂O (anhydrous)', catalyst: true },
+        { smiles: '[H+]', label: 'H₃O⁺ (workup)' },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: 'anti-markovnikov',
     stereochemistry: 'inversion',
@@ -516,6 +636,25 @@ export const ORGANOMETALLIC_REACTIONS: ReactionDef[] = [
     reactants: 'R₂CuLi + R′-X',
     products: 'R-R′ (coupled product) + RCu + LiX',
     conditions: 'Anhydrous ether or THF, −78 °C to 0 °C; X = Cl, Br, I; does not work with F',
+    reactantSpecies: {
+      text: 'R₂CuLi + R′-X',
+      species: [
+        { smiles: '[Cu]([R])[R].[Li+]', label: 'Gilman reagent (R₂CuLi)' },
+        { smiles: "[R]Br", label: "R'–X (alkyl/vinyl/aryl halide)" },
+      ],
+    },
+    productSpecies: {
+      text: 'R-R′ (coupled product) + RCu + LiX',
+      species: [
+        { smiles: '[R][R]', label: "R-R' (coupled product)" },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Anhydrous ether or THF, −78 °C to 0 °C; X = Cl, Br, I; does not work with F',
+      species: [
+        { smiles: 'CCOCC', label: 'Et₂O (anhydrous)', catalyst: true },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: null,
@@ -570,6 +709,26 @@ export const ORGANOMETALLIC_REACTIONS: ReactionDef[] = [
     reactants: 'RC≡CH + NaNH₂ → RC≡C⁻; then R′CHO',
     products: 'RC≡C-C(OH)(H)R′ (propargylic alcohol)',
     conditions: 'NaNH₂ (or n-BuLi), anhydrous THF; −78 °C to rt; then H₃O⁺ workup',
+    reactantSpecies: {
+      text: 'RC≡CH + NaNH₂ → RC≡C⁻; then R′CHO',
+      species: [
+        { smiles: '[R]C#C[H]', label: 'Terminal alkyne' },
+        { smiles: "[R]C=O", label: "Aldehyde (R'CHO)" },
+      ],
+    },
+    productSpecies: {
+      text: 'RC≡C-C(OH)(H)R′ (propargylic alcohol)',
+      species: [
+        { smiles: '[R]C#CC(O)[R]', label: 'Propargylic alcohol' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'NaNH₂ (or n-BuLi), anhydrous THF; −78 °C to rt; then H₃O⁺ workup',
+      species: [
+        { smiles: '[NH2-].[Na+]', label: 'NaNH₂' },
+        { smiles: '[H+]', label: 'H₃O⁺ (workup)' },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: null,
     stereochemistry: null,
@@ -636,6 +795,26 @@ export const ORGANOMETALLIC_REACTIONS: ReactionDef[] = [
     reactants: 'Aldehyde or ketone + HCN (or NaCN/H⁺)',
     products: 'Cyanohydrin (R₂C(OH)CN)',
     conditions: 'NaCN (or KCN) + catalytic H⁺; or HCN (toxic); pH ≈ 8–11 optimal; reversible',
+    reactantSpecies: {
+      text: 'Aldehyde or ketone + HCN (or NaCN/H⁺)',
+      species: [
+        { smiles: '[R]C(=O)[R]', label: 'Aldehyde/Ketone' },
+        { smiles: 'N#C[H]', label: 'HCN', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'Cyanohydrin (R₂C(OH)CN)',
+      species: [
+        { smiles: '[R]C(O)(C#N)[R]', label: 'Cyanohydrin' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'NaCN (or KCN) + catalytic H⁺; or HCN (toxic); pH ≈ 8–11 optimal; reversible',
+      species: [
+        { smiles: '[Na+].[C-]#N', label: 'NaCN' },
+        { smiles: '[H+]', label: 'H⁺ (cat.)', catalyst: true },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: null,
     stereochemistry: null,

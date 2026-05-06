@@ -40,6 +40,19 @@
   --c-actinide:        #fb7185;
   --c-unknown:         #475569;
 
+  /* Functional-group / chemistry-class colors */
+  --c-alkane:   #4ade80;  /* green — saturated hydrocarbon */
+  --c-alkene:   #34d399;  /* emerald — unsaturated C=C */
+  --c-aromatic: #c084fc;  /* purple — aromatic ring */
+  --c-alcohol:  #38bdf8;  /* sky blue — O-containing */
+  --c-amine:    #f472b6;  /* pink — N-containing */
+  --c-acid:     #fb923c;  /* orange — acidic */
+  --c-tm:       #facc15;  /* yellow — transition metal / catalysis */
+
+  /* Text semantic aliases — full rgb() values so color: var(--color-text-*) works directly */
+  --color-text-primary:   rgb(200 205 216);
+  --color-text-secondary: rgb(123 130 160);
+
   /* Feedback colors — semantic, theme-aware (dark mode defaults) */
   --color-success:        52 211 153;   /* emerald-400 */
   --color-success-strong: 110 231 183;  /* emerald-300 */
@@ -71,6 +84,19 @@
   --color-accent-dim:  186 230 253;
 
   --overlay: 0, 0, 0;
+
+  /* Functional-group colors — darker for light backgrounds */
+  --c-alkane:   #16a34a;  /* green-600 */
+  --c-alkene:   #059669;  /* emerald-600 */
+  --c-aromatic: #9333ea;  /* purple-600 */
+  --c-alcohol:  #0284c7;  /* sky-600 */
+  --c-amine:    #db2777;  /* pink-600 */
+  --c-acid:     #ea580c;  /* orange-600 */
+  --c-tm:       #ca8a04;  /* yellow-600 */
+
+  /* Text aliases — light mode overrides */
+  --color-text-primary:   rgb(30 34 53);
+  --color-text-secondary: rgb(94 102 129);
 
   /* Darker element group colors for light backgrounds */
   --c-hydrogen:        #64748b;

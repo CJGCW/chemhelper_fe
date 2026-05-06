@@ -213,7 +213,7 @@ export default function BufferTool() {
       <StepsContent {...stepsState} />
 
       {error && (
-        <p className="font-sans text-sm text-red-400">{error}</p>
+        <p className="font-sans text-sm text-error">{error}</p>
       )}
 
       {result !== null && !error && (

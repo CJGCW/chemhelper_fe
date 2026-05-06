@@ -77,7 +77,7 @@ export default function BindingEnergyReference() {
                   <td className="px-4 py-2 font-mono text-right text-primary text-xs">{n.massDefect.toFixed(6)}</td>
                   <td className="px-4 py-2 font-mono text-right text-primary">{n.totalBE.toFixed(2)}</td>
                   <td className="px-4 py-2 font-mono text-right font-semibold"
-                    style={{ color: n.bePerNucleon > 8 ? '#4ade80' : n.bePerNucleon > 6 ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.6)' }}>
+                    style={{ color: n.bePerNucleon > 8 ? 'rgb(var(--color-success))' : n.bePerNucleon > 6 ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.6)' }}>
                     {n.bePerNucleon.toFixed(3)}
                   </td>
                 </tr>

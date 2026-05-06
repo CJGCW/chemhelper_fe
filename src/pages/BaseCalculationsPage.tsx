@@ -609,7 +609,7 @@ export default function BaseCalculationsPage() {
                   />
                 </div>
 
-                {opError && <p className="font-mono text-xs text-red-400">{opError}</p>}
+                {opError && <p className="font-mono text-xs text-error">{opError}</p>}
 
                 <button
                   onClick={calculate}
@@ -797,7 +797,7 @@ export default function BaseCalculationsPage() {
                       <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm shrink-0"
                         style={{
                           background: 'color-mix(in srgb, #34d399 12%, transparent)',
-                          color: '#34d399',
+                          color: 'rgb(var(--color-success))',
                           border: '1px solid color-mix(in srgb, #34d399 25%, transparent)',
                         }}>
                         {ex.badge}

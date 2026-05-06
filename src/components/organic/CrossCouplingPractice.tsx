@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { generateCrossCouplingProblem, checkCrossCouplingAnswer } from '../../utils/crossCouplingPractice'
 import type { CrossCouplingProblem, CrossCouplingProblemType } from '../../utils/crossCouplingPractice'
 import CompoundDisplay from '../shared/CompoundDisplay'
+import RenderableChoiceButton from '../shared/RenderableChoiceButton'
 
 interface Props { allowCustom?: boolean }
 
@@ -103,25 +104,16 @@ export default function CrossCouplingPractice({ allowCustom: _allowCustom = true
           <p className="font-sans text-sm text-secondary font-medium">{question.question}</p>
 
           <div className="flex flex-col gap-2">
-            {question.choices.map(opt => {
-              const isSelected = selected === opt
-              const isCorrect  = opt === question.answer
-              let style: React.CSSProperties = { background: 'rgb(var(--color-raised))', border: '1px solid rgb(var(--color-border))', color: 'rgba(var(--overlay),0.6)' }
-              if (checked) {
-                if (isCorrect) style = { background: 'rgb(var(--color-success-bg) / 0.35)', border: '1px solid rgb(var(--color-success-border) / 0.5)', color: 'rgb(var(--color-success))' }
-                else if (isSelected) style = { background: 'rgb(var(--color-error-bg) / 0.35)', border: '1px solid rgb(var(--color-error-border) / 0.4)', color: 'rgb(var(--color-error))' }
-              } else if (isSelected) {
-                style = { background: activeTint, border: `1px solid ${activeBorder}`, color: 'var(--c-halogen)' }
-              }
-              return (
-                <button key={opt} onClick={() => handleSelect(opt)} disabled={checked}
-                  className="px-4 py-2.5 rounded-sm font-mono text-sm text-left transition-colors disabled:cursor-not-allowed leading-snug"
-                  style={style}
-                >
-                  {opt}
-                </button>
-              )
-            })}
+            {question.choices.map(opt => (
+              <RenderableChoiceButton
+                key={opt}
+                choice={{ label: opt }}
+                isSelected={selected === opt}
+                isCorrect={opt === question.answer}
+                isChecked={checked}
+                onSelect={() => handleSelect(opt)}
+              />
+            ))}
           </div>
 
           {checked && (

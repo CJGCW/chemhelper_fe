@@ -59,7 +59,7 @@ export default function SynthesisFillInPractice({ allowCustom: _allowCustom = tr
       {score.total > 0 && (
         <div className="flex items-center gap-3">
           <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgb(var(--color-raised))' }}>
-            <motion.div className="h-full rounded-full bg-emerald-500"
+            <motion.div className="h-full rounded-full" style={{ background: 'rgb(var(--color-success))' }}
               animate={{ width: `${(score.correct / score.total) * 100}%` }}
               transition={{ duration: 0.4 }} />
           </div>
@@ -117,7 +117,7 @@ export default function SynthesisFillInPractice({ allowCustom: _allowCustom = tr
 
             return (
               <div key={i} className="flex flex-col gap-2 pl-4 border-l-2"
-                style={{ borderColor: isCorrect ? 'rgb(34 197 94)' : isWrong ? 'rgb(239 68 68)' : 'rgba(var(--overlay),0.15)' }}>
+                style={{ borderColor: isCorrect ? 'rgb(var(--color-success))' : isWrong ? 'rgb(var(--color-error))' : 'rgba(var(--overlay),0.15)' }}>
 
                 <div className="flex items-center gap-2">
                   <span className="font-mono text-[10px] text-dim">Step {i + 1}</span>
@@ -132,16 +132,16 @@ export default function SynthesisFillInPractice({ allowCustom: _allowCustom = tr
                       className="flex-1 px-3 py-1.5 rounded-sm border font-mono text-xs text-primary outline-none transition-colors"
                       style={{
                         background: 'rgb(var(--color-surface))',
-                        borderColor: isCorrect ? 'rgb(34 197 94)' : isWrong ? 'rgb(239 68 68)' : 'rgba(var(--overlay),0.2)',
+                        borderColor: isCorrect ? 'rgb(var(--color-success))' : isWrong ? 'rgb(var(--color-error))' : 'rgba(var(--overlay),0.2)',
                       }}
                     />
-                    {isCorrect && <span className="text-emerald-500 font-mono text-xs">✓</span>}
-                    {isWrong   && <span className="text-red-500 font-mono text-xs">✗</span>}
+                    {isCorrect && <span className="text-success font-mono text-xs">✓</span>}
+                    {isWrong   && <span className="text-error font-mono text-xs">✗</span>}
                   </div>
                 </div>
 
                 {isWrong && (
-                  <div className="ml-2 rounded-sm border border-red-500/20 px-3 py-2" style={{ background: 'rgb(239 68 68 / 0.05)' }}>
+                  <div className="ml-2 rounded-sm border feedback-error px-3 py-2" style={{ background: 'rgb(var(--color-error-bg) / 0.15)' }}>
                     <span className="font-sans text-xs text-secondary">
                       <span className="text-dim">Correct: </span>
                       <span className="font-mono text-primary">{step.reagents}</span>
@@ -163,7 +163,7 @@ export default function SynthesisFillInPractice({ allowCustom: _allowCustom = tr
           <div className="rounded-sm border px-4 py-3 self-start"
             style={{
               background: allCorrect ? 'rgb(34 197 94 / 0.06)' : 'rgb(var(--color-raised))',
-              borderColor: allCorrect ? 'rgb(34 197 94)' : 'rgba(var(--overlay),0.15)',
+              borderColor: allCorrect ? 'rgb(var(--color-success))' : 'rgba(var(--overlay),0.15)',
             }}>
             <span className="font-mono text-xs text-dim block mb-0.5">Target</span>
             {problem.target.smiles ? (

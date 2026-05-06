@@ -191,7 +191,7 @@ export default function MolesTool() {
           unit={<span className="font-mono text-sm text-secondary px-2">mol</span>}
         />
 
-        {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+        {error && <p className="font-mono text-xs text-error">{error}</p>}
 
         <div className="flex items-stretch gap-2">
           <button onClick={calculate} className="shrink-0 py-2 px-5 rounded-sm font-sans font-medium text-sm transition-all"

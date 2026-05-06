@@ -43,7 +43,7 @@ export default function PolyproticPractice({ allowCustom: _allowCustom = true }:
     setScore(s => ({ correct: s.correct + (isCorrect ? 1 : 0), total: s.total + 1 }))
   }
 
-  const verifyColor = verifyState === 'correct' ? '#22c55e' : verifyState === 'incorrect' ? '#ef4444' : undefined
+  const verifyColor = verifyState === 'correct' ? 'rgb(var(--color-success))' : verifyState === 'incorrect' ? 'rgb(var(--color-error))' : undefined
 
   return (
     <div className="flex flex-col gap-5 max-w-lg">

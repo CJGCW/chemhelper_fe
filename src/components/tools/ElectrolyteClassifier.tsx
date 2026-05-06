@@ -323,7 +323,7 @@ const STRENGTH_LABEL: Record<ElectrolyteStrength, string> = {
 }
 
 const STRENGTH_COLOR: Record<ElectrolyteStrength, string> = {
-  strong: '#4ade80',   // green
+  strong: 'rgb(var(--color-success))',   // green
   weak:   '#fbbf24',   // amber
   non:    '#6b7280',   // gray
 }

@@ -222,7 +222,7 @@ export default function VseprPage() {
               aria-label="Ionic charge"
               className="flex-1 min-w-0 font-mono text-sm bg-raised border border-border rounded-l-sm
                          px-3 py-2.5 text-primary focus:outline-none transition-colors text-right"
-              style={{ borderColor: chargeError ? '#f87171' : undefined }}
+              style={{ borderColor: chargeError ? 'rgb(var(--color-error))' : undefined }}
             />
             <span className="flex items-center px-2 font-mono text-xs text-dim bg-raised
                              border border-l-0 border-border rounded-r-sm shrink-0">
@@ -247,7 +247,7 @@ export default function VseprPage() {
           </button>
         </div>
 
-        {chargeError && <p className="font-mono text-[10px] text-red-400">{chargeError}</p>}
+        {chargeError && <p className="font-mono text-[10px] text-error">{chargeError}</p>}
         {resolved && (
           <p className="font-mono text-[10px]" style={{ color: 'var(--c-halogen)' }}>
             Resolved: {resolved.from} → {resolved.to}
@@ -270,7 +270,7 @@ export default function VseprPage() {
         </div>
       </div>
 
-      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      {error && <p className="font-mono text-xs text-error">{error}</p>}
 
       {/* Result */}
       <AnimatePresence mode="wait">

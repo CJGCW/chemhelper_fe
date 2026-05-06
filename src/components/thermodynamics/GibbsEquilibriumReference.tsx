@@ -94,7 +94,7 @@ export default function GibbsEquilibriumReference() {
               {[
                 { dg: '< 0', k: '> 1', e: '> 0', favor: 'Products', color: 'text-success' },
                 { dg: '= 0', k: '= 1', e: '= 0', favor: 'Equilibrium', color: 'text-secondary' },
-                { dg: '> 0', k: '< 1', e: '< 0', favor: 'Reactants', color: 'text-red-400' },
+                { dg: '> 0', k: '< 1', e: '< 0', favor: 'Reactants', color: 'text-error' },
               ].map((row, i) => (
                 <tr key={i} className="border-b border-border/50">
                   <td className="py-2 pr-4 text-primary">{row.dg}</td>

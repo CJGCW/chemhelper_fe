@@ -100,7 +100,7 @@ export default function GibbsTempPractice({ allowCustom = true }: Props) {
       </div>
 
       {verify && (
-        <p className={`font-mono text-sm font-semibold ${verify === 'correct' ? 'text-success' : 'text-red-400'}`}>
+        <p className={`font-mono text-sm font-semibold ${verify === 'correct' ? 'text-success' : 'text-error'}`}>
           {verify === 'correct' ? '✓ Correct!' : `✗ Incorrect. Answer: ${problem.answer.toFixed(1)} K`}
         </p>
       )}

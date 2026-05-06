@@ -230,7 +230,7 @@ function AnimatedUnitTag({
   if (!cancelled) {
     return (
       <span className="font-mono text-xs leading-none font-medium"
-        style={{ color: result ? '#4ade80' : 'var(--c-halogen)' }}>
+        style={{ color: result ? 'rgb(var(--color-success))' : 'var(--c-halogen)' }}>
         {unit}
       </span>
     )
@@ -318,7 +318,7 @@ function ResultValue({ value, numUnit, denUnit }: { value: string; numUnit: stri
   return (
     <div className="flex flex-col items-center shrink-0">
       <div className="flex items-baseline gap-1.5">
-        <span className="font-mono text-xl font-bold" style={{ color: '#4ade80' }}>{value}</span>
+        <span className="font-mono text-xl font-bold" style={{ color: 'rgb(var(--color-success))' }}>{value}</span>
         {!denUnit && <AnimatedUnitTag unit={numUnit} cancelled={false} result />}
         {denUnit && (
           <div className="flex flex-col items-center">
@@ -517,7 +517,7 @@ export default function ConversionExamples() {
                 <span className="font-sans text-xs text-secondary">— cancelled</span>
               </div>
               <div className="flex items-center gap-1">
-                <span className="font-mono text-xs" style={{ color: '#4ade80' }}>unit</span>
+                <span className="font-mono text-xs" style={{ color: 'rgb(var(--color-success))' }}>unit</span>
                 <span className="font-sans text-xs text-secondary">— result</span>
               </div>
             </motion.div>
@@ -548,8 +548,8 @@ export default function ConversionExamples() {
                 transition={{ delay: (analysis.steps.length + 1) * BLOCK_STAGGER + 0.1, duration: 0.18 }}
                 className="flex items-start gap-2.5 pt-1"
               >
-                <span className="font-mono text-[10px] shrink-0 mt-[2px] w-10" style={{ color: '#4ade80' }}>Result</span>
-                <p className="font-mono text-sm font-semibold" style={{ color: '#4ade80' }}>
+                <span className="font-mono text-[10px] shrink-0 mt-[2px] w-10" style={{ color: 'rgb(var(--color-success))' }}>Result</span>
+                <p className="font-mono text-sm font-semibold" style={{ color: 'rgb(var(--color-success))' }}>
                   {analysis.resultValue}{' '}
                   {analysis.resultNumUnit}{analysis.resultDenUnit ? `/${analysis.resultDenUnit}` : ''}
                 </p>

@@ -142,13 +142,13 @@ function fmtAtm(P: number): string {
 
 const PHASE_COLOR: Record<string, string> = {
   Solid:        '#60a5fa',
-  Liquid:       '#34d399',
+  Liquid:       'rgb(var(--color-success))',
   Gas:          '#c084fc',
   Supercritical:'#fbbf24',
 }
 
 const CURVE_COLOR = {
-  sublimation:  '#fb923c',
+  sublimation:  'rgb(var(--color-warning))',
   vaporization: '#f43f5e',
   fusion:       '#60a5fa',
 }

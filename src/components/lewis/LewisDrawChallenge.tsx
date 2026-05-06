@@ -99,7 +99,7 @@ export default function LewisDrawChallenge() {
             <span className="font-sans font-semibold text-bright text-xl">{compound.label}</span>
             {fetching && <span className="font-mono text-xs text-secondary animate-pulse">loading…</span>}
           </div>
-          {fetchError && <p className="font-mono text-xs text-red-400 mt-1">{fetchError}</p>}
+          {fetchError && <p className="font-mono text-xs text-error mt-1">{fetchError}</p>}
         </div>
 
         {/* Score */}

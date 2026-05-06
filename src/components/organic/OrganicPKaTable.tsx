@@ -33,7 +33,7 @@ export default function OrganicPKaTable() {
     gray:   { row: 'bg-transparent',                                                          badge: 'bg-secondary/10 text-secondary' },
     blue:   { row: 'bg-blue-500/5',                                                           badge: 'bg-blue-500/15 text-blue-400'   },
     yellow: { row: 'bg-yellow-500/5',                                                         badge: 'bg-yellow-500/15 text-yellow-400' },
-    red:    { row: 'bg-red-500/5',                                                            badge: 'bg-red-500/15 text-red-400'     },
+    red:    { row: 'bg-red-500/5',                                                            badge: 'bg-red-500/15 text-error'     },
   }
 
   const legend = [

@@ -88,7 +88,7 @@ export default function TrendCompare({ elementA, elementB, onClear }: Props) {
         </div>
         <button
           onClick={onClear}
-          className="font-mono text-[10px] text-dim hover:text-red-400 transition-colors"
+          className="font-mono text-[10px] text-dim hover:text-error transition-colors"
         >
           clear
         </button>

@@ -37,8 +37,8 @@ interface Seg {
 
 const PHASE: Record<Phase, { color: string; label: string; shortLabel: string }> = {
   solid:        { color: '#60a5fa', label: 'Solid heating/cooling',   shortLabel: 'Solid'   },
-  melting:      { color: '#fb923c', label: 'Melting / Freezing',      shortLabel: 'Melt'    },
-  liquid:       { color: '#34d399', label: 'Liquid heating/cooling',  shortLabel: 'Liquid'  },
+  melting:      { color: 'rgb(var(--color-warning))', label: 'Melting / Freezing',      shortLabel: 'Melt'    },
+  liquid:       { color: 'rgb(var(--color-success))', label: 'Liquid heating/cooling',  shortLabel: 'Liquid'  },
   vaporization: { color: '#f43f5e', label: 'Vaporization / Condensation', shortLabel: 'Vap.' },
   gas:          { color: '#c084fc', label: 'Gas heating/cooling',     shortLabel: 'Gas'     },
 }
@@ -453,12 +453,12 @@ export default function HeatingCurveTool() {
                         </div>
                       </td>
                       <td className="px-3 py-2 text-right">
-                        <span style={{ color: seg.q > 0 ? '#fb923c' : '#60a5fa' }}>
+                        <span style={{ color: seg.q > 0 ? 'rgb(var(--color-warning))' : '#60a5fa' }}>
                           {seg.q > 0 ? '+' : ''}{seg.q.toFixed(1)}
                         </span>
                       </td>
                       <td className="px-3 py-2 text-right">
-                        <span style={{ color: seg.q > 0 ? '#fb923c' : '#60a5fa' }}>
+                        <span style={{ color: seg.q > 0 ? 'rgb(var(--color-warning))' : '#60a5fa' }}>
                           {seg.q > 0 ? '+' : ''}{(seg.q / 1000).toPrecision(3)}
                         </span>
                       </td>
@@ -473,11 +473,11 @@ export default function HeatingCurveTool() {
                 <tr className="border-t border-border bg-raised">
                   <td colSpan={3} className="px-3 py-2 font-semibold text-bright">Total</td>
                   <td className="px-3 py-2 text-right font-semibold"
-                    style={{ color: totalQ > 0 ? '#fb923c' : '#60a5fa' }}>
+                    style={{ color: totalQ > 0 ? 'rgb(var(--color-warning))' : '#60a5fa' }}>
                     {totalQ > 0 ? '+' : ''}{totalQ.toFixed(1)} J
                   </td>
                   <td className="px-3 py-2 text-right font-semibold"
-                    style={{ color: totalQ > 0 ? '#fb923c' : '#60a5fa' }}>
+                    style={{ color: totalQ > 0 ? 'rgb(var(--color-warning))' : '#60a5fa' }}>
                     {totalQ > 0 ? '+' : ''}{(totalQ / 1000).toPrecision(4)} kJ
                   </td>
                   <td />
@@ -499,12 +499,12 @@ export default function HeatingCurveTool() {
             {
               title: 'Slopes — q = mc∆T',
               body:  'Temperature changes while a single phase is heated or cooled. Steeper slope = lower specific heat c. Shallower slope = higher c (more heat needed per °C).',
-              color: '#34d399',
+              color: 'rgb(var(--color-success))',
             },
             {
               title: 'Plateaus — q = n∆H',
               body:  'Temperature stays constant during a phase transition. All energy goes into breaking/forming intermolecular forces, not raising temperature.',
-              color: '#fb923c',
+              color: 'rgb(var(--color-warning))',
             },
             {
               title: 'Plateau Length',

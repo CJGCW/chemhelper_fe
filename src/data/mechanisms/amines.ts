@@ -25,6 +25,27 @@ export const AMINE_REACTIONS: ReactionDef[] = [
     reactants: 'Phthalimide + KOH + R-X (1° or methyl halide)',
     products: 'R-NH₂ (1° amine) + phthalic acid',
     conditions: '(1) Phthalimide + KOH → phthalimide anion; (2) SN2 with RX; (3) NH₂NH₂ (Ing-Manske) or H₃O⁺/Δ',
+    reactantSpecies: {
+      text: 'Phthalimide + KOH + R-X (1° or methyl halide)',
+      species: [
+        { smiles: 'O=C1NC(=O)c2ccccc21', label: 'Phthalimide' },
+        { smiles: '[R]Br', label: 'R–X (1° alkyl halide)' },
+      ],
+    },
+    productSpecies: {
+      text: 'R-NH₂ (1° amine) + phthalic acid',
+      species: [
+        { smiles: '[R]N', label: '1° Amine (R-NH₂)', showLonePairs: true },
+        { smiles: 'OC(=O)c1ccccc1C(=O)O', label: 'Phthalic acid' },
+      ],
+    },
+    conditionSpecies: {
+      text: '(1) Phthalimide + KOH → phthalimide anion; (2) SN2 with RX; (3) NH₂NH₂ (Ing-Manske) or H₃O⁺/Δ',
+      species: [
+        { smiles: '[OH-].[K+]', label: 'KOH' },
+        { smiles: 'NN', label: 'N₂H₄ (Ing-Manske)' },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: null,
@@ -89,6 +110,27 @@ export const AMINE_REACTIONS: ReactionDef[] = [
     reactants: 'R-CONH₂ (1° amide) + Br₂ + NaOH',
     products: 'R-NH₂ (1° amine, −1C) + CO₂ + NaBr',
     conditions: 'Br₂/NaOH (aqueous); or N-halosuccinimide/base; mild conditions',
+    reactantSpecies: {
+      text: 'R-CONH₂ (1° amide) + Br₂ + NaOH',
+      species: [
+        { smiles: '[R]C(=O)N', label: '1° Amide (RCONH₂)' },
+        { smiles: 'BrBr', label: 'Br₂' },
+      ],
+    },
+    productSpecies: {
+      text: 'R-NH₂ (1° amine, −1C) + CO₂ + NaBr',
+      species: [
+        { smiles: '[R]N', label: '1° Amine (−1 carbon)', showLonePairs: true },
+        { smiles: 'O=C=O', label: 'CO₂' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Br₂/NaOH (aqueous); or N-halosuccinimide/base; mild conditions',
+      species: [
+        { smiles: 'BrBr', label: 'Br₂' },
+        { smiles: '[OH-].[Na+]', label: 'NaOH' },
+      ],
+    },
     reactionType: 'rearrangement',
     regiochemistry: null,
     stereochemistry: 'retention',
@@ -161,6 +203,27 @@ export const AMINE_REACTIONS: ReactionDef[] = [
     reactants: 'Amine (any class) + excess CH₃I',
     products: 'Least substituted alkene + N(CH₃)₃',
     conditions: '(1) Excess CH₃I → R-N⁺(CH₃)₃ I⁻; (2) Ag₂O/H₂O → R-N⁺(CH₃)₃ OH⁻; (3) heat → E2',
+    reactantSpecies: {
+      text: 'Amine + excess CH₃I',
+      species: [
+        { smiles: '[R]N([R])[R]', label: 'Amine', showLonePairs: true },
+        { smiles: 'CI', label: 'CH₃I (excess)' },
+      ],
+    },
+    productSpecies: {
+      text: 'Alkene (Hofmann product, less substituted) + N(CH₃)₃',
+      species: [
+        { smiles: '[R]C=C[R]', label: 'Alkene (Hofmann)' },
+        { smiles: 'CN(C)C', label: 'Trimethylamine' },
+      ],
+    },
+    conditionSpecies: {
+      text: '(1) Excess CH₃I → R-N⁺(CH₃)₃ I⁻; (2) Ag₂O/H₂O → R-N⁺(CH₃)₃ OH⁻; (3) heat → E2',
+      species: [
+        { smiles: 'CI', label: 'CH₃I (excess)' },
+        { smiles: '[Ag]O[Ag]', label: 'Ag₂O', catalyst: true },
+      ],
+    },
     reactionType: 'elimination',
     regiochemistry: null,
     stereochemistry: 'anti',
@@ -236,6 +299,26 @@ export const AMINE_REACTIONS: ReactionDef[] = [
     reactants: 'RNH₂ + R′X (or R₂NH + R′X)',
     products: 'Mixture of 1°, 2°, 3° amines + R₄N⁺X⁻',
     conditions: 'No catalyst needed; polar aprotic solvent preferred; difficult to stop at one alkylation',
+    reactantSpecies: {
+      text: 'RNH₂ + R′X (or R₂NH + R′X)',
+      species: [
+        { smiles: '[R]N', label: 'Amine (RNH₂)', showLonePairs: true },
+        { smiles: "[R]Br", label: "R'X (alkyl halide)" },
+      ],
+    },
+    productSpecies: {
+      text: 'Mixture of 1°, 2°, 3° amines + R₄N⁺X⁻',
+      species: [
+        { smiles: '[R]N([R])[R]', label: '3° Amine' },
+        { smiles: '[R][N+]([R])([R])[R]', label: 'Quaternary salt (R₄N⁺)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'No catalyst needed; polar aprotic solvent preferred; difficult to stop at one alkylation',
+      species: [
+        { smiles: 'C1CCCCC1', label: 'Polar aprotic solvent', catalyst: true },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: null,
@@ -293,6 +376,26 @@ export const AMINE_REACTIONS: ReactionDef[] = [
     reactants: 'Tertiary amine oxide (R₃N→O)',
     products: 'Alkene + hydroxylamine (R₂NOH)',
     conditions: 'Step 1: amine + H₂O₂ or mCPBA → amine oxide; Step 2: heat (100–150 °C) → syn elimination',
+    reactantSpecies: {
+      text: '3° Amine + H₂O₂ → amine oxide; then heat',
+      species: [
+        { smiles: '[R]N([R])[R]', label: '3° Amine', showLonePairs: true },
+        { smiles: 'OO', label: 'H₂O₂' },
+      ],
+    },
+    productSpecies: {
+      text: 'Alkene + hydroxylamine (Hofmann product)',
+      species: [
+        { smiles: '[R]C=C[R]', label: 'Alkene (Cope product)' },
+        { smiles: '[R]NO', label: 'Hydroxylamine fragment' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Step 1: amine + H₂O₂ or mCPBA → amine oxide; Step 2: heat (100–150 °C) → syn elimination',
+      species: [
+        { smiles: 'OO', label: 'H₂O₂' },
+      ],
+    },
     reactionType: 'elimination',
     regiochemistry: null,
     stereochemistry: 'syn',

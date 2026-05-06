@@ -25,6 +25,26 @@ export const CARBOXYLIC_DERIVATIVE_REACTIONS: ReactionDef[] = [
     reactants: 'Acid derivative (R-CO-LG) + Nu',
     products: 'New acid derivative (R-CO-Nu) + LG',
     conditions: 'Depends on derivative class. Reactivity: acyl halide > anhydride > ester > amide > carboxylate',
+    reactantSpecies: {
+      text: 'Acid derivative (R-CO-LG) + Nu',
+      species: [
+        { smiles: '[R]C(=O)[LG]', label: 'Acid derivative (R-CO-LG)' },
+        { smiles: '[Nu]', label: 'Nucleophile (Nu)', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'New acid derivative (R-CO-Nu) + LG',
+      species: [
+        { smiles: '[R]C(=O)[Nu]', label: 'New acyl product' },
+        { smiles: '[LG-]', label: 'LG⁻ (leaving group)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Depends on derivative class. Reactivity: acyl halide > anhydride > ester > amide > carboxylate',
+      species: [
+        { smiles: '[Nu]', label: 'Nu (nucleophile)', showLonePairs: true },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: null,
@@ -98,6 +118,26 @@ export const CARBOXYLIC_DERIVATIVE_REACTIONS: ReactionDef[] = [
     reactants: 'R-COOH + R′OH',
     products: 'R-COOR′ + H₂O',
     conditions: 'Conc. H₂SO₄ or TsOH (cat.); excess alcohol; Dean–Stark trap or mol. sieves to remove H₂O; heat',
+    reactantSpecies: {
+      text: 'R-COOH + R′OH',
+      species: [
+        { smiles: '[R]C(=O)O', label: 'Carboxylic acid' },
+        { smiles: 'CO', label: "Alcohol (R'OH)", showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'R-COOR′ + H₂O',
+      species: [
+        { smiles: '[R]C(=O)OC', label: 'Ester' },
+        { smiles: 'O', label: 'H₂O' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Conc. H₂SO₄ or TsOH (cat.); excess alcohol; Dean–Stark trap or mol. sieves to remove H₂O; heat',
+      species: [
+        { smiles: 'OS(=O)(=O)O', label: 'H₂SO₄', catalyst: true },
+      ],
+    },
     reactionType: 'condensation',
     regiochemistry: null,
     stereochemistry: null,
@@ -176,6 +216,26 @@ export const CARBOXYLIC_DERIVATIVE_REACTIONS: ReactionDef[] = [
     reactants: 'R-COOR′ + NaOH',
     products: 'R-COO⁻Na⁺ (carboxylate) + R′OH',
     conditions: 'Aqueous NaOH; heat; then acidify (H₃O⁺) to get carboxylic acid if desired',
+    reactantSpecies: {
+      text: 'R-COOR′ + NaOH',
+      species: [
+        { smiles: '[R]C(=O)OC', label: 'Ester' },
+        { smiles: '[OH-].[Na+]', label: 'NaOH', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'R-COO⁻Na⁺ (carboxylate) + R′OH',
+      species: [
+        { smiles: '[R]C(=O)[O-].[Na+]', label: 'Carboxylate salt' },
+        { smiles: 'CO', label: "R'OH (alcohol)" },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Aqueous NaOH; heat; then acidify (H₃O⁺) to get carboxylic acid if desired',
+      species: [
+        { smiles: '[OH-].[Na+]', label: 'NaOH (aq)' },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: null,
@@ -248,6 +308,26 @@ export const CARBOXYLIC_DERIVATIVE_REACTIONS: ReactionDef[] = [
     reactants: 'R-COCl + Nu (H₂O, ROH, NH₃, RNH₂, R′COO⁻)',
     products: 'RCOOH, RCOOR, RCONH₂, RCONHR, or anhydride + HCl',
     conditions: 'Room temperature or 0 °C; no catalyst needed; with amines: use 2 eq amine (one reacts, one neutralizes HCl)',
+    reactantSpecies: {
+      text: 'R-COCl + Nu (H₂O, ROH, NH₃, RNH₂, R′COO⁻)',
+      species: [
+        { smiles: '[R]C(=O)Cl', label: 'Acyl chloride' },
+        { smiles: 'N', label: 'Nu (e.g. NH₃)', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'RCOOH, RCOOR, RCONH₂, RCONHR, or anhydride + HCl',
+      species: [
+        { smiles: '[R]C(=O)N', label: 'Amide (RCONH₂)' },
+        { smiles: 'Cl', label: 'HCl (byproduct)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Room temperature or 0 °C; no catalyst needed; with amines: use 2 eq amine (one reacts, one neutralizes HCl)',
+      species: [
+        { smiles: 'N', label: 'Amine (2 eq)', showLonePairs: true },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: null,
@@ -307,6 +387,26 @@ export const CARBOXYLIC_DERIVATIVE_REACTIONS: ReactionDef[] = [
     reactants: '(RCO)₂O + Nu (ROH, NH₃, RNH₂, H₂O)',
     products: 'RCOX + RCOOH (where X = OR, NR₂, OH)',
     conditions: 'Room temperature; sometimes catalytic H₂SO₄ or pyridine; acetic anhydride most common',
+    reactantSpecies: {
+      text: '(RCO)₂O + Nu (ROH, NH₃, RNH₂, H₂O)',
+      species: [
+        { smiles: '[R]C(=O)OC(=O)[R]', label: 'Anhydride' },
+        { smiles: 'N', label: 'Nu (e.g. NH₃)', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'RCOX + RCOOH (where X = OR, NR₂, OH)',
+      species: [
+        { smiles: '[R]C(=O)N', label: 'Acyl product (RCONHR)' },
+        { smiles: '[R]C(=O)O', label: 'RCOOH (byproduct)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Room temperature; sometimes catalytic H₂SO₄ or pyridine; acetic anhydride most common',
+      species: [
+        { smiles: 'CC(=O)OC(=O)C', label: 'Ac₂O (acetic anhydride)' },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: null,
@@ -367,6 +467,25 @@ export const CARBOXYLIC_DERIVATIVE_REACTIONS: ReactionDef[] = [
     reactants: 'Acid derivative + amine (RNH₂ or R₂NH)',
     products: 'Amide (R-CO-NHR′) + leaving group',
     conditions: 'Acyl chloride/anhydride + amine → fast; DCC (peptide coupling); or salt + Δ (>150 °C)',
+    reactantSpecies: {
+      text: 'Acid derivative + amine (RNH₂ or R₂NH)',
+      species: [
+        { smiles: '[R]C(=O)Cl', label: 'Acyl chloride' },
+        { smiles: '[R]N', label: 'Amine (RNH₂)', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'Amide (R-CO-NHR′) + leaving group',
+      species: [
+        { smiles: '[R]C(=O)N[R]', label: 'Amide' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Acyl chloride/anhydride + amine → fast; DCC (peptide coupling); or salt + Δ (>150 °C)',
+      species: [
+        { smiles: 'C1CN=C=NC1.c1ccccc1', label: 'DCC (coupling agent)', catalyst: true },
+      ],
+    },
     reactionType: 'condensation',
     regiochemistry: null,
     stereochemistry: null,
@@ -425,6 +544,26 @@ export const CARBOXYLIC_DERIVATIVE_REACTIONS: ReactionDef[] = [
     reactants: 'R-COOR′′ + R′OH',
     products: 'R-COOR′ + R′′OH',
     conditions: 'H₂SO₄ (acid cat.) or NaOR′ (base cat.); excess R′OH; reflux',
+    reactantSpecies: {
+      text: 'R-COOR″ + R′OH',
+      species: [
+        { smiles: '[R]C(=O)OC', label: 'Ester (R-COOR″)' },
+        { smiles: 'CO', label: "New alcohol (R'OH)", showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'R-COOR′ + R′′OH',
+      species: [
+        { smiles: '[R]C(=O)OC', label: "New ester (R-COOR')" },
+        { smiles: 'CO', label: 'R″OH (leaving alcohol)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'H₂SO₄ (acid cat.) or NaOR′ (base cat.); excess R′OH; reflux',
+      species: [
+        { smiles: 'OS(=O)(=O)O', label: 'H₂SO₄', catalyst: true },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: null,
@@ -484,6 +623,27 @@ export const CARBOXYLIC_DERIVATIVE_REACTIONS: ReactionDef[] = [
     reactants: 'R-COOR′ + H₃O⁺ (excess H₂O)',
     products: 'RCOOH + R′OH',
     conditions: 'Dilute H₂SO₄ or HCl; excess water; reflux; or NaOH (saponification if base)',
+    reactantSpecies: {
+      text: 'R-COOR′ + H₃O⁺ (excess H₂O)',
+      species: [
+        { smiles: '[R]C(=O)OC', label: 'Ester' },
+        { smiles: 'O', label: 'H₂O (excess)', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'RCOOH + R′OH',
+      species: [
+        { smiles: '[R]C(=O)O', label: 'Carboxylic acid' },
+        { smiles: 'CO', label: "R'OH" },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Dilute H₂SO₄ or HCl; excess water; reflux; or NaOH (saponification if base)',
+      species: [
+        { smiles: 'OS(=O)(=O)O', label: 'H₂SO₄ (dil.)', catalyst: true },
+        { smiles: 'O', label: 'H₂O (excess)' },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: null,

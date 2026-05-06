@@ -112,6 +112,26 @@ export const CROSS_COUPLING_REACTIONS: ReactionDef[] = [
     reactants: 'Ar-X + Ar\'B(OH)₂ + base',
     products: 'Ar-Ar\' (biaryl)',
     conditions: 'Pd(PPh₃)₄ or Pd(OAc)₂/PPh₃; K₂CO₃ or Na₂CO₃; water/THF or EtOH; 60–80 °C',
+    reactantSpecies: {
+      text: 'Ar-X + Ar\'B(OH)₂ + base',
+      species: [
+        { smiles: 'Brc1ccccc1', label: 'Aryl halide (Ar-X)' },
+        { smiles: 'OB(O)c1ccccc1', label: "Arylboronic acid (Ar'B(OH)₂)" },
+      ],
+    },
+    productSpecies: {
+      text: 'Ar-Ar\' (biaryl)',
+      species: [
+        { smiles: 'c1ccc(-c2ccccc2)cc1', label: 'Biphenyl (Ar-Ar\')' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Pd(PPh₃)₄ or Pd(OAc)₂/PPh₃; K₂CO₃ or Na₂CO₃; water/THF or EtOH; 60–80 °C',
+      species: [
+        { smiles: '[Pd]', label: 'Pd(PPh₃)₄', catalyst: true },
+        { smiles: '[K+].[K+].[O-]C([O-])=O', label: 'K₂CO₃' },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: null,
     stereochemistry: null,
@@ -157,6 +177,26 @@ export const CROSS_COUPLING_REACTIONS: ReactionDef[] = [
     reactants: 'Ar-X + H₂C=CHR + base',
     products: 'ArCH=CHR (new alkene)',
     conditions: 'Pd(OAc)₂/PPh₃ or Pd(PPh₃)₄; triethylamine or K₂CO₃; DMF or toluene; 80–120 °C',
+    reactantSpecies: {
+      text: 'Ar-X + H₂C=CHR + base',
+      species: [
+        { smiles: 'Brc1ccccc1', label: 'Aryl halide (Ar-X)' },
+        { smiles: 'C=C[R]', label: 'Alkene' },
+      ],
+    },
+    productSpecies: {
+      text: 'ArCH=CHR (new alkene)',
+      species: [
+        { smiles: 'c1ccc(/C=C/[R])cc1', label: 'Aryl-substituted alkene' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Pd(OAc)₂/PPh₃ or Pd(PPh₃)₄; triethylamine or K₂CO₃; DMF or toluene; 80–120 °C',
+      species: [
+        { smiles: '[Pd]', label: 'Pd catalyst', catalyst: true },
+        { smiles: 'CCN(CC)CC', label: 'Et₃N (base)' },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: null,
     stereochemistry: 'syn',
@@ -227,6 +267,25 @@ export const CROSS_COUPLING_REACTIONS: ReactionDef[] = [
     reactants: 'Ar-X + R-Sn(Bu)₃',
     products: 'Ar-R',
     conditions: 'Pd(PPh₃)₄ or Pd₂(dba)₃; DMF or THF; 60–100 °C; anhydrous',
+    reactantSpecies: {
+      text: 'Ar-X + R-Sn(Bu)₃',
+      species: [
+        { smiles: 'Brc1ccccc1', label: 'Aryl halide (Ar-X)' },
+        { smiles: '[Sn](CCCC)(CCCC)(CCCC)[R]', label: 'Organostannane (R-SnBu₃)' },
+      ],
+    },
+    productSpecies: {
+      text: 'Ar-R',
+      species: [
+        { smiles: '[R]c1ccccc1', label: 'Coupled product (Ar-R)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Pd(PPh₃)₄ or Pd₂(dba)₃; DMF or THF; 60–100 °C; anhydrous',
+      species: [
+        { smiles: '[Pd]', label: 'Pd(0) catalyst', catalyst: true },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: null,
     stereochemistry: null,
@@ -272,6 +331,25 @@ export const CROSS_COUPLING_REACTIONS: ReactionDef[] = [
     reactants: 'Ar-X + R-ZnX\'',
     products: 'Ar-R',
     conditions: 'Pd(PPh₃)₄ or Pd-PEPPSI; THF or DMF; 0 °C to rt; strictly anhydrous',
+    reactantSpecies: {
+      text: 'Ar-X + R-ZnX\'',
+      species: [
+        { smiles: 'Brc1ccccc1', label: 'Aryl halide (Ar-X)' },
+        { smiles: '[Zn](Cl)[R]', label: 'Organozinc (R-ZnX)' },
+      ],
+    },
+    productSpecies: {
+      text: 'Ar-R',
+      species: [
+        { smiles: '[R]c1ccccc1', label: 'Coupled product (Ar-R)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Pd(PPh₃)₄ or Pd-PEPPSI; THF or DMF; 0 °C to rt; strictly anhydrous',
+      species: [
+        { smiles: '[Pd]', label: 'Pd(0) catalyst', catalyst: true },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: null,
     stereochemistry: null,
@@ -317,6 +395,27 @@ export const CROSS_COUPLING_REACTIONS: ReactionDef[] = [
     reactants: 'Ar-X + RC≡CH + base',
     products: 'Ar-C≡C-R (aryl alkyne)',
     conditions: 'Pd(PPh₃)₂Cl₂ / CuI; amine base (Et₃N, piperidine); DMF, THF, or degassed solvent; rt to 60 °C',
+    reactantSpecies: {
+      text: 'Ar-X + RC≡CH + base',
+      species: [
+        { smiles: 'Brc1ccccc1', label: 'Aryl halide (Ar-X)' },
+        { smiles: '[R]C#C[H]', label: 'Terminal alkyne (RC≡CH)' },
+      ],
+    },
+    productSpecies: {
+      text: 'Ar-C≡C-R (aryl alkyne)',
+      species: [
+        { smiles: '[R]C#Cc1ccccc1', label: 'Aryl alkyne (Ar-C≡C-R)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Pd(PPh₃)₂Cl₂ / CuI; amine base (Et₃N, piperidine); DMF, THF, or degassed solvent; rt to 60 °C',
+      species: [
+        { smiles: '[Pd]', label: 'Pd(PPh₃)₂Cl₂', catalyst: true },
+        { smiles: '[Cu]I', label: 'CuI (co-catalyst)', catalyst: true },
+        { smiles: 'CCN(CC)CC', label: 'Et₃N (base)' },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: null,
     stereochemistry: null,

@@ -170,7 +170,7 @@ function SpeciesRow({ row, canDelete, onChange, onDelete, onPickSuggestion }: Ro
       {canDelete && (
         <button
           onClick={() => onDelete(row.id)}
-          className="font-mono text-xs text-dim hover:text-red-400 transition-colors px-1 shrink-0"
+          className="font-mono text-xs text-dim hover:text-error transition-colors px-1 shrink-0"
         >
           ×
         </button>
@@ -191,7 +191,7 @@ interface Result {
 function ResultPanel({ result }: { result: Result }) {
   const [showSteps, setShowSteps] = useState(false)
   const sign = result.dhrxn < 0 ? 'exothermic' : result.dhrxn > 0 ? 'endothermic' : 'thermoneutral'
-  const color = result.dhrxn < 0 ? '#34d399' : result.dhrxn > 0 ? '#f87171' : 'rgba(var(--overlay),0.6)'
+  const color = result.dhrxn < 0 ? 'rgb(var(--color-success))' : result.dhrxn > 0 ? 'rgb(var(--color-error))' : 'rgba(var(--overlay),0.6)'
 
   return (
     <motion.div
@@ -395,7 +395,7 @@ export default function EnthalpyTool() {
 
       {/* Error */}
       {error && (
-        <p className="font-mono text-xs text-red-400">{error}</p>
+        <p className="font-mono text-xs text-error">{error}</p>
       )}
 
       {/* Buttons */}

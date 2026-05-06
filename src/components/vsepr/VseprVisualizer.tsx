@@ -472,7 +472,7 @@ export default function VseprVisualizer({
                   border: `1px solid ${rotating
                     ? 'color-mix(in srgb, #f87171 30%, transparent)'
                     : 'color-mix(in srgb, var(--c-halogen) 22%, transparent)'}`,
-                  color: rotating ? '#f87171' : 'var(--c-halogen)',
+                  color: rotating ? 'rgb(var(--color-error))' : 'var(--c-halogen)',
                 }}>
                 {rotating ? '❙❙ Pause' : '▶ Resume'}
               </button>
@@ -508,7 +508,7 @@ export default function VseprVisualizer({
               border: `1px solid ${playing
                 ? 'color-mix(in srgb, #f87171 35%, transparent)'
                 : 'color-mix(in srgb, var(--c-halogen) 40%, transparent)'}`,
-              color: playing ? '#f87171' : 'var(--c-halogen)',
+              color: playing ? 'rgb(var(--color-error))' : 'var(--c-halogen)',
             }}>
             {playing ? '■ Stop' : '▶ Play All'}
           </button>

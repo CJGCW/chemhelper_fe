@@ -187,7 +187,7 @@ export default function HessTool() {
                 {rows.length > 1 && (
                   <button
                     onClick={() => deleteRow(row.id)}
-                    className="font-mono text-xs text-dim hover:text-red-400 transition-colors"
+                    className="font-mono text-xs text-dim hover:text-error transition-colors"
                   >×</button>
                 )}
               </div>
@@ -195,7 +195,7 @@ export default function HessTool() {
               {/* Contribution preview */}
               {p !== null && row.dh.trim() !== '' && (
                 <div className="ml-8 font-mono text-xs text-secondary">
-                  {row.flipped ? `−` : `+`}{Math.abs(p.mult) !== 1 ? `${Math.abs(p.mult)}×` : ''}({row.dh}) = <span style={{ color: p.contribution < 0 ? '#34d399' : p.contribution > 0 ? '#f87171' : 'rgba(var(--overlay),0.5)' }}>{fmtDH(p.contribution)} kJ</span>
+                  {row.flipped ? `−` : `+`}{Math.abs(p.mult) !== 1 ? `${Math.abs(p.mult)}×` : ''}({row.dh}) = <span style={{ color: p.contribution < 0 ? 'rgb(var(--color-success))' : p.contribution > 0 ? 'rgb(var(--color-error))' : 'rgba(var(--overlay),0.5)' }}>{fmtDH(p.contribution)} kJ</span>
                   {row.flipped && <span className="text-dim ml-2">(reversed)</span>}
                 </div>
               )}
@@ -213,7 +213,7 @@ export default function HessTool() {
           {(rows.some(r => r.equation || r.dh) || target) && (
             <button
               onClick={() => { setRows([newRow(), newRow(), newRow()]); setTarget('') }}
-              className="font-mono text-xs text-dim hover:text-red-400 transition-colors"
+              className="font-mono text-xs text-dim hover:text-error transition-colors"
             >
               Reset
             </button>
@@ -240,7 +240,7 @@ export default function HessTool() {
               <div className="h-px bg-border my-1" />
               <p className="font-mono text-sm">
                 ΔH<sub>rxn</sub> = <span className="font-bold text-xl"
-                  style={{ color: total < 0 ? '#34d399' : total > 0 ? '#f87171' : 'rgba(var(--overlay),0.6)' }}>
+                  style={{ color: total < 0 ? 'rgb(var(--color-success))' : total > 0 ? 'rgb(var(--color-error))' : 'rgba(var(--overlay),0.6)' }}>
                   {fmtDH(total)} kJ
                 </span>
                 <span className="ml-3 text-xs text-dim">

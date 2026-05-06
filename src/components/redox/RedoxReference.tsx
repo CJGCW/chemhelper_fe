@@ -343,7 +343,7 @@ function ActivitySection() {
                     </td>
                     <td className="font-mono text-sm text-secondary py-1.5 pr-4 print:text-gray-600">{m.ion}</td>
                     <td className={`font-sans text-xs py-1.5 pr-4 ${
-                      m.waterRxn === 'Cold water (violent)' ? 'text-red-400 print:text-red-700' :
+                      m.waterRxn === 'Cold water (violent)' ? 'text-error print:text-red-700' :
                       m.waterRxn === 'Cold water'           ? 'text-orange-400 print:text-orange-700' :
                       m.waterRxn === 'Hot water / steam'    ? 'text-yellow-400 print:text-yellow-700' :
                       m.waterRxn === 'Steam only'           ? 'text-lime-400 print:text-lime-700' :
@@ -353,7 +353,7 @@ function ActivitySection() {
                       {isDivider
                         ? <span className="text-dim print:text-gray-400">— H₂ reference line —</span>
                         : m.aboveH2
-                          ? <span className="text-green-400 print:text-green-700">Yes</span>
+                          ? <span className="text-success print:text-green-700">Yes</span>
                           : <span className="text-dim print:text-gray-400">No</span>}
                     </td>
                   </tr>
@@ -547,15 +547,15 @@ function RedoxConceptsSection() {
           <h4 className="font-sans text-sm font-semibold text-bright print:text-black">Spontaneity</h4>
           <div className="flex flex-col gap-1.5 text-xs font-mono">
             <div className="flex items-baseline gap-2">
-              <span className="text-green-400 print:text-green-700 shrink-0">E°cell &gt; 0</span>
+              <span className="text-success print:text-green-700 shrink-0">E°cell &gt; 0</span>
               <span className="text-secondary print:text-gray-600">→ spontaneous</span>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-red-400 print:text-red-700 shrink-0">E°cell &lt; 0</span>
+              <span className="text-error print:text-red-700 shrink-0">E°cell &lt; 0</span>
               <span className="text-secondary print:text-gray-600">→ non-spontaneous</span>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-green-400 print:text-green-700 shrink-0">ΔG° &lt; 0</span>
+              <span className="text-success print:text-green-700 shrink-0">ΔG° &lt; 0</span>
               <span className="text-secondary print:text-gray-600">→ spontaneous</span>
             </div>
             <div className="flex items-baseline gap-2">
@@ -692,8 +692,8 @@ function RedoxConceptsSection() {
                   <td className={`font-mono text-xs py-1.5 pr-4 ${r.ref ? 'text-secondary italic print:text-gray-500' : 'text-primary print:text-gray-800'}`}>{r.half}</td>
                   <td className={`font-mono text-sm text-right py-1.5 font-semibold ${
                     r.ref ? 'text-secondary print:text-gray-500' :
-                    parseFloat(r.e0) > 0 ? 'text-green-400 print:text-green-700' :
-                    'text-red-400 print:text-red-700'
+                    parseFloat(r.e0) > 0 ? 'text-success print:text-green-700' :
+                    'text-error print:text-red-700'
                   }`}>{r.e0}</td>
                 </tr>
               ))}

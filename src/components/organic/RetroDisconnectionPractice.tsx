@@ -43,7 +43,7 @@ export default function RetroDisconnectionPractice({ allowCustom: _allowCustom =
       {score.total > 0 && (
         <div className="flex items-center gap-3">
           <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgb(var(--color-raised))' }}>
-            <motion.div className="h-full rounded-full bg-emerald-500"
+            <motion.div className="h-full rounded-full" style={{ background: 'rgb(var(--color-success))' }}
               animate={{ width: `${(score.correct / score.total) * 100}%` }} transition={{ duration: 0.4 }} />
           </div>
           <span className="font-mono text-xs text-secondary shrink-0">{score.correct} / {score.total}</span>
@@ -74,8 +74,8 @@ export default function RetroDisconnectionPractice({ allowCustom: _allowCustom =
           let borderColor = 'rgba(var(--overlay),0.15)'
           let bg = 'rgb(var(--color-raised))'
           if (submitted) {
-            if (isThisCorrect) { borderColor = 'rgb(34 197 94)'; bg = 'rgb(34 197 94 / 0.06)' }
-            else if (isSelected) { borderColor = 'rgb(239 68 68)'; bg = 'rgb(239 68 68 / 0.06)' }
+            if (isThisCorrect) { borderColor = 'rgb(var(--color-success))'; bg = 'rgb(var(--color-success-bg) / 0.06)' }
+            else if (isSelected) { borderColor = 'rgb(var(--color-error))'; bg = 'rgb(var(--color-error-bg) / 0.06)' }
           } else if (isSelected) {
             borderColor = 'var(--c-halogen)'
             bg = 'color-mix(in srgb, var(--c-halogen) 8%, rgb(var(--color-raised)))'
@@ -88,7 +88,7 @@ export default function RetroDisconnectionPractice({ allowCustom: _allowCustom =
               style={{ borderColor, background: bg }}>
               <span className="font-mono text-xs text-primary">{bond.description}</span>
               {submitted && isThisCorrect && (
-                <span className="ml-2 text-emerald-500 font-mono text-xs">← correct</span>
+                <span className="ml-2 text-success font-mono text-xs">← correct</span>
               )}
             </button>
           )
@@ -123,7 +123,7 @@ export default function RetroDisconnectionPractice({ allowCustom: _allowCustom =
 
             {/* Wrong choice explanation */}
             {whyWrong && (
-              <div className="rounded-sm border border-red-500/20 px-4 py-3"
+              <div className="rounded-sm border feedback-error px-4 py-3"
                 style={{ background: 'rgb(239 68 68 / 0.04)' }}>
                 <span className="font-mono text-[10px] text-dim uppercase tracking-widest block mb-1">Why that disconnection is less useful</span>
                 <p className="font-sans text-xs text-primary leading-relaxed">{whyWrong}</p>
@@ -144,7 +144,7 @@ export default function RetroDisconnectionPractice({ allowCustom: _allowCustom =
                     style={{ background: 'rgb(var(--color-raised))' }}>
                     <span className="font-mono text-[10px] text-dim">{bond.description}</span>
                     {bond.id === problem.correctBondId ? (
-                      <p className="font-sans text-xs text-emerald-500 mt-0.5">✓ Best disconnection → {problem.forwardReaction}</p>
+                      <p className="font-sans text-xs text-success mt-0.5">✓ Best disconnection → {problem.forwardReaction}</p>
                     ) : problem.whyOthersFail[bond.id] ? (
                       <p className="font-sans text-xs text-dim mt-0.5">{problem.whyOthersFail[bond.id]}</p>
                     ) : (

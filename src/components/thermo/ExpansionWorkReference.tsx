@@ -23,13 +23,13 @@ export default function ExpansionWorkReference() {
               case: 'Expansion  (ΔV > 0)',
               sign: 'w < 0',
               meaning: 'System does work on surroundings — system loses energy.',
-              color: '#f87171',
+              color: 'rgb(var(--color-error))',
             },
             {
               case: 'Compression  (ΔV < 0)',
               sign: 'w > 0',
               meaning: 'Surroundings do work on system — system gains energy.',
-              color: '#4ade80',
+              color: 'rgb(var(--color-success))',
             },
           ].map(r => (
             <div key={r.case} className="flex flex-col gap-2 p-3 rounded-sm border border-border"

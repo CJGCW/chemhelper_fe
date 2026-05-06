@@ -114,7 +114,7 @@ export default function FormalChargeOrganic({ allowCustom: _allowCustom = true }
       {score.total > 0 && (
         <div className="flex items-center gap-3">
           <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgb(var(--color-raised))' }}>
-            <motion.div className="h-full rounded-full bg-emerald-500"
+            <motion.div className="h-full rounded-full" style={{ background: 'rgb(var(--color-success))' }}
               animate={{ width: `${(score.correct / score.total) * 100}%` }} transition={{ duration: 0.4 }} />
           </div>
           <span className="font-mono text-xs text-secondary shrink-0">{score.correct} / {score.total}</span>
@@ -183,9 +183,9 @@ export default function FormalChargeOrganic({ allowCustom: _allowCustom = true }
       <AnimatePresence>
         {checked && (
           <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className={`rounded-sm border px-4 py-3 flex flex-col gap-1.5 ${correct ? 'border-emerald-500/30' : 'border-red-500/30'}`}
+            className={`rounded-sm border px-4 py-3 flex flex-col gap-1.5 ${correct ? 'feedback-success' : 'feedback-error'}`}
             style={{ background: correct ? 'rgb(34 197 94 / 0.06)' : 'rgb(239 68 68 / 0.06)' }}>
-            <p className={`font-sans text-sm font-semibold ${correct ? 'text-success' : 'text-red-400'}`}>
+            <p className={`font-sans text-sm font-semibold ${correct ? 'text-success' : 'text-error'}`}>
               {correct ? `✓ Correct! FC = ${problem.correct > 0 ? '+' : ''}${problem.correct}` : `✗ FC = ${problem.correct > 0 ? '+' : ''}${problem.correct}`}
             </p>
             <p className="font-sans text-xs text-secondary leading-relaxed">{problem.explanation}</p>

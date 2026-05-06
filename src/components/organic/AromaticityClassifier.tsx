@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import RenderableChoiceButton from '../shared/RenderableChoiceButton'
 import { motion, AnimatePresence } from 'framer-motion'
 import CompoundDisplay from '../shared/CompoundDisplay'
 
@@ -189,19 +190,16 @@ export default function AromaticityClassifier({ allowCustom = true }: Props) {
           )}
 
           <div className="flex gap-2 flex-wrap">
-            {OPTIONS.map(opt => {
-              const isSelected = selected === opt
-              const isCorrect = opt === problem.classification
-              let style = 'border-border text-secondary hover:border-muted hover:text-primary'
-              if (checked && isCorrect) style = 'border-emerald-700/70 bg-emerald-950/25 text-success'
-              if (checked && isSelected && !isCorrect) style = 'border-rose-700/70 bg-rose-950/25 text-error'
-              return (
-                <button key={opt} disabled={checked} onClick={() => handleSelect(opt)}
-                  className={`px-5 py-2.5 rounded-sm border font-sans text-sm font-medium transition-colors ${style}`}>
-                  {opt}
-                </button>
-              )
-            })}
+            {OPTIONS.map(opt => (
+              <RenderableChoiceButton
+                key={opt}
+                choice={{ label: opt }}
+                isSelected={selected === opt}
+                isCorrect={opt === problem.classification}
+                isChecked={checked}
+                onSelect={() => handleSelect(opt)}
+              />
+            ))}
           </div>
 
           {checked && (

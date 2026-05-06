@@ -156,7 +156,7 @@ export default function EmpiricalPage() {
       </div>
 
       {needsElements && loading && <p className="font-mono text-xs text-dim animate-pulse">Loading element data…</p>}
-      {needsElements && error   && <p className="font-sans text-xs" style={{ color: '#f87171' }}>Failed to load elements: {error}</p>}
+      {needsElements && error   && <p className="font-sans text-xs" style={{ color: 'rgb(var(--color-error))' }}>Failed to load elements: {error}</p>}
 
       <AnimatePresence mode="wait">
         {tab === 'hydrate' && mode === 'reference' && (

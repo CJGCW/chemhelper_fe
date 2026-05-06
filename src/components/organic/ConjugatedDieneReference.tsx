@@ -144,8 +144,8 @@ export default function ConjugatedDieneReference({ allowCustom = true }: Props) 
                 const isSelected = selected === opt.label
                 const isCorrect = opt.label === '1,4-addition'
                 let style = 'border-border text-secondary hover:border-muted hover:text-primary'
-                if (selected !== null && isCorrect) style = 'border-emerald-700/70 bg-emerald-950/25 text-success'
-                if (selected !== null && isSelected && !isCorrect) style = 'border-rose-700/70 bg-rose-950/25 text-error'
+                if (selected !== null && isCorrect) style = 'feedback-success text-success'
+                if (selected !== null && isSelected && !isCorrect) style = 'feedback-error text-error'
                 return (
                   <button key={opt.label} disabled={selected !== null}
                     onClick={() => {

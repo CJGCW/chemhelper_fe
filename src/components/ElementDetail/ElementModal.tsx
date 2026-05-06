@@ -260,7 +260,7 @@ function IsotopesTab({ el, color }: { el: NonNullable<Element>; color: string })
                     <div className="flex-1 h-1 bg-raised rounded-full overflow-hidden">
                       <motion.div
                         className="h-full rounded-full"
-                        style={{ background: iso.radioactive ? '#f87171' : color, opacity: 0.75 }}
+                        style={{ background: iso.radioactive ? 'rgb(var(--color-error))' : color, opacity: 0.75 }}
                         initial={{ width: 0 }}
                         animate={{ width: `${barWidth}%` }}
                         transition={{ duration: 0.2, ease: 'easeOut', delay: 0.05 }}
@@ -280,7 +280,7 @@ function IsotopesTab({ el, color }: { el: NonNullable<Element>; color: string })
             <div className="w-20 shrink-0 text-right">
               {iso.radioactive ? (
                 <div className="flex flex-col items-end gap-0.5">
-                  <span className="font-mono text-[9px]" style={{ color: '#f87171' }}>☢ radioactive</span>
+                  <span className="font-mono text-[9px]" style={{ color: 'rgb(var(--color-error))' }}>☢ radioactive</span>
                   {iso.halfLife && (
                     <span className="font-mono text-xs text-secondary">t½ {iso.halfLife}</span>
                   )}

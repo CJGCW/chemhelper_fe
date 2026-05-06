@@ -182,9 +182,9 @@ const VISC_DATA = [
 const IMF_COLOR: Record<string, string> = {
   'Metallic':       '#fbbf24',
   'H-bonding ×3':   '#f43f5e',
-  'H-bonding ×2':   '#fb7185',
-  'H-bonding':      '#fb923c',
-  'Dipole–dipole':  '#34d399',
+  'H-bonding ×2':   'rgb(var(--color-error))',
+  'H-bonding':      'rgb(var(--color-warning))',
+  'Dipole–dipole':  'rgb(var(--color-success))',
   'London disp.':   '#60a5fa',
   'London + dipole':'#818cf8',
 }
@@ -205,7 +205,7 @@ interface Prediction {
 }
 
 function predict(imf: IMFType, size: SizeType): Prediction {
-  const hi = '#f43f5e', med = '#fb923c', mid = '#fbbf24', lo = '#34d399', vlo = '#60a5fa'
+  const hi = '#f43f5e', med = 'rgb(var(--color-warning))', mid = '#fbbf24', lo = 'rgb(var(--color-success))', vlo = '#60a5fa'
 
   if (imf === 'hbond_multi') return {
     st: 'High',       stColor: hi,
@@ -360,7 +360,7 @@ export default function LiquidProperties() {
             {[
               {
                 title: 'Strong IMFs',
-                color: '#fb923c',
+                color: 'rgb(var(--color-warning))',
                 body: 'Molecules that strongly attract each other resist being pulled apart as layers flow. H-bonding and metallic interactions give the highest viscosities.',
               },
               {
@@ -375,7 +375,7 @@ export default function LiquidProperties() {
               },
               {
                 title: 'Temperature effect',
-                color: '#34d399',
+                color: 'rgb(var(--color-success))',
                 body: 'Higher temperature gives molecules more kinetic energy to overcome IMFs. Liquid viscosity always decreases with increasing T (opposite of gases).',
               },
             ].map(c => (
@@ -440,7 +440,7 @@ export default function LiquidProperties() {
                 },
                 {
                   term: 'Adhesion',
-                  color: '#34d399',
+                  color: 'rgb(var(--color-success))',
                   def: 'IMFs between unlike molecules (liquid–container). Responsible for the liquid climbing the wall.',
                 },
               ].map(t => (

@@ -78,12 +78,12 @@ function ResultCard({ label, unpaired, charge }: { label: string; unpaired: numb
       </div>
       <div className="flex items-center gap-3">
         <span className="font-mono text-3xl font-bold"
-          style={{ color: isPara ? '#f59e0b' : '#34d399' }}>
+          style={{ color: isPara ? '#f59e0b' : 'rgb(var(--color-success))' }}>
           {unpaired}
         </span>
         <div className="flex flex-col">
           <span className="font-sans text-sm font-semibold"
-            style={{ color: isPara ? '#f59e0b' : '#34d399' }}>
+            style={{ color: isPara ? '#f59e0b' : 'rgb(var(--color-success))' }}>
             {isPara ? 'Paramagnetic' : 'Diamagnetic'}
           </span>
           <span className="font-sans text-xs text-secondary">
@@ -161,7 +161,7 @@ export default function ParaDiaMagnetic() {
               term: 'Diamagnetic',
               rule: 'All electrons are paired',
               detail: 'Weakly repelled by external magnetic field — paired spins cancel out completely.',
-              color: '#34d399',
+              color: 'rgb(var(--color-success))',
             },
           ].map(item => (
             <div key={item.term} className="flex flex-col gap-1.5 px-4 py-3 rounded-sm bg-raised border border-border">
@@ -277,10 +277,10 @@ export default function ParaDiaMagnetic() {
                       <td className="px-3 py-2 text-primary font-semibold">{label}</td>
                       <td className="px-3 py-2 text-dim truncate max-w-[160px]">{cfgShort}</td>
                       <td className="px-3 py-2">
-                        <span style={{ color: u > 0 ? '#f59e0b' : '#34d399' }}>{u}</span>
+                        <span style={{ color: u > 0 ? '#f59e0b' : 'rgb(var(--color-success))' }}>{u}</span>
                       </td>
                       <td className="px-3 py-2">
-                        <span style={{ color: u > 0 ? '#f59e0b' : '#34d399' }}>
+                        <span style={{ color: u > 0 ? '#f59e0b' : 'rgb(var(--color-success))' }}>
                           {u > 0 ? 'Para' : 'Dia'}
                         </span>
                       </td>

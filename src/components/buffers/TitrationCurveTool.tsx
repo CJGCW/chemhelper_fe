@@ -264,7 +264,7 @@ export default function TitrationCurveTool() {
         />
       )}
 
-      {error && <p className="font-sans text-sm text-red-400">{error}</p>}
+      {error && <p className="font-sans text-sm text-error">{error}</p>}
 
       {/* Chart */}
       <div className="p-3 rounded-sm border border-border bg-raised">

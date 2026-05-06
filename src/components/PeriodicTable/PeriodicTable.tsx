@@ -184,7 +184,7 @@ export default function PeriodicTable() {
   if (error) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="font-mono text-red-400 text-sm">{error}</div>
+        <div className="font-mono text-error text-sm">{error}</div>
       </div>
     );
   }

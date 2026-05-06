@@ -37,7 +37,7 @@ const TYPE_LABELS: Record<string, string> = {
 }
 
 const resultColor = (r: Result) =>
-  r === 'correct' ? '#22c55e' : r === 'wrong' || r === 'format_error' ? '#ef4444' : 'rgba(var(--overlay),0.12)'
+  r === 'correct' ? 'rgb(var(--color-success))' : r === 'wrong' || r === 'format_error' ? 'rgb(var(--color-error))' : 'rgba(var(--overlay),0.12)'
 
 const resultBg = (r: Result) =>
   r === 'correct' ? 'color-mix(in srgb, #22c55e 10%, transparent)' :
@@ -142,7 +142,7 @@ export default function ScientificNotationPractice({ allowCustom: _allowCustom =
             <motion.span
               initial={{ opacity: 0, x: -4 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
               className="font-mono text-sm"
-              style={{ color: score === states.length ? '#22c55e' : 'var(--c-halogen)' }}
+              style={{ color: score === states.length ? 'rgb(var(--color-success))' : 'var(--c-halogen)' }}
             >
               {score} / {states.length} correct
             </motion.span>
@@ -166,9 +166,9 @@ export default function ScientificNotationPractice({ allowCustom: _allowCustom =
               <span className="font-mono text-xs text-secondary tracking-widest uppercase">
                 {i + 1}. {TYPE_LABELS[s.problem.type]}
               </span>
-              {s.result === 'correct' && <span className="font-mono text-xs text-green-400">✓ correct</span>}
+              {s.result === 'correct' && <span className="font-mono text-xs text-success">✓ correct</span>}
               {(s.result === 'wrong' || s.result === 'format_error') && (
-                <span className="font-mono text-xs text-red-400">
+                <span className="font-mono text-xs text-error">
                   {s.result === 'format_error' ? 'check format' : '✗ incorrect'}
                 </span>
               )}
@@ -217,8 +217,8 @@ export default function ScientificNotationPractice({ allowCustom: _allowCustom =
                   }`
                 }}
               />
-              {s.sfResult === 'correct' && <span className="font-mono text-xs" style={{ color: '#22c55e' }}>✓</span>}
-              {s.sfResult === 'wrong'   && <span className="font-sans text-xs" style={{ color: '#ef4444' }}>expected {s.problem.sigfigs}</span>}
+              {s.sfResult === 'correct' && <span className="font-mono text-xs" style={{ color: 'rgb(var(--color-success))' }}>✓</span>}
+              {s.sfResult === 'wrong'   && <span className="font-sans text-xs" style={{ color: 'rgb(var(--color-error))' }}>expected {s.problem.sigfigs}</span>}
             </div>
 
             {/* Hint / answer toggles */}

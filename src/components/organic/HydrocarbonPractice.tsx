@@ -8,6 +8,7 @@ import {
 } from '../../utils/organicPractice'
 import { useShowAnswers } from '../../stores/preferencesStore'
 import CompoundDisplay from '../shared/CompoundDisplay'
+import RenderableChoiceButton from '../shared/RenderableChoiceButton'
 
 interface Props { allowCustom?: boolean }
 
@@ -52,7 +53,7 @@ export default function HydrocarbonPractice({ allowCustom = true }: Props) {
         <div className="flex items-center gap-3">
           <div className="flex-1 h-1.5 rounded-full bg-raised overflow-hidden">
             <motion.div
-              className="h-full rounded-full bg-emerald-500"
+              className="h-full rounded-full" style={{ background: 'rgb(var(--color-success))' }}
               animate={{ width: `${(score.correct / score.total) * 100}%` }}
               transition={{ duration: 0.4 }}
             />
@@ -79,37 +80,16 @@ export default function HydrocarbonPractice({ allowCustom = true }: Props) {
           </p>
 
           <div className="flex flex-col gap-2">
-            {options.map(option => {
-              const isSelected = selected === option
-              const isCorrect = option === problem.correctFamily
-              let bg = 'bg-raised'
-              let border = 'border-border'
-              let textCol = 'text-secondary'
-              if (checked) {
-                if (isCorrect) { bg = 'bg-emerald-500/10'; border = 'border-emerald-500/40'; textCol = 'text-success' }
-                else if (isSelected && !isCorrect) { bg = 'bg-red-500/10'; border = 'border-red-500/40'; textCol = 'text-red-400' }
-              } else if (isSelected) {
-                bg = 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))'
-                border = 'border-accent/40'
-                textCol = 'text-primary'
-              }
-              return (
-                <button key={option}
-                  onClick={() => handleSelect(option)}
-                  disabled={checked}
-                  className={`w-full text-left px-4 py-3 rounded-sm border font-sans text-sm capitalize transition-all
-                              ${bg} border-${border} ${textCol}
-                              ${!checked ? 'hover:border-accent/30 hover:text-primary cursor-pointer' : 'cursor-default'}`}
-                  style={isSelected && !checked ? {
-                    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-                    border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
-                    color: 'var(--c-halogen)',
-                  } : {}}
-                >
-                  {option}
-                </button>
-              )
-            })}
+            {options.map(option => (
+              <RenderableChoiceButton
+                key={option}
+                choice={{ label: option }}
+                isSelected={selected === option}
+                isCorrect={option === problem.correctFamily}
+                isChecked={checked}
+                onSelect={() => handleSelect(option)}
+              />
+            ))}
           </div>
 
           {!checked && (
@@ -127,8 +107,8 @@ export default function HydrocarbonPractice({ allowCustom = true }: Props) {
           )}
 
           {checked && (
-            <div className={`flex flex-col gap-3 p-4 rounded-sm border ${correct ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-red-500/30 bg-red-500/5'}`}>
-              <p className={`font-sans text-sm font-medium ${correct ? 'text-success' : 'text-red-400'}`}>
+            <div className={`flex flex-col gap-3 p-4 rounded-sm border ${correct ? 'feedback-success' : 'feedback-error'}`}>
+              <p className={`font-sans text-sm font-medium ${correct ? 'text-success' : 'text-error'}`}>
                 {correct ? 'Correct!' : `Incorrect — the answer is: ${problem.correctFamily}`}
               </p>
 

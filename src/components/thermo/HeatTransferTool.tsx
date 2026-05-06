@@ -179,7 +179,7 @@ function SolveBtn({ onClick }: { onClick: () => void }) {
 }
 
 function ErrorMsg({ msg }: { msg: string }) {
-  return <p className="font-mono text-xs text-red-400">{msg}</p>
+  return <p className="font-mono text-xs text-error">{msg}</p>
 }
 
 function ObjectCard({ title, children }: { title: string; children: ReactNode }) {

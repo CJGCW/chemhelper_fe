@@ -285,7 +285,7 @@ const SF_LABEL: Record<SolveFor, string> = {
 }
 
 const SF_COLOR: Record<SolveFor, string> = {
-  P2: '#f43f5e', T2: '#fb923c', dHvap: '#c084fc', T1: '#34d399', P1: '#60a5fa',
+  P2: '#f43f5e', T2: 'rgb(var(--color-warning))', dHvap: '#c084fc', T1: 'rgb(var(--color-success))', P1: '#60a5fa',
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────

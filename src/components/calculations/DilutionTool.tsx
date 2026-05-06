@@ -324,7 +324,7 @@ export default function DilutionTool() {
           />
         </div>
 
-        {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+        {error && <p className="font-mono text-xs text-error">{error}</p>}
 
         <div className="flex items-stretch gap-2">
           <button

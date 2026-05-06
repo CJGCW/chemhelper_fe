@@ -935,7 +935,7 @@ function HCInteractive({ p, answer, onAnswer, result, checked }: {
   const dotIdx   = answer ? p.segments.findIndex(s => s.phase === answer) : -1
   const dotSvgX  = dotIdx >= 0 ? xS((p.pts[dotIdx].x + p.pts[dotIdx + 1].x) / 2) : null
   const dotSvgY  = dotIdx >= 0 ? yS((p.pts[dotIdx].t + p.pts[dotIdx + 1].t) / 2) : null
-  const dotColor = result === 'correct' ? '#22c55e' : result === 'wrong' ? '#ef4444' : '#f59e0b'
+  const dotColor = result === 'correct' ? 'rgb(var(--color-success))' : result === 'wrong' ? 'rgb(var(--color-error))' : '#f59e0b'
 
   // After checking wrong: also show correct segment midpoints in green
   const correctDots = (checked && result === 'wrong')
@@ -1036,7 +1036,7 @@ function PDInteractive({ p, qId, dotPos, onAnswer, onDotPos, result, checked }: 
     pts.filter(([, P]) => { const lp = Math.log10(P); return lp >= logPmin - 0.2 && lp <= logPmax + 0.2 })
        .map(([T, P], i) => `${i === 0 ? 'M' : 'L'} ${xS(T).toFixed(1)} ${yS(P).toFixed(1)}`).join(' ')
 
-  const dotColor = result === 'correct' ? '#22c55e' : result === 'wrong' ? '#ef4444' : '#f59e0b'
+  const dotColor = result === 'correct' ? 'rgb(var(--color-success))' : result === 'wrong' ? 'rgb(var(--color-error))' : '#f59e0b'
 
   // After wrong: show where the correct answer is
   const correctDotPos = (checked && result === 'wrong') ? (() => {
@@ -1458,7 +1458,7 @@ export default function TestSheet({ test, onBack }: Props) {
           {result === 'correct'  && <span className="ml-auto font-mono text-sm text-success">✓</span>}
           {result === 'wrong'    && <span className="ml-auto font-mono text-sm text-error">✗</span>}
           {result === 'wrong_sf' && <span className="ml-auto font-sans text-xs text-orange-400">right value, check sig figs</span>}
-          {result === 'blank'    && <span className="ml-auto font-mono text-xs text-amber-500">no answer</span>}
+          {result === 'blank'    && <span className="ml-auto font-mono text-xs text-warning">no answer</span>}
         </div>
 
         {questionText}

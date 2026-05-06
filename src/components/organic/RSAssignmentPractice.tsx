@@ -149,8 +149,8 @@ export default function RSAssignmentPractice({ allowCustom = true }: Props) {
           <div className="flex gap-3">
             {(['R', 'S'] as const).map(cfg => {
               let style = 'border-border text-secondary hover:border-muted hover:text-primary'
-              if (checked && cfg === problem.config) style = 'border-emerald-700/70 bg-emerald-950/25 text-success'
-              if (checked && answer === cfg && cfg !== problem.config) style = 'border-rose-700/70 bg-rose-950/25 text-error'
+              if (checked && cfg === problem.config) style = 'feedback-success text-success'
+              if (checked && answer === cfg && cfg !== problem.config) style = 'feedback-error text-error'
               return (
                 <button key={cfg} disabled={checked} onClick={() => submit(cfg)}
                   className={`px-8 py-3 rounded-sm border font-mono text-lg font-bold transition-colors ${style}`}>

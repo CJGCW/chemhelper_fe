@@ -30,7 +30,7 @@ const ML = 10, MR = 16, MT = 14, MB = 28
 const PW = SVG_W - ML - MR
 const PH = SVG_H - MT - MB
 
-const C2 = '#fb923c'    // comparison gas
+const C2 = 'rgb(var(--color-warning))'    // comparison gas
 const C_MP  = '#fbbf24' // v_mp
 const C_AVG = '#60a5fa' // v_avg
 const C_RMS = '#f472b6' // v_rms

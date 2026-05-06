@@ -27,6 +27,24 @@ export const ENOLATE_REACTIONS: ReactionDef[] = [
     reactants: '2 R-CHO (or ketone with α-H)',
     products: 'β-Hydroxy carbonyl (aldol)',
     conditions: 'NaOH, NaOEt, or LDA; aq. or anhydrous; 0 °C to rt',
+    reactantSpecies: {
+      text: '2 R-CHO (or ketone with α-H)',
+      species: [
+        { smiles: '[R]CC=O', label: 'Aldehyde (2 eq)' },
+      ],
+    },
+    productSpecies: {
+      text: 'β-Hydroxy carbonyl (aldol)',
+      species: [
+        { smiles: '[R]C(O)CC=O', label: 'β-Hydroxy aldehyde (aldol)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'NaOH, NaOEt, or LDA; aq. or anhydrous; 0 °C to rt',
+      species: [
+        { smiles: '[OH-].[Na+]', label: 'NaOH' },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: null,
     stereochemistry: null,
@@ -100,6 +118,25 @@ export const ENOLATE_REACTIONS: ReactionDef[] = [
     reactants: 'β-Hydroxy carbonyl (from aldol addition)',
     products: 'α,β-Unsaturated carbonyl (enone/enal) + H₂O',
     conditions: 'Heat (drives aldol equilibrium forward) + base or acid; concentrated NaOH and heat',
+    reactantSpecies: {
+      text: '2 R-CHO (or ketone with α-H)',
+      species: [
+        { smiles: '[R]CC=O', label: 'Aldehyde (2 eq)' },
+      ],
+    },
+    productSpecies: {
+      text: 'α,β-Unsaturated carbonyl (condensation product)',
+      species: [
+        { smiles: '[R]/C=C/C=O', label: 'α,β-Unsaturated aldehyde' },
+        { smiles: 'O', label: 'H₂O' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Heat (drives aldol equilibrium forward) + base or acid; concentrated NaOH and heat',
+      species: [
+        { smiles: '[OH-].[Na+]', label: 'NaOH' },
+      ],
+    },
     reactionType: 'condensation',
     regiochemistry: null,
     stereochemistry: null,
@@ -170,6 +207,24 @@ export const ENOLATE_REACTIONS: ReactionDef[] = [
     reactants: '2 R-CH₂-COOR′ (ester with α-H)',
     products: 'β-Keto ester (R-CH₂-CO-CHR-COOR′) + R′OH',
     conditions: 'NaOEt (stoichiometric); anhydrous EtOH; ester must have ≥2 α-H\'s; then acidify',
+    reactantSpecies: {
+      text: '2 R-CH₂-CO₂Et (ester with α-H)',
+      species: [
+        { smiles: '[R]CC(=O)OCC', label: 'Ethyl ester (2 eq)' },
+      ],
+    },
+    productSpecies: {
+      text: 'β-Keto ester',
+      species: [
+        { smiles: '[R]CC(=O)CC(=O)OCC', label: 'β-Keto ester' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'NaOEt (stoichiometric); anhydrous EtOH; ester must have ≥2 α-H\'s; then acidify',
+      species: [
+        { smiles: 'CC[O-].[Na+]', label: 'NaOEt' },
+      ],
+    },
     reactionType: 'condensation',
     regiochemistry: null,
     stereochemistry: null,
@@ -243,6 +298,25 @@ export const ENOLATE_REACTIONS: ReactionDef[] = [
     reactants: 'Michael donor (enolate) + Michael acceptor (enone)',
     products: '1,5-Dicarbonyl compound',
     conditions: 'Base (NaOEt, K₂CO₃, DBU); or under acidic conditions with stable enolates; mild conditions work with soft enolates',
+    reactantSpecies: {
+      text: 'Enolate (Michael donor) + α,β-unsaturated carbonyl (Michael acceptor)',
+      species: [
+        { smiles: '[R]CC(=O)[R]', label: 'Michael donor' },
+        { smiles: '[R]/C=C/C(=O)[R]', label: 'Michael acceptor' },
+      ],
+    },
+    productSpecies: {
+      text: '1,4-Addition product (1,5-dicarbonyl)',
+      species: [
+        { smiles: '[R]CC(=O)CCC(=O)[R]', label: '1,5-Dicarbonyl' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Base (NaOEt, K₂CO₃, DBU); or under acidic conditions with stable enolates; mild conditions work with soft enolates',
+      species: [
+        { smiles: 'CC[O-].[Na+]', label: 'NaOEt' },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: null,
     stereochemistry: null,
@@ -314,6 +388,25 @@ export const ENOLATE_REACTIONS: ReactionDef[] = [
     reactants: 'β-Keto compound + methyl vinyl ketone (MVK) or enone',
     products: '2-Cyclohexenone (α,β-unsaturated cyclic ketone)',
     conditions: 'Base (NaOEt or KOH); EtOH; heat for condensation step',
+    reactantSpecies: {
+      text: 'Michael addition + intramolecular aldol',
+      species: [
+        { smiles: 'CCCC(=O)C', label: 'Michael donor + acceptor' },
+        { smiles: '[R]/C=C/C(=O)[R]', label: 'Michael acceptor (enone)' },
+      ],
+    },
+    productSpecies: {
+      text: 'Cyclohexenone (6-membered ring enone)',
+      species: [
+        { smiles: 'O=C1CCCC=C1', label: '2-Cyclohexen-1-one' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Base (NaOEt or KOH); EtOH; heat for condensation step',
+      species: [
+        { smiles: 'CC[O-].[Na+]', label: 'NaOEt' },
+      ],
+    },
     reactionType: 'condensation',
     regiochemistry: null,
     stereochemistry: null,
@@ -390,6 +483,26 @@ export const ENOLATE_REACTIONS: ReactionDef[] = [
     reactants: 'Diethyl malonate + RX (1° or 2° alkyl halide)',
     products: 'R-CH₂-COOH (monocarboxylic acid)',
     conditions: '(1) NaOEt/EtOH; (2) RX (SN2); (3) H₃O⁺/H₂O/Δ (hydrolysis + decarboxylation)',
+    reactantSpecies: {
+      text: 'Diethyl malonate + RX (1° or 2° alkyl halide)',
+      species: [
+        { smiles: 'CCOC(=O)CC(=O)OCC', label: 'Diethyl malonate' },
+        { smiles: '[R]Br', label: 'R–X (alkyl halide)' },
+      ],
+    },
+    productSpecies: {
+      text: 'R-CH₂-COOH (monocarboxylic acid)',
+      species: [
+        { smiles: '[R]CC(=O)O', label: 'Substituted carboxylic acid' },
+      ],
+    },
+    conditionSpecies: {
+      text: '(1) NaOEt/EtOH; (2) RX (SN2); (3) H₃O⁺/H₂O/Δ (hydrolysis + decarboxylation)',
+      species: [
+        { smiles: 'CC[O-].[Na+]', label: 'NaOEt' },
+        { smiles: '[H+]', label: 'H₃O⁺ (workup)' },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: null,
@@ -462,6 +575,26 @@ export const ENOLATE_REACTIONS: ReactionDef[] = [
     reactants: 'Ethyl acetoacetate (ethyl 3-oxobutanoate) + RX',
     products: 'R-CH₂-CO-CH₃ (methyl ketone, 3 carbons from acetoacetate)',
     conditions: '(1) NaOEt/EtOH; (2) RX (SN2); (3) H₃O⁺/H₂O/Δ (hydrolysis + decarboxylation)',
+    reactantSpecies: {
+      text: 'Ethyl acetoacetate (ethyl 3-oxobutanoate) + RX',
+      species: [
+        { smiles: 'CCOC(=O)CC(=O)C', label: 'Ethyl acetoacetate' },
+        { smiles: '[R]Br', label: 'R–X (alkyl halide)' },
+      ],
+    },
+    productSpecies: {
+      text: 'R-CH₂-CO-CH₃ (methyl ketone, 3 carbons from acetoacetate)',
+      species: [
+        { smiles: '[R]CC(=O)C', label: 'Methyl ketone' },
+      ],
+    },
+    conditionSpecies: {
+      text: '(1) NaOEt/EtOH; (2) RX (SN2); (3) H₃O⁺/H₂O/Δ (hydrolysis + decarboxylation)',
+      species: [
+        { smiles: 'CC[O-].[Na+]', label: 'NaOEt' },
+        { smiles: '[H+]', label: 'H₃O⁺ (workup)' },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: null,
@@ -531,6 +664,25 @@ export const ENOLATE_REACTIONS: ReactionDef[] = [
     reactants: 'β-Keto acid (R-CO-CH₂-COOH)',
     products: 'Ketone (R-CO-CH₃) + CO₂',
     conditions: 'Heat (Δ); acid conditions also helpful; piperidine (amine base) can catalyze via Schiff base',
+    reactantSpecies: {
+      text: 'β-Keto acid (R-CO-CH₂-COOH)',
+      species: [
+        { smiles: '[R]C(=O)CC(=O)O', label: 'β-Keto acid' },
+      ],
+    },
+    productSpecies: {
+      text: 'Ketone (R-CO-CH₃) + CO₂',
+      species: [
+        { smiles: '[R]C(=O)C', label: 'Ketone' },
+        { smiles: 'O=C=O', label: 'CO₂' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Heat (Δ); acid conditions also helpful; piperidine (amine base) can catalyze via Schiff base',
+      species: [
+        { smiles: 'C1CCNCC1', label: 'Piperidine (cat.)', catalyst: true },
+      ],
+    },
     reactionType: 'elimination',
     regiochemistry: null,
     stereochemistry: null,

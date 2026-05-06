@@ -121,7 +121,7 @@ export default function CommonIonTool() {
       </div>
       <StepsContent {...stepsState} />
 
-      {error && <p className="font-sans text-sm text-red-400">{error}</p>}
+      {error && <p className="font-sans text-sm text-error">{error}</p>}
 
       {result && (
         <div className="flex flex-col gap-3">

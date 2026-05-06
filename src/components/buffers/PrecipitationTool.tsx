@@ -106,7 +106,7 @@ export default function PrecipitationTool() {
       </div>
       <StepsContent {...stepsState} />
 
-      {error && <p className="font-sans text-sm text-red-400">{error}</p>}
+      {error && <p className="font-sans text-sm text-error">{error}</p>}
 
       <AnimatePresence>
         {result && (
@@ -129,7 +129,7 @@ export default function PrecipitationTool() {
               <span className="text-2xl">{result.precipitates ? '🧫' : '✓'}</span>
               <div>
                 <p className="font-sans font-semibold text-base"
-                  style={{ color: result.precipitates ? '#f87171' : '#4ade80' }}>
+                  style={{ color: result.precipitates ? 'rgb(var(--color-error))' : 'rgb(var(--color-success))' }}>
                   {result.precipitates ? 'Precipitate forms!' : 'No precipitation'}
                 </p>
                 <p className="font-sans text-sm text-secondary">

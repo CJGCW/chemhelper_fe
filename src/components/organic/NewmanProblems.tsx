@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import NewmanProjectionInline from './NewmanProjectionInline'
+import RenderableChoiceButton from '../shared/RenderableChoiceButton'
 
 interface NewmanSpec {
   front: [string, string, string]
@@ -164,20 +165,16 @@ export default function NewmanProblems({ allowCustom = true }: Props) {
           </div>
 
           <div className="flex flex-col gap-2">
-            {problem.options.map(opt => {
-              const isSelected = selected === opt
-              const isCorrect  = opt === problem.answer
-              let style = 'border-border text-secondary hover:border-muted hover:text-primary'
-              if (checked && isCorrect)  style = 'border-emerald-700/70 bg-emerald-950/25 text-success'
-              if (checked && isSelected && !isCorrect) style = 'border-rose-700/70 bg-rose-950/25 text-error'
-              return (
-                <button key={opt} disabled={checked}
-                  onClick={() => handleSelect(opt)}
-                  className={`w-full text-left px-4 py-2.5 rounded-sm border font-sans text-sm transition-colors ${style}`}>
-                  {opt}
-                </button>
-              )
-            })}
+            {problem.options.map(opt => (
+              <RenderableChoiceButton
+                key={opt}
+                choice={{ label: opt }}
+                isSelected={selected === opt}
+                isCorrect={opt === problem.answer}
+                isChecked={checked}
+                onSelect={() => handleSelect(opt)}
+              />
+            ))}
           </div>
 
           {checked && (

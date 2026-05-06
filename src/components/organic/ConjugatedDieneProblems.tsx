@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import RenderableChoiceButton from '../shared/RenderableChoiceButton'
 
 interface MCProblem {
   question: string
@@ -174,19 +175,16 @@ export default function ConjugatedDieneProblems({ allowCustom = true }: Props) {
           </div>
 
           <div className="flex flex-col gap-2">
-            {problem.shuffled.map(choice => {
-              const isSelected = selected === choice
-              const isCorrect = choice === problem.answer
-              let cls = 'border-border text-secondary hover:border-muted hover:text-primary'
-              if (checked && isCorrect)                cls = 'feedback-success text-success-strong'
-              if (checked && isSelected && !isCorrect) cls = 'feedback-error text-error-strong'
-              return (
-                <button key={choice} disabled={checked} onClick={() => handleSelect(choice)}
-                  className={`text-left px-4 py-2.5 rounded-sm border font-sans text-sm transition-colors disabled:cursor-default ${cls}`}>
-                  {choice}
-                </button>
-              )
-            })}
+            {problem.shuffled.map(choice => (
+              <RenderableChoiceButton
+                key={choice}
+                choice={{ label: choice }}
+                isSelected={selected === choice}
+                isCorrect={choice === problem.answer}
+                isChecked={checked}
+                onSelect={() => handleSelect(choice)}
+              />
+            ))}
           </div>
 
           {checked && (

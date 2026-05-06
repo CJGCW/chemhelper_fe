@@ -93,6 +93,25 @@ export const ALKYNE_REACTIONS: ReactionDef[] = [
     reactants: 'Alkyne + HX',
     products: 'Vinyl halide (Markovnikov, trans)',
     conditions: 'HBr or HCl; neat or polar solvent; 1 eq for vinyl halide, 2 eq for geminal dihalide',
+    reactantSpecies: {
+      text: 'Alkyne + HX',
+      species: [
+        { smiles: '[R]C#C[R]', label: 'Alkyne' },
+        { smiles: '[H]Br', label: 'HBr' },
+      ],
+    },
+    productSpecies: {
+      text: 'Vinyl halide (Markovnikov, trans)',
+      species: [
+        { smiles: '[R]/C([Br])=C(/[H])[R]', label: 'trans-Vinyl bromide' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'HBr or HCl; neat or polar solvent; 1 eq for vinyl halide, 2 eq for geminal dihalide',
+      species: [
+        { smiles: '[H]Br', label: 'HBr' },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: 'markovnikov',
     stereochemistry: 'anti',
@@ -145,6 +164,26 @@ export const ALKYNE_REACTIONS: ReactionDef[] = [
     reactants: 'Alkyne + Br₂',
     products: 'Trans-1,2-dibromoalkene (or tetrahalide with 2 eq)',
     conditions: 'Br₂ in CH₂Cl₂; 1 eq for vinyl dihalide, 2 eq for tetrahalide',
+    reactantSpecies: {
+      text: 'Alkyne + Br₂',
+      species: [
+        { smiles: '[R]C#C[R]', label: 'Alkyne' },
+        { smiles: 'BrBr', label: 'Br₂' },
+      ],
+    },
+    productSpecies: {
+      text: 'Trans-1,2-dibromoalkene (or tetrahalide with 2 eq)',
+      species: [
+        { smiles: '[R]/C([Br])=C(\\[Br])[R]', label: 'trans-1,2-Dibromoalkene' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Br₂ in CH₂Cl₂; 1 eq for vinyl dihalide, 2 eq for tetrahalide',
+      species: [
+        { smiles: 'BrBr', label: 'Br₂' },
+        { smiles: 'ClCCl', label: 'CH₂Cl₂', catalyst: true },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: null,
     stereochemistry: 'anti',
@@ -192,6 +231,26 @@ export const ALKYNE_REACTIONS: ReactionDef[] = [
     reactants: 'Terminal alkyne + H₂O (H₂SO₄ / HgSO₄ cat.)',
     products: 'Methyl ketone (Markovnikov)',
     conditions: 'Dilute H₂SO₄ with HgSO₄ catalyst; aqueous; 60–80 °C',
+    reactantSpecies: {
+      text: 'Terminal alkyne + H₂O (H₂SO₄ / HgSO₄ cat.)',
+      species: [
+        { smiles: '[R]C#C[H]', label: 'Terminal alkyne' },
+        { smiles: 'O', label: 'H₂O', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'Methyl ketone (Markovnikov)',
+      species: [
+        { smiles: 'CC(=O)[R]', label: 'Methyl ketone' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Dilute H₂SO₄ with HgSO₄ catalyst; aqueous; 60–80 °C',
+      species: [
+        { smiles: 'OS(=O)(=O)O', label: 'H₂SO₄', catalyst: true },
+        { smiles: '[Hg+2]', label: 'HgSO₄', catalyst: true },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: 'markovnikov',
     stereochemistry: null,
@@ -248,6 +307,26 @@ export const ALKYNE_REACTIONS: ReactionDef[] = [
     reactants: 'Internal alkyne + H₂O (H₂SO₄ / HgSO₄ cat.)',
     products: 'Ketone',
     conditions: 'Dilute H₂SO₄ with HgSO₄ catalyst; aqueous; 60–80 °C',
+    reactantSpecies: {
+      text: 'Internal alkyne + H₂O (H₂SO₄ / HgSO₄ cat.)',
+      species: [
+        { smiles: '[R]C#C[R]', label: 'Internal alkyne' },
+        { smiles: 'O', label: 'H₂O', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'Ketone',
+      species: [
+        { smiles: '[R]C(=O)[R]', label: 'Ketone' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Dilute H₂SO₄ with HgSO₄ catalyst; aqueous; 60–80 °C',
+      species: [
+        { smiles: 'OS(=O)(=O)O', label: 'H₂SO₄', catalyst: true },
+        { smiles: '[Hg+2]', label: 'HgSO₄', catalyst: true },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: null,
     stereochemistry: null,
@@ -299,6 +378,27 @@ export const ALKYNE_REACTIONS: ReactionDef[] = [
     reactants: 'Internal alkyne + BH₃·THF; then H₂O₂/NaOH',
     products: 'Ketone (via enol, syn addition)',
     conditions: 'BH₃·THF; then H₂O₂, NaOH, H₂O',
+    reactantSpecies: {
+      text: 'Internal alkyne + BH₃·THF; then H₂O₂/NaOH',
+      species: [
+        { smiles: '[R]C#C[R]', label: 'Internal alkyne' },
+        { smiles: 'B([H])([H])[H]', label: 'BH₃' },
+      ],
+    },
+    productSpecies: {
+      text: 'Ketone (via enol, syn addition)',
+      species: [
+        { smiles: '[R]C(=O)[R]', label: 'Ketone' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'BH₃·THF; then H₂O₂, NaOH, H₂O',
+      species: [
+        { smiles: 'B([H])([H])[H]', label: 'BH₃·THF', catalyst: true },
+        { smiles: 'OO', label: 'H₂O₂' },
+        { smiles: '[OH-]', label: 'NaOH' },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: 'anti-markovnikov',
     stereochemistry: 'syn',
@@ -346,6 +446,27 @@ export const ALKYNE_REACTIONS: ReactionDef[] = [
     reactants: 'Terminal alkyne + Sia₂BH; then H₂O₂/NaOH',
     products: 'Aldehyde (anti-Markovnikov)',
     conditions: 'Sia₂BH (disiamylborane) in THF; then H₂O₂, NaOH, H₂O',
+    reactantSpecies: {
+      text: 'Terminal alkyne + Sia₂BH; then H₂O₂/NaOH',
+      species: [
+        { smiles: '[R]C#C[H]', label: 'Terminal alkyne' },
+        { smiles: 'B([H])([H])[H]', label: 'Sia₂BH' },
+      ],
+    },
+    productSpecies: {
+      text: 'Aldehyde (anti-Markovnikov)',
+      species: [
+        { smiles: '[R]CC=O', label: 'Aldehyde' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Sia₂BH (disiamylborane) in THF; then H₂O₂, NaOH, H₂O',
+      species: [
+        { smiles: 'B([H])([H])[H]', label: 'Sia₂BH', catalyst: true },
+        { smiles: 'OO', label: 'H₂O₂' },
+        { smiles: '[OH-]', label: 'NaOH' },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: 'anti-markovnikov',
     stereochemistry: 'syn',
@@ -405,6 +526,26 @@ export const ALKYNE_REACTIONS: ReactionDef[] = [
     reactants: 'Internal alkyne + H₂ (Lindlar catalyst)',
     products: 'Cis (Z) alkene',
     conditions: 'H₂ gas; Pd/BaSO₄ poisoned with quinoline (Lindlar catalyst); EtOAc',
+    reactantSpecies: {
+      text: 'Internal alkyne + H₂ (Lindlar catalyst)',
+      species: [
+        { smiles: '[R]C#C[R]', label: 'Internal alkyne' },
+        { smiles: '[H][H]', label: 'H₂' },
+      ],
+    },
+    productSpecies: {
+      text: 'Cis (Z) alkene',
+      species: [
+        { smiles: '[R]/C=C\\[R]', label: 'cis-Alkene (Z)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'H₂ gas; Pd/BaSO₄ poisoned with quinoline (Lindlar catalyst); EtOAc',
+      species: [
+        { smiles: '[Pd]', label: 'Lindlar Pd', catalyst: true },
+        { smiles: '[H][H]', label: 'H₂' },
+      ],
+    },
     reactionType: 'reduction',
     regiochemistry: null,
     stereochemistry: 'syn',
@@ -455,6 +596,26 @@ export const ALKYNE_REACTIONS: ReactionDef[] = [
     reactants: 'Internal alkyne + Na (or Li) / liq. NH₃',
     products: 'Trans (E) alkene',
     conditions: 'Na metal in liquid NH₃ (−33 °C); add NH₄Cl to quench',
+    reactantSpecies: {
+      text: 'Internal alkyne + Na (or Li) / liq. NH₃',
+      species: [
+        { smiles: '[R]C#C[R]', label: 'Internal alkyne' },
+        { smiles: '[Na]', label: 'Na' },
+      ],
+    },
+    productSpecies: {
+      text: 'Trans (E) alkene',
+      species: [
+        { smiles: '[R]/C=C/[R]', label: 'trans-Alkene (E)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Na metal in liquid NH₃ (−33 °C); add NH₄Cl to quench',
+      species: [
+        { smiles: '[Na]', label: 'Na' },
+        { smiles: 'N', label: 'liq. NH₃' },
+      ],
+    },
     reactionType: 'reduction',
     regiochemistry: null,
     stereochemistry: 'anti',
@@ -506,6 +667,25 @@ export const ALKYNE_REACTIONS: ReactionDef[] = [
     reactants: 'Terminal alkyne + NaNH₂; then R–X (primary)',
     products: 'Internal alkyne (extended carbon chain)',
     conditions: 'NaNH₂ in liq. NH₃ or THF; then primary R–X; 0 °C to RT',
+    reactantSpecies: {
+      text: 'Terminal alkyne + NaNH₂; then R–X (primary)',
+      species: [
+        { smiles: '[R]C#C[H]', label: 'Terminal alkyne' },
+        { smiles: '[R]Br', label: 'R–X (primary)' },
+      ],
+    },
+    productSpecies: {
+      text: 'Internal alkyne (extended carbon chain)',
+      species: [
+        { smiles: '[R]C#C[R]', label: 'Internal alkyne' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'NaNH₂ in liq. NH₃ or THF; then primary R–X; 0 °C to RT',
+      species: [
+        { smiles: '[NH2-].[Na+]', label: 'NaNH₂', catalyst: true },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: null,

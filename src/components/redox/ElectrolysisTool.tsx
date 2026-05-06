@@ -181,7 +181,7 @@ export default function ElectrolysisTool() {
           </div>
         )}
 
-        {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+        {error && <p className="font-mono text-xs text-error">{error}</p>}
 
         <button
           onClick={handleCalculate}

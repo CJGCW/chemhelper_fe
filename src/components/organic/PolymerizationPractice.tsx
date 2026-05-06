@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import CompoundDisplay from '../shared/CompoundDisplay'
+import RenderableChoiceButton from '../shared/RenderableChoiceButton'
 
 interface PolyProblem {
   monomer: string
@@ -101,11 +102,12 @@ const PROBLEMS: PolyProblem[] = [
 
 export default function PolymerizationPractice({ allowCustom = true }: { allowCustom?: boolean }) {
   const [idx, setIdx] = useState(0)
-  const [selected, setSelected] = useState<number | null>(null)
+  const [selected, setSelected] = useState<string | null>(null)
   const [score, setScore] = useState({ correct: 0, total: 0 })
 
   const problem = PROBLEMS[idx]
-  const isCorrect = selected === problem.correctIndex
+  const correctLabel = problem.options[problem.correctIndex]
+  const isCorrect = selected === correctLabel
 
   function next() {
     const nextIdx = allowCustom
@@ -115,10 +117,10 @@ export default function PolymerizationPractice({ allowCustom = true }: { allowCu
     setSelected(null)
   }
 
-  function handleSelect(i: number) {
+  function handleSelect(label: string) {
     if (selected !== null) return
-    setSelected(i)
-    setScore(s => ({ correct: s.correct + (i === problem.correctIndex ? 1 : 0), total: s.total + 1 }))
+    setSelected(label)
+    setScore(s => ({ correct: s.correct + (label === correctLabel ? 1 : 0), total: s.total + 1 }))
   }
 
   return (
@@ -147,30 +149,20 @@ export default function PolymerizationPractice({ allowCustom = true }: { allowCu
         </div>
 
         <div className="flex flex-col gap-2">
-          {problem.options.map((opt, i) => {
-            let bg = 'rgb(var(--color-surface))'
-            let border = 'rgb(var(--color-border))'
-            let textCl = 'text-primary'
-            if (selected !== null) {
-              if (i === problem.correctIndex) { bg = '#16a34a20'; border = '#16a34a'; textCl = 'text-green-700 dark:text-green-400' }
-              else if (i === selected) { bg = '#dc262620'; border = '#dc2626'; textCl = 'text-red-700 dark:text-red-400' }
-            }
-            return (
-              <button
-                key={i}
-                onClick={() => handleSelect(i)}
-                disabled={selected !== null}
-                className="px-4 py-3 rounded-sm border text-left text-sm font-sans transition-colors"
-                style={{ background: bg, borderColor: border, color: textCl }}
-              >
-                {opt}
-              </button>
-            )
-          })}
+          {problem.options.map((opt, i) => (
+            <RenderableChoiceButton
+              key={opt}
+              choice={{ label: opt }}
+              isSelected={selected === opt}
+              isCorrect={i === problem.correctIndex}
+              isChecked={selected !== null}
+              onSelect={() => handleSelect(opt)}
+            />
+          ))}
         </div>
 
         {selected !== null && (
-          <div className={`rounded-sm p-3 text-xs font-sans ${isCorrect ? 'bg-green-500/10 text-green-700 dark:text-green-400' : 'bg-red-500/10 text-red-700 dark:text-red-400'}`}>
+          <div className="rounded-sm p-3 text-xs font-sans" style={{ background: isCorrect ? 'rgb(var(--color-success-bg) / 0.2)' : 'rgb(var(--color-error-bg) / 0.2)', color: isCorrect ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
             <p className="font-semibold mb-1">{isCorrect ? 'Correct!' : 'Incorrect'}</p>
             <p>{problem.explanation}</p>
           </div>

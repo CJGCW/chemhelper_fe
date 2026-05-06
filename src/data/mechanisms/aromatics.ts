@@ -174,6 +174,26 @@ export const AROMATIC_REACTIONS: ReactionDef[] = [
     reactants: 'Arene + Br₂, AlBr₃',
     products: 'Aryl bromide',
     conditions: 'Br₂, AlBr₃ (Lewis acid); anhydrous; room temperature; FeBr₃ also works',
+    reactantSpecies: {
+      text: 'Arene + Br₂, AlBr₃',
+      species: [
+        { smiles: 'c1ccccc1', label: 'Benzene' },
+        { smiles: 'BrBr', label: 'Br₂' },
+      ],
+    },
+    productSpecies: {
+      text: 'Aryl bromide',
+      species: [
+        { smiles: 'Brc1ccccc1', label: 'Bromobenzene' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Br₂, AlBr₃ (Lewis acid); anhydrous; room temperature; FeBr₃ also works',
+      species: [
+        { smiles: 'BrBr', label: 'Br₂' },
+        { smiles: 'BrAlBr', label: 'AlBr₃', catalyst: true },
+      ],
+    },
     reactionType: 'eas',
     regiochemistry: null,
     stereochemistry: null,
@@ -219,6 +239,26 @@ export const AROMATIC_REACTIONS: ReactionDef[] = [
     reactants: 'Arene + HNO₃, H₂SO₄',
     products: 'Nitroarene (ArNO₂)',
     conditions: 'Conc. HNO₃ + conc. H₂SO₄ (mixed acid); 0–50 °C; T controls mono vs poly nitration',
+    reactantSpecies: {
+      text: 'Arene + HNO₃/H₂SO₄',
+      species: [
+        { smiles: 'c1ccccc1', label: 'Benzene' },
+        { smiles: 'O[N+](=O)[O-]', label: 'HNO₃' },
+      ],
+    },
+    productSpecies: {
+      text: 'Nitrobenzene',
+      species: [
+        { smiles: 'O=[N+]([O-])c1ccccc1', label: 'Nitrobenzene' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Conc. HNO₃ + conc. H₂SO₄ (mixed acid); 0–50 °C; T controls mono vs poly nitration',
+      species: [
+        { smiles: 'O[N+](=O)[O-]', label: 'HNO₃' },
+        { smiles: 'OS(=O)(=O)O', label: 'H₂SO₄', catalyst: true },
+      ],
+    },
     reactionType: 'eas',
     regiochemistry: null,
     stereochemistry: null,
@@ -264,6 +304,25 @@ export const AROMATIC_REACTIONS: ReactionDef[] = [
     reactants: 'Arene + fuming H₂SO₄ (H₂S₂O₇)',
     products: 'Arylsulfonic acid (ArSO₃H)',
     conditions: 'Fuming H₂SO₄ (oleum); heat; reversible with dil. H₂SO₄/steam',
+    reactantSpecies: {
+      text: 'Arene + fuming H₂SO₄',
+      species: [
+        { smiles: 'c1ccccc1', label: 'Benzene' },
+        { smiles: 'OS(=O)(=O)O', label: 'H₂SO₄ (oleum)' },
+      ],
+    },
+    productSpecies: {
+      text: 'Arylsulfonic acid',
+      species: [
+        { smiles: 'OS(=O)(=O)c1ccccc1', label: 'Benzenesulfonic acid' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Fuming H₂SO₄ (oleum); heat; reversible with dil. H₂SO₄/steam',
+      species: [
+        { smiles: 'OS(=O)(=O)O', label: 'Oleum (H₂SO₄)', catalyst: true },
+      ],
+    },
     reactionType: 'eas',
     regiochemistry: null,
     stereochemistry: null,
@@ -310,6 +369,25 @@ export const AROMATIC_REACTIONS: ReactionDef[] = [
     reactants: 'Arene + R-Cl, AlCl₃',
     products: 'Alkylbenzene',
     conditions: 'AlCl₃ (Lewis acid), RX, anhydrous; mild temperature',
+    reactantSpecies: {
+      text: 'Arene + RX, AlCl₃',
+      species: [
+        { smiles: 'c1ccccc1', label: 'Benzene' },
+        { smiles: '[R]Cl', label: 'Alkyl halide (RX)' },
+      ],
+    },
+    productSpecies: {
+      text: 'Alkylbenzene',
+      species: [
+        { smiles: '[R]c1ccccc1', label: 'Alkylbenzene' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'AlCl₃ (Lewis acid), RX, anhydrous; mild temperature',
+      species: [
+        { smiles: '[Al](Cl)(Cl)Cl', label: 'AlCl₃', catalyst: true },
+      ],
+    },
     reactionType: 'eas',
     regiochemistry: null,
     stereochemistry: null,
@@ -356,6 +434,26 @@ export const AROMATIC_REACTIONS: ReactionDef[] = [
     reactants: 'Arene + RCOCl, AlCl₃',
     products: 'Aryl ketone (Ar–COR)',
     conditions: 'AlCl₃ (1 equiv or excess), RCOCl, anhydrous CH₂Cl₂ or CS₂',
+    reactantSpecies: {
+      text: 'Arene + RCOCl, AlCl₃',
+      species: [
+        { smiles: 'c1ccccc1', label: 'Benzene' },
+        { smiles: '[R]C(=O)Cl', label: 'Acyl chloride' },
+      ],
+    },
+    productSpecies: {
+      text: 'Aryl ketone',
+      species: [
+        { smiles: '[R]C(=O)c1ccccc1', label: 'Aryl ketone' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'AlCl₃ (1 equiv or excess), RCOCl, anhydrous CH₂Cl₂ or CS₂',
+      species: [
+        { smiles: '[Al](Cl)(Cl)Cl', label: 'AlCl₃', catalyst: true },
+        { smiles: '[R]C(=O)Cl', label: 'RCOCl' },
+      ],
+    },
     reactionType: 'eas',
     regiochemistry: null,
     stereochemistry: null,
@@ -401,6 +499,26 @@ export const AROMATIC_REACTIONS: ReactionDef[] = [
     reactants: 'Aryl ketone',
     products: 'Alkylbenzene (C=O → CH₂)',
     conditions: 'Zn(Hg) amalgam, conc. HCl; reflux; acidic conditions required',
+    reactantSpecies: {
+      text: 'Aryl ketone + Zn(Hg), HCl',
+      species: [
+        { smiles: '[R]C(=O)c1ccccc1', label: 'Aryl ketone' },
+        { smiles: '[H][H]', label: 'H₂ (equiv)' },
+      ],
+    },
+    productSpecies: {
+      text: 'Alkylbenzene',
+      species: [
+        { smiles: '[R]Cc1ccccc1', label: 'Alkylbenzene' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Zn(Hg) amalgam, conc. HCl; reflux; acidic conditions required',
+      species: [
+        { smiles: '[Zn]', label: 'Zn(Hg) amalgam', catalyst: true },
+        { smiles: 'Cl', label: 'conc. HCl' },
+      ],
+    },
     reactionType: 'reduction',
     regiochemistry: null,
     stereochemistry: null,
@@ -442,6 +560,26 @@ export const AROMATIC_REACTIONS: ReactionDef[] = [
     reactants: 'Aryl ketone',
     products: 'Alkylbenzene (C=O → CH₂)',
     conditions: 'NH₂NH₂ (hydrazine), KOH, ethylene glycol; 200 °C (Huang Minlon) or sealed tube',
+    reactantSpecies: {
+      text: 'Aryl ketone + N₂H₄, KOH',
+      species: [
+        { smiles: '[R]C(=O)c1ccccc1', label: 'Aryl ketone' },
+        { smiles: 'NN', label: 'N₂H₄ (hydrazine)' },
+      ],
+    },
+    productSpecies: {
+      text: 'Alkylbenzene',
+      species: [
+        { smiles: '[R]Cc1ccccc1', label: 'Alkylbenzene' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'NH₂NH₂ (hydrazine), KOH, ethylene glycol; 200 °C (Huang Minlon) or sealed tube',
+      species: [
+        { smiles: 'NN', label: 'N₂H₄' },
+        { smiles: '[OH-].[K+]', label: 'KOH' },
+      ],
+    },
     reactionType: 'reduction',
     regiochemistry: null,
     stereochemistry: null,
@@ -500,6 +638,26 @@ export const AROMATIC_REACTIONS: ReactionDef[] = [
     reactants: 'Alkylbenzene + NBS',
     products: 'Benzylic bromide',
     conditions: 'NBS, hν (light) or ROOR (peroxide initiator); CCl₄ solvent; 80 °C',
+    reactantSpecies: {
+      text: 'Alkylbenzene + NBS, hν',
+      species: [
+        { smiles: '[R]Cc1ccccc1', label: 'Alkylbenzene' },
+        { smiles: 'O=C1CCC(=O)N1Br', label: 'NBS' },
+      ],
+    },
+    productSpecies: {
+      text: 'Benzylic bromide',
+      species: [
+        { smiles: '[R]C(Br)c1ccccc1', label: 'Benzylic bromide' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'NBS, hν (light) or ROOR (peroxide initiator); CCl₄ solvent; 80 °C',
+      species: [
+        { smiles: 'O=C1CCC(=O)N1Br', label: 'NBS' },
+        { smiles: 'ClC(Cl)(Cl)Cl', label: 'CCl₄', catalyst: true },
+      ],
+    },
     reactionType: 'radical',
     regiochemistry: null,
     stereochemistry: null,
@@ -586,6 +744,25 @@ export const AROMATIC_REACTIONS: ReactionDef[] = [
     reactants: 'Alkylbenzene',
     products: 'Benzoic acid (ArCOOH)',
     conditions: 'Hot conc. KMnO₄, H₂O (acidify workup); or Na₂Cr₂O₇/H₂SO₄',
+    reactantSpecies: {
+      text: 'Alkylbenzene + KMnO₄',
+      species: [
+        { smiles: '[R]Cc1ccccc1', label: 'Alkylbenzene' },
+        { smiles: '[O-][Mn](=O)(=O)=O.[K+]', label: 'KMnO₄' },
+      ],
+    },
+    productSpecies: {
+      text: 'Benzoic acid',
+      species: [
+        { smiles: 'OC(=O)c1ccccc1', label: 'Benzoic acid' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Hot conc. KMnO₄, H₂O (acidify workup); or Na₂Cr₂O₇/H₂SO₄',
+      species: [
+        { smiles: '[O-][Mn](=O)(=O)=O.[K+]', label: 'KMnO₄' },
+      ],
+    },
     reactionType: 'oxidation',
     regiochemistry: null,
     stereochemistry: null,
@@ -647,6 +824,26 @@ export const AROMATIC_REACTIONS: ReactionDef[] = [
     reactants: 'Arylamine (ArNH₂)',
     products: 'Aryldiazonium salt (ArN₂⁺)',
     conditions: 'NaNO₂, HCl, 0–5 °C (must stay cold — diazonium decomposes above 5 °C)',
+    reactantSpecies: {
+      text: 'ArNH₂ + NaNO₂, HCl, 0–5 °C',
+      species: [
+        { smiles: 'Nc1ccccc1', label: 'Aniline (ArNH₂)' },
+        { smiles: 'N=O.[Na+].[Cl-]', label: 'NaNO₂/HCl' },
+      ],
+    },
+    productSpecies: {
+      text: 'Arenediazonium salt (ArN₂⁺)',
+      species: [
+        { smiles: '[N+]#Nc1ccccc1', label: 'Benzenediazonium' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'NaNO₂, HCl, 0–5 °C (must stay cold — diazonium decomposes above 5 °C)',
+      species: [
+        { smiles: '[Na+].[O-]N=O', label: 'NaNO₂' },
+        { smiles: 'Cl', label: 'HCl' },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: null,
@@ -705,6 +902,24 @@ export const AROMATIC_REACTIONS: ReactionDef[] = [
     reactants: 'ArN₂⁺ + nucleophile',
     products: 'Ar-Nu (Nu = Cl, Br, I, F, OH, CN, H)',
     conditions: 'Various: CuX (Sandmeyer), KI, HBF₄, H₂O, H₃PO₂; 0 °C → warm depending on reaction',
+    reactantSpecies: {
+      text: 'ArN₂⁺ Cl⁻ (diazonium salt)',
+      species: [
+        { smiles: '[N+]#Nc1ccccc1', label: 'Diazonium salt (ArN₂⁺)' },
+      ],
+    },
+    productSpecies: {
+      text: 'ArX (Ar-F, Ar-Cl, Ar-Br, Ar-I, Ar-CN, Ar-OH)',
+      species: [
+        { smiles: 'Brc1ccccc1', label: 'Aryl bromide (Sandmeyer)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Various: CuX (Sandmeyer), KI, HBF₄, H₂O, H₃PO₂; 0 °C → warm depending on reaction',
+      species: [
+        { smiles: 'Br[Cu]Br', label: 'CuBr (Sandmeyer)', catalyst: true },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: null,
@@ -762,6 +977,26 @@ export const AROMATIC_REACTIONS: ReactionDef[] = [
     reactants: 'Nitroarene (ArNO₂)',
     products: 'Arylamine (ArNH₂)',
     conditions: 'H₂/Pd-C or Sn/HCl (Fe/HCl also works); acidic workup gives salt, then NaOH to free amine',
+    reactantSpecies: {
+      text: 'Nitrobenzene + H₂/Pd-C',
+      species: [
+        { smiles: 'O=[N+]([O-])c1ccccc1', label: 'Nitrobenzene' },
+        { smiles: '[H][H]', label: 'H₂' },
+      ],
+    },
+    productSpecies: {
+      text: 'Aniline (ArNH₂)',
+      species: [
+        { smiles: 'Nc1ccccc1', label: 'Aniline' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'H₂/Pd-C or Sn/HCl (Fe/HCl also works); acidic workup gives salt, then NaOH to free amine',
+      species: [
+        { smiles: '[Pd]', label: 'Pd/C', catalyst: true },
+        { smiles: '[H][H]', label: 'H₂' },
+      ],
+    },
     reactionType: 'reduction',
     regiochemistry: null,
     stereochemistry: null,
@@ -820,6 +1055,25 @@ export const AROMATIC_REACTIONS: ReactionDef[] = [
     reactants: 'ArN₂⁺ + activated Ar′H (phenol or aniline)',
     products: 'Azo compound Ar–N=N–Ar′',
     conditions: 'Near-neutral pH (4–9); 0–5 °C; para position preferred; dye synthesis',
+    reactantSpecies: {
+      text: 'ArN₂⁺ + activated arene',
+      species: [
+        { smiles: '[N+]#Nc1ccccc1', label: 'Diazonium ion (ArN₂⁺)' },
+        { smiles: 'Nc1ccccc1', label: 'Activated arene (e.g. aniline)' },
+      ],
+    },
+    productSpecies: {
+      text: 'Azo compound (Ar-N=N-Ar)',
+      species: [
+        { smiles: 'c1ccc(/N=N/c2ccccc2)cc1', label: 'Azo dye' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Near-neutral pH (4–9); 0–5 °C; para position preferred; dye synthesis',
+      species: [
+        { smiles: '[H+]', label: 'pH 4–9 buffer', catalyst: true },
+      ],
+    },
     reactionType: 'eas',
     regiochemistry: null,
     stereochemistry: null,
@@ -881,6 +1135,25 @@ export const AROMATIC_REACTIONS: ReactionDef[] = [
     reactants: 'Activated arene + Nu⁻',
     products: 'Ar-Nu',
     conditions: 'EWG (NO₂, CN) at ortho or para to leaving group; strong nucleophile (OH⁻, NH₃, RO⁻); polar aprotic or protic solvent',
+    reactantSpecies: {
+      text: 'Activated aryl halide + strong nucleophile',
+      species: [
+        { smiles: 'O=[N+]([O-])c1ccc(Cl)cc1', label: '4-Chloronitrobenzene' },
+        { smiles: '[OH-]', label: 'Nu⁻ (e.g. OH⁻)', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'Substituted arene (Nu replaces LG)',
+      species: [
+        { smiles: 'O=[N+]([O-])c1ccc(O)cc1', label: '4-Nitrophenol' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'EWG (NO₂, CN) at ortho or para to leaving group; strong nucleophile (OH⁻, NH₃, RO⁻); polar aprotic or protic solvent',
+      species: [
+        { smiles: '[OH-]', label: 'OH⁻ (nucleophile)', showLonePairs: true },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: null,
@@ -972,6 +1245,26 @@ export const AROMATIC_REACTIONS: ReactionDef[] = [
     reactants: 'Halobenzene + NaNH₂',
     products: 'Aniline (mixture of regioisomers if substituted)',
     conditions: 'NaNH₂ (sodamide), liquid NH₃ or THF; very strong base required',
+    reactantSpecies: {
+      text: 'Halobenzene + NaNH₂',
+      species: [
+        { smiles: 'Clc1ccccc1', label: 'Chlorobenzene' },
+        { smiles: '[NH2-].[Na+]', label: 'NaNH₂', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'Aniline (mixture of regioisomers if substituted)',
+      species: [
+        { smiles: 'Nc1ccccc1', label: 'Aniline' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'NaNH₂ (sodamide), liquid NH₃ or THF; very strong base required',
+      species: [
+        { smiles: '[NH2-].[Na+]', label: 'NaNH₂' },
+        { smiles: 'N', label: 'liq. NH₃', catalyst: true },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: null,
@@ -1053,6 +1346,25 @@ export const AROMATIC_REACTIONS: ReactionDef[] = [
     reactants: 'Diene (s-cis) + dienophile',
     products: '6-membered ring (cyclohexene derivative)',
     conditions: 'Typically heat; electron-poor dienophile (EWG on C=C); diene must adopt s-cis; may use Lewis acid catalyst',
+    reactantSpecies: {
+      text: 'Diene (s-cis) + dienophile',
+      species: [
+        { smiles: 'C=CC=C', label: 'Diene (s-cis)' },
+        { smiles: 'C=CC=O', label: 'Dienophile (with EWG)' },
+      ],
+    },
+    productSpecies: {
+      text: 'Cyclohexene (bicyclic if cyclic diene)',
+      species: [
+        { smiles: 'C1=CCCCC1', label: 'Cyclohexene' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Typically heat; electron-poor dienophile (EWG on C=C); diene must adopt s-cis; may use Lewis acid catalyst',
+      species: [
+        { smiles: '[Al](Cl)(Cl)Cl', label: 'AlCl₃ (optional Lewis acid)', catalyst: true },
+      ],
+    },
     reactionType: 'pericyclic',
     regiochemistry: null,
     stereochemistry: 'syn',

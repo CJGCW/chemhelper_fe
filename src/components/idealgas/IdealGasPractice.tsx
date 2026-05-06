@@ -57,7 +57,7 @@ export default function IdealGasPractice({ allowCustom = true }: Props) {
         <div className="flex items-center gap-3">
           <div className="flex-1 h-1.5 rounded-full bg-raised overflow-hidden">
             <motion.div
-              className="h-full rounded-full bg-emerald-500"
+              className="h-full rounded-full" style={{ background: 'rgb(var(--color-success))' }}
               animate={{ width: `${(score.correct / score.total) * 100}%` }}
               transition={{ duration: 0.4 }}
             />
@@ -119,8 +119,8 @@ export default function IdealGasPractice({ allowCustom = true }: Props) {
             <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
               className={`flex items-center gap-2 px-3 py-2 rounded-sm border ${
                 correct
-                  ? 'border-emerald-500/30 bg-emerald-500/10 text-success'
-                  : 'border-red-500/30 bg-red-500/10 text-red-400'
+                  ? 'feedback-success text-success'
+                  : 'feedback-error text-error'
               }`}
             >
               <span className="font-mono text-sm font-semibold">

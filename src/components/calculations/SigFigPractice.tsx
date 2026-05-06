@@ -224,7 +224,7 @@ export default function SigFigPractice({ allowCustom = true }: Props) {
                 }}
               >
                 <span className="font-mono font-bold text-xl"
-                  style={{ color: correct === total ? '#22c55e' : 'var(--c-halogen)' }}>
+                  style={{ color: correct === total ? 'rgb(var(--color-success))' : 'var(--c-halogen)' }}>
                   {correct} / {total}
                 </span>
                 <span className="font-sans text-sm text-secondary">correct</span>
@@ -281,13 +281,13 @@ export default function SigFigPractice({ allowCustom = true }: Props) {
                             style={{ border: `1px solid ${borderColor(result)}` }}
                           />
                           {result === 'correct' && (
-                            <span className="font-mono text-xs" style={{ color: '#22c55e' }}>✓</span>
+                            <span className="font-mono text-xs" style={{ color: 'rgb(var(--color-success))' }}>✓</span>
                           )}
                           {result === 'wrong_sf' && (
-                            <span className="font-sans text-xs" style={{ color: '#f97316' }}>right value</span>
+                            <span className="font-sans text-xs" style={{ color: 'rgb(var(--color-warning))' }}>right value</span>
                           )}
                           {result === 'wrong_value' && (
-                            <span className="font-mono text-xs" style={{ color: '#ef4444' }}>✗</span>
+                            <span className="font-mono text-xs" style={{ color: 'rgb(var(--color-error))' }}>✗</span>
                           )}
                         </div>
                       </div>
@@ -318,9 +318,9 @@ export default function SigFigPractice({ allowCustom = true }: Props) {
                                   }`
                                 }}
                               />
-                              {pr === 'correct' && <span className="font-mono text-xs" style={{ color: '#22c55e' }}>✓</span>}
+                              {pr === 'correct' && <span className="font-mono text-xs" style={{ color: 'rgb(var(--color-success))' }}>✓</span>}
                               {pr === 'wrong'   && (
-                                <span className="font-sans text-xs" style={{ color: '#ef4444' }}>
+                                <span className="font-sans text-xs" style={{ color: 'rgb(var(--color-error))' }}>
                                   expected {p.isAddSub ? p.limitingDP : p.limitingSF}
                                 </span>
                               )}

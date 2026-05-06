@@ -43,7 +43,7 @@ export default function IsomerPractice({ allowCustom = true }: Props) {
         <div className="flex items-center gap-3">
           <div className="flex-1 h-1.5 rounded-full bg-raised overflow-hidden">
             <motion.div
-              className="h-full rounded-full bg-emerald-500"
+              className="h-full rounded-full" style={{ background: 'rgb(var(--color-success))' }}
               animate={{ width: `${(score.correct / score.total) * 100}%` }}
               transition={{ duration: 0.4 }}
             />
@@ -95,17 +95,15 @@ export default function IsomerPractice({ allowCustom = true }: Props) {
                   style={
                     checked
                       ? isCorrect
-                        ? { background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.4)', color: 'rgb(52,211,153)' }
+                        ? { background: 'rgb(var(--color-success-bg) / 0.1)', border: '1px solid rgb(var(--color-success-border) / 0.4)', color: 'rgb(var(--color-success))' }
                         : isSelected
-                          ? { background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.4)', color: 'rgb(248,113,113)' }
+                          ? { background: 'rgb(var(--color-error-bg) / 0.1)', border: '1px solid rgb(var(--color-error-border) / 0.4)', color: 'rgb(var(--color-error))' }
                           : { background: 'rgb(var(--color-raised))', border: '1px solid rgb(var(--color-border))', color: 'rgba(var(--overlay),0.4)' }
                       : isSelected
                         ? { background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)', color: 'var(--c-halogen)' }
                         : { background: 'rgb(var(--color-raised))', border: '1px solid rgb(var(--color-border))', color: 'rgba(var(--overlay),0.4)' }
                   }
-                >
-                  {option}
-                </button>
+                >{option}</button>
               )
             })}
           </div>
@@ -123,8 +121,8 @@ export default function IsomerPractice({ allowCustom = true }: Props) {
           )}
 
           {checked && (
-            <div className={`flex flex-col gap-3 p-4 rounded-sm border ${correct ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-red-500/30 bg-red-500/5'}`}>
-              <p className={`font-sans text-sm font-medium ${correct ? 'text-success' : 'text-red-400'}`}>
+            <div className={`flex flex-col gap-3 p-4 rounded-sm border ${correct ? 'feedback-success' : 'feedback-error'}`}>
+              <p className={`font-sans text-sm font-medium ${correct ? 'text-success' : 'text-error'}`}>
                 {correct ? 'Correct!' : `Incorrect — the answer is: ${correctAnswer}`}
               </p>
               {showAnswers && (

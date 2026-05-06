@@ -20,19 +20,19 @@ export default function ReactionProfileReference() {
               symbol: 'Eₐ (forward)',
               def: 'Energy gap from reactants to transition state.',
               note: 'Always positive. Determines reaction rate.',
-              color: '#f87171',
+              color: 'rgb(var(--color-error))',
             },
             {
               symbol: 'Eₐ (reverse)',
               def: 'Energy gap from products to transition state.',
               note: 'Eₐ(rev) = Eₐ(fwd) − ΔH',
-              color: '#fb923c',
+              color: 'rgb(var(--color-warning))',
             },
             {
               symbol: 'ΔH (reaction)',
               def: 'Energy of products minus energy of reactants.',
               note: 'Exothermic: ΔH < 0 (products lower). Endothermic: ΔH > 0.',
-              color: '#4ade80',
+              color: 'rgb(var(--color-success))',
             },
             {
               symbol: 'Transition state',

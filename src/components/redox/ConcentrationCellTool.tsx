@@ -104,7 +104,7 @@ export default function ConcentrationCellTool() {
           </div>
         </div>
 
-        {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+        {error && <p className="font-mono text-xs text-error">{error}</p>}
 
         <button
           onClick={handleCalculate}
@@ -136,7 +136,7 @@ export default function ConcentrationCellTool() {
           >
             <p className="font-mono text-xs tracking-widest uppercase text-secondary">Cell EMF</p>
             <div className="flex items-baseline gap-2">
-              <span className="font-mono text-3xl font-semibold" style={{ color: result.E > 0 ? '#4ade80' : '#f87171' }}>
+              <span className="font-mono text-3xl font-semibold" style={{ color: result.E > 0 ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                 {result.E >= 0 ? '+' : ''}{result.E.toFixed(5)} V
               </span>
             </div>

@@ -16,7 +16,7 @@ export default function AromaticityReference() {
               { n: 3, count: 14, color: 'emerald' },
               { n: 4, count: 18, color: 'emerald' },
             ].map(row => (
-              <div key={row.n} className="flex items-center gap-2 px-3 py-2 rounded-sm border border-emerald-800/40 bg-emerald-50 dark:bg-emerald-950/20">
+              <div key={row.n} className="flex items-center gap-2 px-3 py-2 rounded-sm border" style={{ borderColor: 'rgb(var(--color-success-border) / 0.4)', background: 'rgb(var(--color-success-bg) / 0.15)' }}>
                 <span className="text-dim">n={row.n}:</span>
                 <span className="text-success font-bold">{row.count}π</span>
               </div>

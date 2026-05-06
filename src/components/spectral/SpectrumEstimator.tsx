@@ -297,7 +297,7 @@ export default function SpectrumEstimator() {
             </div>
 
             {error && (
-              <p className="text-sm font-mono" style={{ color: '#f87171' }}>{error}</p>
+              <p className="text-sm font-mono" style={{ color: 'rgb(var(--color-error))' }}>{error}</p>
             )}
           </div>
         </div>

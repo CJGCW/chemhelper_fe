@@ -328,7 +328,7 @@ export default function VseprEditor({ correctStructure, onValidated }: VseprEdit
           <div className="flex items-center gap-2">
             <span style={{ fontSize: 18 }}>{validationResult.passed ? '✓' : '✗'}</span>
             <span className="font-sans font-semibold text-sm"
-              style={{ color: validationResult.passed ? '#4ade80' : '#f87171' }}>
+              style={{ color: validationResult.passed ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
               {validationResult.passed ? 'Correct! Great work.' : 'Not quite — see details below.'}
             </span>
           </div>
@@ -336,7 +336,7 @@ export default function VseprEditor({ correctStructure, onValidated }: VseprEdit
             {validationResult.checks.map((check, i) => (
               <div key={i} className="flex items-start gap-2">
                 <span className="font-mono text-xs shrink-0 w-3"
-                  style={{ color: check.passed ? '#4ade80' : '#f87171', marginTop: 1 }}>
+                  style={{ color: check.passed ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))', marginTop: 1 }}>
                   {check.passed ? '✓' : '✗'}
                 </span>
                 <div>

@@ -25,6 +25,27 @@ export const OX_RED_REACTIONS: ReactionDef[] = [
     reactants: 'Alkene + O₃',
     products: '2 carbonyl compounds (aldehyde + ketone, or 2 aldehydes)',
     conditions: 'O₃/CH₂Cl₂ at −78 °C; then DMS (dimethyl sulfide) or Zn/AcOH for reductive workup',
+    reactantSpecies: {
+      text: 'Alkene + O₃',
+      species: [
+        { smiles: '[R]C=C[R]', label: 'Alkene' },
+        { smiles: '[O-][O+]=O', label: 'O₃ (ozone)' },
+      ],
+    },
+    productSpecies: {
+      text: '2 carbonyl compounds (aldehyde + ketone, or 2 aldehydes)',
+      species: [
+        { smiles: '[R]C=O', label: 'Carbonyl fragment 1' },
+        { smiles: '[R]C=O', label: 'Carbonyl fragment 2' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'O₃/CH₂Cl₂ at −78 °C; then DMS (dimethyl sulfide) or Zn/AcOH for reductive workup',
+      species: [
+        { smiles: '[O-][O+]=O', label: 'O₃' },
+        { smiles: 'CSC', label: 'DMS (reductive workup)' },
+      ],
+    },
     reactionType: 'oxidation',
     regiochemistry: null,
     stereochemistry: null,
@@ -88,6 +109,27 @@ export const OX_RED_REACTIONS: ReactionDef[] = [
     reactants: 'Alkene + O₃',
     products: 'Carboxylic acid (from =CHR) + ketone (from =CR₂)',
     conditions: 'O₃/CH₂Cl₂ at −78 °C; then H₂O₂ (oxidative workup)',
+    reactantSpecies: {
+      text: 'Alkene + O₃',
+      species: [
+        { smiles: '[R]C=C[R]', label: 'Alkene' },
+        { smiles: '[O-][O+]=O', label: 'O₃ (ozone)' },
+      ],
+    },
+    productSpecies: {
+      text: 'Carboxylic acid (from =CHR) + ketone (from =CR₂)',
+      species: [
+        { smiles: '[R]C(=O)O', label: 'Carboxylic acid (from =CHR)' },
+        { smiles: '[R]C(=O)[R]', label: 'Ketone (from =CR₂)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'O₃/CH₂Cl₂ at −78 °C; then H₂O₂ (oxidative workup)',
+      species: [
+        { smiles: '[O-][O+]=O', label: 'O₃' },
+        { smiles: 'OO', label: 'H₂O₂ (oxidative workup)' },
+      ],
+    },
     reactionType: 'oxidation',
     regiochemistry: null,
     stereochemistry: null,
@@ -150,6 +192,27 @@ export const OX_RED_REACTIONS: ReactionDef[] = [
     reactants: 'R-C≡C-R′ + O₃',
     products: 'RCOOH + R′COOH (2 carboxylic acids)',
     conditions: 'O₃; then H₂O workup; terminal alkyne: one product is CO₂',
+    reactantSpecies: {
+      text: 'R-C≡C-R′ + O₃',
+      species: [
+        { smiles: '[R]C#C[R]', label: 'Internal alkyne' },
+        { smiles: '[O-][O+]=O', label: 'O₃ (ozone)' },
+      ],
+    },
+    productSpecies: {
+      text: 'RCOOH + R′COOH (2 carboxylic acids)',
+      species: [
+        { smiles: '[R]C(=O)O', label: 'RCOOH' },
+        { smiles: '[R]C(=O)O', label: "R'COOH" },
+      ],
+    },
+    conditionSpecies: {
+      text: 'O₃; then H₂O workup; terminal alkyne: one product is CO₂',
+      species: [
+        { smiles: '[O-][O+]=O', label: 'O₃' },
+        { smiles: 'O', label: 'H₂O (workup)' },
+      ],
+    },
     reactionType: 'oxidation',
     regiochemistry: null,
     stereochemistry: null,
@@ -212,6 +275,26 @@ export const OX_RED_REACTIONS: ReactionDef[] = [
     reactants: 'Alkene + OsO₄/NMO (or cold, dil. KMnO₄)',
     products: 'Vicinal diol (1,2-diol, syn)',
     conditions: 'OsO₄ (cat.)/NMO (N-methylmorpholine N-oxide); or cold, dilute KMnO₄; aqueous/acetone',
+    reactantSpecies: {
+      text: 'Alkene + OsO₄/NMO (or cold, dil. KMnO₄)',
+      species: [
+        { smiles: '[R]C=C[R]', label: 'Alkene' },
+        { smiles: 'O=[Os](=O)(=O)=O', label: 'OsO₄' },
+      ],
+    },
+    productSpecies: {
+      text: 'Vicinal diol (1,2-diol, syn)',
+      species: [
+        { smiles: '[R][C@@H](O)[C@H](O)[R]', label: 'cis-1,2-Diol (syn)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'OsO₄ (cat.)/NMO (N-methylmorpholine N-oxide); or cold, dilute KMnO₄; aqueous/acetone',
+      species: [
+        { smiles: 'O=[Os](=O)(=O)=O', label: 'OsO₄', catalyst: true },
+        { smiles: 'CN1CC[N+](=O)CC1=O', label: 'NMO (reoxidant)' },
+      ],
+    },
     reactionType: 'oxidation',
     regiochemistry: null,
     stereochemistry: 'syn',
@@ -276,6 +359,26 @@ export const OX_RED_REACTIONS: ReactionDef[] = [
     reactants: '1,2-Diol + HIO₄ (or NaIO₄)',
     products: '2 carbonyl compounds (aldehydes or ketones)',
     conditions: 'HIO₄ or NaIO₄; aqueous; room temperature; 1,2-diol required (vicinal diols only)',
+    reactantSpecies: {
+      text: 'Vicinal diol + HIO₄',
+      species: [
+        { smiles: '[R]C(O)C(O)[R]', label: 'Vicinal diol (1,2-diol)' },
+        { smiles: 'OI(=O)(=O)=O', label: 'HIO₄ (periodic acid)' },
+      ],
+    },
+    productSpecies: {
+      text: '2 carbonyl compounds',
+      species: [
+        { smiles: '[R]C=O', label: 'Carbonyl fragment 1' },
+        { smiles: '[R]C=O', label: 'Carbonyl fragment 2' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'HIO₄ or NaIO₄; aqueous; room temperature; 1,2-diol required (vicinal diols only)',
+      species: [
+        { smiles: 'OI(=O)(=O)=O', label: 'HIO₄' },
+      ],
+    },
     reactionType: 'oxidation',
     regiochemistry: null,
     stereochemistry: null,
@@ -342,6 +445,26 @@ export const OX_RED_REACTIONS: ReactionDef[] = [
     reactants: 'R-C≡C-R′ + KMnO₄ (hot, conc.)',
     products: 'RCOOH + R′COOH',
     conditions: 'Hot, conc. KMnO₄/H₂O; or O₃/H₂O; strong oxidizing conditions',
+    reactantSpecies: {
+      text: 'R-C≡C-R′ + KMnO₄ (hot, conc.)',
+      species: [
+        { smiles: '[R]C#C[R]', label: 'Internal alkyne' },
+        { smiles: '[O-][Mn](=O)(=O)=O.[K+]', label: 'KMnO₄' },
+      ],
+    },
+    productSpecies: {
+      text: 'RCOOH + R′COOH',
+      species: [
+        { smiles: '[R]C(=O)O', label: 'RCOOH' },
+        { smiles: "[R]C(=O)O", label: "R'COOH" },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Hot, conc. KMnO₄/H₂O; or O₃/H₂O; strong oxidizing conditions',
+      species: [
+        { smiles: '[O-][Mn](=O)(=O)=O.[K+]', label: 'KMnO₄ (hot, conc.)' },
+      ],
+    },
     reactionType: 'oxidation',
     regiochemistry: null,
     stereochemistry: null,
@@ -404,6 +527,26 @@ export const OX_RED_REACTIONS: ReactionDef[] = [
     reactants: 'Aldehyde, ketone, ester, acid, amide, epoxide + hydride reagent',
     products: 'Alcohol (or amine from amide) depending on substrate and reagent',
     conditions: 'LiAlH₄: Et₂O, then H₃O⁺; NaBH₄: MeOH or EtOH; DIBAL-H: −78 °C, toluene, then H₃O⁺',
+    reactantSpecies: {
+      text: 'Aldehyde, ketone, ester, acid, amide, epoxide + hydride reagent',
+      species: [
+        { smiles: '[R]C(=O)[R]', label: 'Carbonyl substrate' },
+        { smiles: '[AlH4-].[Li+]', label: 'LiAlH₄' },
+      ],
+    },
+    productSpecies: {
+      text: 'Alcohol (or amine from amide) depending on substrate and reagent',
+      species: [
+        { smiles: '[R]C(O)[R]', label: 'Alcohol' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'LiAlH₄: Et₂O, then H₃O⁺; NaBH₄: MeOH or EtOH; DIBAL-H: −78 °C, toluene, then H₃O⁺',
+      species: [
+        { smiles: '[AlH4-].[Li+]', label: 'LiAlH₄ (strong)' },
+        { smiles: '[BH4-].[Na+]', label: 'NaBH₄ (mild)' },
+      ],
+    },
     reactionType: 'reduction',
     regiochemistry: null,
     stereochemistry: null,
@@ -475,6 +618,26 @@ export const OX_RED_REACTIONS: ReactionDef[] = [
     reactants: 'Unsaturated compound + H₂ + metal catalyst',
     products: 'Reduced product (alkane from alkene/alkyne; alcohol from aldehyde/ketone)',
     conditions: 'H₂/Pd-C (most common); H₂/Pt (stronger); H₂/Ni (industrial); Lindlar\'s for alkyne → cis-alkene',
+    reactantSpecies: {
+      text: 'Unsaturated compound + H₂ + metal catalyst',
+      species: [
+        { smiles: '[R]C=C[R]', label: 'Alkene' },
+        { smiles: '[H][H]', label: 'H₂' },
+      ],
+    },
+    productSpecies: {
+      text: 'Reduced product (alkane from alkene/alkyne; alcohol from aldehyde/ketone)',
+      species: [
+        { smiles: '[R]CC[R]', label: 'Alkane' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'H₂/Pd-C (most common); H₂/Pt (stronger); H₂/Ni (industrial); Lindlar\'s for alkyne → cis-alkene',
+      species: [
+        { smiles: '[Pd]', label: 'Pd/C', catalyst: true },
+        { smiles: '[H][H]', label: 'H₂' },
+      ],
+    },
     reactionType: 'reduction',
     regiochemistry: null,
     stereochemistry: 'syn',
@@ -537,6 +700,27 @@ export const OX_RED_REACTIONS: ReactionDef[] = [
     reactants: 'Alkane + Br₂ (or Cl₂)',
     products: 'Alkyl halide + HBr (or HCl)',
     conditions: 'Br₂ or Cl₂; hν (light) or Δ; no solvent or CCl₄; free radical chain mechanism',
+    reactantSpecies: {
+      text: 'Alkane + Br₂ (or Cl₂)',
+      species: [
+        { smiles: '[R]C([H])([H])[R]', label: 'Alkane' },
+        { smiles: 'BrBr', label: 'Br₂' },
+      ],
+    },
+    productSpecies: {
+      text: 'Alkyl halide + HBr (or HCl)',
+      species: [
+        { smiles: '[R]C([Br])([H])[R]', label: 'Alkyl bromide' },
+        { smiles: '[H]Br', label: 'HBr' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Br₂ or Cl₂; hν (light) or Δ; no solvent or CCl₄; free radical chain mechanism',
+      species: [
+        { smiles: 'BrBr', label: 'Br₂' },
+        { smiles: 'ClC(Cl)(Cl)Cl', label: 'CCl₄ (solvent)', catalyst: true },
+      ],
+    },
     reactionType: 'radical',
     regiochemistry: null,
     stereochemistry: null,

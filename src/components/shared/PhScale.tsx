@@ -58,8 +58,8 @@ export default function PhScale({ pH, label, orientation = 'horizontal' }: PhSca
 
       {/* Labels */}
       <div className="flex items-center justify-between font-mono text-[9px] px-0.5">
-        <span style={{ color: '#ef4444' }}>Acidic</span>
-        <span style={{ color: '#22c55e' }}>Neutral</span>
+        <span style={{ color: 'rgb(var(--color-error))' }}>Acidic</span>
+        <span style={{ color: 'rgb(var(--color-success))' }}>Neutral</span>
         <span style={{ color: '#6366f1' }}>Basic</span>
       </div>
 
@@ -75,11 +75,11 @@ export default function PhScale({ pH, label, orientation = 'horizontal' }: PhSca
 
 function interpolatePhColor(pH: number): string {
   // Match the gradient stops: red→orange→yellow→green→blue→indigo→violet
-  if (pH <= 0)  return '#ef4444'
-  if (pH <= 3)  return blendColors('#ef4444', '#f97316', pH / 3)
-  if (pH <= 5)  return blendColors('#f97316', '#eab308', (pH - 3) / 2)
-  if (pH <= 7)  return blendColors('#eab308', '#22c55e', (pH - 5) / 2)
-  if (pH <= 9)  return blendColors('#22c55e', '#3b82f6', (pH - 7) / 2)
+  if (pH <= 0)  return 'rgb(var(--color-error))'
+  if (pH <= 3)  return blendColors('rgb(var(--color-error))', 'rgb(var(--color-warning))', pH / 3)
+  if (pH <= 5)  return blendColors('rgb(var(--color-warning))', '#eab308', (pH - 3) / 2)
+  if (pH <= 7)  return blendColors('#eab308', 'rgb(var(--color-success))', (pH - 5) / 2)
+  if (pH <= 9)  return blendColors('rgb(var(--color-success))', '#3b82f6', (pH - 7) / 2)
   if (pH <= 11) return blendColors('#3b82f6', '#6366f1', (pH - 9) / 2)
   if (pH <= 14) return blendColors('#6366f1', '#8b5cf6', (pH - 11) / 3)
   return '#8b5cf6'

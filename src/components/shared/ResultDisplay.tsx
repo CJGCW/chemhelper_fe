@@ -72,7 +72,7 @@ export default function ResultDisplay({ label, value, unit, sigFigsValue, verifi
             </span>
             <span className="font-mono text-base text-secondary">{unit}</span>
             {sigFigsValue && sigFigsValue !== value && (
-              <span className="font-mono text-sm" style={{ color: '#f97316' }}>
+              <span className="font-mono text-sm" style={{ color: 'rgb(var(--color-warning))' }}>
                 = <span className="font-semibold">{sigFigsValue}</span> {unit} with sig figs
               </span>
             )}

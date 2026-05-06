@@ -159,8 +159,8 @@ const HALOGEN_EXAMPLES: Partial<Record<string, string[]>> = {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 const WATER_RXN_META: Record<WaterRxn, { label: string; color: string }> = {
-  cold_violent: { label: 'Cold water (violent)', color: '#f87171' },
-  cold:         { label: 'Cold water',           color: '#fb923c' },
+  cold_violent: { label: 'Cold water (violent)', color: 'rgb(var(--color-error))' },
+  cold:         { label: 'Cold water',           color: 'rgb(var(--color-warning))' },
   hot:          { label: 'Hot water / steam',    color: '#fbbf24' },
   steam:        { label: 'Steam only',           color: '#a3e635' },
   acid_only:    { label: 'Acid only — not water', color: '#60a5fa' },
@@ -171,14 +171,14 @@ function metalColor(metal: ActivityMetal, selected: ActivityMetal | null): strin
   if (!selected) return 'rgba(var(--overlay),0.72)'
   if (metal.symbol === selected.symbol) return 'var(--c-halogen)'
   if (metal.rank < selected.rank) return '#fbbf24'   // amber  — more active, can displace selected
-  return '#4ade80'                                    // green  — less active, selected can displace this
+  return 'rgb(var(--color-success))'                                    // green  — less active, selected can displace this
 }
 
 function halogenColor(h: ActivityHalogen, selected: ActivityHalogen | null): string {
   if (!selected) return 'rgba(var(--overlay),0.72)'
   if (h.formula === selected.formula) return 'var(--c-halogen)'
   if (h.rank < selected.rank) return '#fbbf24'
-  return '#4ade80'
+  return 'rgb(var(--color-success))'
 }
 
 // ── Series row ────────────────────────────────────────────────────────────────
@@ -280,7 +280,7 @@ function Legend({ show }: { show: boolean }) {
       {[
         { color: '#fbbf24', label: 'More active — displaces the selected' },
         { color: 'var(--c-halogen)', label: 'Selected' },
-        { color: '#4ade80', label: 'Less active — displaced by the selected' },
+        { color: 'rgb(var(--color-success))', label: 'Less active — displaced by the selected' },
       ].map(e => (
         <div key={e.label} className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full shrink-0" style={{ background: e.color }} />
@@ -313,11 +313,11 @@ function MetalDetail({ metal, all }: { metal: ActivityMetal; all: ActivityMetal[
         <div className="flex flex-col gap-1.5 rounded-sm border border-border bg-raised px-4 py-3">
           {canDisplace.length > 0 ? (
             <div className="flex items-start gap-2">
-              <span className="font-mono text-xs shrink-0" style={{ color: '#4ade80' }}>Can displace</span>
+              <span className="font-mono text-xs shrink-0" style={{ color: 'rgb(var(--color-success))' }}>Can displace</span>
               <div className="flex flex-wrap gap-1">
                 {canDisplace.map(m => (
                   <span key={m.symbol} className="font-mono text-xs px-1.5 py-0.5 rounded-sm border"
-                    style={{ borderColor: 'rgba(74,222,128,0.3)', color: '#4ade80', background: 'rgba(74,222,128,0.08)' }}>
+                    style={{ borderColor: 'rgba(74,222,128,0.3)', color: 'rgb(var(--color-success))', background: 'rgba(74,222,128,0.08)' }}>
                     {m.symbol}
                   </span>
                 ))}
@@ -351,10 +351,10 @@ function MetalDetail({ metal, all }: { metal: ActivityMetal; all: ActivityMetal[
         </div>
         <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-sm border border-border bg-raised">
           <span className="w-2 h-2 rounded-full shrink-0"
-            style={{ background: metal.aboveH2 ? '#4ade80' : '#6b7280' }} />
+            style={{ background: metal.aboveH2 ? 'rgb(var(--color-success))' : '#6b7280' }} />
           <span className="font-sans text-xs text-secondary">Dilute acid: </span>
           <span className="font-mono text-xs"
-            style={{ color: metal.aboveH2 ? '#4ade80' : '#6b7280' }}>
+            style={{ color: metal.aboveH2 ? 'rgb(var(--color-success))' : '#6b7280' }}>
             {metal.aboveH2 ? 'Reacts → H₂(g)' : 'No reaction'}
           </span>
         </div>
@@ -407,11 +407,11 @@ function HalogenDetail({ halogen, all }: { halogen: ActivityHalogen; all: Activi
         <div className="flex flex-col gap-1.5 rounded-sm border border-border bg-raised px-4 py-3">
           {canDisplace.length > 0 ? (
             <div className="flex items-start gap-2">
-              <span className="font-mono text-xs shrink-0" style={{ color: '#4ade80' }}>Displaces ion</span>
+              <span className="font-mono text-xs shrink-0" style={{ color: 'rgb(var(--color-success))' }}>Displaces ion</span>
               <div className="flex flex-wrap gap-1">
                 {canDisplace.map(h => (
                   <span key={h.formula} className="font-mono text-xs px-1.5 py-0.5 rounded-sm border"
-                    style={{ borderColor: 'rgba(74,222,128,0.3)', color: '#4ade80', background: 'rgba(74,222,128,0.08)' }}>
+                    style={{ borderColor: 'rgba(74,222,128,0.3)', color: 'rgb(var(--color-success))', background: 'rgba(74,222,128,0.08)' }}>
                     {h.ion}
                   </span>
                 ))}
@@ -513,11 +513,11 @@ function DisplacementChecker() {
               background:  displaces ? 'rgba(74,222,128,0.06)'  : 'rgba(248,113,113,0.06)',
             }}
           >
-            <span className="font-mono text-lg mt-0.5" style={{ color: displaces ? '#4ade80' : '#f87171' }}>
+            <span className="font-mono text-lg mt-0.5" style={{ color: displaces ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
               {displaces ? '✓' : '✗'}
             </span>
             <div className="flex flex-col gap-0.5">
-              <span className="font-mono text-sm font-semibold" style={{ color: displaces ? '#4ade80' : '#f87171' }}>
+              <span className="font-mono text-sm font-semibold" style={{ color: displaces ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                 {displaces
                   ? `${mA.symbol} displaces ${mB.symbol}`
                   : `${mA.symbol} does NOT displace ${mB.symbol}`}

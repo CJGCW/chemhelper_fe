@@ -161,11 +161,11 @@ export default function LewisStructurePractice({ allowCustom = true }: Props) {
             >
               Load
             </button>
-            {otherError && <span className="font-mono text-[10px] text-red-400">{otherError}</span>}
+            {otherError && <span className="font-mono text-xs text-error">{otherError}</span>}
           </>
         )}
         {fetching && <span className="font-mono text-xs text-secondary animate-pulse">loading…</span>}
-        {fetchError && <span className="font-mono text-[10px] text-red-400">{fetchError}</span>}
+        {fetchError && <span className="font-mono text-xs text-error">{fetchError}</span>}
       </div>
 
       {/* Editor — always mounted; correctStructure fed in for Check validation */}
@@ -225,12 +225,12 @@ export default function LewisStructurePractice({ allowCustom = true }: Props) {
             Check
           </button>
           {bondResult === 'correct' && (
-            <span className="font-mono text-sm" style={{ color: '#22c55e' }}>✓ Correct</span>
+            <span className="font-mono text-sm" style={{ color: 'rgb(var(--color-success))' }}>✓ Correct</span>
           )}
           {bondResult && bondResult !== 'correct' && (() => {
             const { sigma, pi } = correctStructure ? countSigmaPi(correctStructure) : { sigma: 0, pi: 0 }
             return (
-              <span className="font-sans text-xs" style={{ color: '#ef4444' }}>
+              <span className="font-sans text-xs" style={{ color: 'rgb(var(--color-error))' }}>
                 {bondResult === 'wrong-sigma' ? `σ should be ${sigma}` :
                  bondResult === 'wrong-pi'    ? `π should be ${pi}` :
                  `σ should be ${sigma}, π should be ${pi}`}

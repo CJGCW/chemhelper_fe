@@ -52,7 +52,7 @@ export default function EntropyReference() {
             <div key={i} className="flex items-start gap-3 p-3 rounded-sm border border-border bg-raised">
               <span
                 className="font-mono text-lg font-bold shrink-0 w-5 text-center"
-                style={{ color: item.sign === '+' ? 'var(--c-halogen)' : item.sign === '−' ? '#f87171' : 'rgb(var(--color-secondary))' }}
+                style={{ color: item.sign === '+' ? 'var(--c-halogen)' : item.sign === '−' ? 'rgb(var(--color-error))' : 'rgb(var(--color-secondary))' }}
               >
                 {item.sign}
               </span>

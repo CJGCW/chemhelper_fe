@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import NewmanProjectionInline from './NewmanProjectionInline'
+import RenderableChoiceButton from '../shared/RenderableChoiceButton'
+import type { RenderableChoice } from '../../data/mechanisms/types'
 
 interface NewmanSpec {
   front: [string, string, string]
@@ -11,7 +13,7 @@ interface NewmanSpec {
 interface Problem {
   question: string
   newman: NewmanSpec
-  options: string[]
+  choices: RenderableChoice[]
   answer: string
   explanation: string
 }
@@ -20,32 +22,47 @@ const PROBLEMS: Problem[] = [
   {
     question: 'What conformation is shown?',
     newman: { front: ['CH₃', 'H', 'H'], back: ['CH₃', 'H', 'H'], dihedral: 180 },
-    options: ['Anti', 'Gauche', 'Eclipsed', 'Totally Eclipsed'],
+    choices: [
+      { label: 'Anti' },
+      { label: 'Gauche' },
+      { label: 'Eclipsed' },
+      { label: 'Totally Eclipsed' },
+    ],
     answer: 'Anti',
     explanation: 'φ = 180° places the two CH₃ groups on opposite sides — this is the anti conformation, the most stable for butane (0 kJ/mol relative energy).',
   },
   {
     question: 'What conformation of butane is shown? The large groups on front and back overlap perfectly.',
     newman: { front: ['CH₃', 'H', 'H'], back: ['CH₃', 'H', 'H'], dihedral: 0 },
-    options: ['Totally Eclipsed', 'Anti', 'Gauche', 'Staggered'],
+    choices: [
+      { label: 'Totally Eclipsed' },
+      { label: 'Anti' },
+      { label: 'Gauche' },
+      { label: 'Staggered' },
+    ],
     answer: 'Totally Eclipsed',
     explanation: 'φ = 0° with CH₃ groups overlapping = totally eclipsed. For butane this is the highest-energy conformation (~19 kJ/mol above anti).',
   },
   {
     question: 'What conformation of butane is shown?',
     newman: { front: ['CH₃', 'H', 'H'], back: ['CH₃', 'H', 'H'], dihedral: 60 },
-    options: ['Gauche', 'Anti', 'Eclipsed (H/CH₃)', 'Totally Eclipsed'],
+    choices: [
+      { label: 'Gauche' },
+      { label: 'Anti' },
+      { label: 'Eclipsed (H/CH₃)' },
+      { label: 'Totally Eclipsed' },
+    ],
     answer: 'Gauche',
     explanation: 'φ = 60° places the two CH₃ groups 60° apart — gauche conformation (~3.8 kJ/mol above anti).',
   },
   {
     question: 'Rank the following butane conformations from MOST to LEAST stable: anti, gauche, eclipsed (H/CH₃), totally eclipsed (CH₃/CH₃).',
     newman: { front: ['CH₃', 'H', 'H'], back: ['CH₃', 'H', 'H'], dihedral: 180 },
-    options: [
-      'Anti > Gauche > Eclipsed > Totally Eclipsed',
-      'Gauche > Anti > Eclipsed > Totally Eclipsed',
-      'Anti > Eclipsed > Gauche > Totally Eclipsed',
-      'Totally Eclipsed > Eclipsed > Gauche > Anti',
+    choices: [
+      { label: 'Anti > Gauche > Eclipsed > Totally Eclipsed' },
+      { label: 'Gauche > Anti > Eclipsed > Totally Eclipsed' },
+      { label: 'Anti > Eclipsed > Gauche > Totally Eclipsed' },
+      { label: 'Totally Eclipsed > Eclipsed > Gauche > Anti' },
     ],
     answer: 'Anti > Gauche > Eclipsed > Totally Eclipsed',
     explanation: 'Staggered conformations are always more stable than eclipsed. Among staggered: anti (0) > gauche (3.8 kJ/mol). Among eclipsed: H/CH₃ eclipsed (16) < CH₃/CH₃ eclipsed (19 kJ/mol).',
@@ -53,32 +70,47 @@ const PROBLEMS: Problem[] = [
   {
     question: 'The Newman projection shown is of ethane in a staggered conformation. What is the approximate rotational barrier to reach the eclipsed form?',
     newman: { front: ['H', 'H', 'H'], back: ['H', 'H', 'H'], dihedral: 60 },
-    options: ['~12 kJ/mol', '~3 kJ/mol', '~19 kJ/mol', '~50 kJ/mol'],
+    choices: [
+      { label: '~12 kJ/mol' },
+      { label: '~3 kJ/mol' },
+      { label: '~19 kJ/mol' },
+      { label: '~50 kJ/mol' },
+    ],
     answer: '~12 kJ/mol',
     explanation: 'Ethane has a rotational barrier of ~12 kJ/mol due to torsional (eclipsing) strain between H–H pairs. This is much less than butane\'s totally eclipsed barrier because H is smaller than CH₃.',
   },
   {
     question: 'What dihedral angle corresponds to a gauche conformation in butane?',
     newman: { front: ['CH₃', 'H', 'H'], back: ['H', 'CH₃', 'H'], dihedral: 60 },
-    options: ['60°', '0°', '120°', '180°'],
+    choices: [
+      { label: '60°' },
+      { label: '0°' },
+      { label: '120°' },
+      { label: '180°' },
+    ],
     answer: '60°',
     explanation: 'The gauche conformation has a dihedral angle of 60° (or 300°) between the two largest groups. It is a staggered conformation but not the most stable due to steric repulsion.',
   },
   {
     question: 'In a Newman projection looking down the C2–C3 bond of butane, how many gauche conformations exist per full rotation?',
     newman: { front: ['CH₃', 'H', 'H'], back: ['CH₃', 'H', 'H'], dihedral: 60 },
-    options: ['2', '1', '3', '4'],
+    choices: [
+      { label: '2' },
+      { label: '1' },
+      { label: '3' },
+      { label: '4' },
+    ],
     answer: '2',
     explanation: 'There are two gauche conformations: CH₃ at +60° and CH₃ at −60° (300°) relative to the front CH₃. Both are identical in energy by symmetry (~3.8 kJ/mol above anti).',
   },
   {
     question: 'Which conformation of propane has all H atoms staggered with respect to each other?',
     newman: { front: ['H', 'H', 'H'], back: ['H', 'H', 'H'], dihedral: 60 },
-    options: [
-      'The staggered conformation (φ = 60°)',
-      'The eclipsed conformation (φ = 0°)',
-      'Both are equally stable for propane',
-      'Propane does not have staggered conformations',
+    choices: [
+      { label: 'The staggered conformation (φ = 60°)' },
+      { label: 'The eclipsed conformation (φ = 0°)' },
+      { label: 'Both are equally stable for propane' },
+      { label: 'Propane does not have staggered conformations' },
     ],
     answer: 'The staggered conformation (φ = 60°)',
     explanation: 'When neighboring H atoms are staggered (60° dihedral), torsional strain is minimized. Eclipsed (φ = 0°) brings H atoms into alignment, increasing strain.',
@@ -146,20 +178,16 @@ export default function NewmanPractice({ allowCustom = true }: Props) {
           </div>
 
           <div className="flex flex-col gap-2">
-            {problem.options.map(opt => {
-              const isSelected = selected === opt
-              const isCorrect  = opt === problem.answer
-              let style = 'border-border text-secondary hover:border-muted hover:text-primary'
-              if (checked && isCorrect)  style = 'border-emerald-700/70 bg-emerald-950/25 text-success'
-              if (checked && isSelected && !isCorrect) style = 'border-rose-700/70 bg-rose-950/25 text-error'
-              return (
-                <button key={opt} disabled={checked}
-                  onClick={() => handleSelect(opt)}
-                  className={`w-full text-left px-4 py-2.5 rounded-sm border font-sans text-sm transition-colors ${style}`}>
-                  {opt}
-                </button>
-              )
-            })}
+            {problem.choices.map(choice => (
+              <RenderableChoiceButton
+                key={choice.label}
+                choice={choice}
+                isSelected={selected === choice.label}
+                isCorrect={choice.label === problem.answer}
+                isChecked={checked}
+                onSelect={() => handleSelect(choice.label)}
+              />
+            ))}
           </div>
 
           {checked && (

@@ -154,7 +154,7 @@ export default function GasStoichPractice({ allowCustom = true }: Props) {
             )}
 
             {checkState !== 'idle' && (
-              <span className={`font-mono text-sm font-semibold ${checkState === 'correct' ? 'text-green-400' : 'text-red-400'}`}>
+              <span className={`font-mono text-sm font-semibold ${checkState === 'correct' ? 'text-success' : 'text-error'}`}>
                 {checkState === 'correct' ? '✓ Correct' : '✗ Incorrect'}
               </span>
             )}

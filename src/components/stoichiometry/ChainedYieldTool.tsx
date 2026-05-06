@@ -245,7 +245,7 @@ export default function ChainedYieldTool({ allowCustom = true }: Props) {
         </div>
       )}
 
-      {error && <p className="font-mono text-xs" style={{ color: '#f87171' }}>{error}</p>}
+      {error && <p className="font-mono text-xs" style={{ color: 'rgb(var(--color-error))' }}>{error}</p>}
 
       {/* Start / New problem button */}
       {!problem && (

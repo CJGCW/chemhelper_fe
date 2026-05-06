@@ -101,7 +101,7 @@ export default function NuclearDecayTool() {
         />
       </div>
 
-      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      {error && <p className="font-mono text-xs text-error">{error}</p>}
 
       {/* Buttons */}
       <div className="flex items-stretch gap-2">

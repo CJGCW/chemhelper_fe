@@ -18,7 +18,7 @@ const SOLID_TYPES: SolidType[] = [
   {
     id: 'ionic',
     name: 'Ionic',
-    color: '#fb923c',
+    color: 'rgb(var(--color-warning))',
     particles: 'Cations & anions',
     bonds: 'Electrostatic attraction (ionic bonds)',
     mp: 'High (400–3000°C)',
@@ -36,7 +36,7 @@ const SOLID_TYPES: SolidType[] = [
   {
     id: 'molecular',
     name: 'Molecular',
-    color: '#34d399',
+    color: 'rgb(var(--color-success))',
     particles: 'Discrete molecules',
     bonds: 'Intermolecular forces (London, dipole-dipole, H-bonds)',
     mp: 'Low (often below 300°C)',
@@ -251,7 +251,7 @@ export default function SolidTypesReference() {
           {
             title: 'Why are ionic solids brittle?',
             body: 'A mechanical stress shifts ion planes. Like charges align → strong repulsion → crystal shatters. Metals deform instead because the electron sea adjusts to the new geometry.',
-            color: '#fb923c',
+            color: 'rgb(var(--color-warning))',
           },
           {
             title: 'Why does graphite conduct electricity?',
@@ -261,7 +261,7 @@ export default function SolidTypesReference() {
           {
             title: 'Why do molecular solids have low mp?',
             body: 'The covalent bonds within each molecule are strong, but only weak IMFs hold molecules together. Melting only requires overcoming those weak forces, not breaking covalent bonds.',
-            color: '#34d399',
+            color: 'rgb(var(--color-success))',
           },
           {
             title: 'Why do ionic solids conduct when molten?',

@@ -80,7 +80,7 @@ function ionColor(charge: number): { bg: string; border: string; label: string }
   return {
     bg:     'color-mix(in srgb, #fb923c 14%, rgb(var(--color-surface)))',
     border: 'color-mix(in srgb, #fb923c 40%, transparent)',
-    label:  '#fb923c',
+    label:  'rgb(var(--color-warning))',
   }
 }
 

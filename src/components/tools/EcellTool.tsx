@@ -109,7 +109,7 @@ function HalfRxnSelect({
                   className="w-full flex items-center justify-between gap-3 px-3 py-2 text-left hover:bg-raised transition-colors"
                 >
                   <span className="font-mono text-xs text-secondary leading-snug flex-1">{hr.cathode}</span>
-                  <span className="font-mono text-xs shrink-0" style={{ color: hr.e0 >= 0 ? '#4ade80' : '#f87171' }}>
+                  <span className="font-mono text-xs shrink-0" style={{ color: hr.e0 >= 0 ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                     {fmt(hr.e0)} V
                   </span>
                 </button>
@@ -157,7 +157,7 @@ function ReferenceTable() {
           </thead>
           <tbody>
             {rows.map((hr, i) => {
-              const color = hr.e0 > 0.3 ? '#4ade80' : hr.e0 < -0.3 ? '#f87171' : 'rgba(var(--overlay),0.55)'
+              const color = hr.e0 > 0.3 ? 'rgb(var(--color-success))' : hr.e0 < -0.3 ? 'rgb(var(--color-error))' : 'rgba(var(--overlay),0.55)'
               return (
                 <tr key={hr.id} style={{ borderBottom: i < rows.length - 1 ? '1px solid rgb(var(--color-border))' : undefined }}>
                   <td className="font-mono text-xs text-secondary px-3 py-1.5 leading-snug">{hr.cathode}</td>
@@ -320,7 +320,7 @@ export default function EcellTool() {
                       <span
                         className="font-mono text-xs px-2 py-0.5 rounded-sm"
                         style={{
-                          color: e0cell > 0 ? '#4ade80' : '#f87171',
+                          color: e0cell > 0 ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))',
                           background: e0cell > 0
                             ? 'color-mix(in srgb, #4ade80 14%, rgb(var(--color-raised)))'
                             : 'color-mix(in srgb, #f87171 14%, rgb(var(--color-raised)))',
@@ -337,7 +337,7 @@ export default function EcellTool() {
                       </span>
                       <span
                         className="font-mono text-2xl font-semibold"
-                        style={{ color: e0cell > 0 ? '#4ade80' : '#f87171' }}
+                        style={{ color: e0cell > 0 ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}
                       >
                         {fmt(e0cell)} V
                       </span>
@@ -366,7 +366,7 @@ export default function EcellTool() {
                       </div>
                       {ecellVerify !== null && (
                         <span className="font-mono text-sm font-medium self-end mb-1.5"
-                          style={{ color: ecellVerify === 'correct' ? '#4ade80' : '#f87171' }}>
+                          style={{ color: ecellVerify === 'correct' ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                           {ecellVerify === 'correct' ? '✓ Correct' : '✗ Incorrect'}
                         </span>
                       )}
@@ -409,7 +409,7 @@ export default function EcellTool() {
                           <span className="font-mono text-xs text-secondary">E (non-standard)</span>
                           <span
                             className="font-mono text-lg font-semibold"
-                            style={{ color: ecell > 0 ? '#4ade80' : '#f87171' }}
+                            style={{ color: ecell > 0 ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}
                           >
                             {fmt(ecell)} V
                           </span>
@@ -418,10 +418,10 @@ export default function EcellTool() {
                     </div>
 
                     {qRaw && isNaN(Q) && (
-                      <p className="font-mono text-xs text-red-400">Q must be a positive number.</p>
+                      <p className="font-mono text-xs text-error">Q must be a positive number.</p>
                     )}
                     {qRaw && !isNaN(Q) && Q <= 0 && (
-                      <p className="font-mono text-xs text-red-400">Q must be greater than 0.</p>
+                      <p className="font-mono text-xs text-error">Q must be greater than 0.</p>
                     )}
                   </div>
                 </motion.div>

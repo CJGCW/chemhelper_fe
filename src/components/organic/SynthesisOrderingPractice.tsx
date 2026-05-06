@@ -70,7 +70,7 @@ export default function SynthesisOrderingPractice({ allowCustom: _allowCustom = 
       {score.total > 0 && (
         <div className="flex items-center gap-3">
           <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgb(var(--color-raised))' }}>
-            <motion.div className="h-full rounded-full bg-emerald-500"
+            <motion.div className="h-full rounded-full" style={{ background: 'rgb(var(--color-success))' }}
               animate={{ width: `${(score.correct / score.total) * 100}%` }} transition={{ duration: 0.4 }} />
           </div>
           <span className="font-mono text-xs text-secondary shrink-0">{score.correct} / {score.total}</span>
@@ -150,12 +150,12 @@ export default function SynthesisOrderingPractice({ allowCustom: _allowCustom = 
                 <span className="font-mono text-[10px] text-dim w-10 shrink-0">Step {i + 1}</span>
                 <div className="flex items-center gap-2 flex-1 px-3 py-2 rounded-sm border"
                   style={{
-                    background: isCorrect ? 'rgb(34 197 94 / 0.06)' : isWrong ? 'rgb(239 68 68 / 0.06)' : 'rgb(var(--color-raised))',
-                    borderColor: isCorrect ? 'rgb(34 197 94)' : isWrong ? 'rgb(239 68 68)' : 'rgba(var(--overlay),0.15)',
+                    background: isCorrect ? 'rgb(var(--color-success-bg) / 0.06)' : isWrong ? 'rgb(var(--color-error-bg) / 0.06)' : 'rgb(var(--color-raised))',
+                    borderColor: isCorrect ? 'rgb(var(--color-success))' : isWrong ? 'rgb(var(--color-error))' : 'rgba(var(--overlay),0.15)',
                   }}>
                   <span className="font-mono text-xs text-primary flex-1">{chip}</span>
-                  {isCorrect && <span className="text-emerald-500 text-xs">✓</span>}
-                  {isWrong   && <span className="text-red-500 text-xs">✗</span>}
+                  {isCorrect && <span className="text-success text-xs">✓</span>}
+                  {isWrong   && <span className="text-error text-xs">✗</span>}
                 </div>
                 {!submitted && (
                   <button onClick={() => setSelected(prev => prev.filter((_, j) => j !== i))}

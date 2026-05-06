@@ -140,7 +140,7 @@ export default function VseprDrawChallenge() {
                 <span className="text-bright">{score.correct}</span>
                 <span className="text-dim"> / {score.attempted}</span>
                 {pct !== null && (
-                  <span className="ml-1.5" style={{ color: pct >= 80 ? '#4ade80' : pct >= 60 ? '#fbbf24' : '#f87171' }}>
+                  <span className="ml-1.5" style={{ color: pct >= 80 ? 'rgb(var(--color-success))' : pct >= 60 ? '#fbbf24' : 'rgb(var(--color-error))' }}>
                     {pct}%
                   </span>
                 )}
@@ -178,7 +178,7 @@ export default function VseprDrawChallenge() {
           <p className="font-mono text-xs text-dim mt-0.5">
             Use wedge (▶) and dash (– –) bonds to show 3D geometry
           </p>
-          {fetchError && <p className="font-mono text-xs text-red-400 mt-1">{fetchError}</p>}
+          {fetchError && <p className="font-mono text-xs text-error mt-1">{fetchError}</p>}
         </div>
 
       </div>
@@ -199,10 +199,10 @@ export default function VseprDrawChallenge() {
               background: lastResult ? 'rgba(74,222,128,0.06)' : 'rgba(248,113,113,0.06)',
             }}
           >
-            <span className="font-mono text-base" style={{ color: lastResult ? '#4ade80' : '#f87171' }}>
+            <span className="font-mono text-base" style={{ color: lastResult ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
               {lastResult ? '✓' : '✗'}
             </span>
-            <span className="font-sans text-sm" style={{ color: lastResult ? '#4ade80' : '#f87171' }}>
+            <span className="font-sans text-sm" style={{ color: lastResult ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
               {lastResult
                 ? 'Correct! Hit Next Problem to continue.'
                 : 'Not quite — review the check details, then try again or move on.'}

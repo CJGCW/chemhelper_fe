@@ -140,15 +140,15 @@ export default function PredictProductPractice({ allowCustom = true }: Props) {
               className="font-mono text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded"
               style={{
                 background: problem.difficulty === 'hard'
-                  ? 'rgba(239,68,68,0.12)'
+                  ? 'rgb(var(--color-error-bg) / 0.12)'
                   : problem.difficulty === 'medium'
                   ? 'rgba(234,179,8,0.12)'
-                  : 'rgba(16,185,129,0.12)',
+                  : 'rgb(var(--color-success-bg) / 0.12)',
                 color: problem.difficulty === 'hard'
-                  ? '#f87171'
+                  ? 'rgb(var(--color-error))'
                   : problem.difficulty === 'medium'
                   ? '#fbbf24'
-                  : '#34d399',
+                  : 'rgb(var(--color-success))',
               }}
             >
               {problem.difficulty}

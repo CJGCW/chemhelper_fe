@@ -16,10 +16,10 @@ function wavelengthColor(nm: number): string | null {
   if (nm < 380 || nm > 780) return null
   if (nm < 450) return '#8b5cf6'   // violet
   if (nm < 495) return '#3b82f6'   // blue
-  if (nm < 570) return '#22c55e'   // green
+  if (nm < 570) return 'rgb(var(--color-success))'   // green
   if (nm < 590) return '#fbbf24'   // yellow
-  if (nm < 625) return '#f97316'   // orange
-  return '#ef4444'                  // red
+  if (nm < 625) return 'rgb(var(--color-warning))'   // orange
+  return 'rgb(var(--color-error))'                  // red
 }
 
 function wavelengthLabel(nm: number): string {
@@ -32,7 +32,7 @@ function wavelengthLabel(nm: number): string {
 
 // Photon color for UV/IR transitions not visible in the spectrum
 function arrowFallback(nm: number): string {
-  return nm < 380 ? '#a855f7' : '#ef4444'
+  return nm < 380 ? '#a855f7' : 'rgb(var(--color-error))'
 }
 
 // ── Main component ────────────────────────────────────────────────────────────

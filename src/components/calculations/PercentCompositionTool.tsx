@@ -227,9 +227,9 @@ export default function PercentCompositionTool() {
             placeholder={mode === 'formula' ? 'e.g. H2O' : 'e.g. CCO'}
             className="w-full font-mono text-sm bg-raised border rounded-sm px-3 py-2
                        text-bright placeholder-dim focus:outline-none transition-colors"
-            style={{ borderColor: inputError ? '#f87171' : 'rgb(var(--color-border))' }}
+            style={{ borderColor: inputError ? 'rgb(var(--color-error))' : 'rgb(var(--color-border))' }}
           />
-          {inputError && <p className="font-mono text-[10px] text-red-400">{inputError}</p>}
+          {inputError && <p className="font-mono text-xs text-error">{inputError}</p>}
         </div>
         <button onClick={handleResolve} disabled={loading || !input.trim() || !!inputError}
           className="shrink-0 px-5 font-sans text-sm font-medium rounded-sm border transition-colors
@@ -244,7 +244,7 @@ export default function PercentCompositionTool() {
         </button>
       </div>
 
-      {error && <p className="font-mono text-[10px] text-red-400">{error}</p>}
+      {error && <p className="font-mono text-xs text-error">{error}</p>}
 
       {/* Results */}
       <AnimatePresence>

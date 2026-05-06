@@ -134,7 +134,7 @@ export default function EnergyDiagram() {
   const [ea, setEa] = useState(100)    // kJ/mol above reactants
 
   const isExo  = dh < 0
-  const accent = isExo ? '#34d399' : '#f87171'
+  const accent = isExo ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))'
 
   // TS must clear both reactants and products
   const effEa = Math.max(ea, dh > 0 ? dh + 12 : 0, 10)
@@ -325,9 +325,9 @@ export default function EnergyDiagram() {
             }}
           />
           <div className="flex justify-between font-mono text-[9px]">
-            <span style={{ color: '#34d399' }}>−400 exothermic</span>
+            <span style={{ color: 'rgb(var(--color-success))' }}>−400 exothermic</span>
             <span className="text-dim">0</span>
-            <span style={{ color: '#f87171' }}>endothermic +400</span>
+            <span style={{ color: 'rgb(var(--color-error))' }}>endothermic +400</span>
           </div>
         </div>
 
@@ -360,13 +360,13 @@ export default function EnergyDiagram() {
         <p className="font-sans text-sm text-secondary leading-relaxed">
           {isExo ? (
             <>
-              <span style={{ color: '#34d399' }} className="font-semibold">Exothermic</span> — products are at
+              <span style={{ color: 'rgb(var(--color-success))' }} className="font-semibold">Exothermic</span> — products are at
               lower energy than reactants. The system <strong>releases heat</strong> to the surroundings (ΔH &lt; 0).
               The 🔥 above the beaker show heat energy escaping as the reaction descends to a lower energy state.
             </>
           ) : (
             <>
-              <span style={{ color: '#f87171' }} className="font-semibold">Endothermic</span> — products are at
+              <span style={{ color: 'rgb(var(--color-error))' }} className="font-semibold">Endothermic</span> — products are at
               higher energy than reactants. The system <strong>absorbs heat</strong> from the surroundings (ΔH &gt; 0).
               The 🔥 below the beaker show external heat being applied to drive the reaction uphill.
             </>

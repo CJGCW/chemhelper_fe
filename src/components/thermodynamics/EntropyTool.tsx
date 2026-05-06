@@ -73,7 +73,7 @@ function SpeciesSelector({
             {rows.length > 1 && (
               <button
                 onClick={() => onRemove(idx)}
-                className="font-mono text-xs text-dim hover:text-red-400 transition-colors"
+                className="font-mono text-xs text-dim hover:text-error transition-colors"
               >
                 ✕
               </button>
@@ -193,7 +193,7 @@ export default function EntropyTool() {
 
       <StepsContent {...stepsState} />
 
-      {error && <p className="font-mono text-sm text-red-400">{error}</p>}
+      {error && <p className="font-mono text-sm text-error">{error}</p>}
 
       {result !== null && (
         <div

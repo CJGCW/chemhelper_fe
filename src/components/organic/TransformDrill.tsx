@@ -79,7 +79,7 @@ export default function TransformDrill({ allowCustom: _allowCustom = true }: Pro
       {score.total > 0 && (
         <div className="flex items-center gap-3">
           <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgb(var(--color-raised))' }}>
-            <motion.div className="h-full rounded-full bg-emerald-500"
+            <motion.div className="h-full rounded-full" style={{ background: 'rgb(var(--color-success))' }}
               animate={{ width: `${(score.correct / score.total) * 100}%` }} transition={{ duration: 0.4 }} />
           </div>
           <span className="font-mono text-xs text-secondary shrink-0">{score.correct} / {score.total}</span>
@@ -114,8 +114,8 @@ export default function TransformDrill({ allowCustom: _allowCustom = true }: Pro
           let borderColor = 'rgba(var(--overlay),0.15)'
           let bg = 'rgb(var(--color-raised))'
           if (selected !== null) {
-            if (isCorrectOpt) { borderColor = 'rgb(34 197 94)'; bg = 'rgb(34 197 94 / 0.06)' }
-            else if (isSelected) { borderColor = 'rgb(239 68 68)'; bg = 'rgb(239 68 68 / 0.06)' }
+            if (isCorrectOpt) { borderColor = 'rgb(var(--color-success))'; bg = 'rgb(var(--color-success-bg) / 0.06)' }
+            else if (isSelected) { borderColor = 'rgb(var(--color-error))'; bg = 'rgb(var(--color-error-bg) / 0.06)' }
           } else {
             // hover state hint
           }
@@ -125,12 +125,11 @@ export default function TransformDrill({ allowCustom: _allowCustom = true }: Pro
               disabled={selected !== null}
               className="text-left px-4 py-3 rounded-sm border font-mono text-xs text-primary transition-colors"
               style={{ borderColor, background: bg }}>
-              {opt}
-              {selected !== null && isCorrectOpt && (
-                <span className="ml-2 text-emerald-500">✓</span>
+              {opt}{selected !== null && isCorrectOpt && (
+                <span className="ml-2 text-success">✓</span>
               )}
               {isSelected && !isCorrectOpt && (
-                <span className="ml-2 text-red-500">✗</span>
+                <span className="ml-2 text-error">✗</span>
               )}
             </button>
           )

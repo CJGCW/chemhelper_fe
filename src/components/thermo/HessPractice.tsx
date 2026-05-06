@@ -50,7 +50,7 @@ export default function HessPractice({ allowCustom = true }: Props) {
         <div className="flex items-center gap-3">
           <div className="flex-1 h-1.5 rounded-full bg-raised overflow-hidden">
             <motion.div
-              className="h-full rounded-full bg-emerald-500"
+              className="h-full rounded-full" style={{ background: 'rgb(var(--color-success))' }}
               animate={{ width: `${(score.correct / score.total) * 100}%` }}
               transition={{ duration: 0.4 }}
             />
@@ -94,7 +94,7 @@ export default function HessPractice({ allowCustom = true }: Props) {
                   <span className="font-mono text-xs text-dim">({i + 1})</span>
                   <span className="font-mono text-sm text-primary">{step.equation}</span>
                   <span className="font-mono text-sm shrink-0"
-                    style={{ color: step.dh < 0 ? '#34d399' : step.dh > 0 ? '#f87171' : 'rgba(var(--overlay),0.5)' }}>
+                    style={{ color: step.dh < 0 ? 'rgb(var(--color-success))' : step.dh > 0 ? 'rgb(var(--color-error))' : 'rgba(var(--overlay),0.5)' }}>
                     ΔH = {step.dh > 0 ? '+' : ''}{step.dh} kJ
                   </span>
                 </div>
@@ -125,8 +125,8 @@ export default function HessPractice({ allowCustom = true }: Props) {
             <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
               className={`flex items-center gap-2 px-3 py-2 rounded-sm border ${
                 correct
-                  ? 'border-emerald-500/30 bg-emerald-500/10 text-success'
-                  : 'border-red-500/30 bg-red-500/10 text-red-400'
+                  ? 'feedback-success text-success'
+                  : 'feedback-error text-error'
               }`}
             >
               <span className="font-mono text-sm font-semibold">

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import RenderableChoiceButton from '../shared/RenderableChoiceButton'
 
 function SugarReactionsReference() {
   return (
@@ -105,7 +106,7 @@ function SugarReactionsReference() {
                   <td className="px-3 py-2 text-secondary">{r.comp}</td>
                   <td className="px-3 py-2 font-mono text-secondary">{r.link}</td>
                   <td className="px-3 py-2">
-                    <span className={`font-semibold ${r.reducing === 'NO' ? 'text-red-400' : 'text-success'}`}>{r.reducing}</span>
+                    <span className={`font-semibold ${r.reducing === 'NO' ? 'text-error' : 'text-success'}`}>{r.reducing}</span>
                   </td>
                   <td className="px-3 py-2 text-dim">{r.notes}</td>
                 </tr>
@@ -221,7 +222,7 @@ function SugarRxnPractice() {
       {score.total > 0 && (
         <div className="flex items-center gap-3">
           <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgb(var(--color-raised))' }}>
-            <motion.div className="h-full rounded-full bg-emerald-500"
+            <motion.div className="h-full rounded-full" style={{ background: 'rgb(var(--color-success))' }}
               animate={{ width: `${(score.correct / score.total) * 100}%` }} transition={{ duration: 0.4 }} />
           </div>
           <span className="font-mono text-xs text-secondary shrink-0">{score.correct} / {score.total}</span>
@@ -234,26 +235,16 @@ function SugarRxnPractice() {
       </div>
 
       <div className="flex flex-col gap-2">
-        {problem.options.map(opt => {
-          const isSelected = selected === opt
-          const isCorrect = opt === problem.correct
-          let borderColor = 'rgb(var(--color-border))'
-          let bg = 'rgb(var(--color-raised))'
-          if (checked) {
-            if (isCorrect) { borderColor = 'rgb(34 197 94)'; bg = 'rgb(34 197 94 / 0.06)' }
-            else if (isSelected) { borderColor = 'rgb(239 68 68)'; bg = 'rgb(239 68 68 / 0.06)' }
-          } else if (isSelected) {
-            borderColor = 'var(--c-halogen)'
-            bg = 'color-mix(in srgb, var(--c-halogen) 8%, rgb(var(--color-raised)))'
-          }
-          return (
-            <button key={opt} onClick={() => !checked && setSelected(opt)} disabled={checked}
-              className="px-3 py-2.5 rounded-sm border text-left font-sans text-xs leading-relaxed transition-colors"
-              style={{ borderColor, background: bg, color: 'rgb(var(--overlay)/0.8)' }}>
-              {opt}
-            </button>
-          )
-        })}
+        {problem.options.map(opt => (
+          <RenderableChoiceButton
+            key={opt}
+            choice={{ label: opt }}
+            isSelected={selected === opt}
+            isCorrect={opt === problem.correct}
+            isChecked={checked}
+            onSelect={() => setSelected(opt)}
+          />
+        ))}
       </div>
 
       <div className="flex items-center gap-2">
@@ -277,9 +268,9 @@ function SugarRxnPractice() {
       <AnimatePresence>
         {checked && (
           <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className={`rounded-sm border px-4 py-3 flex flex-col gap-1.5 ${correct ? 'border-emerald-500/30' : 'border-red-500/30'}`}
-            style={{ background: correct ? 'rgb(34 197 94 / 0.06)' : 'rgb(239 68 68 / 0.06)' }}>
-            <p className={`font-sans text-sm font-semibold ${correct ? 'text-success' : 'text-red-400'}`}>
+            className={`rounded-sm border px-4 py-3 flex flex-col gap-1.5 ${correct ? 'feedback-success' : 'feedback-error'}`}
+            style={{ background: correct ? 'rgb(var(--color-success-bg) / 0.06)' : 'rgb(var(--color-error-bg) / 0.06)' }}>
+            <p className={`font-sans text-sm font-semibold ${correct ? 'text-success' : 'text-error'}`}>
               {correct ? '✓ Correct!' : '✗ Incorrect'}
             </p>
             <p className="font-sans text-xs text-secondary leading-relaxed">{problem.explanation}</p>

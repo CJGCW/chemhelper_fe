@@ -14,7 +14,7 @@ interface TrendInfo {
 const EXPLANATIONS: Record<Exclude<TrendMode, 'none'>, TrendInfo> = {
   electronegativity: {
     name:    'Electronegativity',
-    color:   '#f97316',
+    color:   'rgb(var(--color-warning))',
     concept: 'Effective Nuclear Charge (Zeff)',
     acrossPeriod:
       'Increases left → right. Nuclear charge (Z) rises while electrons fill the same shell, so shielding barely changes. Higher Zeff means the nucleus pulls bonding electrons more strongly.',
@@ -34,7 +34,7 @@ const EXPLANATIONS: Record<Exclude<TrendMode, 'none'>, TrendInfo> = {
   },
   ie1: {
     name:    'First Ionization Energy',
-    color:   '#4ade80',
+    color:   'rgb(var(--color-success))',
     concept: 'Zeff and orbital distance',
     acrossPeriod:
       'Generally increases left → right as Zeff rises — it takes more energy to remove a more tightly held electron. Notable dips: Group 13 (first p electron, slightly lower than filled s) and Group 16 (paired p electron is easier to remove due to e⁻ repulsion).',
@@ -56,7 +56,7 @@ const EXPLANATIONS: Record<Exclude<TrendMode, 'none'>, TrendInfo> = {
   },
   ionicRadius: {
     name:    'Ionic Radius',
-    color:   '#fb923c',
+    color:   'rgb(var(--color-warning))',
     concept: 'Electron count vs. nuclear charge balance',
     acrossPeriod:
       'Cations (metals, left of table) are smaller than their neutral atoms — losing electrons increases the Zeff-per-electron ratio, pulling the remaining cloud inward. Anions (nonmetals, right) are larger — extra electrons add repulsion, expanding the cloud.',

@@ -187,8 +187,8 @@ export default function PhaseDiagramReference() {
           <div className="rounded-sm border border-border bg-surface overflow-hidden">
             {[
               { label: 'Solid',          color: '#60a5fa', desc: 'Low temperature, high pressure. Particles locked in a rigid lattice.' },
-              { label: 'Liquid',         color: '#fb923c', desc: 'Moderate T and P. Particles close together but able to flow.' },
-              { label: 'Gas',            color: '#34d399', desc: 'High temperature, low pressure. Particles far apart and moving fast.' },
+              { label: 'Liquid',         color: 'rgb(var(--color-warning))', desc: 'Moderate T and P. Particles close together but able to flow.' },
+              { label: 'Gas',            color: 'rgb(var(--color-success))', desc: 'High temperature, low pressure. Particles far apart and moving fast.' },
               { label: 'Supercritical',  color: '#f43f5e', desc: 'Above critical T and P. A single fluid phase — gas and liquid properties merge.' },
             ].map(r => (
               <div key={r.label} className="flex gap-3 items-start px-4 py-3 border-b border-border last:border-b-0">
@@ -203,8 +203,8 @@ export default function PhaseDiagramReference() {
           <SectionHead label="Boundary Lines" />
           <div className="rounded-sm border border-border bg-surface overflow-hidden">
             {[
-              { label: 'Fusion curve',       color: '#fb923c', desc: 'Solid ↔ Liquid boundary. The melting/freezing line. Most substances have a positive slope (pressure raises mp).' },
-              { label: 'Vaporization curve', color: '#34d399', desc: 'Liquid ↔ Gas boundary. Ends at the critical point; beyond it, no sharp phase boundary exists.' },
+              { label: 'Fusion curve',       color: 'rgb(var(--color-warning))', desc: 'Solid ↔ Liquid boundary. The melting/freezing line. Most substances have a positive slope (pressure raises mp).' },
+              { label: 'Vaporization curve', color: 'rgb(var(--color-success))', desc: 'Liquid ↔ Gas boundary. Ends at the critical point; beyond it, no sharp phase boundary exists.' },
               { label: 'Sublimation curve',  color: '#60a5fa', desc: 'Solid ↔ Gas boundary. Below the triple point, solid converts directly to vapor (and vice versa).' },
             ].map(r => (
               <div key={r.label} className="flex gap-3 items-start px-4 py-3 border-b border-border last:border-b-0">
@@ -235,13 +235,13 @@ export default function PhaseDiagramReference() {
             },
             {
               label: 'Normal mp',
-              color: '#fb923c',
+              color: 'rgb(var(--color-warning))',
               formula: 'T where fusion curve crosses 1 atm',
               desc: 'The melting point measured at standard atmospheric pressure (1 atm / 101.325 kPa).',
             },
             {
               label: 'Normal bp',
-              color: '#34d399',
+              color: 'rgb(var(--color-success))',
               formula: 'T where vaporization curve crosses 1 atm',
               desc: 'The boiling point measured at 1 atm. At higher altitudes (lower P), the boiling point decreases.',
             },
@@ -299,12 +299,12 @@ export default function PhaseDiagramReference() {
             },
             {
               title: 'Crossing a boundary',
-              color: '#fb923c',
+              color: 'rgb(var(--color-warning))',
               body: 'Moving across a boundary line at constant pressure = heating or cooling induces a phase change. Moving across at constant temperature = pressure-induced phase change.',
             },
             {
               title: 'Negative fusion slope',
-              color: '#34d399',
+              color: 'rgb(var(--color-success))',
               body: 'Water\'s fusion curve slopes left — higher pressure lowers the melting point. Most substances slope right. This is why ice melts under pressure (e.g., ice skating).',
             },
             {

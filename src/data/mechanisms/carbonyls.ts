@@ -25,6 +25,26 @@ export const CARBONYL_REACTIONS: ReactionDef[] = [
     reactants: 'R₂C=O + H₂NR′',
     products: 'R₂C=NR′ (imine) + H₂O',
     conditions: 'Catalytic acid (pH 4–5 optimal); mild heat; 1° amine required',
+    reactantSpecies: {
+      text: 'R₂C=O + H₂NR′',
+      species: [
+        { smiles: '[R]C(=O)[R]', label: 'Aldehyde/Ketone' },
+        { smiles: '[R]N', label: 'Primary amine (H₂NR)', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'R₂C=NR′ (imine) + H₂O',
+      species: [
+        { smiles: '[R]C(=N[R])[R]', label: 'Imine (C=NR)' },
+        { smiles: 'O', label: 'H₂O' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Catalytic acid (pH 4–5 optimal); mild heat; 1° amine required',
+      species: [
+        { smiles: '[H+]', label: 'H⁺ (cat.)', catalyst: true },
+      ],
+    },
     reactionType: 'condensation',
     regiochemistry: null,
     stereochemistry: null,
@@ -97,6 +117,27 @@ export const CARBONYL_REACTIONS: ReactionDef[] = [
     reactants: 'R₂C=O + R′₂NH (2° amine)',
     products: 'R-C=C-NR′₂ (enamine) + H₂O',
     conditions: 'Acid catalyst or molecular sieves; remove H₂O (azeotrope or sieves); piperidine, pyrrolidine, or morpholine commonly used',
+    reactantSpecies: {
+      text: 'R₂C=O + R′₂NH (2° amine)',
+      species: [
+        { smiles: '[R]C(=O)[R]', label: 'Carbonyl' },
+        { smiles: '[R]N[R]', label: '2° Amine (HNR₂)', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'R-C=C-NR′₂ (enamine) + H₂O',
+      species: [
+        { smiles: '[R]/C=C(\\[R])N([R])[R]', label: 'Enamine' },
+        { smiles: 'O', label: 'H₂O' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Acid catalyst or molecular sieves; remove H₂O (azeotrope or sieves); piperidine, pyrrolidine, or morpholine commonly used',
+      species: [
+        { smiles: 'C1CCNC1', label: 'Pyrrolidine' },
+        { smiles: '[H+]', label: 'H⁺ (cat.)', catalyst: true },
+      ],
+    },
     reactionType: 'condensation',
     regiochemistry: null,
     stereochemistry: null,
@@ -172,6 +213,26 @@ export const CARBONYL_REACTIONS: ReactionDef[] = [
     reactants: 'R₂C=O + 2 ROH',
     products: 'R₂C(OR)₂ (acetal/ketal) + H₂O',
     conditions: 'Dry HCl or TsOH (acid catalyst); anhydrous alcohol; remove H₂O (Dean–Stark or molecular sieves)',
+    reactantSpecies: {
+      text: 'R₂C=O + 2 ROH',
+      species: [
+        { smiles: '[R]C(=O)[R]', label: 'Aldehyde/Ketone' },
+        { smiles: 'CO', label: 'ROH (alcohol)', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'R₂C(OR)₂ (acetal/ketal) + H₂O',
+      species: [
+        { smiles: '[R]C(OC)(OC)[R]', label: 'Acetal' },
+        { smiles: 'O', label: 'H₂O' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Dry HCl or TsOH (acid catalyst); anhydrous alcohol; remove H₂O (Dean–Stark or molecular sieves)',
+      species: [
+        { smiles: '[H+]', label: 'H⁺ (cat.)', catalyst: true },
+      ],
+    },
     reactionType: 'addition',
     regiochemistry: null,
     stereochemistry: null,
@@ -246,6 +307,26 @@ export const CARBONYL_REACTIONS: ReactionDef[] = [
     reactants: 'Ph₃P=CHR (ylide) + R′₂C=O',
     products: 'R₂C=CHR′ (alkene) + Ph₃P=O',
     conditions: 'Anhydrous; non-nucleophilic base (n-BuLi) to make ylide from phosphonium salt',
+    reactantSpecies: {
+      text: 'Ph₃P=CHR (ylide) + R′₂C=O',
+      species: [
+        { smiles: '[R]C=[P](c1ccccc1)(c1ccccc1)c1ccccc1', label: 'Phosphorus ylide' },
+        { smiles: '[R]C(=O)[R]', label: 'Carbonyl' },
+      ],
+    },
+    productSpecies: {
+      text: 'R₂C=CHR′ (alkene) + Ph₃P=O',
+      species: [
+        { smiles: '[R]C=C[R]', label: 'Alkene' },
+        { smiles: 'O=[P](c1ccccc1)(c1ccccc1)c1ccccc1', label: 'Ph₃P=O' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Anhydrous; non-nucleophilic base (n-BuLi) to make ylide from phosphonium salt',
+      species: [
+        { smiles: '[Li]CCCC', label: 'n-BuLi', catalyst: true },
+      ],
+    },
     reactionType: 'pericyclic',
     regiochemistry: null,
     stereochemistry: null,
@@ -329,6 +410,24 @@ export const CARBONYL_REACTIONS: ReactionDef[] = [
     reactants: 'Keto form (C=O with α-H)',
     products: 'Enol form (C=C with O–H)',
     conditions: 'Acid cat. (H⁺ protonates O, then α-H lost); or base cat. (α-H removed → enolate → O protonated)',
+    reactantSpecies: {
+      text: 'Keto form (C=O with α-H)',
+      species: [
+        { smiles: '[R]C(=O)C([H])([R])[R]', label: 'Keto form' },
+      ],
+    },
+    productSpecies: {
+      text: 'Enol form (C=C with O–H)',
+      species: [
+        { smiles: '[R]/C(O)=C([R])/[R]', label: 'Enol form' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Acid cat. (H⁺ protonates O, then α-H lost); or base cat. (α-H removed → enolate → O protonated)',
+      species: [
+        { smiles: '[H+]', label: 'H⁺ or OH⁻', catalyst: true },
+      ],
+    },
     reactionType: 'rearrangement',
     regiochemistry: null,
     stereochemistry: null,
@@ -395,6 +494,25 @@ export const CARBONYL_REACTIONS: ReactionDef[] = [
     reactants: 'Ketone/aldehyde + X₂ (Cl₂, Br₂, I₂)',
     products: 'α-Halo carbonyl compound',
     conditions: 'Acid cat. (H₃O⁺): monohalogenation; base (NaOH): polyhalogenation → haloform reaction',
+    reactantSpecies: {
+      text: 'Ketone/aldehyde + X₂ (Cl₂, Br₂, I₂)',
+      species: [
+        { smiles: '[R]C(=O)C([H])([H])[R]', label: 'Ketone' },
+        { smiles: 'BrBr', label: 'Br₂ (X₂)' },
+      ],
+    },
+    productSpecies: {
+      text: 'α-Halo carbonyl compound',
+      species: [
+        { smiles: '[R]C(=O)C([Br])([H])[R]', label: 'α-Bromo carbonyl' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Acid cat. (H₃O⁺): monohalogenation; base (NaOH): polyhalogenation → haloform reaction',
+      species: [
+        { smiles: '[H+]', label: 'H⁺ (acid cat.)', catalyst: true },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: null,
@@ -480,6 +598,27 @@ export const CARBONYL_REACTIONS: ReactionDef[] = [
     reactants: 'R-CO-CH₃ (methyl ketone) + 3X₂ + 3 NaOH',
     products: 'RCOONa (carboxylate) + CHX₃ (haloform)',
     conditions: 'Excess X₂/NaOH (or NaOX); aqueous base; I₂/NaOH → iodoform test',
+    reactantSpecies: {
+      text: 'R-CO-CH₃ (methyl ketone) + 3X₂ + 3 NaOH',
+      species: [
+        { smiles: '[R]C(=O)C', label: 'Methyl ketone' },
+        { smiles: 'BrBr', label: 'Br₂ (X₂, 3 eq)' },
+      ],
+    },
+    productSpecies: {
+      text: 'RCOONa (carboxylate) + CHX₃ (haloform)',
+      species: [
+        { smiles: '[R]C(=O)[O-]', label: 'Carboxylate' },
+        { smiles: 'BrC(Br)Br', label: 'CHBr₃ (bromoform)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Excess X₂/NaOH (or NaOX); aqueous base; I₂/NaOH → iodoform test',
+      species: [
+        { smiles: '[OH-]', label: 'NaOH' },
+        { smiles: 'BrBr', label: 'Br₂' },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: null,
@@ -551,6 +690,26 @@ export const CARBONYL_REACTIONS: ReactionDef[] = [
     reactants: 'R-CH₂-COOH + PBr₃ + Br₂',
     products: 'R-CHBr-COOH (α-bromo acid)',
     conditions: 'PBr₃ (cat. or 1 eq); Br₂; then H₂O workup; red P + Br₂ also works',
+    reactantSpecies: {
+      text: 'R-CH₂-COOH + PBr₃ + Br₂',
+      species: [
+        { smiles: '[R]CC(=O)O', label: 'Carboxylic acid' },
+        { smiles: 'BrBr', label: 'Br₂' },
+      ],
+    },
+    productSpecies: {
+      text: 'R-CHBr-COOH (α-bromo acid)',
+      species: [
+        { smiles: '[R]C([Br])C(=O)O', label: 'α-Bromocarboxylic acid' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'PBr₃ (cat. or 1 eq); Br₂; then H₂O workup; red P + Br₂ also works',
+      species: [
+        { smiles: 'BrP(Br)Br', label: 'PBr₃', catalyst: true },
+        { smiles: 'BrBr', label: 'Br₂' },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: null,
@@ -630,6 +789,26 @@ export const CARBONYL_REACTIONS: ReactionDef[] = [
     reactants: 'Ketone + peroxyacid (mCPBA, peracetic acid)',
     products: 'Ester (O inserted next to better migrating group)',
     conditions: 'mCPBA (meta-chloroperoxybenzoic acid) in CH₂Cl₂; or H₂O₂/BF₃; mild conditions',
+    reactantSpecies: {
+      text: 'Ketone + peroxyacid (mCPBA, peracetic acid)',
+      species: [
+        { smiles: '[R]C(=O)[R]', label: 'Ketone' },
+        { smiles: 'OOC(=O)c1cccc(Cl)c1', label: 'mCPBA' },
+      ],
+    },
+    productSpecies: {
+      text: 'Ester (O inserted next to better migrating group)',
+      species: [
+        { smiles: '[R]OC(=O)[R]', label: 'Ester' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'mCPBA (meta-chloroperoxybenzoic acid) in CH₂Cl₂; or H₂O₂/BF₃; mild conditions',
+      species: [
+        { smiles: 'OOC(=O)c1cccc(Cl)c1', label: 'mCPBA' },
+        { smiles: 'ClCCl', label: 'CH₂Cl₂', catalyst: true },
+      ],
+    },
     reactionType: 'oxidation',
     regiochemistry: null,
     stereochemistry: 'retention',
@@ -714,6 +893,26 @@ export const CARBONYL_REACTIONS: ReactionDef[] = [
     reactants: 'R₂C=O + H₂NR′ (or HNR′₂)',
     products: 'R₂CH-NHR′ (or R₂CH-NR′₂) (amine)',
     conditions: 'NaBH₃CN or NaBH(OAc)₃; pH 6–7 (AcOH buffer); room temperature',
+    reactantSpecies: {
+      text: 'R₂C=O + H₂NR′ (or HNR′₂)',
+      species: [
+        { smiles: '[R]C(=O)[R]', label: 'Aldehyde/Ketone' },
+        { smiles: '[R]N', label: 'Amine (H₂NR)', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'R₂CH-NHR′ (or R₂CH-NR′₂) (amine)',
+      species: [
+        { smiles: '[R]C([H])(N([R])[R])[R]', label: 'Amine product' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'NaBH₃CN or NaBH(OAc)₃; pH 6–7 (AcOH buffer); room temperature',
+      species: [
+        { smiles: '[BH3-]C#N.[Na+]', label: 'NaBH₃CN' },
+        { smiles: 'CC(=O)O', label: 'AcOH (buffer)', catalyst: true },
+      ],
+    },
     reactionType: 'reduction',
     regiochemistry: null,
     stereochemistry: null,

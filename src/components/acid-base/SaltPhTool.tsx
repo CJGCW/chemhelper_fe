@@ -72,8 +72,8 @@ export default function SaltPhTool() {
   }
 
   const classColor = result?.classification === 'basic' ? '#6366f1'
-    : result?.classification === 'acidic' ? '#ef4444'
-    : '#22c55e'
+    : result?.classification === 'acidic' ? 'rgb(var(--color-error))'
+    : 'rgb(var(--color-success))'
 
   const isManual = selectedPreset === 'Manual'
 
@@ -175,7 +175,7 @@ export default function SaltPhTool() {
         )}
       </div>
 
-      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      {error && <p className="font-mono text-xs text-error">{error}</p>}
 
       {stepsOpen && result && (
         <div className="flex flex-col gap-1 p-3 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>

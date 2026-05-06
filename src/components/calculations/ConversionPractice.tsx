@@ -42,7 +42,7 @@ export default function ConversionPractice({ allowCustom = true }: Props) {
       {score.total > 0 && (
         <div className="flex items-center gap-3">
           <div className="flex-1 h-1.5 rounded-full bg-raised overflow-hidden">
-            <motion.div className="h-full rounded-full bg-emerald-500"
+            <motion.div className="h-full rounded-full" style={{ background: 'rgb(var(--color-success))' }}
               animate={{ width: `${(score.correct / score.total) * 100}%` }}
               transition={{ duration: 0.4 }} />
           </div>
@@ -82,7 +82,7 @@ export default function ConversionPractice({ allowCustom = true }: Props) {
             <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
               className="flex flex-col gap-2">
               <span className="font-sans text-sm font-medium"
-                style={{ color: isCorrect ? '#4ade80' : '#f87171' }}>
+                style={{ color: isCorrect ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                 {isCorrect ? '✓ Correct!' : showAnswers ? `✗ Answer: ${problem.answer} ${problem.answerUnit}` : '✗ Incorrect — try again'}
               </span>
               {showAnswers && (

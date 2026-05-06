@@ -136,10 +136,10 @@ export default function ZwitterionAndPI({ allowCustom = true }: { allowCustom?: 
             const isAnswer = c.id === problem.correctCharge
             let bg = 'rgb(var(--color-surface))'
             let border = 'rgb(var(--color-border))'
-            let textCl = 'text-primary'
+            let textColor = 'rgb(var(--color-primary))'
             if (selected !== null) {
-              if (isAnswer) { bg = '#16a34a20'; border = '#16a34a'; textCl = 'text-green-700 dark:text-green-400' }
-              else if (isSelected && !isAnswer) { bg = '#dc262620'; border = '#dc2626'; textCl = 'text-red-700 dark:text-red-400' }
+              if (isAnswer) { bg = 'rgb(var(--color-success-bg) / 0.2)'; border = 'rgb(var(--color-success))'; textColor = 'rgb(var(--color-success))' }
+              else if (isSelected && !isAnswer) { bg = 'rgb(var(--color-error-bg) / 0.2)'; border = 'rgb(var(--color-error))'; textColor = 'rgb(var(--color-error))' }
             }
 
             return (
@@ -151,14 +151,14 @@ export default function ZwitterionAndPI({ allowCustom = true }: { allowCustom?: 
                 style={{ background: bg, borderColor: border }}
               >
                 <span className="font-mono text-sm w-8 shrink-0" style={{ color: border }}>{c.symbol}</span>
-                <span className={`font-sans text-sm ${textCl}`}>{c.label}</span>
+                <span className="font-sans text-sm" style={{ color: textColor }}>{c.label}</span>
               </button>
             )
           })}
         </div>
 
         {selected !== null && (
-          <div className={`rounded-sm p-3 text-xs font-sans ${isCorrect ? 'bg-green-500/10 text-green-700 dark:text-green-400' : 'bg-red-500/10 text-red-700 dark:text-red-400'}`}>
+          <div className="rounded-sm p-3 text-xs font-sans" style={{ background: isCorrect ? 'rgb(var(--color-success-bg) / 0.2)' : 'rgb(var(--color-error-bg) / 0.2)', color: isCorrect ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
             <p className="font-semibold mb-1">{isCorrect ? 'Correct!' : `Incorrect — answer: ${problem.correctCharge}`}</p>
             <p>pH {problem.pH.toFixed(1)} {problem.pH < problem.aa.pI ? '<' : problem.pH > problem.aa.pI ? '>' : '≈'} pI {problem.aa.pI.toFixed(2)}</p>
             <p className="mt-1">Dominant form: {problem.dominantForm}</p>

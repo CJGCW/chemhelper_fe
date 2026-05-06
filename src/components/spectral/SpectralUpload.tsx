@@ -157,7 +157,7 @@ function PeakEntryForm({ specType, peaks, onChange }: PeakEntryFormProps) {
                 {p.label && <span className="text-secondary">: {p.label}</span>}
                 <button onClick={() => removePeak(i)}
                   className="ml-auto transition-colors"
-                  style={{ color: '#f87171' }}
+                  style={{ color: 'rgb(var(--color-error))' }}
                   aria-label="Remove peak">×</button>
               </li>
             ))}
@@ -278,7 +278,7 @@ export default function SpectralUpload() {
 
       {error && (
         <p className="font-mono text-xs rounded-sm px-3 py-2 border"
-          style={{ color: '#f87171', background: 'rgba(248,113,113,0.08)', borderColor: 'rgba(248,113,113,0.2)' }}>
+          style={{ color: 'rgb(var(--color-error))', background: 'rgba(248,113,113,0.08)', borderColor: 'rgba(248,113,113,0.2)' }}>
           {error}
         </p>
       )}

@@ -497,7 +497,7 @@ export default function DaltonsLawTool() {
               <button
                 onClick={() => removeRow(row.id)}
                 disabled={rows.length <= 2}
-                className="font-mono text-sm text-dim hover:text-red-400 transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+                className="font-mono text-sm text-dim hover:text-error transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
                 title="Remove gas"
               >×</button>
             </div>
@@ -543,7 +543,7 @@ export default function DaltonsLawTool() {
       </div>
       )}
 
-      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      {error && <p className="font-mono text-xs text-error">{error}</p>}
 
       <div className="flex items-stretch gap-2">
         <button

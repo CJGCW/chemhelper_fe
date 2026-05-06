@@ -103,11 +103,11 @@ export default function KExpressionPractice({ allowCustom = true }: Props) {
                 <p className="font-sans text-sm text-secondary">Did you get it right?</p>
                 <div className="flex gap-2">
                   <button onClick={() => handleSelfAssess(true)}
-                    className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium border border-success-border text-success hover:bg-emerald-50 dark:bg-emerald-950/20 transition-colors">
+                    className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium border border-success-border text-success transition-colors" style={{ background: 'rgb(var(--color-success-bg) / 0.1)' }}>
                     Yes, correct
                   </button>
                   <button onClick={() => handleSelfAssess(false)}
-                    className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium border border-error-border text-error hover:bg-rose-50 dark:bg-rose-950/20 transition-colors">
+                    className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium border border-error-border text-error transition-colors" style={{ background: 'rgb(var(--color-error-bg) / 0.1)' }}>
                     No, incorrect
                   </button>
                 </div>

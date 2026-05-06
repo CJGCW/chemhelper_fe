@@ -58,7 +58,7 @@ export default function BondEnthalpyReference() {
             <div key={row.cond}
               className="grid grid-cols-[6rem_8rem_1fr] gap-x-4 items-baseline px-4 py-2.5 border-b border-border last:border-b-0">
               <span className="font-mono text-sm"
-                style={{ color: row.cond.includes('<') ? '#34d399' : '#f87171' }}>{row.cond}</span>
+                style={{ color: row.cond.includes('<') ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>{row.cond}</span>
               <span className="font-sans text-sm text-primary font-medium">{row.label}</span>
               <span className="font-sans text-sm text-secondary">{row.note}</span>
             </div>

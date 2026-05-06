@@ -181,7 +181,7 @@ export default function PhCalculatorTool() {
         )}
       </div>
 
-      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      {error && <p className="font-mono text-xs text-error">{error}</p>}
 
       {/* Steps panel */}
       {stepsOpen && steps.length > 0 && (

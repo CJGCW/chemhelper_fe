@@ -47,9 +47,9 @@ export default function WeakBaseReference() {
             <div className="text-primary">0</div>
             <div className="text-primary">0</div>
             <div className="text-secondary font-bold text-left">C</div>
-            <div className="text-red-400">−x</div>
-            <div className="text-green-400">+x</div>
-            <div className="text-green-400">+x</div>
+            <div className="text-error">−x</div>
+            <div className="text-success">+x</div>
+            <div className="text-success">+x</div>
             <div className="text-secondary font-bold text-left">E</div>
             <div className="text-primary">C−x</div>
             <div className="text-primary">x</div>

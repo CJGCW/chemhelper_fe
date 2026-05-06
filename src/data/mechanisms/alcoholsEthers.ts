@@ -38,6 +38,25 @@ export const ALCOHOL_ETHER_REACTIONS: ReactionDef[] = [
     reactants: 'Alcohol',
     products: 'Alkene + H₂O (Zaitsev product)',
     conditions: 'Conc. H₂SO₄ or H₃PO₄, heat (E1); or POCl₃/pyridine (E2, 2° only)',
+    reactantSpecies: {
+      text: 'Alcohol (2° or 3°)',
+      species: [
+        { smiles: '[R]C(O)[R]', label: 'Alcohol', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'Alkene + H₂O',
+      species: [
+        { smiles: '[R]C=C[R]', label: 'Alkene (Zaitsev product)' },
+        { smiles: 'O', label: 'H₂O' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Conc. H₂SO₄ or H₃PO₄, heat (E1); or POCl₃/pyridine (E2, 2° only)',
+      species: [
+        { smiles: 'OS(=O)(=O)O', label: 'H₂SO₄ (conc.)', catalyst: true },
+      ],
+    },
     reactionType: 'elimination',
     regiochemistry: null,
     stereochemistry: null,
@@ -137,6 +156,25 @@ export const ALCOHOL_ETHER_REACTIONS: ReactionDef[] = [
     reactants: '1° or 2° Alcohol',
     products: 'Aldehyde (PCC from 1°), Carboxylic acid (Jones from 1°), Ketone (from 2°)',
     conditions: 'PCC (mild, CH₂Cl₂, rt); H₂CrO₄ (Jones, strong, acetone); MnO₂ (allylic/benzylic)',
+    reactantSpecies: {
+      text: '1° or 2° Alcohol',
+      species: [
+        { smiles: '[R]CO', label: '1° Alcohol', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'Aldehyde (PCC from 1°), Carboxylic acid (Jones from 1°), Ketone (from 2°)',
+      species: [
+        { smiles: '[R]C=O', label: 'Aldehyde (PCC, 1°)' },
+        { smiles: '[R]C(=O)[R]', label: 'Ketone (from 2°)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'PCC (mild, CH₂Cl₂, rt); H₂CrO₄ (Jones, strong, acetone); MnO₂ (allylic/benzylic)',
+      species: [
+        { smiles: 'O=Cr(=O)(Cl)O.c1ccncc1', label: 'PCC', catalyst: true },
+      ],
+    },
     reactionType: 'oxidation',
     regiochemistry: null,
     stereochemistry: null,
@@ -210,6 +248,26 @@ export const ALCOHOL_ETHER_REACTIONS: ReactionDef[] = [
     reactants: 'Alcohol + HX (or SOCl₂ or PBr₃)',
     products: 'Alkyl halide (R-X)',
     conditions: 'HX (3° SN1, rearrange; 1° SN2); SOCl₂/pyridine → RCl (SN2, inversion); PBr₃ → RBr (SN2)',
+    reactantSpecies: {
+      text: 'Alcohol + HX (or SOCl₂ or PBr₃)',
+      species: [
+        { smiles: '[R]O', label: 'Alcohol', showLonePairs: true },
+        { smiles: 'ClS(=O)Cl', label: 'SOCl₂' },
+      ],
+    },
+    productSpecies: {
+      text: 'Alkyl halide (R-X)',
+      species: [
+        { smiles: '[R]Cl', label: 'Alkyl chloride' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'HX (3° SN1, rearrange; 1° SN2); SOCl₂/pyridine → RCl (SN2, inversion); PBr₃ → RBr (SN2)',
+      species: [
+        { smiles: 'ClS(=O)Cl', label: 'SOCl₂' },
+        { smiles: 'c1ccncc1', label: 'Pyridine', catalyst: true },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: 'inversion',
@@ -310,6 +368,27 @@ export const ALCOHOL_ETHER_REACTIONS: ReactionDef[] = [
     reactants: '1° Alcohol',
     products: 'Aldehyde',
     conditions: '(COCl)₂ then DMSO; then alcohol; then Et₃N; CH₂Cl₂, −78 °C',
+    reactantSpecies: {
+      text: '1° Alcohol',
+      species: [
+        { smiles: '[R]CO', label: '1° Alcohol', showLonePairs: true },
+        { smiles: 'CS(C)=O', label: 'DMSO' },
+      ],
+    },
+    productSpecies: {
+      text: 'Aldehyde',
+      species: [
+        { smiles: '[R]C=O', label: 'Aldehyde' },
+      ],
+    },
+    conditionSpecies: {
+      text: '(COCl)₂ then DMSO; then alcohol; then Et₃N; CH₂Cl₂, −78 °C',
+      species: [
+        { smiles: 'O=C(Cl)C(=O)Cl', label: '(COCl)₂ (oxalyl chloride)' },
+        { smiles: 'CS(C)=O', label: 'DMSO' },
+        { smiles: 'CCN(CC)CC', label: 'Et₃N', catalyst: true },
+      ],
+    },
     reactionType: 'oxidation',
     regiochemistry: null,
     stereochemistry: null,
@@ -409,6 +488,26 @@ export const ALCOHOL_ETHER_REACTIONS: ReactionDef[] = [
     reactants: 'Alcohol + TsCl (or MsCl)',
     products: 'Tosylate ester (R-OTs)',
     conditions: 'TsCl or MsCl, pyridine (or Et₃N); CH₂Cl₂; 0 °C to rt; 3° alcohols fail (steric)',
+    reactantSpecies: {
+      text: 'Alcohol + TsCl (or MsCl)',
+      species: [
+        { smiles: '[R]O', label: 'Alcohol', showLonePairs: true },
+        { smiles: 'Cc1ccc(S(=O)(=O)Cl)cc1', label: 'TsCl' },
+      ],
+    },
+    productSpecies: {
+      text: 'Tosylate ester (R-OTs)',
+      species: [
+        { smiles: '[R]OC(=O)S(=O)c1ccc(C)cc1', label: 'Tosylate (R-OTs)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'TsCl or MsCl, pyridine (or Et₃N); CH₂Cl₂; 0 °C to rt; 3° alcohols fail (steric)',
+      species: [
+        { smiles: 'Cc1ccc(S(=O)(=O)Cl)cc1', label: 'TsCl' },
+        { smiles: 'c1ccncc1', label: 'Pyridine', catalyst: true },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: 'retention',
@@ -484,6 +583,26 @@ export const ALCOHOL_ETHER_REACTIONS: ReactionDef[] = [
     reactants: 'Ether + excess HX (Δ)',
     products: '2 Alkyl halides (or alcohol + halide with 1 eq HX)',
     conditions: 'Excess HX (HI > HBr >> HCl); heat; HI or HBr required (HCl/HF too weak)',
+    reactantSpecies: {
+      text: 'Ether + excess HX (Δ)',
+      species: [
+        { smiles: '[R]O[R]', label: 'Ether', showLonePairs: true },
+        { smiles: '[H]I', label: 'HI (excess)' },
+      ],
+    },
+    productSpecies: {
+      text: '2 Alkyl halides (or alcohol + halide with 1 eq HX)',
+      species: [
+        { smiles: '[R]I', label: 'Alkyl iodide' },
+        { smiles: '[R]I', label: 'Alkyl iodide (2nd)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Excess HX (HI > HBr >> HCl); heat; HI or HBr required (HCl/HF too weak)',
+      species: [
+        { smiles: '[H]I', label: 'HI (excess)' },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: null,
@@ -575,6 +694,26 @@ export const ALCOHOL_ETHER_REACTIONS: ReactionDef[] = [
     reactants: 'Alcohol + TMSCl',
     products: 'TMS ether (R-OTMS)',
     conditions: 'TMSCl, Et₃N (or imidazole), CH₂Cl₂; rt; deprotect with TBAF (Bu₄NF) or 1% HF/MeOH',
+    reactantSpecies: {
+      text: 'Alcohol + TMSCl',
+      species: [
+        { smiles: '[R]O', label: 'Alcohol', showLonePairs: true },
+        { smiles: 'C[Si](C)(C)Cl', label: 'TMSCl' },
+      ],
+    },
+    productSpecies: {
+      text: 'TMS ether (R-OTMS)',
+      species: [
+        { smiles: '[R]O[Si](C)(C)C', label: 'TMS ether (R-OTMS)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'TMSCl, Et₃N (or imidazole), CH₂Cl₂; rt; deprotect with TBAF (Bu₄NF) or 1% HF/MeOH',
+      species: [
+        { smiles: 'C[Si](C)(C)Cl', label: 'TMSCl' },
+        { smiles: 'CCN(CC)CC', label: 'Et₃N', catalyst: true },
+      ],
+    },
     reactionType: 'substitution',
     regiochemistry: null,
     stereochemistry: 'retention',

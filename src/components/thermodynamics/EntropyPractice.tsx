@@ -43,7 +43,7 @@ export default function EntropyPractice({ allowCustom = true }: Props) {
 
   const verifyColor = verify === 'correct'
     ? 'text-success'
-    : verify === 'incorrect' ? 'text-red-400' : ''
+    : verify === 'incorrect' ? 'text-error' : ''
 
   return (
     <div className="flex flex-col gap-5 max-w-xl">
