@@ -260,8 +260,8 @@ export default function DilutionConcPractice({ allowCustom = true }: Props) {
                 <div className="flex flex-col gap-3">
                   <div className={`flex items-center gap-2 px-3 py-2.5 rounded-sm border text-base font-sans
                     ${correct
-                      ? 'border-emerald-800/50 bg-emerald-950/40 text-emerald-300'
-                      : 'border-rose-800/50 bg-rose-950/40 text-rose-300'
+                      ? 'border-emerald-500 dark:border-emerald-800/50 bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
+                      : 'border-rose-500 dark:border-rose-800/50 bg-rose-950/40 text-rose-700 dark:text-rose-300'
                     }`}>
                     <span className="font-mono">{correct ? '✓' : '✗'}</span>
                     {correct

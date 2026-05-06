@@ -23,13 +23,11 @@ function freshProblem(sel: Selection) {
 interface Props { allowCustom?: boolean }
 
 export default function ReactionPredictorPractice({ allowCustom = true }: Props) {
-  const [selected,  setSelected]  = useState<Selection>('random')
-  const [problem,   setProblem]   = useState(() => freshProblem('random'))
-  const [answer,    setAnswer]    = useState('')
-  const [checked,   setChecked]   = useState(false)
-  const [correct,   setCorrect]   = useState(false)
-  const [showSteps, setShowSteps] = useState(false)
-  const [score,     setScore]     = useState({ right: 0, total: 0 })
+  const [selected,   setSelected]   = useState<Selection>('random')
+  const [problem,    setProblem]    = useState(() => freshProblem('random'))
+  const [chosen,     setChosen]     = useState<string | null>(null)
+  const [showSteps,  setShowSteps]  = useState(false)
+  const [score,      setScore]      = useState({ right: 0, total: 0 })
   const showAnswers = useShowAnswers()
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -37,28 +35,30 @@ export default function ReactionPredictorPractice({ allowCustom = true }: Props)
 
   function nextProblem(sel: Selection = selected) {
     setProblem(freshProblem(sel))
-    setAnswer(''); setChecked(false); setShowSteps(false)
+    setChosen(null); setShowSteps(false)
   }
 
   function handleTypeChange(sel: Selection) {
     setSelected(sel)
     setProblem(freshProblem(sel))
-    setAnswer(''); setChecked(false); setShowSteps(false)
+    setChosen(null); setShowSteps(false)
     setScore({ right: 0, total: 0 })
   }
 
-  function handleCheck() {
-    if (!answer.trim() || checked) return
-    const c = checkRxnPracticeAnswer(answer, problem)
-    setCorrect(c)
-    setChecked(true)
-    setScore(s => ({ right: s.right + (c ? 1 : 0), total: s.total + 1 }))
+  function handleChoose(choice: string) {
+    if (chosen !== null) return
+    const correct = checkRxnPracticeAnswer(choice, problem)
+    setChosen(choice)
+    setScore(s => ({ right: s.right + (correct ? 1 : 0), total: s.total + 1 }))
   }
 
-  const borderClass = checked
+  const checked = chosen !== null
+  const correct = checked && checkRxnPracticeAnswer(chosen, problem)
+
+  const cardBorder = checked
     ? correct
-      ? 'border-emerald-800/50 bg-emerald-950/20'
-      : 'border-rose-800/50 bg-rose-950/20'
+      ? 'border-emerald-500 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/20'
+      : 'border-rose-500 dark:border-rose-800/50 bg-rose-50 dark:bg-rose-950/20'
     : 'border-border bg-surface'
 
   return (
@@ -107,7 +107,7 @@ export default function ReactionPredictorPractice({ allowCustom = true }: Props)
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.18 }}
-        className={`rounded-sm border p-5 flex flex-col gap-4 transition-colors ${borderClass}`}
+        className={`rounded-sm border p-5 flex flex-col gap-4 transition-colors ${cardBorder}`}
       >
         {/* Context equation */}
         {problem.context && (
@@ -125,47 +125,35 @@ export default function ReactionPredictorPractice({ allowCustom = true }: Props)
           </p>
         )}
 
-        {/* Input row */}
-        <div className="flex items-center gap-3 flex-wrap">
-          <input
-            type="text"
-            value={answer}
-            onChange={e => setAnswer(e.target.value)}
-            onKeyDown={e => !checked && e.key === 'Enter' && handleCheck()}
-            disabled={checked}
-            placeholder={problem.answerHint}
-            className={`bg-raised border rounded-sm px-3 py-1.5 font-mono text-base
-                        placeholder-dim focus:outline-none focus:border-muted
-                        disabled:cursor-not-allowed transition-colors w-48
-                        ${checked
-                          ? correct
-                            ? 'border-emerald-700/60 text-emerald-300'
-                            : 'border-rose-700/60 text-rose-300'
-                          : 'border-border text-bright'}`}
-          />
-
-          {!checked ? (
-            <button onClick={handleCheck} disabled={!answer.trim()}
-              className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-30"
-              style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
-                color: 'var(--c-halogen)',
-              }}>
-              Check
-            </button>
-          ) : (
-            <>
-              <span className={`font-sans text-sm font-medium ${correct ? 'text-emerald-400' : 'text-rose-400'}`}>
-                {correct ? '✓ Correct' : '✗ Incorrect'}
-              </span>
-              <button onClick={() => setShowSteps(s => !s)}
-                className="font-mono text-xs text-dim hover:text-secondary transition-colors">
-                {showSteps ? '▲ hide' : '▼ solution'}
+        {/* Choice buttons */}
+        <div className="flex flex-col gap-2">
+          {problem.choices.map(choice => {
+            const isChosen  = chosen === choice
+            const isCorrect = choice === problem.answer
+            let cls = 'border-border text-secondary hover:border-muted hover:text-primary'
+            if (checked && isCorrect)                cls = 'border-emerald-500 dark:border-emerald-700/60 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300'
+            if (checked && isChosen && !isCorrect)   cls = 'border-rose-500 dark:border-rose-700/60 bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-300'
+            return (
+              <button key={choice} disabled={checked} onClick={() => handleChoose(choice)}
+                className={`text-left px-4 py-2.5 rounded-sm border font-sans text-sm transition-colors disabled:cursor-default font-mono ${cls}`}>
+                {choice}
               </button>
-            </>
-          )}
+            )
+          })}
         </div>
+
+        {/* Feedback row */}
+        {checked && (
+          <div className="flex items-center gap-3">
+            <span className={`font-sans text-sm font-medium ${correct ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
+              {correct ? '✓ Correct' : '✗ Incorrect'}
+            </span>
+            <button onClick={() => setShowSteps(s => !s)}
+              className="font-mono text-xs text-dim hover:text-secondary transition-colors">
+              {showSteps ? '▲ hide' : '▼ solution'}
+            </button>
+          </div>
+        )}
 
         {/* Solution steps */}
         <AnimatePresence>
@@ -199,7 +187,7 @@ export default function ReactionPredictorPractice({ allowCustom = true }: Props)
       {checked && (
         <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="flex gap-2">
           {!correct && (
-            <button onClick={() => { setAnswer(''); setChecked(false); setShowSteps(false) }}
+            <button onClick={() => { setChosen(null); setShowSteps(false) }}
               className="px-4 py-2 rounded-sm font-sans text-sm border border-border text-dim hover:text-secondary transition-colors">
               Try Again
             </button>

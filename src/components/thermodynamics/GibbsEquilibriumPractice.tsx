@@ -119,7 +119,7 @@ export default function GibbsEquilibriumPractice({ allowCustom = true }: Props) 
       </div>
 
       {verify && (
-        <p className={`font-mono text-sm font-semibold ${verify === 'correct' ? 'text-emerald-400' : 'text-red-400'}`}>
+        <p className={`font-mono text-sm font-semibold ${verify === 'correct' ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-400'}`}>
           {verify === 'correct' ? '✓ Correct!' : `✗ Incorrect. Answer: ${answerDisplay}`}
         </p>
       )}

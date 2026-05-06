@@ -79,8 +79,8 @@ export default function RedoxPractice({ allowCustom = true }: Props) {
 
   const borderClass = checked
     ? correct
-      ? 'border-emerald-800/50 bg-emerald-950/20'
-      : 'border-rose-800/50 bg-rose-950/20'
+      ? 'border-emerald-500 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/20'
+      : 'border-rose-500 dark:border-rose-800/50 bg-rose-50 dark:bg-rose-950/20'
     : 'border-border bg-surface'
 
   const placeholder = problem.isTextAnswer
@@ -181,8 +181,8 @@ export default function RedoxPractice({ allowCustom = true }: Props) {
                         disabled:cursor-not-allowed transition-colors w-40
                         ${checked
                           ? correct
-                            ? 'border-emerald-700/60 text-emerald-300'
-                            : 'border-rose-700/60 text-rose-300'
+                            ? 'border-emerald-500 dark:border-emerald-700/60 text-emerald-700 dark:text-emerald-300'
+                            : 'border-rose-500 dark:border-rose-700/60 text-rose-700 dark:text-rose-300'
                           : 'border-border text-bright'}`}
           />
 
@@ -202,7 +202,7 @@ export default function RedoxPractice({ allowCustom = true }: Props) {
             </button>
           ) : (
             <>
-              <span className={`font-sans text-sm font-medium ${correct ? 'text-emerald-400' : 'text-rose-400'}`}>
+              <span className={`font-sans text-sm font-medium ${correct ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
                 {correct ? '✓ Correct' : '✗ Incorrect'}
               </span>
               <button

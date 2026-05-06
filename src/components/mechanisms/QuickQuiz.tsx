@@ -121,7 +121,7 @@ export default function QuickQuiz({ category = 'all' }: Props) {
             return (
               <div key={i} className="rounded-sm border border-border p-3 flex flex-col gap-1" style={{ background: 'rgb(var(--color-raised))' }}>
                 <div className="flex items-center gap-2">
-                  <span className={`font-mono text-xs ${wasCorrect ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  <span className={`font-mono text-xs ${wasCorrect ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
                     {wasCorrect ? '✓' : '✗'}
                   </span>
                   <span className="font-sans text-xs text-secondary capitalize">{q.type.replace(/-/g, ' ')}</span>
@@ -153,7 +153,7 @@ export default function QuickQuiz({ category = 'all' }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between print:hidden">
         <span className="font-mono text-sm text-secondary">Q {current + 1}/{questions.length}</span>
-        <span className={`font-mono text-sm ${isUrgent ? 'text-rose-400' : 'text-dim'}`}>
+        <span className={`font-mono text-sm ${isUrgent ? 'text-rose-700 dark:text-rose-400' : 'text-dim'}`}>
           {formatTime(timeLeft)}
         </span>
       </div>
@@ -169,7 +169,7 @@ export default function QuickQuiz({ category = 'all' }: Props) {
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.18 }}
           className={`rounded-sm border p-5 flex flex-col gap-4 transition-colors ${
-            !confirmed ? 'border-border' : correct ? 'border-emerald-800/50 bg-emerald-950/20' : 'border-rose-800/50 bg-rose-950/20'
+            !confirmed ? 'border-border' : correct ? 'border-emerald-500 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/20' : 'border-rose-500 dark:border-rose-800/50 bg-rose-50 dark:bg-rose-950/20'
           }`}
           style={{ background: confirmed ? undefined : 'rgb(var(--color-surface))' }}
         >
@@ -202,7 +202,7 @@ export default function QuickQuiz({ category = 'all' }: Props) {
           </div>
 
           {confirmed && (
-            <p className={`font-sans text-sm font-medium ${correct ? 'text-emerald-400' : 'text-rose-400'}`}>
+            <p className={`font-sans text-sm font-medium ${correct ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
               {correct ? '✓ Correct' : `✗ Incorrect — ${q.answer}`}
             </p>
           )}

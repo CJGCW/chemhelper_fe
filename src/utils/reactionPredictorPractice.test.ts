@@ -17,7 +17,7 @@ describe('genRxnPracticeProblem — shape invariants', () => {
         expect(p.subtype).toBe(subtype)
         expect(p.question.length).toBeGreaterThan(10)
         expect(p.answer.length).toBeGreaterThan(0)
-        expect(p.answerHint.length).toBeGreaterThan(0)
+        expect(Array.isArray(p.choices) && p.choices.length >= 2).toBe(true)
         expect(Array.isArray(p.steps)).toBe(true)
         expect(p.steps.length).toBeGreaterThanOrEqual(2)
       }
@@ -28,10 +28,10 @@ describe('genRxnPracticeProblem — shape invariants', () => {
 // ── predict_occurs ────────────────────────────────────────────────────────────
 
 describe('predict_occurs', () => {
-  it('answer is always "yes" or "no"', () => {
+  it('answer is always "Yes" or "No"', () => {
     for (let i = 0; i < 50; i++) {
       const p = genRxnPracticeProblem('predict_occurs')
-      expect(['yes', 'no']).toContain(p.answer)
+      expect(['Yes', 'No']).toContain(p.answer)
     }
   })
 
@@ -52,13 +52,13 @@ describe('predict_occurs', () => {
     }
   })
 
-  it('produces both yes and no answers across 200 runs', () => {
+  it('produces both Yes and No answers across 200 runs', () => {
     const answers = new Set<string>()
     for (let i = 0; i < 200; i++) {
       answers.add(genRxnPracticeProblem('predict_occurs').answer)
     }
-    expect(answers.has('yes')).toBe(true)
-    expect(answers.has('no')).toBe(true)
+    expect(answers.has('Yes')).toBe(true)
+    expect(answers.has('No')).toBe(true)
   })
 })
 
@@ -94,10 +94,11 @@ describe('name_precipitate', () => {
 // ── identify_solubility ───────────────────────────────────────────────────────
 
 describe('identify_solubility', () => {
-  it('answer is always s, i, or ss', () => {
+  it('answer is always a full label', () => {
+    const LABELS = ['Soluble (S)', 'Insoluble (I)', 'Slightly Soluble (SS)']
     for (let i = 0; i < 50; i++) {
       const p = genRxnPracticeProblem('identify_solubility')
-      expect(['s', 'i', 'ss']).toContain(p.answer)
+      expect(LABELS).toContain(p.answer)
     }
   })
 
@@ -106,9 +107,9 @@ describe('identify_solubility', () => {
     for (let i = 0; i < 200; i++) {
       answers.add(genRxnPracticeProblem('identify_solubility').answer)
     }
-    expect(answers.has('s')).toBe(true)
-    expect(answers.has('i')).toBe(true)
-    expect(answers.has('ss')).toBe(true)
+    expect(answers.has('Soluble (S)')).toBe(true)
+    expect(answers.has('Insoluble (I)')).toBe(true)
+    expect(answers.has('Slightly Soluble (SS)')).toBe(true)
   })
 
   it('question contains the compound formula', () => {
@@ -133,37 +134,38 @@ describe('checkRxnPracticeAnswer — predict_occurs', () => {
   function makeProblem(answer: string): RxnPracticeProblem {
     return {
       subtype: 'predict_occurs',
-      question: 'q', answer, answerHint: 'h',
+      question: 'q', answer,
+      choices: ['Yes', 'No'],
       steps: [],
     }
   }
 
-  it('accepts exact "yes"', ()  => expect(checkRxnPracticeAnswer('yes', makeProblem('yes'))).toBe(true))
-  it('accepts exact "no"',  ()  => expect(checkRxnPracticeAnswer('no',  makeProblem('no'))).toBe(true))
-  it('rejects "no" for "yes"',  () => expect(checkRxnPracticeAnswer('no', makeProblem('yes'))).toBe(false))
-  it('accepts "Yes" (case-insensitive)', () => expect(checkRxnPracticeAnswer('Yes', makeProblem('yes'))).toBe(true))
-  it('accepts "NO" (upper)', () => expect(checkRxnPracticeAnswer('NO', makeProblem('no'))).toBe(true))
-  it('rejects empty string', () => expect(checkRxnPracticeAnswer('', makeProblem('yes'))).toBe(false))
+  it('accepts exact "Yes"', ()  => expect(checkRxnPracticeAnswer('Yes', makeProblem('Yes'))).toBe(true))
+  it('accepts exact "No"',  ()  => expect(checkRxnPracticeAnswer('No',  makeProblem('No'))).toBe(true))
+  it('rejects "No" for "Yes"',  () => expect(checkRxnPracticeAnswer('No', makeProblem('Yes'))).toBe(false))
+  it('accepts "yes" (case-insensitive)', () => expect(checkRxnPracticeAnswer('yes', makeProblem('Yes'))).toBe(true))
+  it('accepts "NO" (upper)', () => expect(checkRxnPracticeAnswer('NO', makeProblem('No'))).toBe(true))
+  it('rejects empty string', () => expect(checkRxnPracticeAnswer('', makeProblem('Yes'))).toBe(false))
 })
 
 describe('checkRxnPracticeAnswer — identify_solubility', () => {
   function makeProblem(answer: string): RxnPracticeProblem {
-    return { subtype: 'identify_solubility', question:'q', answer, answerHint:'h', steps:[] }
+    return { subtype: 'identify_solubility', question: 'q', answer, choices: ['Soluble (S)', 'Insoluble (I)', 'Slightly Soluble (SS)'], steps: [] }
   }
 
-  it('accepts "S" for soluble', ()  => expect(checkRxnPracticeAnswer('S', makeProblem('s'))).toBe(true))
-  it('accepts "soluble" for s', ()  => expect(checkRxnPracticeAnswer('soluble', makeProblem('s'))).toBe(true))
-  it('accepts "I" for insoluble', () => expect(checkRxnPracticeAnswer('I', makeProblem('i'))).toBe(true))
-  it('accepts "insoluble" for i', () => expect(checkRxnPracticeAnswer('insoluble', makeProblem('i'))).toBe(true))
-  it('accepts "SS" for slightly soluble', () => expect(checkRxnPracticeAnswer('SS', makeProblem('ss'))).toBe(true))
-  it('accepts "slightly soluble" long form', () => expect(checkRxnPracticeAnswer('slightly soluble', makeProblem('ss'))).toBe(true))
-  it('rejects "I" when answer is "s"', () => expect(checkRxnPracticeAnswer('I', makeProblem('s'))).toBe(false))
-  it('rejects unknown input', () => expect(checkRxnPracticeAnswer('maybe', makeProblem('s'))).toBe(false))
+  it('accepts "S" for soluble', ()  => expect(checkRxnPracticeAnswer('S', makeProblem('Soluble (S)'))).toBe(true))
+  it('accepts "soluble" for Soluble (S)', ()  => expect(checkRxnPracticeAnswer('soluble', makeProblem('Soluble (S)'))).toBe(true))
+  it('accepts "I" for insoluble', () => expect(checkRxnPracticeAnswer('I', makeProblem('Insoluble (I)'))).toBe(true))
+  it('accepts "insoluble" for Insoluble (I)', () => expect(checkRxnPracticeAnswer('insoluble', makeProblem('Insoluble (I)'))).toBe(true))
+  it('accepts "SS" for slightly soluble', () => expect(checkRxnPracticeAnswer('SS', makeProblem('Slightly Soluble (SS)'))).toBe(true))
+  it('accepts "slightly soluble" long form', () => expect(checkRxnPracticeAnswer('slightly soluble', makeProblem('Slightly Soluble (SS)'))).toBe(true))
+  it('rejects "I" when answer is Soluble (S)', () => expect(checkRxnPracticeAnswer('I', makeProblem('Soluble (S)'))).toBe(false))
+  it('rejects unknown input', () => expect(checkRxnPracticeAnswer('maybe', makeProblem('Soluble (S)'))).toBe(false))
 })
 
 describe('checkRxnPracticeAnswer — name_precipitate', () => {
   function makeProblem(answer: string): RxnPracticeProblem {
-    return { subtype: 'name_precipitate', question:'q', answer, answerHint:'h', steps:[] }
+    return { subtype: 'name_precipitate', question: 'q', answer, choices: [], steps: [] }
   }
 
   it('accepts matching formula', () => expect(checkRxnPracticeAnswer('AgCl', makeProblem('agcl'))).toBe(true))
@@ -189,11 +191,7 @@ describe('self-consistency: generated answer passes checkRxnPracticeAnswer', () 
     it(`${subtype}: canonical answer always passes`, () => {
       for (let i = 0; i < 30; i++) {
         const p = genRxnPracticeProblem(subtype)
-        // Re-construct display answer from the canonical (lowercase) answer
-        const display = subtype === 'identify_solubility'
-          ? p.answer.toUpperCase()
-          : p.answer
-        expect(checkRxnPracticeAnswer(display, p)).toBe(true)
+        expect(checkRxnPracticeAnswer(p.answer, p)).toBe(true)
       }
     })
   }

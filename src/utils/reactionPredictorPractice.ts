@@ -11,8 +11,8 @@ export interface RxnPracticeProblem {
   subtype:    RxnSubtype
   question:   string
   context?:   string      // displayed in a mono block (e.g. reaction equation)
-  answer:     string      // canonical lower-cased answer
-  answerHint: string      // placeholder for the input
+  answer:     string      // canonical answer matching one entry in choices
+  choices:    string[]    // shuffled option buttons
   steps:      string[]
   hint?:      string
 }
@@ -21,6 +21,15 @@ export interface RxnPracticeProblem {
 
 function pick<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)] }
 
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
 /** Normalise formula subscripts + case for loose formula matching */
 function normFormula(s: string): string {
   return s
@@ -28,14 +37,6 @@ function normFormula(s: string): string {
     .replace(/₄/g,'4').replace(/₅/g,'5').replace(/₆/g,'6')
     .replace(/⁺/g,'+').replace(/⁻/g,'-')
     .replace(/\s+/g,'').toLowerCase()
-}
-
-function normSol(s: string): Sol | null {
-  const t = s.trim().toLowerCase()
-  if (t === 's' || t === 'soluble')             return 'S'
-  if (t === 'i' || t === 'insoluble')           return 'I'
-  if (t === 'ss' || t === 'slightly soluble' || t === 'slightly')   return 'SS'
-  return null
 }
 
 // ── Compound pool ─────────────────────────────────────────────────────────────
@@ -49,6 +50,17 @@ for (let ci = 0; ci < CATIONS.length; ci++) {
     const { sol } = solLookup(CATIONS[ci].id, ANIONS[ai].id)
     if (sol === 'S' || sol === 'SS') {
       SOLUBLE.push({ catIdx: ci, aniIdx: ai, formula: buildFormula(CATIONS[ci], ANIONS[ai]) })
+    }
+  }
+}
+
+// Pool of common insoluble compounds for name_precipitate distractors
+const INSOLUBLE_FORMULAS: string[] = []
+for (let ci = 0; ci < CATIONS.length; ci++) {
+  for (let ai = 0; ai < ANIONS.length; ai++) {
+    const { sol } = solLookup(CATIONS[ci].id, ANIONS[ai].id)
+    if (sol === 'I') {
+      INSOLUBLE_FORMULAS.push(buildFormula(CATIONS[ci], ANIONS[ai]))
     }
   }
 }
@@ -85,12 +97,14 @@ function genPredictOccurs(): RxnPracticeProblem {
       : `Both products are soluble → all ions remain in solution → no net reaction (NR).`,
   ]
 
+  const answer = hasRxn ? 'Yes' : 'No'
+
   return {
     subtype: 'predict_occurs',
     question: `When aqueous solutions of ${catA.name} ${aniA.name} and ${catB.name} ${aniB.name} are mixed, does a reaction occur?`,
     context: `${a.formula}(aq) + ${b.formula}(aq) → ?`,
-    answer: hasRxn ? 'yes' : 'no',
-    answerHint: 'yes or no',
+    answer,
+    choices: shuffle(['Yes', 'No']),
     steps,
   }
 }
@@ -122,22 +136,36 @@ function genNamePrecipitate(): RxnPracticeProblem {
     ...(r2.sol === 'I' ? [{ formula: prod2, name: `${catB.name} ${aniA.name}`, rule: r2.rule }] : []),
   ]
 
-  const precipAnswer = precipitates.map(p => normFormula(p.formula)).join(' and ')
-  const displayAnswer = precipitates.map(p => p.formula).join(' and ')
+  const precipAnswer = precipitates.map(p => p.formula).join(' and ')
 
   const steps: string[] = [
     `Double-displacement: swap anions.`,
     `Products formed: ${prod1} and ${prod2}`,
     ...precipitates.map(p => `${p.formula}: ${p.rule}`),
-    `Precipitate(s): ${displayAnswer} ↓`,
+    `Precipitate(s): ${precipAnswer} ↓`,
   ]
+
+  // Build choices: correct answer + other product + 1-2 insoluble distractors
+  const correct = precipAnswer
+  const otherProduct = precipitates[0]?.formula === prod1 ? prod2 : prod1
+  const distractors = INSOLUBLE_FORMULAS
+    .filter(f => normFormula(f) !== normFormula(correct) && normFormula(f) !== normFormula(otherProduct))
+  const distractor = distractors.length > 0 ? pick(distractors) : null
+
+  const choiceSet = new Set([correct, otherProduct])
+  if (distractor) choiceSet.add(distractor)
+  // Fill to 4 choices if we can
+  while (choiceSet.size < 4 && distractors.length > choiceSet.size) {
+    choiceSet.add(pick(distractors))
+  }
+  const choices = shuffle([...choiceSet])
 
   return {
     subtype: 'name_precipitate',
-    question: `What precipitate(s) form when ${a.formula}(aq) and ${b.formula}(aq) are mixed?${precipitates.length > 1 ? ' (Give both formulas, separated by "and")' : ''}`,
+    question: `What precipitate(s) form when ${a.formula}(aq) and ${b.formula}(aq) are mixed?`,
     context: `${a.formula}(aq) + ${b.formula}(aq) → ?`,
-    answer: precipAnswer,
-    answerHint: precipitates.length > 1 ? 'formula and formula' : 'formula, e.g. AgCl',
+    answer: correct,
+    choices,
     steps,
     hint: 'Apply solubility rules after swapping anions between the two compounds.',
   }
@@ -145,30 +173,32 @@ function genNamePrecipitate(): RxnPracticeProblem {
 
 // ── 3. identify_solubility ────────────────────────────────────────────────────
 
+const SOL_CHOICES = ['Soluble (S)', 'Slightly Soluble (SS)', 'Insoluble (I)']
+
+const SOL_ANSWER: Record<Sol, string> = {
+  S:  'Soluble (S)',
+  I:  'Insoluble (I)',
+  SS: 'Slightly Soluble (SS)',
+}
+
 function genIdentifySolubility(): RxnPracticeProblem {
   const cat = pick(CATIONS)
   const ani = pick(ANIONS)
   const formula = buildFormula(cat, ani)
   const { sol, rule } = solLookup(cat.id, ani.id)
 
-  const solLabel: Record<Sol, string> = {
-    S:  'Soluble (S)',
-    I:  'Insoluble (I)',
-    SS: 'Slightly Soluble (SS)',
-  }
-
   const steps: string[] = [
     `Compound: ${formula} — ${cat.name} ${ani.name}`,
     `Cation: ${cat.formula}  |  Anion: ${ani.formula}`,
     `Apply solubility rules: ${rule}`,
-    `Classification: ${solLabel[sol]}`,
+    `Classification: ${SOL_ANSWER[sol]}`,
   ]
 
   return {
     subtype: 'identify_solubility',
     question: `Classify ${formula} as Soluble (S), Slightly Soluble (SS), or Insoluble (I).`,
-    answer: sol.toLowerCase(),
-    answerHint: 'S, SS, or I',
+    answer: SOL_ANSWER[sol],
+    choices: shuffle([...SOL_CHOICES]),
     steps,
   }
 }
@@ -186,27 +216,31 @@ export function genRxnPracticeProblem(subtype: RxnSubtype): RxnPracticeProblem {
 // ── Answer checker ────────────────────────────────────────────────────────────
 
 export function checkRxnPracticeAnswer(raw: string, problem: RxnPracticeProblem): boolean {
+  // With choice buttons, answer matches exactly
+  if (raw.trim() === problem.answer) return true
+
   const input = raw.trim().toLowerCase()
+  const answer = problem.answer.toLowerCase()
 
   if (problem.subtype === 'predict_occurs') {
-    return input === problem.answer
+    return input === answer || input === answer[0]
   }
 
   if (problem.subtype === 'identify_solubility') {
-    const norm = normSol(input)
-    if (!norm) return false
-    return norm.toLowerCase() === problem.answer
+    // Accept abbreviation "(S)"/"s", full word "soluble", or full label
+    const abbrevMatch = answer.match(/\((\w+)\)/)
+    const abbrev = abbrevMatch ? abbrevMatch[1] : ''
+    const mainWord = answer.replace(/\s*\(\w+\)/, '').trim()
+    return input === abbrev || input === mainWord || input === answer
   }
 
-  // name_precipitate — compare normalised formulas
-  // answer may be "formula1 and formula2", handle both orderings
+  // name_precipitate — compare normalised formulas; handle multi-precipitate answers
   const inputParts  = input.split(/\s+and\s+/).map(normFormula)
-  const answerParts = problem.answer.split(/\s+and\s+/).map(normFormula)
+  const answerParts = answer.split(/\s+and\s+/).map(normFormula)
 
   if (inputParts.length === 1 && answerParts.length === 1) {
     return inputParts[0] === answerParts[0]
   }
-  // Both orderings accepted for two-precipitate answers
   const inputSet  = new Set(inputParts)
   const answerSet = new Set(answerParts)
   return [...answerSet].every(a => inputSet.has(a)) && inputSet.size === answerSet.size

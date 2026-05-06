@@ -33,9 +33,9 @@ export default function RateLawPractice({ allowCustom = true }: Props) {
   }
 
   const borderClass = checkState === 'correct'
-    ? 'border-emerald-800/50 bg-emerald-950/20'
+    ? 'border-emerald-500 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/20'
     : checkState === 'wrong'
-    ? 'border-rose-800/50 bg-rose-950/20'
+    ? 'border-rose-500 dark:border-rose-800/50 bg-rose-50 dark:bg-rose-950/20'
     : 'border-border bg-surface'
 
   return (
@@ -87,8 +87,8 @@ export default function RateLawPractice({ allowCustom = true }: Props) {
                 className={`bg-raised border rounded-sm px-3 py-1.5 font-mono text-base w-24
                             placeholder-dim focus:outline-none focus:border-muted transition-colors
                             disabled:cursor-not-allowed
-                            ${checkState === 'correct' ? 'border-emerald-700/60 text-emerald-300'
-                            : checkState === 'wrong'   ? 'border-rose-700/60 text-rose-300'
+                            ${checkState === 'correct' ? 'border-emerald-500 dark:border-emerald-700/60 text-emerald-700 dark:text-emerald-300'
+                            : checkState === 'wrong'   ? 'border-rose-500 dark:border-rose-700/60 text-rose-700 dark:text-rose-300'
                             : 'border-border text-bright'}`}
               />
 
@@ -104,7 +104,7 @@ export default function RateLawPractice({ allowCustom = true }: Props) {
                 </button>
               ) : (
                 <span className={`font-sans text-sm font-medium ${
-                  checkState === 'correct' ? 'text-emerald-400' : 'text-rose-400'
+                  checkState === 'correct' ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'
                 }`}>
                   {checkState === 'correct'
                     ? '✓ Correct'

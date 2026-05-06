@@ -16,9 +16,9 @@ export default function AromaticityReference() {
               { n: 3, count: 14, color: 'emerald' },
               { n: 4, count: 18, color: 'emerald' },
             ].map(row => (
-              <div key={row.n} className="flex items-center gap-2 px-3 py-2 rounded-sm border border-emerald-800/40 bg-emerald-950/20">
+              <div key={row.n} className="flex items-center gap-2 px-3 py-2 rounded-sm border border-emerald-800/40 bg-emerald-50 dark:bg-emerald-950/20">
                 <span className="text-dim">n={row.n}:</span>
-                <span className="text-emerald-400 font-bold">{row.count}π</span>
+                <span className="text-emerald-700 dark:text-emerald-400 font-bold">{row.count}π</span>
               </div>
             ))}
           </div>
@@ -65,7 +65,7 @@ export default function AromaticityReference() {
               ].map(([sys, pi, n, note]) => (
                 <tr key={sys} className="border-b border-border/50">
                   <td className="py-1.5 pr-4 text-primary">{sys}</td>
-                  <td className="py-1.5 pr-4 text-center text-emerald-400">{pi}</td>
+                  <td className="py-1.5 pr-4 text-center text-emerald-700 dark:text-emerald-400">{pi}</td>
                   <td className="py-1.5 pr-4 text-center text-dim">{n}</td>
                   <td className="py-1.5 text-dim text-[11px]">{note}</td>
                 </tr>
@@ -95,7 +95,7 @@ export default function AromaticityReference() {
               ].map(([sys, pi, note]) => (
                 <tr key={sys} className="border-b border-border/50">
                   <td className="py-1.5 pr-4 text-primary">{sys}</td>
-                  <td className="py-1.5 pr-4 text-center text-rose-400">{pi}</td>
+                  <td className="py-1.5 pr-4 text-center text-rose-700 dark:text-rose-400">{pi}</td>
                   <td className="py-1.5 text-dim text-[11px]">{note}</td>
                 </tr>
               ))}

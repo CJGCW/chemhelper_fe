@@ -162,7 +162,7 @@ export default function AdvancedPercentYieldTool({ allowCustom = true }: { allow
           <NumInput value={knownVal} onChange={v => { setKnownVal(v); clearResult() }} placeholder={knownPlaceholder} />
           <span className="font-mono text-xs text-secondary">{solveFor === 'percent' ? 'g' : '%'}</span>
         </div>
-        {knownError && <p className="font-mono text-xs text-rose-400">{knownError}</p>}
+        {knownError && <p className="font-mono text-xs text-rose-700 dark:text-rose-400">{knownError}</p>}
       </div>
 
       <NumberField

@@ -92,7 +92,7 @@ export default function LewisDrawModal({ compound, structure, reviewSnapshot, on
                 }}>
                 {submitting ? 'Submitting…' : 'Submit Drawing'}
               </button>
-              {emptyError && <span className="font-mono text-xs text-rose-400">Nothing drawn yet.</span>}
+              {emptyError && <span className="font-mono text-xs text-rose-700 dark:text-rose-400">Nothing drawn yet.</span>}
               <span className="font-mono text-xs text-dim ml-auto">Result shown after Check All</span>
             </>
           )}

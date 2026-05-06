@@ -4,7 +4,7 @@ export default function SpontaneityReference() {
       dH: '< 0', dS: '> 0',
       result: 'Always spontaneous',
       note: 'Exothermic + entropy increase — ΔG < 0 at all T',
-      color: 'text-emerald-400',
+      color: 'text-emerald-700 dark:text-emerald-400',
     },
     {
       dH: '> 0', dS: '< 0',
@@ -97,7 +97,7 @@ export default function SpontaneityReference() {
         <h3 className="font-mono text-xs tracking-widest text-secondary uppercase">Decision Flowchart</h3>
         <div className="p-4 rounded-sm border border-border bg-raised font-mono text-xs flex flex-col gap-2 text-secondary">
           <p>1. Determine sign of ΔH° (exo: −, endo: +) and ΔS° (+ or −)</p>
-          <p className="pl-4">├─ ΔH° &lt; 0, ΔS° &gt; 0 → <span className="text-emerald-400">Always spontaneous</span></p>
+          <p className="pl-4">├─ ΔH° &lt; 0, ΔS° &gt; 0 → <span className="text-emerald-700 dark:text-emerald-400">Always spontaneous</span></p>
           <p className="pl-4">├─ ΔH° &gt; 0, ΔS° &lt; 0 → <span className="text-red-400">Never spontaneous</span></p>
           <p className="pl-4">├─ ΔH° &lt; 0, ΔS° &lt; 0 → <span className="text-amber-400">Spontaneous at T &lt; Tc</span></p>
           <p className="pl-4">└─ ΔH° &gt; 0, ΔS° &gt; 0 → <span className="text-amber-400">Spontaneous at T &gt; Tc</span></p>

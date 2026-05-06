@@ -144,8 +144,8 @@ export default function ConjugatedDieneReference({ allowCustom = true }: Props) 
                 const isSelected = selected === opt.label
                 const isCorrect = opt.label === '1,4-addition'
                 let style = 'border-border text-secondary hover:border-muted hover:text-primary'
-                if (selected !== null && isCorrect) style = 'border-emerald-700/70 bg-emerald-950/25 text-emerald-400'
-                if (selected !== null && isSelected && !isCorrect) style = 'border-rose-700/70 bg-rose-950/25 text-rose-400'
+                if (selected !== null && isCorrect) style = 'border-emerald-700/70 bg-emerald-950/25 text-emerald-700 dark:text-emerald-400'
+                if (selected !== null && isSelected && !isCorrect) style = 'border-rose-700/70 bg-rose-950/25 text-rose-700 dark:text-rose-400'
                 return (
                   <button key={opt.label} disabled={selected !== null}
                     onClick={() => {
@@ -161,7 +161,7 @@ export default function ConjugatedDieneReference({ allowCustom = true }: Props) 
 
             {selected !== null && (
               <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
-                className={`p-3 rounded-sm border text-sm font-sans ${selected === '1,4-addition' ? 'border-emerald-700/50 bg-emerald-950/20 text-emerald-300' : 'border-rose-700/50 bg-rose-950/20 text-rose-300'}`}>
+                className={`p-3 rounded-sm border text-sm font-sans ${selected === '1,4-addition' ? 'border-emerald-500 dark:border-emerald-700/50 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300' : 'border-rose-500 dark:border-rose-700/50 bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-300'}`}>
                 <span className="font-semibold">{selected === '1,4-addition' ? 'Correct. ' : 'Incorrect — 1,4-addition is the thermodynamic product. '}</span>
                 {problem.explanation}
               </motion.div>

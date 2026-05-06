@@ -161,7 +161,7 @@ export default function MechanismStepwise({ category = 'all' }: Props) {
         <div className="rounded-sm border p-4 flex flex-col gap-2"
           style={{ background: isCorrect ? 'rgba(16,185,129,0.05)' : 'rgba(239,68,68,0.05)', border: isCorrect ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(239,68,68,0.3)' }}
         >
-          <p className={`font-sans text-sm font-semibold ${isCorrect ? 'text-emerald-400' : 'text-rose-400'}`}>
+          <p className={`font-sans text-sm font-semibold ${isCorrect ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
             {isCorrect ? '✓ Correct order!' : '✗ Incorrect order'}
           </p>
           {!isCorrect && (

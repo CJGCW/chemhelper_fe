@@ -61,7 +61,7 @@ export default function LipidIdentificationPractice({ allowCustom: _allowCustom 
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.18 }}
           className={`rounded-sm border p-5 flex flex-col gap-4 transition-colors ${
-            !checked ? 'border-border' : correct ? 'border-emerald-800/50' : 'border-rose-800/50'
+            !checked ? 'border-border' : correct ? 'border-emerald-500 dark:border-emerald-800/50' : 'border-rose-500 dark:border-rose-800/50'
           }`}
           style={{ background: checked ? (correct ? 'rgba(16,185,129,0.05)' : 'rgba(239,68,68,0.05)') : 'rgb(var(--color-surface))' }}
         >
@@ -99,7 +99,7 @@ export default function LipidIdentificationPractice({ allowCustom: _allowCustom 
 
           {checked && (
             <div className="flex flex-col gap-1.5">
-              <p className={`font-sans text-sm font-medium ${correct ? 'text-emerald-400' : 'text-rose-400'}`}>
+              <p className={`font-sans text-sm font-medium ${correct ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
                 {correct ? '✓ Correct' : `✗ Incorrect — ${LIPID_CLASS_LABELS[problem.lipidClass]}`}
               </p>
               <p className="font-sans text-sm text-secondary leading-relaxed">{problem.explanation}</p>

@@ -185,7 +185,7 @@ export default function FormalChargeOrganic({ allowCustom: _allowCustom = true }
           <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
             className={`rounded-sm border px-4 py-3 flex flex-col gap-1.5 ${correct ? 'border-emerald-500/30' : 'border-red-500/30'}`}
             style={{ background: correct ? 'rgb(34 197 94 / 0.06)' : 'rgb(239 68 68 / 0.06)' }}>
-            <p className={`font-sans text-sm font-semibold ${correct ? 'text-emerald-400' : 'text-red-400'}`}>
+            <p className={`font-sans text-sm font-semibold ${correct ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-400'}`}>
               {correct ? `✓ Correct! FC = ${problem.correct > 0 ? '+' : ''}${problem.correct}` : `✗ FC = ${problem.correct > 0 ? '+' : ''}${problem.correct}`}
             </p>
             <p className="font-sans text-xs text-secondary leading-relaxed">{problem.explanation}</p>

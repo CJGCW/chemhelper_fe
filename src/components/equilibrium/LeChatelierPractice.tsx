@@ -118,9 +118,9 @@ export default function LeChatelierPractice({ allowCustom = true }: Props) {
   }
 
   const borderClass = checkState === 'correct'
-    ? 'border-emerald-800/50 bg-emerald-950/20'
+    ? 'border-emerald-500 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/20'
     : checkState === 'wrong'
-    ? 'border-rose-800/50 bg-rose-950/20'
+    ? 'border-rose-500 dark:border-rose-800/50 bg-rose-50 dark:bg-rose-950/20'
     : 'border-border bg-surface'
 
   const options: { id: Direction; label: string }[] = [
@@ -214,7 +214,7 @@ export default function LeChatelierPractice({ allowCustom = true }: Props) {
 
           {checkState !== 'idle' && (
             <div className="flex flex-col gap-1.5">
-              <p className={`font-sans text-sm font-medium ${checkState === 'correct' ? 'text-emerald-400' : 'text-rose-400'}`}>
+              <p className={`font-sans text-sm font-medium ${checkState === 'correct' ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
                 {checkState === 'correct' ? '\u2713 Correct!' : '\u2717 Incorrect'}
               </p>
               <p className="font-sans text-sm text-secondary leading-relaxed">{scenario.explanation}</p>

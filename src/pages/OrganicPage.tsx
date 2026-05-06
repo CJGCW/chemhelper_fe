@@ -29,6 +29,8 @@ import AromaticityReference from '../components/organic/AromaticityReference'
 import AromaticityClassifier from '../components/organic/AromaticityClassifier'
 import DirectingEffectsReference from '../components/organic/DirectingEffectsReference'
 import ConjugatedDieneReference from '../components/organic/ConjugatedDieneReference'
+import ConjugatedDienePractice from '../components/organic/ConjugatedDienePractice'
+import ConjugatedDieneProblems from '../components/organic/ConjugatedDieneProblems'
 import OrganicPKaTable from '../components/organic/OrganicPKaTable'
 import AcidityFactorsReference from '../components/organic/AcidityFactorsReference'
 import MostAcidicHPractice from '../components/organic/MostAcidicHPractice'
@@ -1014,11 +1016,25 @@ export default function OrganicPage() {
             <DirectingEffectsReference allowCustom={activeTab !== 'directing-problems'} />
           </motion.div>
         )}
-        {(activeTab === 'ref-conjugation' || activeTab === 'conjugation-practice' || activeTab === 'conjugation-problems') && (
-          <motion.div key={activeTab}
+        {activeTab === 'ref-conjugation' && (
+          <motion.div key="ref-conjugation"
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
-            <ConjugatedDieneReference allowCustom={activeTab !== 'conjugation-problems'} />
+            <ConjugatedDieneReference />
+          </motion.div>
+        )}
+        {activeTab === 'conjugation-practice' && (
+          <motion.div key="conjugation-practice"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <ConjugatedDienePractice />
+          </motion.div>
+        )}
+        {activeTab === 'conjugation-problems' && (
+          <motion.div key="conjugation-problems"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <ConjugatedDieneProblems />
           </motion.div>
         )}
 

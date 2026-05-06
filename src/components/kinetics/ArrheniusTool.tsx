@@ -112,7 +112,7 @@ export default function ArrheniusTool() {
         )}
       </div>
 
-      {error && <p className="font-sans text-sm text-rose-400">{error}</p>}
+      {error && <p className="font-sans text-sm text-rose-700 dark:text-rose-400">{error}</p>}
 
       <div className="flex items-stretch gap-2">
         <button onClick={handleSolve}

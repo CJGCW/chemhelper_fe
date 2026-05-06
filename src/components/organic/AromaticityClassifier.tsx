@@ -146,8 +146,8 @@ export default function AromaticityClassifier({ allowCustom = true }: Props) {
     <div className="flex flex-col gap-6 max-w-2xl">
       <div className="p-3 rounded-sm border border-border bg-surface text-sm font-sans text-secondary flex flex-col gap-1">
         <p className="font-mono text-xs text-dim uppercase tracking-wider mb-1">Quick Reference</p>
-        <p><span className="text-emerald-400 font-semibold">Aromatic:</span> cyclic + planar + conjugated + 4n+2 π electrons</p>
-        <p><span className="text-rose-400 font-semibold">Antiaromatic:</span> cyclic + planar + conjugated + 4n π electrons</p>
+        <p><span className="text-emerald-700 dark:text-emerald-400 font-semibold">Aromatic:</span> cyclic + planar + conjugated + 4n+2 π electrons</p>
+        <p><span className="text-rose-700 dark:text-rose-400 font-semibold">Antiaromatic:</span> cyclic + planar + conjugated + 4n π electrons</p>
         <p><span className="text-secondary font-semibold">Nonaromatic:</span> fails any one of the first three requirements</p>
       </div>
 
@@ -193,8 +193,8 @@ export default function AromaticityClassifier({ allowCustom = true }: Props) {
               const isSelected = selected === opt
               const isCorrect = opt === problem.classification
               let style = 'border-border text-secondary hover:border-muted hover:text-primary'
-              if (checked && isCorrect) style = 'border-emerald-700/70 bg-emerald-950/25 text-emerald-400'
-              if (checked && isSelected && !isCorrect) style = 'border-rose-700/70 bg-rose-950/25 text-rose-400'
+              if (checked && isCorrect) style = 'border-emerald-700/70 bg-emerald-950/25 text-emerald-700 dark:text-emerald-400'
+              if (checked && isSelected && !isCorrect) style = 'border-rose-700/70 bg-rose-950/25 text-rose-700 dark:text-rose-400'
               return (
                 <button key={opt} disabled={checked} onClick={() => handleSelect(opt)}
                   className={`px-5 py-2.5 rounded-sm border font-sans text-sm font-medium transition-colors ${style}`}>
@@ -206,7 +206,7 @@ export default function AromaticityClassifier({ allowCustom = true }: Props) {
 
           {checked && (
             <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
-              className={`p-3 rounded-sm border text-sm font-sans ${correct ? 'border-emerald-700/50 bg-emerald-950/20 text-emerald-300' : 'border-rose-700/50 bg-rose-950/20 text-rose-300'}`}>
+              className={`p-3 rounded-sm border text-sm font-sans ${correct ? 'border-emerald-500 dark:border-emerald-700/50 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300' : 'border-rose-500 dark:border-rose-700/50 bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-300'}`}>
               <span className="font-semibold">{correct ? 'Correct. ' : `Incorrect — ${problem.classification}. `}</span>
               {problem.explanation}
             </motion.div>

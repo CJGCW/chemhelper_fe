@@ -136,8 +136,8 @@ export default function EZPractice({ allowCustom = true }: Props) {
           <div className="flex gap-3">
             {(['E', 'Z'] as const).map(cfg => {
               let style = 'border-border text-secondary hover:border-muted hover:text-primary'
-              if (checked && cfg === problem.config) style = 'border-emerald-700/70 bg-emerald-950/25 text-emerald-400'
-              if (checked && answer === cfg && cfg !== problem.config) style = 'border-rose-700/70 bg-rose-950/25 text-rose-400'
+              if (checked && cfg === problem.config) style = 'border-emerald-700/70 bg-emerald-950/25 text-emerald-700 dark:text-emerald-400'
+              if (checked && answer === cfg && cfg !== problem.config) style = 'border-rose-700/70 bg-rose-950/25 text-rose-700 dark:text-rose-400'
               return (
                 <button key={cfg} disabled={checked} onClick={() => submit(cfg)}
                   className={`px-8 py-3 rounded-sm border font-mono text-lg font-bold transition-colors ${style}`}>
@@ -149,7 +149,7 @@ export default function EZPractice({ allowCustom = true }: Props) {
 
           {checked && (
             <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
-              className={`p-3 rounded-sm border text-sm font-sans ${correct ? 'border-emerald-700/50 bg-emerald-950/20 text-emerald-300' : 'border-rose-700/50 bg-rose-950/20 text-rose-300'}`}>
+              className={`p-3 rounded-sm border text-sm font-sans ${correct ? 'border-emerald-500 dark:border-emerald-700/50 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300' : 'border-rose-500 dark:border-rose-700/50 bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-300'}`}>
               <span className="font-semibold">{correct ? 'Correct — ' : `Incorrect (${problem.config}) — `}</span>
               {problem.explanation}
             </motion.div>

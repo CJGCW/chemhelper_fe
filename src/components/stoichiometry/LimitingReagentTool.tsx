@@ -187,9 +187,9 @@ export default function LimitingReagentTool({ allowCustom = true }: Props) {
           <div className="flex flex-col gap-3">
             {!isDecomp && lrResult.limitingSpecies && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="rounded-sm border border-rose-800/50 bg-rose-950/20 px-4 py-3">
+                <div className="rounded-sm border border-rose-500 dark:border-rose-800/50 bg-rose-50 dark:bg-rose-950/20 px-4 py-3">
                   <span className="font-mono text-xs text-secondary uppercase tracking-widest block mb-1">Limiting Reagent</span>
-                  <span className="font-mono text-xl font-semibold text-rose-300">{lrResult.limitingSpecies.display}</span>
+                  <span className="font-mono text-xl font-semibold text-rose-700 dark:text-rose-300">{lrResult.limitingSpecies.display}</span>
                   <span className="font-mono text-xs text-dim block mt-0.5">{lrResult.limitingSpecies.name}</span>
                 </div>
                 {lrResult.excess.map(e => (

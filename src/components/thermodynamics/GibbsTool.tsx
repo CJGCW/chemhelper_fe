@@ -200,7 +200,7 @@ export default function GibbsTool() {
           <p className="font-mono text-2xl font-semibold mt-1" style={{ color: 'var(--c-halogen)' }}>
             {result.toFixed(2)} kJ/mol
           </p>
-          <p className={`font-sans text-xs mt-2 ${result < 0 ? 'text-emerald-400' : result > 0 ? 'text-red-400' : 'text-secondary'}`}>
+          <p className={`font-sans text-xs mt-2 ${result < 0 ? 'text-emerald-700 dark:text-emerald-400' : result > 0 ? 'text-red-400' : 'text-secondary'}`}>
             {result < 0 ? 'Spontaneous (product-favored)' : result > 0 ? 'Non-spontaneous (reactant-favored)' : 'System at equilibrium'}
           </p>
         </div>

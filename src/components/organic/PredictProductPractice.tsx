@@ -127,8 +127,8 @@ export default function PredictProductPractice({ allowCustom = true }: Props) {
             !checked
               ? 'border-border'
               : correct
-              ? 'border-emerald-800/50 bg-emerald-950/20'
-              : 'border-rose-800/50 bg-rose-950/20'
+              ? 'border-emerald-500 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/20'
+              : 'border-rose-500 dark:border-rose-800/50 bg-rose-50 dark:bg-rose-950/20'
           }`}
           style={{ background: checked ? undefined : 'rgb(var(--color-surface))' }}
         >
@@ -238,7 +238,7 @@ export default function PredictProductPractice({ allowCustom = true }: Props) {
           {/* Result + explanation */}
           {checked && (
             <div className="flex flex-col gap-2">
-              <p className={`font-sans text-sm font-semibold ${correct ? 'text-emerald-400' : 'text-rose-400'}`}>
+              <p className={`font-sans text-sm font-semibold ${correct ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
                 {correct ? '✓ Correct' : `✗ Incorrect — ${problem.correctProduct.label}`}
               </p>
               <p className="font-sans text-sm text-secondary leading-relaxed">{problem.explanation}</p>

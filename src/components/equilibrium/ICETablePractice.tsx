@@ -193,8 +193,8 @@ export default function ICETablePractice({ allowCustom = true }: Props) {
   const { equation, skeletonEquation, balancingRequired, K, kType, species, reactantSpecies, productSpecies, initial, solution, prefilled } = problem
 
   function stateColor(state: CellState | undefined, type: 'border' | 'text') {
-    if (state === 'correct') return type === 'border' ? 'border-emerald-700/60' : 'text-emerald-300'
-    if (state === 'wrong')   return type === 'border' ? 'border-rose-700/60'    : 'text-rose-300'
+    if (state === 'correct') return type === 'border' ? 'border-emerald-500 dark:border-emerald-700/60' : 'text-emerald-700 dark:text-emerald-300'
+    if (state === 'wrong')   return type === 'border' ? 'border-rose-500 dark:border-rose-700/60'    : 'text-rose-700 dark:text-rose-300'
     return type === 'border' ? 'border-border' : 'text-primary'
   }
 
@@ -225,7 +225,7 @@ export default function ICETablePractice({ allowCustom = true }: Props) {
             {get(sp, row) || '—'}
           </span>
           {state === 'wrong' && (
-            <span className="text-xs text-emerald-400">{fmt(val)}</span>
+            <span className="text-xs text-emerald-700 dark:text-emerald-400">{fmt(val)}</span>
           )}
         </div>
       )
@@ -265,7 +265,7 @@ export default function ICETablePractice({ allowCustom = true }: Props) {
             placeholder="1"
             className={`w-10 text-center bg-raised border rounded-sm px-1 py-0.5 font-mono text-sm
               focus:outline-none focus:border-muted transition-colors
-              ${isWrong ? 'border-rose-700/60 text-rose-300' : 'border-border text-primary'}`}
+              ${isWrong ? 'border-rose-500 dark:border-rose-700/60 text-rose-700 dark:text-rose-300' : 'border-border text-primary'}`}
           />
           <span className="font-mono text-sm text-primary">
             {s.formula}<span className="text-dim text-xs">({s.state})</span>
@@ -383,7 +383,7 @@ export default function ICETablePractice({ allowCustom = true }: Props) {
                 </div>
 
                 {coeffError && !coeffRevealed && (
-                  <p className="font-sans text-sm text-rose-400">
+                  <p className="font-sans text-sm text-rose-700 dark:text-rose-400">
                     Some coefficients are incorrect — check your work and try again.
                   </p>
                 )}
@@ -464,7 +464,7 @@ export default function ICETablePractice({ allowCustom = true }: Props) {
                     <span className="font-mono text-xs text-dim">Enter/Tab to advance cells</span>
                   </div>
                 ) : (
-                  <span className={`font-sans text-sm font-medium ${allBlankCorrect ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  <span className={`font-sans text-sm font-medium ${allBlankCorrect ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
                     {allBlankCorrect ? '✓ All correct' : '✗ See corrections above in green'}
                   </span>
                 )}

@@ -57,8 +57,8 @@ export default function SolutionStoichPractice({ allowCustom = true }: Props) {
   const canCheck = input.trim() !== '' && !checked
 
   const borderClass = !checked ? 'border-border bg-surface'
-    : correct ? 'border-emerald-800/50 bg-emerald-950/20'
-    : 'border-rose-800/50 bg-rose-950/20'
+    : correct ? 'border-emerald-500 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/20'
+    : 'border-rose-500 dark:border-rose-800/50 bg-rose-50 dark:bg-rose-950/20'
 
   return (
     <div className="flex flex-col gap-5 max-w-2xl">
@@ -128,8 +128,8 @@ export default function SolutionStoichPractice({ allowCustom = true }: Props) {
             className={`w-36 bg-raised border rounded-sm px-3 py-1.5 font-mono text-base
                         placeholder-dim focus:outline-none focus:border-muted
                         disabled:cursor-not-allowed transition-colors
-                        ${checked && correct  ? 'border-emerald-700/60 text-emerald-300'
-                        : checked && !correct ? 'border-rose-700/60 text-rose-300'
+                        ${checked && correct  ? 'border-emerald-500 dark:border-emerald-700/60 text-emerald-700 dark:text-emerald-300'
+                        : checked && !correct ? 'border-rose-500 dark:border-rose-700/60 text-rose-700 dark:text-rose-300'
                         : 'border-border text-bright'}`}
           />
           <span className="font-mono text-sm text-secondary">{problem.answerUnit}</span>
@@ -146,7 +146,7 @@ export default function SolutionStoichPractice({ allowCustom = true }: Props) {
               Check
             </button>
           ) : (
-            <span className={`font-sans text-sm font-medium ${correct ? 'text-emerald-400' : 'text-rose-400'}`}>
+            <span className={`font-sans text-sm font-medium ${correct ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
               {correct ? '✓ Correct' : '✗ Incorrect'}
             </span>
           )}

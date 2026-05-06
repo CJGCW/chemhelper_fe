@@ -11,7 +11,7 @@ const CLASS_LABEL: Record<string, string> = {
 }
 
 const CLASS_COLOR: Record<string, string> = {
-  always:  'text-emerald-400',
+  always:  'text-emerald-700 dark:text-emerald-400',
   never:   'text-red-400',
   'low-T': 'text-amber-400',
   'high-T':'text-amber-400',
@@ -110,7 +110,7 @@ export default function SpontaneityTool() {
           {deltaGAtT !== null && (
             <div className="p-3 rounded-sm border border-border bg-raised">
               <p className="font-mono text-xs text-secondary">ΔG° at T = {T} K</p>
-              <p className={`font-mono text-xl mt-1 ${deltaGAtT < 0 ? 'text-emerald-400' : deltaGAtT > 0 ? 'text-red-400' : 'text-secondary'}`}>
+              <p className={`font-mono text-xl mt-1 ${deltaGAtT < 0 ? 'text-emerald-700 dark:text-emerald-400' : deltaGAtT > 0 ? 'text-red-400' : 'text-secondary'}`}>
                 {deltaGAtT.toFixed(2)} kJ/mol
               </p>
               <p className="font-sans text-xs text-secondary mt-1">

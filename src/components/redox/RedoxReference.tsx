@@ -23,7 +23,7 @@ function Example({ scenario, steps, result }: { scenario: string; steps: string[
         {steps.map((s, i) => (
           <p key={i} className="font-mono text-sm text-primary print:text-gray-800">{s}</p>
         ))}
-        <p className="font-mono text-sm font-semibold text-emerald-400 print:text-green-700 mt-0.5">∴ {result}</p>
+        <p className="font-mono text-sm font-semibold text-emerald-700 dark:text-emerald-400 print:text-green-700 mt-0.5">∴ {result}</p>
       </div>
     </div>
   )
@@ -668,7 +668,7 @@ function RedoxConceptsSection() {
                 <p className="font-mono text-xs text-primary print:text-gray-800">Red: MnO₄⁻ + 8H⁺ + 5e⁻ → Mn²⁺ + 4H₂O</p>
                 <p className="font-mono text-xs text-primary print:text-gray-800">Ox:  Fe²⁺ → Fe³⁺ + e⁻  (×5)</p>
                 <p className="font-mono text-xs text-primary print:text-gray-800">Overall: MnO₄⁻ + 5Fe²⁺ + 8H⁺ → Mn²⁺ + 5Fe³⁺ + 4H₂O</p>
-                <p className="font-mono text-xs font-semibold text-emerald-400 print:text-green-700 mt-0.5">∴ 5 electrons transferred; charges balance</p>
+                <p className="font-mono text-xs font-semibold text-emerald-700 dark:text-emerald-400 print:text-green-700 mt-0.5">∴ 5 electrons transferred; charges balance</p>
               </div>
             </div>
           </div>

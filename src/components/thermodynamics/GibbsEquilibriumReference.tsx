@@ -92,7 +92,7 @@ export default function GibbsEquilibriumReference() {
             </thead>
             <tbody>
               {[
-                { dg: '< 0', k: '> 1', e: '> 0', favor: 'Products', color: 'text-emerald-400' },
+                { dg: '< 0', k: '> 1', e: '> 0', favor: 'Products', color: 'text-emerald-700 dark:text-emerald-400' },
                 { dg: '= 0', k: '= 1', e: '= 0', favor: 'Equilibrium', color: 'text-secondary' },
                 { dg: '> 0', k: '< 1', e: '< 0', favor: 'Reactants', color: 'text-red-400' },
               ].map((row, i) => (

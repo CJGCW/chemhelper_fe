@@ -334,7 +334,7 @@ export default function OrbitalBoxDiagram() {
             Unpaired electrons: <span className="text-bright font-semibold">{totalUnpaired}</span>
           </span>
           <span className="text-dim">·</span>
-          <span className={`font-mono text-xs font-semibold ${totalUnpaired > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>
+          <span className={`font-mono text-xs font-semibold ${totalUnpaired > 0 ? 'text-amber-400' : 'text-emerald-700 dark:text-emerald-400'}`}>
             {totalUnpaired > 0 ? `Paramagnetic (${totalUnpaired} unpaired)` : 'Diamagnetic (all paired)'}
           </span>
         </div>

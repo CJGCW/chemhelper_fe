@@ -55,8 +55,8 @@ export default function PredictProductPractice({ category = 'all' }: Props) {
           transition={{ duration: 0.18 }}
           className={`rounded-sm border p-5 flex flex-col gap-4 transition-colors ${
             !checked ? 'border-border'
-            : correct ? 'border-emerald-800/50 bg-emerald-950/20'
-            : 'border-rose-800/50 bg-rose-950/20'
+            : correct ? 'border-emerald-500 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/20'
+            : 'border-rose-500 dark:border-rose-800/50 bg-rose-50 dark:bg-rose-950/20'
           }`}
           style={{ background: checked ? undefined : 'rgb(var(--color-surface))' }}
         >
@@ -87,7 +87,7 @@ export default function PredictProductPractice({ category = 'all' }: Props) {
 
           {checked && (
             <div className="flex flex-col gap-1.5">
-              <p className={`font-sans text-sm font-medium ${correct ? 'text-emerald-400' : 'text-rose-400'}`}>
+              <p className={`font-sans text-sm font-medium ${correct ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
                 {correct ? '✓ Correct' : `✗ Incorrect — ${q.answer}`}
               </p>
               <p className="font-sans text-sm text-secondary leading-relaxed">{q.explanation}</p>

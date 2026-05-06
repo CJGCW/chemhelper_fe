@@ -196,8 +196,8 @@ function AtomTable({ elements }: { elements: { element: string; left: number; ri
                        border-b border-border last:border-b-0 bg-surface"
           >
             <span className="font-mono text-sm font-semibold text-bright">{e.element}</span>
-            <span className={`font-mono text-sm text-center ${ok ? 'text-emerald-400' : 'text-rose-400'}`}>{e.left}</span>
-            <span className={`font-mono text-sm text-center ${ok ? 'text-emerald-400' : 'text-rose-400'}`}>{e.right}</span>
+            <span className={`font-mono text-sm text-center ${ok ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>{e.left}</span>
+            <span className={`font-mono text-sm text-center ${ok ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>{e.right}</span>
             <span className="font-mono text-sm text-center">{ok ? '✓' : '✗'}</span>
           </div>
         )
@@ -265,8 +265,8 @@ export default function BalancingPractice({ allowCustom: _allowCustom = true }: 
   const borderClass = result === null
     ? 'border-border bg-surface'
     : result.balanced
-      ? 'border-emerald-800/50 bg-emerald-950/20'
-      : 'border-rose-800/50 bg-rose-950/20'
+      ? 'border-emerald-500 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/20'
+      : 'border-rose-500 dark:border-rose-800/50 bg-rose-50 dark:bg-rose-950/20'
 
   // Live atom counts for the balance visualization
   const leftAtoms  = countAtoms(eq.reactants, rCoeffs)
@@ -374,11 +374,11 @@ export default function BalancingPractice({ allowCustom: _allowCustom = true }: 
               Check
             </button>
           ) : (
-            <span className="font-sans text-sm font-medium text-emerald-400">✓ Balanced!</span>
+            <span className="font-sans text-sm font-medium text-emerald-700 dark:text-emerald-400">✓ Balanced!</span>
           )}
 
           {result && !result.balanced && (
-            <span className="font-sans text-sm text-rose-400">✗ Not balanced — check the atom counts below</span>
+            <span className="font-sans text-sm text-rose-700 dark:text-rose-400">✗ Not balanced — check the atom counts below</span>
           )}
         </div>
 

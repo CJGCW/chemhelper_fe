@@ -228,7 +228,7 @@ export default function ExamSimulation() {
     <div className="flex flex-col gap-5 max-w-2xl">
       <div className="flex items-center justify-between print:hidden">
         <span className="font-mono text-sm text-secondary">{preset.label} · Q {current + 1}/{questions.length}</span>
-        <span className={`font-mono text-sm ${isUrgent ? 'text-rose-400' : 'text-dim'}`}>{formatTime(timeLeft)}</span>
+        <span className={`font-mono text-sm ${isUrgent ? 'text-rose-700 dark:text-rose-400' : 'text-dim'}`}>{formatTime(timeLeft)}</span>
       </div>
       <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgb(var(--color-raised))' }}>
         <motion.div className="h-full rounded-full" style={{ background: 'var(--c-halogen)' }}
@@ -240,7 +240,7 @@ export default function ExamSimulation() {
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.18 }}
           className={`rounded-sm border p-5 flex flex-col gap-4 transition-colors ${
-            !confirmed ? 'border-border' : isCorrect ? 'border-emerald-800/50 bg-emerald-950/20' : 'border-rose-800/50 bg-rose-950/20'
+            !confirmed ? 'border-border' : isCorrect ? 'border-emerald-500 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/20' : 'border-rose-500 dark:border-rose-800/50 bg-rose-50 dark:bg-rose-950/20'
           }`}
           style={{ background: confirmed ? undefined : 'rgb(var(--color-surface))' }}
         >
@@ -273,7 +273,7 @@ export default function ExamSimulation() {
             })}
           </div>
           {confirmed && (
-            <p className={`font-sans text-sm font-medium ${isCorrect ? 'text-emerald-400' : 'text-rose-400'}`}>
+            <p className={`font-sans text-sm font-medium ${isCorrect ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
               {isCorrect ? '✓ Correct' : `✗ Incorrect — ${q.answer}`}
             </p>
           )}

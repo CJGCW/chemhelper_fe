@@ -109,7 +109,7 @@ export function StepsContent({ open, hasCalcSteps, exampleData, activeSteps, rev
                   </motion.p>
                 ))}
                 {!hasCalcSteps && exampleData && revealed > exampleData.steps.length && (
-                  <motion.p initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.2 }} className="font-mono text-sm font-semibold text-emerald-400 mt-1">
+                  <motion.p initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.2 }} className="font-mono text-sm font-semibold text-emerald-700 dark:text-emerald-400 mt-1">
                     ∴ {exampleData.result}
                   </motion.p>
                 )}

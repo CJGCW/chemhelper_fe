@@ -99,7 +99,7 @@ function ExamplesContent() {
                 {ex.steps.map((s, j) => (
                   <p key={j} className="font-mono text-sm text-primary">{s}</p>
                 ))}
-                <p className="font-mono text-sm font-semibold text-emerald-400 mt-0.5">∴ {ex.ans}</p>
+                <p className="font-mono text-sm font-semibold text-emerald-700 dark:text-emerald-400 mt-0.5">∴ {ex.ans}</p>
               </div>
             </div>
           ))}

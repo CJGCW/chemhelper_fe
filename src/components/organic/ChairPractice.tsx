@@ -166,8 +166,8 @@ export default function ChairPractice({ allowCustom = true }: Props) {
               const isSelected = selected === opt
               const isCorrect  = opt === problem.answer
               let style = 'border-border text-secondary hover:border-muted hover:text-primary'
-              if (checked && isCorrect)  style = 'border-emerald-700/70 bg-emerald-950/25 text-emerald-400'
-              if (checked && isSelected && !isCorrect) style = 'border-rose-700/70 bg-rose-950/25 text-rose-400'
+              if (checked && isCorrect)  style = 'border-emerald-700/70 bg-emerald-950/25 text-emerald-700 dark:text-emerald-400'
+              if (checked && isSelected && !isCorrect) style = 'border-rose-700/70 bg-rose-950/25 text-rose-700 dark:text-rose-400'
               return (
                 <button key={opt} disabled={checked}
                   onClick={() => handleSelect(opt)}
@@ -180,7 +180,7 @@ export default function ChairPractice({ allowCustom = true }: Props) {
 
           {checked && (
             <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
-              className={`p-3 rounded-sm border text-sm font-sans ${correct ? 'border-emerald-700/50 bg-emerald-950/20 text-emerald-300' : 'border-rose-700/50 bg-rose-950/20 text-rose-300'}`}>
+              className={`p-3 rounded-sm border text-sm font-sans ${correct ? 'border-emerald-500 dark:border-emerald-700/50 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300' : 'border-rose-500 dark:border-rose-700/50 bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-300'}`}>
               <span className="font-semibold">{correct ? 'Correct. ' : 'Incorrect. '}</span>
               {problem.explanation}
             </motion.div>

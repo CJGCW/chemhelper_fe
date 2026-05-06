@@ -214,7 +214,7 @@ export default function MostAcidicHPractice({ allowCustom: _allowCustom = true }
       <AnimatePresence>
         {checked && (
           <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className={`rounded-sm border px-4 py-2.5 font-sans text-sm font-semibold ${correct ? 'text-emerald-400 border-emerald-500/30' : 'text-red-400 border-red-500/30'}`}
+            className={`rounded-sm border px-4 py-2.5 font-sans text-sm font-semibold ${correct ? 'text-emerald-700 dark:text-emerald-400 border-emerald-500/30' : 'text-red-400 border-red-500/30'}`}
             style={{ background: correct ? 'rgb(34 197 94 / 0.06)' : 'rgb(239 68 68 / 0.06)' }}>
             {correct ? '✓ Correct!' : `✗ Incorrect — ${problem.correctAnswer === 'A' ? optA.label : optB.label} (pKₐ ${problem.correctAnswer === 'A' ? optA.pka : optB.pka}) is more acidic.`}
           </motion.div>
