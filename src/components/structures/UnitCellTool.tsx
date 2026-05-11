@@ -86,7 +86,7 @@ const FACE_F    = [28,   38]  as const; const FACE_BK = [49, 26] as const
 const FACE_L    = [15.5, 32]  as const; const FACE_R  = [61.5, 32] as const
 const FACE_BOT  = [38.5, 55]  as const; const FACE_T  = [38.5, 9] as const
 
-const CLR_CORNER = '#60a5fa'; const CLR_BODY = '#fb923c'; const CLR_FACE = '#34d399'
+const CLR_CORNER = '#60a5fa'; const CLR_BODY = 'rgb(var(--color-warning))'; const CLR_FACE = 'rgb(var(--color-success))'
 
 function seg(a: readonly [number,number], b: readonly [number,number], hidden = false) {
   return <line x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]}
@@ -358,8 +358,8 @@ function CrystalCanvas({ structureId }: { structureId: StructureId }) {
                 className="relative px-3.5 py-1 rounded-sm font-mono text-xs transition-colors"
                 style={{ color: active ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)' }}>
                 {active && <span className="absolute inset-0 rounded-sm" style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                  border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 }} />}
                 <span className="relative z-10">{n}×{n}×{n}</span>
               </button>
@@ -502,7 +502,7 @@ export default function UnitCellTool() {
               <button key={u} onClick={() => switchUnit(u)}
                 className="px-3 py-1.5 rounded-sm font-mono text-xs border transition-colors"
                 style={{
-                  borderColor: edgeUnit===u ? 'color-mix(in srgb, var(--c-halogen) 35%, transparent)' : 'rgb(var(--color-border))',
+                  borderColor: edgeUnit===u ? 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' : 'rgb(var(--color-border))',
                   background:  edgeUnit===u ? 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-surface)))' : 'rgb(var(--color-surface))',
                   color: edgeUnit===u ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
                 }}>{u}</button>
@@ -600,7 +600,7 @@ export default function UnitCellTool() {
               </div>
               {densityVerify !== null && (
                 <span className="font-mono text-sm font-medium self-end mb-1.5"
-                  style={{ color: densityVerify === 'correct' ? '#4ade80' : densityVerify === 'sig_fig_warning' ? '#fbbf24' : '#f87171' }}>
+                  style={{ color: densityVerify === 'correct' ? 'rgb(var(--color-success))' : densityVerify === 'sig_fig_warning' ? '#fbbf24' : 'rgb(var(--color-error))' }}>
                   {densityVerify === 'correct' ? '✓ Correct' : densityVerify === 'sig_fig_warning' ? '~ Check sig figs' : '✗ Incorrect'}
                 </span>
               )}

@@ -88,7 +88,7 @@ function SolutionSteps({
         <div className="flex flex-col items-center px-4 py-2 rounded-sm border"
           style={{ background: 'color-mix(in srgb, #4ade80 6%, rgb(var(--color-base)))', borderColor: 'color-mix(in srgb, #4ade80 25%, transparent)' }}>
           <span className="font-mono text-xs text-secondary uppercase tracking-widest">Empirical</span>
-          <span className="font-mono text-xl font-bold" style={{ color: '#4ade80' }}>{result.empiricalFormula}</span>
+          <span className="font-mono text-xl font-bold" style={{ color: 'rgb(var(--color-success))' }}>{result.empiricalFormula}</span>
         </div>
 
         {result.molecularFormula && result.molecularMultiplier && (
@@ -218,7 +218,7 @@ export default function EmpiricalPractice({ allowCustom = true }: Props) {
     if (correct) setShowSolution(true)
   }
 
-  const feedbackColor = checkState === 'correct' ? '#4ade80' : '#f87171'
+  const feedbackColor = checkState === 'correct' ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))'
 
   return (
     <div className="flex flex-col gap-5">
@@ -227,7 +227,7 @@ export default function EmpiricalPractice({ allowCustom = true }: Props) {
       {score.total > 0 && (
         <div className="flex items-center gap-3">
           <div className="flex-1 h-1.5 rounded-full bg-raised overflow-hidden">
-            <motion.div className="h-full rounded-full bg-emerald-500"
+            <motion.div className="h-full rounded-full" style={{ background: 'rgb(var(--color-success))' }}
               animate={{ width: `${(score.correct / score.total) * 100}%` }}
               transition={{ duration: 0.4 }} />
           </div>
@@ -251,8 +251,8 @@ export default function EmpiricalPractice({ allowCustom = true }: Props) {
               {difficulty === d && (
                 <motion.div layoutId="practice-diff-bg" className="absolute inset-0 rounded-sm"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                    border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                    border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   }}
                   transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
               )}
@@ -279,7 +279,7 @@ export default function EmpiricalPractice({ allowCustom = true }: Props) {
               <div className="flex items-center gap-2">
                 <span className="font-mono text-xs uppercase tracking-widest px-2 py-0.5 rounded-sm border"
                   style={{
-                    color: problem.difficulty === 'easy' ? '#4ade80' : problem.difficulty === 'medium' ? '#fb923c' : '#f87171',
+                    color: problem.difficulty === 'easy' ? 'rgb(var(--color-success))' : problem.difficulty === 'medium' ? 'rgb(var(--color-warning))' : 'rgb(var(--color-error))',
                     borderColor: problem.difficulty === 'easy' ? 'rgba(74,222,128,0.3)' : problem.difficulty === 'medium' ? 'rgba(251,146,60,0.3)' : 'rgba(248,113,113,0.3)',
                     background: problem.difficulty === 'easy' ? 'rgba(74,222,128,0.05)' : problem.difficulty === 'medium' ? 'rgba(251,146,60,0.05)' : 'rgba(248,113,113,0.05)',
                   }}>
@@ -287,7 +287,7 @@ export default function EmpiricalPractice({ allowCustom = true }: Props) {
                 </span>
                 {problemIsDynamic && (
                   <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
-                    style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
+                    style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
                     generated
                   </span>
                 )}

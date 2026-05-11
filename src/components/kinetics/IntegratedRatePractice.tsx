@@ -37,9 +37,9 @@ export default function IntegratedRatePractice({ allowCustom = true }: Props) {
   }
 
   const borderClass = checkState === 'correct'
-    ? 'border-emerald-800/50 bg-emerald-950/20'
+    ? 'feedback-success'
     : checkState === 'wrong'
-    ? 'border-rose-800/50 bg-rose-950/20'
+    ? 'feedback-error'
     : 'border-border bg-surface'
 
   const promptLabel = problem.solveFor === 'At' ? '[A] (M)' : problem.solveFor === 't' ? 'Time (s)' : 't½ (s)'
@@ -85,8 +85,8 @@ export default function IntegratedRatePractice({ allowCustom = true }: Props) {
               className={`bg-raised border rounded-sm px-3 py-1.5 font-mono text-base w-36
                           placeholder-dim focus:outline-none focus:border-muted transition-colors
                           disabled:cursor-not-allowed
-                          ${checkState === 'correct' ? 'border-emerald-700/60 text-emerald-300'
-                          : checkState === 'wrong'   ? 'border-rose-700/60 text-rose-300'
+                          ${checkState === 'correct' ? 'border-success-border text-success-strong'
+                          : checkState === 'wrong'   ? 'border-error-border text-error-strong'
                           : 'border-border text-bright'}`}
             />
 
@@ -94,15 +94,15 @@ export default function IntegratedRatePractice({ allowCustom = true }: Props) {
               <button onClick={handleCheck} disabled={!answer.trim()}
                 className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-30"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                  border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                 }}>
                 Check
               </button>
             ) : (
               <span className={`font-sans text-sm font-medium ${
-                checkState === 'correct' ? 'text-emerald-400' : 'text-rose-400'
+                checkState === 'correct' ? 'text-success' : 'text-error'
               }`}>
                 {checkState === 'correct'
                   ? '✓ Correct'

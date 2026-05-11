@@ -42,8 +42,8 @@ export default function EntropyPractice({ allowCustom = true }: Props) {
   }
 
   const verifyColor = verify === 'correct'
-    ? 'text-emerald-400'
-    : verify === 'incorrect' ? 'text-red-400' : ''
+    ? 'text-success'
+    : verify === 'incorrect' ? 'text-error' : ''
 
   return (
     <div className="flex flex-col gap-5 max-w-xl">
@@ -93,7 +93,7 @@ export default function EntropyPractice({ allowCustom = true }: Props) {
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 15%, transparent)',
             color: 'var(--c-halogen)',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           }}
         >
           Check

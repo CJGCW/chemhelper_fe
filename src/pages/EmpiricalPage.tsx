@@ -114,8 +114,8 @@ export default function EmpiricalPage() {
               <button key={t.id} onClick={() => setTab(t.id)}
                 className="relative flex items-center gap-2 px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-all"
                 style={isActive ? {
-                  background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                  border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                 } : {
                   background: 'rgb(var(--color-surface))',
@@ -142,8 +142,8 @@ export default function EmpiricalPage() {
                   {isActive && (
                     <motion.div layoutId="empirical-mode-switch" className="absolute inset-0 rounded-full"
                       style={{
-                        background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                        border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                        background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                        border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                       }}
                       transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
                   )}
@@ -156,7 +156,7 @@ export default function EmpiricalPage() {
       </div>
 
       {needsElements && loading && <p className="font-mono text-xs text-dim animate-pulse">Loading element data…</p>}
-      {needsElements && error   && <p className="font-sans text-xs" style={{ color: '#f87171' }}>Failed to load elements: {error}</p>}
+      {needsElements && error   && <p className="font-sans text-xs" style={{ color: 'rgb(var(--color-error))' }}>Failed to load elements: {error}</p>}
 
       <AnimatePresence mode="wait">
         {tab === 'hydrate' && mode === 'reference' && (

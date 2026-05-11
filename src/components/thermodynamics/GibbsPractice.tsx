@@ -104,7 +104,7 @@ export default function GibbsPractice({ allowCustom = true }: Props) {
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 15%, transparent)',
             color: 'var(--c-halogen)',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           }}>
           Check
         </button>
@@ -114,7 +114,7 @@ export default function GibbsPractice({ allowCustom = true }: Props) {
       </div>
 
       {verify && (
-        <p className={`font-mono text-sm font-semibold ${verify === 'correct' ? 'text-emerald-400' : 'text-red-400'}`}>
+        <p className={`font-mono text-sm font-semibold ${verify === 'correct' ? 'text-success' : 'text-error'}`}>
           {verify === 'correct' ? '✓ Correct!' : `✗ Incorrect. Answer: ${problem.answer.toFixed(2)} kJ/mol`}
         </p>
       )}

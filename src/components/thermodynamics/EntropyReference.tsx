@@ -52,7 +52,7 @@ export default function EntropyReference() {
             <div key={i} className="flex items-start gap-3 p-3 rounded-sm border border-border bg-raised">
               <span
                 className="font-mono text-lg font-bold shrink-0 w-5 text-center"
-                style={{ color: item.sign === '+' ? 'var(--c-halogen)' : item.sign === '−' ? '#f87171' : 'rgb(var(--color-secondary))' }}
+                style={{ color: item.sign === '+' ? 'var(--c-halogen)' : item.sign === '−' ? 'rgb(var(--color-error))' : 'rgb(var(--color-secondary))' }}
               >
                 {item.sign}
               </span>
@@ -94,7 +94,7 @@ export default function EntropyReference() {
         <h3 className="font-mono text-xs tracking-widest text-secondary uppercase">Worked Example (Chang Ex 17.4)</h3>
         <div className="p-4 rounded-sm border border-border bg-raised flex flex-col gap-3">
           <p className="font-sans text-sm text-primary font-medium">CaCO₃(s) → CaO(s) + CO₂(g)</p>
-          <div className="flex flex-col gap-1.5 pl-3 border-l-2" style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 35%, transparent)' }}>
+          <div className="flex flex-col gap-1.5 pl-3 border-l-2" style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
             {[
               'ΔS°rxn = Σ n·S°(products) − Σ n·S°(reactants)',
               'Products: 1 × S°[CaO(s)] + 1 × S°[CO₂(g)] = 39.8 + 213.6 = 253.4 J/(mol·K)',

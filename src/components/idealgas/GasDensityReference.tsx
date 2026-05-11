@@ -99,7 +99,7 @@ function ExamplesContent() {
                 {ex.steps.map((s, j) => (
                   <p key={j} className="font-mono text-sm text-primary">{s}</p>
                 ))}
-                <p className="font-mono text-sm font-semibold text-emerald-400 mt-0.5">∴ {ex.ans}</p>
+                <p className="font-mono text-sm font-semibold text-success mt-0.5">∴ {ex.ans}</p>
               </div>
             </div>
           ))}
@@ -128,8 +128,8 @@ export default function GasDensityReference() {
             {pill === p && (
               <motion.div layoutId="gasdensity-ref-pill" className="absolute inset-0 rounded-sm"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                  border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
             )}

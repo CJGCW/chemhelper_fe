@@ -10,7 +10,7 @@ export default function GibbsEquilibriumReference() {
             <polygon
               points="160,20 30,230 290,230"
               fill="color-mix(in srgb, var(--c-halogen) 6%, transparent)"
-              stroke="color-mix(in srgb, var(--c-halogen) 30%, transparent)"
+              stroke="color-mix(in srgb, var(--c-halogen) 40%, transparent)"
               strokeWidth="2"
             />
             {/* Vertices labels */}
@@ -92,9 +92,9 @@ export default function GibbsEquilibriumReference() {
             </thead>
             <tbody>
               {[
-                { dg: '< 0', k: '> 1', e: '> 0', favor: 'Products', color: 'text-emerald-400' },
+                { dg: '< 0', k: '> 1', e: '> 0', favor: 'Products', color: 'text-success' },
                 { dg: '= 0', k: '= 1', e: '= 0', favor: 'Equilibrium', color: 'text-secondary' },
-                { dg: '> 0', k: '< 1', e: '< 0', favor: 'Reactants', color: 'text-red-400' },
+                { dg: '> 0', k: '< 1', e: '< 0', favor: 'Reactants', color: 'text-error' },
               ].map((row, i) => (
                 <tr key={i} className="border-b border-border/50">
                   <td className="py-2 pr-4 text-primary">{row.dg}</td>

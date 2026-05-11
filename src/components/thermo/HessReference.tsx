@@ -101,7 +101,7 @@ export default function HessReference() {
                 Flip (2):   2CO₂ → 2CO + O₂   ΔH = +566.0 kJ
               </p>
               <div className="h-px bg-border my-0.5" />
-              <p className="font-mono text-xs font-semibold text-emerald-400">
+              <p className="font-mono text-xs font-semibold text-success">
                 Net: 2C + O₂ → 2CO   ΔH = −221.0 kJ
               </p>
             </div>

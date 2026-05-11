@@ -186,8 +186,8 @@ export default function MolarVolumeTool() {
                 onClick={() => handleStandardChange(s.id)}
                 className="flex flex-col items-start px-4 py-2.5 rounded-sm font-sans text-sm font-medium transition-colors text-left flex-1"
                 style={active ? {
-                  background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                  border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                 } : {
                   background: 'rgb(var(--color-surface))',
@@ -223,7 +223,7 @@ export default function MolarVolumeTool() {
         solveFor={filledCount === 1 && hasN}
       />
 
-      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      {error && <p className="font-mono text-xs text-error">{error}</p>}
 
       <div className="flex items-stretch gap-2">
         <button

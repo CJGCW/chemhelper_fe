@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genIsomerProblem, type IsomerProblem } from '../../utils/organicPractice'
 import { useShowAnswers } from '../../stores/preferencesStore'
+import CompoundDisplay from '../shared/CompoundDisplay'
 
 interface Props { allowCustom?: boolean }
 
@@ -42,7 +43,7 @@ export default function IsomerPractice({ allowCustom = true }: Props) {
         <div className="flex items-center gap-3">
           <div className="flex-1 h-1.5 rounded-full bg-raised overflow-hidden">
             <motion.div
-              className="h-full rounded-full bg-emerald-500"
+              className="h-full rounded-full" style={{ background: 'rgb(var(--color-success))' }}
               animate={{ width: `${(score.correct / score.total) * 100}%` }}
               transition={{ duration: 0.4 }}
             />
@@ -60,11 +61,26 @@ export default function IsomerPractice({ allowCustom = true }: Props) {
           <p className="font-sans text-base text-primary leading-relaxed">
             Are these two compounds structural isomers?
           </p>
-          <div className="flex gap-6 items-center justify-center py-3">
-            <span className="font-mono text-xl font-bold text-bright">{problem.formula1}</span>
-            <span className="font-sans text-sm text-dim">vs</span>
-            <span className="font-mono text-xl font-bold text-bright">{problem.formula2}</span>
-          </div>
+          {problem.smiles1 && problem.smiles2 ? (
+            <div className="grid grid-cols-2 gap-3">
+              {([
+                { smiles: problem.smiles1, formula: problem.formula1, label: problem.label1 ?? problem.formula1 },
+                { smiles: problem.smiles2, formula: problem.formula2, label: problem.label2 ?? problem.formula2 },
+              ] as const).map((mol, i) => (
+                <div key={i} className="p-3 rounded-sm border border-border bg-raised flex flex-col items-center gap-1">
+                  <p className="font-mono text-[10px] text-dim self-start">Compound {i === 0 ? 'A' : 'B'}</p>
+                  <CompoundDisplay smiles={mol.smiles} label={mol.label} width={170} height={140} />
+                  <p className="font-mono text-xs text-secondary">{mol.formula}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex gap-6 items-center justify-center py-3">
+              <span className="font-mono text-xl font-bold text-bright">{problem.formula1}</span>
+              <span className="font-sans text-sm text-dim">vs</span>
+              <span className="font-mono text-xl font-bold text-bright">{problem.formula2}</span>
+            </div>
+          )}
 
           <div className="flex gap-3">
             {['Yes', 'No'].map(option => {
@@ -79,17 +95,15 @@ export default function IsomerPractice({ allowCustom = true }: Props) {
                   style={
                     checked
                       ? isCorrect
-                        ? { background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.4)', color: 'rgb(52,211,153)' }
+                        ? { background: 'rgb(var(--color-success-bg) / 0.1)', border: '1px solid rgb(var(--color-success-border) / 0.4)', color: 'rgb(var(--color-success))' }
                         : isSelected
-                          ? { background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.4)', color: 'rgb(248,113,113)' }
+                          ? { background: 'rgb(var(--color-error-bg) / 0.1)', border: '1px solid rgb(var(--color-error-border) / 0.4)', color: 'rgb(var(--color-error))' }
                           : { background: 'rgb(var(--color-raised))', border: '1px solid rgb(var(--color-border))', color: 'rgba(var(--overlay),0.4)' }
                       : isSelected
-                        ? { background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)', color: 'var(--c-halogen)' }
+                        ? { background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)', color: 'var(--c-halogen)' }
                         : { background: 'rgb(var(--color-raised))', border: '1px solid rgb(var(--color-border))', color: 'rgba(var(--overlay),0.4)' }
                   }
-                >
-                  {option}
-                </button>
+                >{option}</button>
               )
             })}
           </div>
@@ -107,8 +121,8 @@ export default function IsomerPractice({ allowCustom = true }: Props) {
           )}
 
           {checked && (
-            <div className={`flex flex-col gap-3 p-4 rounded-sm border ${correct ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-red-500/30 bg-red-500/5'}`}>
-              <p className={`font-sans text-sm font-medium ${correct ? 'text-emerald-400' : 'text-red-400'}`}>
+            <div className={`flex flex-col gap-3 p-4 rounded-sm border ${correct ? 'feedback-success' : 'feedback-error'}`}>
+              <p className={`font-sans text-sm font-medium ${correct ? 'text-success' : 'text-error'}`}>
                 {correct ? 'Correct!' : `Incorrect — the answer is: ${correctAnswer}`}
               </p>
               {showAnswers && (

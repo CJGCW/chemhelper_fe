@@ -126,7 +126,7 @@ export default function SpontaneityPractice({ allowCustom = true }: Props) {
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 15%, transparent)',
             color: 'var(--c-halogen)',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           }}
         >
           Check
@@ -138,7 +138,7 @@ export default function SpontaneityPractice({ allowCustom = true }: Props) {
 
       {verify && (
         <div className="flex flex-col gap-1">
-          <p className={`font-mono text-sm font-semibold ${verify === 'correct' ? 'text-emerald-400' : 'text-red-400'}`}>
+          <p className={`font-mono text-sm font-semibold ${verify === 'correct' ? 'text-success' : 'text-error'}`}>
             {verify === 'correct' ? '✓ Correct!' : `✗ Incorrect. Answer: ${problem.answer}${problem.crossoverT ? ` — Crossover T = ${problem.crossoverT.toFixed(1)} K` : ''}`}
           </p>
         </div>

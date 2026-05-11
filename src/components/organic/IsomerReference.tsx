@@ -1,3 +1,5 @@
+import CompoundDisplay from '../shared/CompoundDisplay'
+
 export default function IsomerReference() {
   return (
     <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
@@ -24,8 +26,8 @@ export default function IsomerReference() {
               subtitle: 'Same formula, different connectivity',
               description: 'Atoms are bonded in a different order. This includes differences in carbon chain branching, position of a double bond, or position of a functional group.',
               examples: [
-                { name: 'butane', formula: 'CH₃CH₂CH₂CH₃', note: 'straight chain' },
-                { name: 'isobutane (2-methylpropane)', formula: '(CH₃)₃CH', note: 'branched' },
+                { name: 'butane', formula: 'CH₃CH₂CH₂CH₃', note: 'straight chain', smiles: 'CCCC' },
+                { name: 'isobutane (2-methylpropane)', formula: '(CH₃)₃CH', note: 'branched', smiles: 'CC(C)C' },
               ],
               formula: 'Both: C₄H₁₀',
             },
@@ -34,8 +36,8 @@ export default function IsomerReference() {
               subtitle: 'Same formula, same connectivity, different spatial arrangement around a double bond',
               description: 'Occur when rotation around a C=C bond is restricted. Groups on the same side of the double bond are cis; groups on opposite sides are trans.',
               examples: [
-                { name: 'cis-2-butene', formula: 'CH₃ groups on same side', note: 'bp = 3.7 °C' },
-                { name: 'trans-2-butene', formula: 'CH₃ groups on opposite sides', note: 'bp = 0.9 °C' },
+                { name: 'cis-2-butene', formula: 'CH₃ groups on same side', note: 'bp = 3.7 °C', smiles: 'C/C=C\\C' },
+                { name: 'trans-2-butene', formula: 'CH₃ groups on opposite sides', note: 'bp = 0.9 °C', smiles: 'C/C=C/C' },
               ],
               formula: 'Both: C₄H₈',
             },
@@ -44,9 +46,9 @@ export default function IsomerReference() {
               subtitle: 'Variation in the carbon skeleton (straight vs branched)',
               description: 'A specific type of structural isomer where the carbon chain arrangement differs — pentane, isopentane, and neopentane all have formula C₅H₁₂.',
               examples: [
-                { name: 'pentane', formula: 'CH₃(CH₂)₃CH₃', note: 'bp = 36.1 °C' },
-                { name: 'isopentane (2-methylbutane)', formula: '(CH₃)₂CHCH₂CH₃', note: 'bp = 27.7 °C' },
-                { name: 'neopentane (2,2-dimethylpropane)', formula: 'C(CH₃)₄', note: 'bp = 9.5 °C' },
+                { name: 'pentane', formula: 'CH₃(CH₂)₃CH₃', note: 'bp = 36.1 °C', smiles: 'CCCCC' },
+                { name: 'isopentane (2-methylbutane)', formula: '(CH₃)₂CHCH₂CH₃', note: 'bp = 27.7 °C', smiles: 'CCC(C)C' },
+                { name: 'neopentane (2,2-dimethylpropane)', formula: 'C(CH₃)₄', note: 'bp = 9.5 °C', smiles: 'CC(C)(C)C' },
               ],
               formula: 'All: C₅H₁₂',
             },
@@ -57,15 +59,21 @@ export default function IsomerReference() {
                 <p className="font-mono text-xs text-secondary mt-0.5">{section.subtitle}</p>
               </div>
               <p className="font-sans text-sm text-secondary leading-relaxed">{section.description}</p>
-              <div className="flex flex-col gap-1 pl-3 border-l-2 border-border">
-                <p className="font-mono text-xs text-dim uppercase tracking-wider mb-1">{section.formula}</p>
-                {section.examples.map(ex => (
-                  <div key={ex.name} className="flex gap-3 items-baseline">
-                    <span className="font-sans text-sm text-primary shrink-0">{ex.name}:</span>
-                    <span className="font-mono text-xs text-secondary">{ex.formula}</span>
-                    <span className="font-sans text-xs text-dim italic">({ex.note})</span>
-                  </div>
-                ))}
+              <div className="flex flex-col gap-2 pl-3 border-l-2 border-border">
+                <p className="font-mono text-xs text-dim uppercase tracking-wider">{section.formula}</p>
+                <div className="flex flex-wrap gap-4">
+                  {section.examples.map(ex => (
+                    <div key={ex.name} className="flex flex-col gap-1 items-start">
+                      {ex.smiles && (
+                        <CompoundDisplay smiles={ex.smiles} label={ex.name} width={150} height={110} />
+                      )}
+                      <div className="flex gap-2 items-baseline">
+                        <span className="font-mono text-xs text-secondary">{ex.formula}</span>
+                        <span className="font-sans text-xs text-dim italic">({ex.note})</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           ))}

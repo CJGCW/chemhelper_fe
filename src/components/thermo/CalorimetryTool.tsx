@@ -400,7 +400,7 @@ function McDeltaT() {
         )}
       </div>
 
-      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      {error && <p className="font-mono text-xs text-error">{error}</p>}
       <div className="flex items-stretch gap-2">
         <CalcButton onClick={calculate} />
         <StepsTrigger {...stepsState} />
@@ -616,7 +616,7 @@ function CDeltaT() {
         )}
       </div>
 
-      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      {error && <p className="font-mono text-xs text-error">{error}</p>}
       <div className="flex items-stretch gap-2">
         <CalcButton onClick={calculate} />
         <StepsTrigger {...stepsState} />
@@ -783,7 +783,7 @@ function CoffeeCup() {
         unit={<span className="font-mono text-sm text-secondary px-2">{qUnit}</span>}
       />
 
-      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      {error && <p className="font-mono text-xs text-error">{error}</p>}
       <div className="flex items-stretch gap-2">
         <CalcButton onClick={calculate} />
         <StepsTrigger {...stepsState} />
@@ -936,7 +936,7 @@ function BombCalorimeter() {
         unit={<span className="font-mono text-sm text-secondary px-2">{qUnit}</span>}
       />
 
-      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      {error && <p className="font-mono text-xs text-error">{error}</p>}
       <div className="flex items-stretch gap-2">
         <CalcButton onClick={calculate} />
         <StepsTrigger {...stepsState} />
@@ -1069,7 +1069,7 @@ function HeatOfSolutionMode() {
         onChange={v => { setAnswerVal(sanitize(v)); setVerified(null) }} placeholder="kJ/mol"
         unit={<span className="font-mono text-sm text-secondary px-2">kJ/mol</span>} />
 
-      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      {error && <p className="font-mono text-xs text-error">{error}</p>}
       <div className="flex items-stretch gap-2">
         <CalcButton onClick={calculate} />
         <StepsTrigger {...stepsState} />
@@ -1217,7 +1217,7 @@ function HeatOfNeutralizationMode() {
         onChange={v => { setAnswerVal(sanitize(v)); setVerified(null) }} placeholder="kJ/mol"
         unit={<span className="font-mono text-sm text-secondary px-2">kJ/mol</span>} />
 
-      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      {error && <p className="font-mono text-xs text-error">{error}</p>}
       <div className="flex items-stretch gap-2">
         <CalcButton onClick={calculate} />
         <StepsTrigger {...stepsState} />
@@ -1302,7 +1302,7 @@ function DeltaUToDeltaHMode() {
         onChange={v => { setTVal(sanitize(v)); reset() }} placeholder="K"
         unit={<span className="font-mono text-sm text-secondary px-2">K</span>} />
 
-      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      {error && <p className="font-mono text-xs text-error">{error}</p>}
       <div className="flex items-stretch gap-2">
         <CalcButton onClick={calculate} />
         <StepsTrigger {...stepsState} />
@@ -1338,9 +1338,9 @@ export default function CalorimetryTool() {
               className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
               style={{
                 color: active ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
-                background: active ? 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))' : 'rgb(var(--color-surface))',
+                background: active ? 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))' : 'rgb(var(--color-surface))',
                 border: active
-                  ? '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)'
+                  ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)'
                   : '1px solid rgb(var(--color-border))',
               }}>
               <span className="font-mono text-[10px] opacity-60">{m.formula}</span>

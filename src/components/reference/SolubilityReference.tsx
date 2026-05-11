@@ -22,7 +22,7 @@ function InteractiveLookup() {
         onClick={onClick}
         className="px-2.5 py-1.5 rounded-sm font-mono text-sm transition-colors"
         style={isActive ? {
-          background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
+          background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
           border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           color: 'var(--c-halogen)',
         } : {
@@ -180,7 +180,7 @@ function SolubilityTable() {
                     style={{
                       color: isSelected ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.6)',
                       background: isSelected
-                        ? 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))'
+                        ? 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))'
                         : undefined,
                     }}
                     title={`Click to highlight ${a.name} (${a.formula}) solubility pairings`}
@@ -371,8 +371,8 @@ export default function SolubilityReference() {
               {isActive && (
                 <motion.div layoutId="sol-view-pill" className="absolute inset-0 rounded-sm"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                    border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                    border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   }}
                   transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
               )}

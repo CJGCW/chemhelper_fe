@@ -313,7 +313,7 @@ function classify(a: Compound, b: Compound): ReactionResult {
 
 const TYPE_COLOR: Record<ReactionType, string> = {
   precipitation: '#60a5fa',   // blue
-  acid_base:     '#4ade80',   // green
+  acid_base:     'rgb(var(--color-success))',   // green
   gas_forming:   '#fbbf24',   // amber
   redox:         '#f472b6',   // pink
   no_reaction:   '#6b7280',   // gray
@@ -449,7 +449,7 @@ export default function ReactionClassifier() {
             className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             style={{
               background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-              border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+              border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
             }}
           >

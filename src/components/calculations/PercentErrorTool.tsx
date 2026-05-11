@@ -162,7 +162,7 @@ export default function PercentErrorTool() {
       />
 
       {error && (
-        <p className="font-mono text-xs" style={{ color: '#f87171' }}>{error}</p>
+        <p className="font-mono text-xs" style={{ color: 'rgb(var(--color-error))' }}>{error}</p>
       )}
 
       <AnimatePresence mode="wait">

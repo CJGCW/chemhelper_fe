@@ -35,11 +35,11 @@ const LP_DOT_SEP  = 2.5
 const LP_OFFSET   = 15
 
 const ELEM_COLORS: Record<string, string> = {
-  H: '#9ca3af', C: '#e2e8f0', N: '#6ea8fe', O: '#f87171',
-  F: '#4ade80', Cl: '#4ade80', Br: '#fb923c', I: '#c084fc',
-  S: '#fbbf24', P: '#fb923c', Na: '#a78bfa', K: '#818cf8',
-  Li: '#c084fc', Ca: '#94a3b8', Mg: '#6ee7b7', Al: '#94a3b8',
-  Si: '#a8a29e', B: '#fb923c', Xe: '#60a5fa',
+  H: '#9ca3af', C: '#e2e8f0', N: '#6ea8fe', O: 'rgb(var(--color-error))',
+  F: 'rgb(var(--color-success))', Cl: 'rgb(var(--color-success))', Br: 'rgb(var(--color-warning))', I: '#c084fc',
+  S: '#fbbf24', P: 'rgb(var(--color-warning))', Na: '#a78bfa', K: '#818cf8',
+  Li: '#c084fc', Ca: '#94a3b8', Mg: 'rgb(var(--color-success-strong))', Al: '#94a3b8',
+  Si: '#a8a29e', B: 'rgb(var(--color-warning))', Xe: '#60a5fa',
 }
 
 const COMMON_ELEMENTS = ['H', 'C', 'N', 'O', 'F', 'Cl', 'S', 'P', 'Br', 'I', 'B']
@@ -819,14 +819,14 @@ const LewisEditor = forwardRef<LewisEditorHandle, Props>(function LewisEditor(
         }}>
           <div className="flex items-center gap-2">
             <span style={{ fontSize: 18 }}>{validationResult.passed ? '✓' : '✗'}</span>
-            <span className="font-sans font-semibold text-sm" style={{ color: validationResult.passed ? '#4ade80' : '#f87171' }}>
+            <span className="font-sans font-semibold text-sm" style={{ color: validationResult.passed ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
               {validationResult.passed ? 'Correct! Great work.' : 'Not quite — see details below.'}
             </span>
           </div>
           <div className="flex flex-col gap-2">
             {validationResult.checks.map((c, i) => (
               <div key={i} className="flex items-start gap-2">
-                <span className="font-mono text-xs shrink-0 w-3 mt-0.5" style={{ color: c.passed ? '#4ade80' : '#f87171' }}>{c.passed ? '✓' : '✗'}</span>
+                <span className="font-mono text-xs shrink-0 w-3 mt-0.5" style={{ color: c.passed ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>{c.passed ? '✓' : '✗'}</span>
                 <div>
                   <span className="font-sans text-xs font-medium text-primary">{c.label}: </span>
                   <span className="font-mono text-xs text-secondary">{c.detail}</span>

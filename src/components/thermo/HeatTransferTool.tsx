@@ -179,7 +179,7 @@ function SolveBtn({ onClick }: { onClick: () => void }) {
 }
 
 function ErrorMsg({ msg }: { msg: string }) {
-  return <p className="font-mono text-xs text-red-400">{msg}</p>
+  return <p className="font-mono text-xs text-error">{msg}</p>
 }
 
 function ObjectCard({ title, children }: { title: string; children: ReactNode }) {
@@ -459,8 +459,8 @@ export default function HeatTransferTool() {
               {active && (
                 <motion.div layoutId="ht-mode-switch" className="absolute inset-0 rounded-full"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                    border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                    border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   }}
                   transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
               )}

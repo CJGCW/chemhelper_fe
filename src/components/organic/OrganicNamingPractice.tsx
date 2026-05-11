@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { genNamingProblem, checkNamingAnswer } from '../../utils/organicPractice'
 import type { OrganicNamingProblem } from '../../data/functionalGroups'
+import CompoundDisplay from '../shared/CompoundDisplay'
 
 type CheckState = 'idle' | 'correct' | 'wrong'
 
@@ -30,9 +31,9 @@ export default function OrganicNamingPractice({ allowCustom = true }: Props) {
   const FAMILY_LABEL: Record<string, string> = { alkane: 'Alkane', alkene: 'Alkene', alkyne: 'Alkyne' }
 
   const borderClass = checkState === 'correct'
-    ? 'border-emerald-800/50 bg-emerald-950/20'
+    ? 'feedback-success'
     : checkState === 'wrong'
-    ? 'border-rose-800/50 bg-rose-950/20'
+    ? 'feedback-error'
     : 'border-border bg-surface'
 
   return (
@@ -62,10 +63,14 @@ export default function OrganicNamingPractice({ allowCustom = true }: Props) {
           exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}
           className={`rounded-sm border p-5 flex flex-col gap-4 transition-colors ${borderClass}`}
         >
-          <div className="flex items-center gap-3">
-            <span className="font-mono text-2xl font-semibold" style={{ color: 'var(--c-halogen)' }}>
-              {problem.formula}
-            </span>
+          <div className="flex items-center gap-3 flex-wrap">
+            {problem.smiles ? (
+              <CompoundDisplay smiles={problem.smiles} label={problem.formula} width={200} height={150} />
+            ) : (
+              <span className="font-mono text-2xl font-semibold" style={{ color: 'var(--c-halogen)' }}>
+                {problem.formula}
+              </span>
+            )}
             <span className="font-sans text-sm text-secondary px-2 py-0.5 rounded"
               style={{ background: 'rgb(var(--color-raised))', border: '1px solid rgb(var(--color-border))' }}>
               {FAMILY_LABEL[problem.family]}
@@ -85,8 +90,8 @@ export default function OrganicNamingPractice({ allowCustom = true }: Props) {
               className={`bg-raised border rounded-sm px-3 py-1.5 font-mono text-base w-48
                           placeholder-dim focus:outline-none focus:border-muted
                           disabled:cursor-not-allowed transition-colors
-                          ${checkState === 'correct' ? 'border-emerald-700/60 text-emerald-300'
-                          : checkState === 'wrong'   ? 'border-rose-700/60 text-rose-300'
+                          ${checkState === 'correct' ? 'border-success-border text-success-strong'
+                          : checkState === 'wrong'   ? 'border-error-border text-error-strong'
                           : 'border-border text-bright'}`}
             />
 
@@ -94,15 +99,15 @@ export default function OrganicNamingPractice({ allowCustom = true }: Props) {
               <button onClick={handleCheck} disabled={!answer.trim()}
                 className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-30"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                  border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                 }}>
                 Check
               </button>
             ) : (
               <div className="flex flex-col gap-0.5">
-                <span className={`font-sans text-sm font-medium ${checkState === 'correct' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                <span className={`font-sans text-sm font-medium ${checkState === 'correct' ? 'text-success' : 'text-error'}`}>
                   {checkState === 'correct' ? '✓ Correct' : '✗ Incorrect'}
                 </span>
                 {checkState === 'wrong' && (

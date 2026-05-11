@@ -306,7 +306,7 @@ export default function MolarityTool() {
             <span className="font-mono text-sm text-secondary px-2">mol/L</span>
           }
         />
-        {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+        {error && <p className="font-mono text-xs text-error">{error}</p>}
         <div className="flex items-stretch gap-2">
           <button
             onClick={calculate}

@@ -3,7 +3,7 @@ export default function LeChatelierReference() {
     <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       <section className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-primary text-lg">Le Chatelier's Principle</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Le Chatelier's Principle</h3>
         <div className="rounded-sm p-4"
           style={{ background: 'rgb(var(--color-raised))', border: '1px solid rgb(var(--color-border))' }}>
           <p className="font-sans text-sm text-primary leading-relaxed italic">
@@ -20,7 +20,7 @@ export default function LeChatelierReference() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-primary text-lg">1. Concentration Changes</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">1. Concentration Changes</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
             { stress: 'Add a reactant', result: 'Shift forward \u2192 (to consume the added reactant)', color: 'rgb(34 197 94)' },
@@ -41,7 +41,7 @@ export default function LeChatelierReference() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-primary text-lg">2. Pressure / Volume Changes (Gas-Phase Only)</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">2. Pressure / Volume Changes (Gas-Phase Only)</h3>
         <p className="font-sans text-sm text-secondary leading-relaxed">
           Increasing pressure (decreasing volume) shifts equilibrium toward the side with <strong className="text-primary">fewer moles of gas</strong>.
           Decreasing pressure shifts toward the side with <strong className="text-primary">more moles of gas</strong>.
@@ -61,7 +61,7 @@ export default function LeChatelierReference() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-primary text-lg">3. Temperature Changes</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">3. Temperature Changes</h3>
         <p className="font-sans text-sm text-secondary leading-relaxed">
           Temperature changes are unique: they <strong className="text-primary">change the value of K</strong>, not just the position of equilibrium.
           Treat heat as a reactant or product:
@@ -95,7 +95,7 @@ export default function LeChatelierReference() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-primary text-lg">Worked Example: Haber Process</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Worked Example: Haber Process</h3>
         <div className="rounded-sm p-4 flex flex-col gap-2"
           style={{ background: 'rgb(var(--color-raised))', border: '1px solid rgb(var(--color-border))' }}>
           <p className="font-mono text-sm text-primary">N\u2082(g) + 3H\u2082(g) \u21cc 2NH\u2083(g) &nbsp; \u0394H = \u2212 92 kJ/mol</p>

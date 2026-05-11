@@ -43,7 +43,7 @@ export default function BufferCapacityReference() {
             A 500 mL buffer contains 0.20 M acetic acid and 0.20 M sodium acetate. How much NaOH (in moles)
             can be added before the pH rises more than 1 unit above the buffer pH (4.74)?
           </p>
-          <div className="flex flex-col gap-1.5 pl-3 border-l-2" style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 35%, transparent)' }}>
+          <div className="flex flex-col gap-1.5 pl-3 border-l-2" style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
             {[
               'Moles HA = 0.20 M × 0.500 L = 0.100 mol',
               'At pH = pKa + 1 = 5.74: [A⁻]/[HA] = 10',

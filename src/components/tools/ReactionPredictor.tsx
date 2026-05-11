@@ -319,7 +319,7 @@ export default function ReactionPredictor() {
             <button
               key={`${a}+${b}`}
               onClick={() => loadExample(a, b)}
-              className="font-mono text-[11px] px-2 py-0.5 rounded-sm border border-border
+              className="font-mono text-xs px-2 py-0.5 rounded-sm border border-border
                          text-secondary hover:text-primary hover:border-muted transition-colors"
             >
               {(resolveInput(a)?.formula ?? a)} + {(resolveInput(b)?.formula ?? b)}
@@ -328,7 +328,7 @@ export default function ReactionPredictor() {
         </div>
       </div>
 
-      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      {error && <p className="font-mono text-xs text-error">{error}</p>}
 
       {/* Result */}
       <AnimatePresence mode="wait">
@@ -350,7 +350,7 @@ export default function ReactionPredictor() {
               {result.hasReaction ? (
                 <span className="font-mono text-xs px-2 py-0.5 rounded-sm"
                   style={{
-                    color: '#4ade80',
+                    color: 'rgb(var(--color-success))',
                     background: 'color-mix(in srgb, #4ade80 12%, rgb(var(--color-raised)))',
                     border: '1px solid color-mix(in srgb, #4ade80 30%, transparent)',
                   }}>

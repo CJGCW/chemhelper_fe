@@ -26,7 +26,7 @@ export default function HalfLifeReference() {
 
       {/* Formulas */}
       <div className="flex flex-col gap-3">
-        <h3 className="font-sans font-semibold text-bright text-lg">Half-Life Equations</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Half-Life Equations</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
             { label: 'Amount remaining', formula: 'N = N₀ × (1/2)^(t / t½)', note: 'N₀ = initial amount, t = elapsed time' },
@@ -56,7 +56,7 @@ export default function HalfLifeReference() {
 
       {/* Decay table */}
       <div className="flex flex-col gap-3">
-        <h3 className="font-sans font-semibold text-bright text-lg">Half-Lives of Common Nuclides</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Half-Lives of Common Nuclides</h3>
         <div className="overflow-x-auto rounded-sm border border-border">
           <table className="w-full text-sm font-sans border-collapse">
             <thead>

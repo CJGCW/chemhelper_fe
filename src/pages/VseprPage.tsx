@@ -222,7 +222,7 @@ export default function VseprPage() {
               aria-label="Ionic charge"
               className="flex-1 min-w-0 font-mono text-sm bg-raised border border-border rounded-l-sm
                          px-3 py-2.5 text-primary focus:outline-none transition-colors text-right"
-              style={{ borderColor: chargeError ? '#f87171' : undefined }}
+              style={{ borderColor: chargeError ? 'rgb(var(--color-error))' : undefined }}
             />
             <span className="flex items-center px-2 font-mono text-xs text-dim bg-raised
                              border border-l-0 border-border rounded-r-sm shrink-0">
@@ -247,7 +247,7 @@ export default function VseprPage() {
           </button>
         </div>
 
-        {chargeError && <p className="font-mono text-[10px] text-red-400">{chargeError}</p>}
+        {chargeError && <p className="font-mono text-[10px] text-error">{chargeError}</p>}
         {resolved && (
           <p className="font-mono text-[10px]" style={{ color: 'var(--c-halogen)' }}>
             Resolved: {resolved.from} → {resolved.to}
@@ -261,7 +261,7 @@ export default function VseprPage() {
             <button
               key={`${ex.input}${ex.charge ?? 0}`}
               onClick={() => handleExample(ex)}
-              className="font-mono text-[11px] px-2 py-0.5 rounded-sm border border-border
+              className="font-mono text-xs px-2 py-0.5 rounded-sm border border-border
                          text-secondary hover:text-primary hover:border-muted transition-colors"
             >
               {ex.label}
@@ -270,7 +270,7 @@ export default function VseprPage() {
         </div>
       </div>
 
-      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      {error && <p className="font-mono text-xs text-error">{error}</p>}
 
       {/* Result */}
       <AnimatePresence mode="wait">
@@ -322,7 +322,7 @@ export default function VseprPage() {
                 className="px-3.5 py-2 rounded-sm font-sans text-sm border transition-colors"
                 style={{
                   color: 'var(--c-halogen)',
-                  borderColor: 'color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                  borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   background: 'color-mix(in srgb, var(--c-halogen) 8%, transparent)',
                 }}
               >

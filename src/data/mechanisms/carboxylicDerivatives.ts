@@ -1,0 +1,701 @@
+import type { ReactionDef, AtomPosition, BondPosition } from './types'
+
+function mk(
+  id: string, symbol: string, x: number, y: number,
+  extras: Partial<Pick<AtomPosition, 'charge' | 'label' | 'role' | 'glow'>> = {}
+): AtomPosition {
+  return { id, symbol, x, y, ...extras }
+}
+
+function bd(
+  id: string, from: string, to: string,
+  order: 1 | 2 | 3 = 1, style: BondPosition['style'] = 'solid'
+): BondPosition {
+  return { id, from, to, order, style }
+}
+
+export const CARBOXYLIC_DERIVATIVE_REACTIONS: ReactionDef[] = [
+
+  // ── 1. Nucleophilic Acyl Substitution (General) ───────────────────────────────
+  {
+    id: 'nucleophilic-acyl-sub',
+    category: 'carboxylic',
+    name: 'Nucleophilic Acyl Substitution (General)',
+    summary: 'The unifying mechanism for ALL carboxylic acid derivative reactions: nucleophile attacks C=O → tetrahedral intermediate (sp³) → leaving group departs → new C=O. Unlike aldehyde/ketone additions, a leaving group is present.',
+    reactants: 'Acid derivative (R-CO-LG) + Nu',
+    products: 'New acid derivative (R-CO-Nu) + LG',
+    conditions: 'Depends on derivative class. Reactivity: acyl halide > anhydride > ester > amide > carboxylate',
+    reactantSpecies: {
+      text: 'Acid derivative (R-CO-LG) + Nu',
+      species: [
+        { smiles: '[R]C(=O)[LG]', label: 'Acid derivative (R-CO-LG)' },
+        { smiles: '[Nu]', label: 'Nucleophile (Nu)', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'New acid derivative (R-CO-Nu) + LG',
+      species: [
+        { smiles: '[R]C(=O)[Nu]', label: 'New acyl product' },
+        { smiles: '[LG-]', label: 'LG⁻ (leaving group)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Depends on derivative class. Reactivity: acyl halide > anhydride > ester > amide > carboxylate',
+      species: [
+        { smiles: '[Nu]', label: 'Nu (nucleophile)', showLonePairs: true },
+      ],
+    },
+    reactionType: 'substitution',
+    regiochemistry: null,
+    stereochemistry: null,
+    intermediate: 'Tetrahedral intermediate',
+    importantInfo: [
+      'Step 1: nucleophile attacks electrophilic C=O → tetrahedral intermediate (sp³, O now O⁻)',
+      'Step 2: leaving group departs, C returns to sp², new C=O forms',
+      'Unlike aldehyde/ketone additions, there IS a leaving group — substitution, not just addition',
+      'Reactivity order: acyl halide > anhydride > ester ≈ thioester > amide > carboxylate',
+      'More reactive derivatives can be converted to less reactive ones (downhill). Not the reverse without special activation.',
+    ],
+    brownRef: 'Ch 18.4',
+    relatedReactions: ['fischer-esterification', 'saponification', 'acyl-chloride-reactions', 'amide-formation'],
+    tags: ['nucleophilic acyl substitution', 'NAS', 'tetrahedral intermediate', 'carboxylic', 'acid derivative', 'leaving group'],
+    frames: [
+      {
+        atoms: [
+          mk('r',  'R',    200, 165, { role: 'r_group' }),
+          mk('c',  'C',    350, 165, { role: 'carbonyl_carbon' }),
+          mk('o',  'O',    350,  55, { role: 'carbonyl_oxygen' }),
+          mk('lg', 'LG',   500, 165, { role: 'leaving_group' }),
+          mk('nu', 'Nu',   560, 280, { charge: '−', role: 'nucleophile' }),
+        ],
+        bonds: [bd('r-c','r','c'), bd('c-o','c','o',2), bd('c-lg','c','lg')],
+        arrows: [{ from: { kind: 'atom', id: 'nu' }, to: { kind: 'atom', id: 'c' }, color: 'var(--c-alkali)' }],
+        description: 'Nucleophile (Nu) attacks the electrophilic carbonyl carbon. The LG must be a good enough leaving group for the reaction to proceed. Reactivity order of acid derivatives determines how easily this attack occurs.',
+        shortLabel: 'Nu attacks C=O',
+      },
+      {
+        atoms: [
+          mk('r',  'R',    200, 165, { role: 'r_group' }),
+          mk('c',  'C',    350, 165, { glow: true }),
+          mk('o',  'O',    350,  55, { charge: '−' }),
+          mk('lg', 'LG',   500, 165, { role: 'leaving_group' }),
+          mk('nu', 'Nu',   350, 275, { glow: true }),
+        ],
+        bonds: [bd('r-c','r','c'), bd('c-o','c','o'), bd('c-lg','c','lg'), bd('c-nu','c','nu')],
+        arrows: [{ from: { kind: 'atom', id: 'o' }, to: { kind: 'atom', id: 'c' }, color: 'var(--c-halogen)' }],
+        description: 'Tetrahedral intermediate: C is now sp³, bonded to R, O⁻, LG, and Nu. This is the key intermediate — it is not isolable, but its stability determines the reaction rate. The C=O pi bond has broken; both electrons are on O.',
+        shortLabel: 'Tetrahedral intermediate',
+      },
+      {
+        atoms: [
+          mk('r',   'R',    200, 165),
+          mk('c',   'C',    350, 165, { role: 'carbonyl_carbon' }),
+          mk('o',   'O',    350,  55, { role: 'carbonyl_oxygen' }),
+          mk('nu',  'Nu',   500, 165, { glow: true }),
+          mk('lgm', 'LG⁻',  600, 280, { charge: '−', label: 'departed' }),
+        ],
+        bonds: [bd('r-c','r','c'), bd('c-o','c','o',2), bd('c-nu','c','nu')],
+        arrows: [],
+        description: 'LG departs as LG⁻ (or LGH after proton transfer). C returns to sp², new C=O forms. Net result: LG has been replaced by Nu at the acyl carbon. The reaction is formally a substitution at the carbonyl carbon.',
+        shortLabel: 'R-CO-Nu + LG⁻',
+      },
+    ],
+    energyDiagram: [
+      { label: 'R-CO-LG + Nu', energy: 35 },
+      { label: 'TS₁', energy: 55, isTransitionState: true },
+      { label: 'Tetrahedral intermediate', energy: 45 },
+      { label: 'TS₂', energy: 52, isTransitionState: true },
+      { label: 'R-CO-Nu + LG', energy: 18 },
+    ],
+  },
+
+  // ── 2. Fischer Esterification ─────────────────────────────────────────────────
+  {
+    id: 'fischer-esterification',
+    category: 'carboxylic',
+    name: 'Fischer Esterification',
+    summary: 'Carboxylic acid + alcohol + H⁺ (cat) ⇌ ester + H₂O. Acid-catalyzed, REVERSIBLE equilibrium. Drive forward by excess alcohol or removing water. The O in the ester comes from the ALCOHOL (proved by ¹⁸O labeling).',
+    reactants: 'R-COOH + R′OH',
+    products: 'R-COOR′ + H₂O',
+    conditions: 'Conc. H₂SO₄ or TsOH (cat.); excess alcohol; Dean–Stark trap or mol. sieves to remove H₂O; heat',
+    reactantSpecies: {
+      text: 'R-COOH + R′OH',
+      species: [
+        { smiles: '[R]C(=O)O', label: 'Carboxylic acid' },
+        { smiles: 'CO', label: "Alcohol (R'OH)", showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'R-COOR′ + H₂O',
+      species: [
+        { smiles: '[R]C(=O)OC', label: 'Ester' },
+        { smiles: 'O', label: 'H₂O' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Conc. H₂SO₄ or TsOH (cat.); excess alcohol; Dean–Stark trap or mol. sieves to remove H₂O; heat',
+      species: [
+        { smiles: 'OS(=O)(=O)O', label: 'H₂SO₄', catalyst: true },
+      ],
+    },
+    reactionType: 'condensation',
+    regiochemistry: null,
+    stereochemistry: null,
+    intermediate: 'Protonated carbonyl / tetrahedral intermediate',
+    reversible: true,
+    importantInfo: [
+      'RCOOH + ROH ⇌ RCOOR + H₂O. Acid-catalyzed, REVERSIBLE (equilibrium).',
+      'Drive forward by: excess alcohol (Le Chatelier), or removing H₂O (Dean-Stark trap).',
+      'Mechanism: protonate C=O → ROH attacks → tetrahedral intermediate → lose H₂O → ester.',
+      'The O in the ester comes from the ALCOHOL — proved by 18-O isotope labeling experiments.',
+      'The reverse (acid-catalyzed ester hydrolysis) uses the same mechanism with excess water.',
+    ],
+    brownRef: 'Ch 17.7',
+    relatedReactions: ['ester-hydrolysis-acid', 'transesterification', 'nucleophilic-acyl-sub'],
+    tags: ['Fischer esterification', 'ester', 'RCOOH', 'ROH', 'acid catalyst', 'reversible', 'condensation', 'H₂SO₄'],
+    frames: [
+      {
+        atoms: [
+          mk('r',   'R',    200, 165, { role: 'r_group' }),
+          mk('c',   'C',    350, 165, { role: 'carbonyl_carbon' }),
+          mk('o1',  'O',    350,  55, { role: 'carbonyl_oxygen' }),
+          mk('oh',  'OH',   500, 165, { role: 'leaving_group' }),
+          mk('roh', 'ROH',  560, 280, { role: 'nucleophile' }),
+          mk('h',   'H⁺',  420,  35, { role: 'acid' }),
+        ],
+        bonds: [bd('r-c','r','c'), bd('c-o1','c','o1',2), bd('c-oh','c','oh')],
+        arrows: [
+          { from: { kind: 'atom', id: 'h' }, to: { kind: 'atom', id: 'o1' }, color: 'var(--c-alkali)' },
+          { from: { kind: 'atom', id: 'roh' }, to: { kind: 'atom', id: 'c' }, color: 'var(--c-halogen)' },
+        ],
+        description: 'H⁺ protonates the carbonyl oxygen → oxocarbenium ion (C is more electrophilic). R′OH attacks the activated C. Note: OH is the group that will leave as water. The incoming O is from the alcohol (¹⁸O labeling proves this).',
+        shortLabel: 'RCOOH + ROH + H⁺',
+      },
+      {
+        atoms: [
+          mk('r',   'R',    200, 165),
+          mk('c',   'C',    350, 165),
+          mk('o1',  'O',    350,  55, { charge: '+' }),
+          mk('oh2', 'OH',   500, 165, { role: 'leaving_group', glow: true }),
+          mk('or',  "OR′",  350, 265),
+        ],
+        bonds: [bd('r-c','r','c'), bd('c-o1','c','o1'), bd('c-oh2','c','oh2'), bd('c-or','c','or')],
+        arrows: [],
+        description: 'Tetrahedral intermediate: C bonded to R, OH (from COOH), OR′ (from alcohol), and OH⁺ (protonated). Acid-catalyzed dehydration: OH₂⁺ departs as water. This is the reverse of the hydrolysis direction.',
+        shortLabel: 'Tetrahedral intermediate',
+      },
+      {
+        atoms: [
+          mk('r',   'R',    200, 165),
+          mk('c',   'C',    350, 165, { role: 'carbonyl_carbon' }),
+          mk('o1',  'O',    350,  55, { role: 'carbonyl_oxygen' }),
+          mk('or',  "OR′",  500, 165, { glow: true }),
+          mk('h2o', 'H₂O',  600, 290, { label: 'byproduct' }),
+        ],
+        bonds: [bd('r-c','r','c'), bd('c-o1','c','o1',2), bd('c-or','c','or')],
+        arrows: [],
+        description: 'Ester R-COOR′ + H₂O. The COOH oxygen left as water; the OR′ oxygen (from the alcohol) is now in the ester. To drive the equilibrium forward: use excess ROH (3–5 eq) or a Dean–Stark trap to continuously remove water.',
+        shortLabel: 'Ester + H₂O',
+      },
+    ],
+    energyDiagram: [
+      { label: 'RCOOH + ROH', energy: 30 },
+      { label: 'TS₁ (protonation)', energy: 45, isTransitionState: true },
+      { label: 'Tetrahedral intermediate', energy: 35 },
+      { label: 'TS₂ (dehydration)', energy: 42, isTransitionState: true },
+      { label: 'Ester + H₂O', energy: 28 },
+    ],
+  },
+
+  // ── 3. Saponification ─────────────────────────────────────────────────────────
+  {
+    id: 'saponification',
+    category: 'carboxylic',
+    name: 'Saponification (Base Hydrolysis of Esters)',
+    summary: 'Ester + NaOH → carboxylate salt + ROH. IRREVERSIBLE — the carboxylate anion is very stable and not electrophilic, so the reverse cannot occur. "Saponification" = soap making (fats + NaOH → soap).',
+    reactants: 'R-COOR′ + NaOH',
+    products: 'R-COO⁻Na⁺ (carboxylate) + R′OH',
+    conditions: 'Aqueous NaOH; heat; then acidify (H₃O⁺) to get carboxylic acid if desired',
+    reactantSpecies: {
+      text: 'R-COOR′ + NaOH',
+      species: [
+        { smiles: '[R]C(=O)OC', label: 'Ester' },
+        { smiles: '[OH-].[Na+]', label: 'NaOH', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'R-COO⁻Na⁺ (carboxylate) + R′OH',
+      species: [
+        { smiles: '[R]C(=O)[O-].[Na+]', label: 'Carboxylate salt' },
+        { smiles: 'CO', label: "R'OH (alcohol)" },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Aqueous NaOH; heat; then acidify (H₃O⁺) to get carboxylic acid if desired',
+      species: [
+        { smiles: '[OH-].[Na+]', label: 'NaOH (aq)' },
+      ],
+    },
+    reactionType: 'substitution',
+    regiochemistry: null,
+    stereochemistry: null,
+    intermediate: 'Tetrahedral intermediate',
+    reversible: false,
+    importantInfo: [
+      'IRREVERSIBLE because carboxylate (RCOO⁻) is resonance-stabilized and not electrophilic — OH⁻ cannot attack it.',
+      '"Saponification" = soap making. Fats (glycerol triesters) + NaOH → glycerol + 3 sodium carboxylate (soap) molecules.',
+      'Mechanism: OH⁻ attacks C=O → tetrahedral intermediate → R′O⁻ leaves → RCOOH → deprotonated to RCOO⁻.',
+      'The irreversibility makes saponification quantitative — useful for determining fat content (saponification number).',
+    ],
+    brownRef: 'Ch 18.6',
+    relatedReactions: ['nucleophilic-acyl-sub', 'fischer-esterification', 'ester-hydrolysis-acid'],
+    tags: ['saponification', 'base hydrolysis', 'ester', 'NaOH', 'carboxylate', 'soap', 'irreversible', 'carboxylic'],
+    frames: [
+      {
+        atoms: [
+          mk('r',   'R',    190, 165, { role: 'r_group' }),
+          mk('c',   'C',    340, 165, { role: 'carbonyl_carbon' }),
+          mk('o1',  'O',    340,  55, { role: 'carbonyl_oxygen' }),
+          mk('or',  "OR′",  490, 165, { role: 'leaving_group' }),
+          mk('oh',  'OH⁻',  560, 275, { charge: '−', role: 'nucleophile' }),
+        ],
+        bonds: [bd('r-c','r','c'), bd('c-o1','c','o1',2), bd('c-or','c','or')],
+        arrows: [{ from: { kind: 'atom', id: 'oh' }, to: { kind: 'atom', id: 'c' }, color: 'var(--c-alkali)' }],
+        description: 'OH⁻ (strong nucleophile) attacks the ester carbonyl C directly — no need to activate with acid because OH⁻ is already a good enough nucleophile. No protonation step required (unlike Fischer esterification).',
+        shortLabel: 'Ester + OH⁻',
+      },
+      {
+        atoms: [
+          mk('r',   'R',    200, 165),
+          mk('c',   'C',    350, 165, { glow: true }),
+          mk('o1',  'O',    350,  55, { charge: '−' }),
+          mk('or',  "OR′",  500, 165, { role: 'leaving_group' }),
+          mk('oh',  'OH',   350, 275),
+        ],
+        bonds: [bd('r-c','r','c'), bd('c-o1','c','o1'), bd('c-or','c','or'), bd('c-oh','c','oh')],
+        arrows: [],
+        description: 'Tetrahedral intermediate: C bonded to O⁻, OR′, OH, and R. The O⁻ will donate back to reform C=O while OR′ departs as an alkoxide (R′O⁻). The alkoxide is a reasonable leaving group for an sp³ carbon.',
+        shortLabel: 'Tetrahedral intermediate',
+      },
+      {
+        atoms: [
+          mk('r',   'R',    200, 165),
+          mk('c',   'C',    350, 165, { role: 'carbonyl_carbon' }),
+          mk('o1',  'O',    350,  55),
+          mk('o2',  'O',    500, 165, { charge: '−', glow: true }),
+          mk('roh', "R′OH", 600, 285, { label: 'protonated alkoxide' }),
+        ],
+        bonds: [bd('r-c','r','c'), bd('c-o1','c','o1',2), bd('c-o2','c','o2')],
+        arrows: [],
+        description: 'Carboxylate RCOO⁻ + R′OH (the alkoxide R′O⁻ was protonated by RCOOH). The carboxylate is resonance-stabilized — both oxygens share the negative charge. This stability makes the reaction IRREVERSIBLE: RCOO⁻ is not electrophilic and cannot be attacked by R′O⁻.',
+        shortLabel: 'RCOO⁻ + R′OH',
+      },
+    ],
+    energyDiagram: [
+      { label: 'Ester + OH⁻', energy: 35 },
+      { label: 'TS', energy: 55, isTransitionState: true },
+      { label: 'Tetrahedral', energy: 42 },
+      { label: 'RCOO⁻ + R′OH', energy: 8 },
+    ],
+  },
+
+  // ── 4. Acyl Chloride Reactions ────────────────────────────────────────────────
+  {
+    id: 'acyl-chloride-reactions',
+    category: 'carboxylic',
+    name: 'Acyl Chloride Reactions',
+    summary: 'Most reactive acid derivative. RCOCl reacts with H₂O, ROH, amines, or carboxylates by fast nucleophilic acyl substitution. Cl⁻ is an excellent leaving group. Reactions often violent — add dropwise with cooling.',
+    reactants: 'R-COCl + Nu (H₂O, ROH, NH₃, RNH₂, R′COO⁻)',
+    products: 'RCOOH, RCOOR, RCONH₂, RCONHR, or anhydride + HCl',
+    conditions: 'Room temperature or 0 °C; no catalyst needed; with amines: use 2 eq amine (one reacts, one neutralizes HCl)',
+    reactantSpecies: {
+      text: 'R-COCl + Nu (H₂O, ROH, NH₃, RNH₂, R′COO⁻)',
+      species: [
+        { smiles: '[R]C(=O)Cl', label: 'Acyl chloride' },
+        { smiles: 'N', label: 'Nu (e.g. NH₃)', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'RCOOH, RCOOR, RCONH₂, RCONHR, or anhydride + HCl',
+      species: [
+        { smiles: '[R]C(=O)N', label: 'Amide (RCONH₂)' },
+        { smiles: 'Cl', label: 'HCl (byproduct)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Room temperature or 0 °C; no catalyst needed; with amines: use 2 eq amine (one reacts, one neutralizes HCl)',
+      species: [
+        { smiles: 'N', label: 'Amine (2 eq)', showLonePairs: true },
+      ],
+    },
+    reactionType: 'substitution',
+    regiochemistry: null,
+    stereochemistry: null,
+    intermediate: 'Tetrahedral intermediate',
+    reversible: false,
+    importantInfo: [
+      'Most reactive acid derivative — Cl⁻ is an excellent leaving group (pKa HCl = −7).',
+      'RCOCl + H₂O → RCOOH (hydrolysis); + ROH → RCOOR (ester); + NH₃ → RCONH₂ (amide); + RNH₂ → RCONHR.',
+      'With amines: use 2 equivalents — 1 reacts, 1 acts as base to neutralize HCl byproduct (Schotten-Baumann).',
+      'RCOCl + R′COO⁻ → anhydride (useful synthesis of mixed anhydrides).',
+      'Reactions are fast and often exothermic — add slowly to cooled amine/alcohol solution.',
+    ],
+    brownRef: 'Ch 18.5',
+    relatedReactions: ['nucleophilic-acyl-sub', 'anhydride-reactions', 'amide-formation'],
+    tags: ['acyl chloride', 'acid chloride', 'RCOCl', 'most reactive', 'carboxylic', 'substitution', 'Cl leaving group'],
+    frames: [
+      {
+        atoms: [
+          mk('r',  'R',    200, 165, { role: 'r_group' }),
+          mk('c',  'C',    350, 165, { role: 'carbonyl_carbon' }),
+          mk('o',  'O',    350,  55, { role: 'carbonyl_oxygen' }),
+          mk('cl', 'Cl',   500, 165, { role: 'leaving_group' }),
+          mk('nu', 'Nu',   560, 275, { role: 'nucleophile', label: 'ROH or NH₃ or H₂O' }),
+        ],
+        bonds: [bd('r-c','r','c'), bd('c-o','c','o',2), bd('c-cl','c','cl')],
+        arrows: [{ from: { kind: 'atom', id: 'nu' }, to: { kind: 'atom', id: 'c' }, color: 'var(--c-alkali)' }],
+        description: 'Acyl chloride: the C=O is highly electrophilic (Cl is electronegative but a poor π-donor to C=O). Any nucleophile — water, alcohol, amine, carboxylate — attacks readily. No catalyst needed at room temperature.',
+        shortLabel: 'RCOCl + Nu',
+      },
+      {
+        atoms: [
+          mk('r',  'R',    200, 165),
+          mk('c',  'C',    350, 165, { role: 'carbonyl_carbon' }),
+          mk('o',  'O',    350,  55, { role: 'carbonyl_oxygen' }),
+          mk('nu', 'Nu',   500, 165, { glow: true }),
+          mk('hcl','HCl',  600, 285, { label: 'byproduct' }),
+        ],
+        bonds: [bd('r-c','r','c'), bd('c-o','c','o',2), bd('c-nu','c','nu')],
+        arrows: [],
+        description: 'Product: new acid derivative R-CO-Nu (ester, amide, acid, or anhydride). Cl⁻ departs (HCl formed). The tetrahedral intermediate collapses immediately because Cl⁻ is such a good leaving group. With amine: the HCl byproduct is neutralized by a second equivalent of amine.',
+        shortLabel: 'R-CO-Nu + HCl',
+      },
+    ],
+    energyDiagram: [
+      { label: 'RCOCl + Nu', energy: 40 },
+      { label: 'TS', energy: 52, isTransitionState: true },
+      { label: 'R-CO-Nu + HCl', energy: 10 },
+    ],
+  },
+
+  // ── 5. Anhydride Reactions ────────────────────────────────────────────────────
+  {
+    id: 'anhydride-reactions',
+    category: 'carboxylic',
+    name: 'Anhydride Reactions',
+    summary: 'Second most reactive acid derivative. (RCO)₂O + Nu → RCOX + RCOOH. One acyl group is transferred; the other becomes carboxylic acid. Cyclic anhydrides (succinic, maleic, phthalic) are especially useful — ring opening gives a difunctional product.',
+    reactants: '(RCO)₂O + Nu (ROH, NH₃, RNH₂, H₂O)',
+    products: 'RCOX + RCOOH (where X = OR, NR₂, OH)',
+    conditions: 'Room temperature; sometimes catalytic H₂SO₄ or pyridine; acetic anhydride most common',
+    reactantSpecies: {
+      text: '(RCO)₂O + Nu (ROH, NH₃, RNH₂, H₂O)',
+      species: [
+        { smiles: '[R]C(=O)OC(=O)[R]', label: 'Anhydride' },
+        { smiles: 'N', label: 'Nu (e.g. NH₃)', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'RCOX + RCOOH (where X = OR, NR₂, OH)',
+      species: [
+        { smiles: '[R]C(=O)N', label: 'Acyl product (RCONHR)' },
+        { smiles: '[R]C(=O)O', label: 'RCOOH (byproduct)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Room temperature; sometimes catalytic H₂SO₄ or pyridine; acetic anhydride most common',
+      species: [
+        { smiles: 'CC(=O)OC(=O)C', label: 'Ac₂O (acetic anhydride)' },
+      ],
+    },
+    reactionType: 'substitution',
+    regiochemistry: null,
+    stereochemistry: null,
+    intermediate: 'Tetrahedral intermediate',
+    reversible: false,
+    importantInfo: [
+      'Second most reactive after acyl halides. RCO₂⁻ is the leaving group.',
+      '(RCO)₂O + H₂O → 2 RCOOH; + ROH → RCOOR + RCOOH; + NH₃ → RCONH₂ + RCOOH.',
+      'One acyl group goes to Nu; the other is released as the free carboxylate/acid.',
+      'Cyclic anhydrides: ring opening with one Nu gives a half-ester or half-amide (one COOH + one CONu).',
+      'Acetic anhydride (Ac₂O) is the most common anhydride in synthesis — acetylation agent.',
+    ],
+    brownRef: 'Ch 18.6',
+    relatedReactions: ['nucleophilic-acyl-sub', 'acyl-chloride-reactions', 'amide-formation'],
+    tags: ['anhydride', '(RCO)₂O', 'acetic anhydride', 'cyclic anhydride', 'carboxylic', 'substitution', 'second reactive'],
+    frames: [
+      {
+        atoms: [
+          mk('rco1', 'RCO', 185, 165, { role: 'r_group' }),
+          mk('o_an', 'O',   340, 165),
+          mk('c2',   'C',   490, 165, { role: 'carbonyl_carbon' }),
+          mk('o2',   'O',   490,  55, { role: 'carbonyl_oxygen' }),
+          mk('r2',   'R',   630, 165, { role: 'r_group' }),
+          mk('nu',   'Nu',  560, 280, { role: 'nucleophile' }),
+        ],
+        bonds: [bd('rco1-o','rco1','o_an'), bd('o-c2','o_an','c2'), bd('c2-o2','c2','o2',2), bd('c2-r2','c2','r2')],
+        arrows: [{ from: { kind: 'atom', id: 'nu' }, to: { kind: 'atom', id: 'c2' }, color: 'var(--c-alkali)' }],
+        description: 'Anhydride (RCO)₂O: two acyl groups linked by a bridging oxygen. Nu attacks ONE of the carbonyl carbons. The central O is part of the leaving group — the other acyl group departs as RCOO⁻ (carboxylate).',
+        shortLabel: '(RCO)₂O + Nu',
+      },
+      {
+        atoms: [
+          mk('r',    'R',     190, 165),
+          mk('c',    'C',     340, 165, { role: 'carbonyl_carbon' }),
+          mk('o',    'O',     340,  55, { role: 'carbonyl_oxygen' }),
+          mk('nu',   'Nu',    490, 165, { glow: true }),
+          mk('rcoo', 'RCOOH', 600, 280, { label: 'carboxylic acid byproduct' }),
+        ],
+        bonds: [bd('r-c','r','c'), bd('c-o','c','o',2), bd('c-nu','c','nu')],
+        arrows: [],
+        description: 'Product: new acid derivative R-CO-Nu (ester, amide, or acid) + RCOOH as the byproduct. This wastes one equivalent of the acid component — anhydrides are 50% atom-efficient but cheaper/easier to handle than acyl halides in many cases.',
+        shortLabel: 'R-CO-Nu + RCOOH',
+      },
+    ],
+    energyDiagram: [
+      { label: '(RCO)₂O + Nu', energy: 38 },
+      { label: 'TS', energy: 55, isTransitionState: true },
+      { label: 'R-CO-Nu + RCOOH', energy: 12 },
+    ],
+  },
+
+  // ── 6. Amide Formation ────────────────────────────────────────────────────────
+  {
+    id: 'amide-formation',
+    category: 'carboxylic',
+    name: 'Amide Formation',
+    summary: 'Carboxylic acid + amine → amide + H₂O. CANNOT react directly at room temperature (gives a salt). Must use: heat the salt to high T, or react a more reactive derivative (acyl chloride or anhydride) with an amine. DCC couples acids + amines directly in peptide synthesis.',
+    reactants: 'Acid derivative + amine (RNH₂ or R₂NH)',
+    products: 'Amide (R-CO-NHR′) + leaving group',
+    conditions: 'Acyl chloride/anhydride + amine → fast; DCC (peptide coupling); or salt + Δ (>150 °C)',
+    reactantSpecies: {
+      text: 'Acid derivative + amine (RNH₂ or R₂NH)',
+      species: [
+        { smiles: '[R]C(=O)Cl', label: 'Acyl chloride' },
+        { smiles: '[R]N', label: 'Amine (RNH₂)', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'Amide (R-CO-NHR′) + leaving group',
+      species: [
+        { smiles: '[R]C(=O)N[R]', label: 'Amide' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Acyl chloride/anhydride + amine → fast; DCC (peptide coupling); or salt + Δ (>150 °C)',
+      species: [
+        { smiles: 'C1CN=C=NC1.c1ccccc1', label: 'DCC (coupling agent)', catalyst: true },
+      ],
+    },
+    reactionType: 'condensation',
+    regiochemistry: null,
+    stereochemistry: null,
+    intermediate: 'Tetrahedral intermediate',
+    reversible: false,
+    importantInfo: [
+      'Direct: RCOOH + RNH₂ → salt (RCO₂⁻ RNH₃⁺) NOT amide at room temperature.',
+      'To make amide directly: use acyl chloride (RCOCl) or anhydride + amine — both fast at rt.',
+      'DCC (dicyclohexylcarbodiimide): activates RCOOH as an "activated ester" → amine attacks → amide + DCU byproduct. Used in peptide synthesis.',
+      'Amides are the LEAST reactive acid derivative — NR₂ is a poor leaving group (pKa NH₃ ≈ 38).',
+    ],
+    brownRef: 'Ch 18.7',
+    relatedReactions: ['acyl-chloride-reactions', 'anhydride-reactions', 'nucleophilic-acyl-sub'],
+    tags: ['amide', 'amine', 'peptide bond', 'DCC', 'carboxylic', 'condensation', 'acid chloride', 'least reactive'],
+    frames: [
+      {
+        atoms: [
+          mk('r',   'R',    200, 165, { role: 'r_group' }),
+          mk('c',   'C',    350, 165, { role: 'carbonyl_carbon' }),
+          mk('o',   'O',    350,  55, { role: 'carbonyl_oxygen' }),
+          mk('cl',  'Cl',   500, 165, { role: 'leaving_group' }),
+          mk('rnh', 'H₂NR′',560, 275, { role: 'nucleophile' }),
+        ],
+        bonds: [bd('r-c','r','c'), bd('c-o','c','o',2), bd('c-cl','c','cl')],
+        arrows: [{ from: { kind: 'atom', id: 'rnh' }, to: { kind: 'atom', id: 'c' }, color: 'var(--c-alkali)' }],
+        description: 'Best route: acyl chloride + amine. Amine nitrogen (nucleophile) attacks the acyl carbonyl C. Cl⁻ will depart. The byproduct HCl is neutralized by a second equiv. of amine. This is fast at rt — no heating needed.',
+        shortLabel: 'RCOCl + H₂NR′',
+      },
+      {
+        atoms: [
+          mk('r',   'R',    200, 165),
+          mk('c',   'C',    350, 165, { role: 'carbonyl_carbon' }),
+          mk('o',   'O',    350,  55, { role: 'carbonyl_oxygen' }),
+          mk('nr',  'NHR′', 500, 165, { glow: true }),
+          mk('hcl', 'HCl',  600, 285, { label: 'byproduct' }),
+        ],
+        bonds: [bd('r-c','r','c'), bd('c-o','c','o',2), bd('c-nr','c','nr')],
+        arrows: [],
+        description: 'Amide R-CO-NHR′ + HCl. The C=O is stabilized by resonance with the N lone pair (partial C=N character in amides). This makes amides resistant to further nucleophilic attack — they are the LEAST reactive acid derivative. Amide bonds = peptide bonds in proteins.',
+        shortLabel: 'Amide + HCl',
+      },
+    ],
+    energyDiagram: [
+      { label: 'RCOCl + H₂NR′', energy: 38 },
+      { label: 'TS', energy: 52, isTransitionState: true },
+      { label: 'Amide + HCl', energy: 8 },
+    ],
+  },
+
+  // ── 7. Transesterification ────────────────────────────────────────────────────
+  {
+    id: 'transesterification',
+    category: 'carboxylic',
+    name: 'Transesterification',
+    summary: 'Ester + R′OH ⇌ new ester + ROH. Acid- or base-catalyzed. Equilibrium — drive forward with excess R′OH. Used in biodiesel production (methanol + triglycerides → fatty acid methyl esters + glycerol).',
+    reactants: 'R-COOR′′ + R′OH',
+    products: 'R-COOR′ + R′′OH',
+    conditions: 'H₂SO₄ (acid cat.) or NaOR′ (base cat.); excess R′OH; reflux',
+    reactantSpecies: {
+      text: 'R-COOR″ + R′OH',
+      species: [
+        { smiles: '[R]C(=O)OC', label: 'Ester (R-COOR″)' },
+        { smiles: 'CO', label: "New alcohol (R'OH)", showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'R-COOR′ + R′′OH',
+      species: [
+        { smiles: '[R]C(=O)OC', label: "New ester (R-COOR')" },
+        { smiles: 'CO', label: 'R″OH (leaving alcohol)' },
+      ],
+    },
+    conditionSpecies: {
+      text: 'H₂SO₄ (acid cat.) or NaOR′ (base cat.); excess R′OH; reflux',
+      species: [
+        { smiles: 'OS(=O)(=O)O', label: 'H₂SO₄', catalyst: true },
+      ],
+    },
+    reactionType: 'substitution',
+    regiochemistry: null,
+    stereochemistry: null,
+    intermediate: 'Tetrahedral intermediate',
+    reversible: true,
+    importantInfo: [
+      'Ester + R′OH ⇌ new ester + ROH. Reversible — equilibrium controlled by alkoxide leaving group ability.',
+      'Base-catalyzed: alkoxide (R′O⁻) is the nucleophile; attacks C=O → tetrahedral → original OR leaves.',
+      'Acid-catalyzed: protonation of C=O → R′OH attacks → deprotonate → new ester.',
+      'Industrial use: biodiesel (transesterification of triglycerides with MeOH → FAMEs + glycerol).',
+      'Drive forward with large excess of R′OH (Le Chatelier) or remove product alcohol by distillation.',
+    ],
+    brownRef: 'Ch 18.6',
+    relatedReactions: ['fischer-esterification', 'saponification', 'nucleophilic-acyl-sub'],
+    tags: ['transesterification', 'ester', 'alcohol exchange', 'reversible', 'biodiesel', 'carboxylic', 'substitution'],
+    frames: [
+      {
+        atoms: [
+          mk('r',    'R',     190, 165, { role: 'r_group' }),
+          mk('c',    'C',     340, 165, { role: 'carbonyl_carbon' }),
+          mk('o',    'O',     340,  55, { role: 'carbonyl_oxygen' }),
+          mk('or2',  "OR′′",  490, 165, { role: 'leaving_group' }),
+          mk('ro',   "R′O⁻",  560, 275, { charge: '−', role: 'nucleophile' }),
+        ],
+        bonds: [bd('r-c','r','c'), bd('c-o','c','o',2), bd('c-or2','c','or2')],
+        arrows: [{ from: { kind: 'atom', id: 'ro' }, to: { kind: 'atom', id: 'c' }, color: 'var(--c-alkali)' }],
+        description: 'Base-catalyzed: R′O⁻ (alkoxide nucleophile) attacks the ester carbonyl. Tetrahedral intermediate forms. The original R′′O⁻ will depart as alkoxide (leaving group). Equilibrium: both R′O⁻ and R′′O⁻ can serve as nucleophile or leaving group.',
+        shortLabel: "Ester + R′O⁻",
+      },
+      {
+        atoms: [
+          mk('r',   'R',    190, 165),
+          mk('c',   'C',    340, 165, { role: 'carbonyl_carbon' }),
+          mk('o',   'O',    340,  55, { role: 'carbonyl_oxygen' }),
+          mk('or1', "OR′",  490, 165, { glow: true }),
+          mk('roh', "R′′OH",600, 285, { label: 'departed alkoxide' }),
+        ],
+        bonds: [bd('r-c','r','c'), bd('c-o','c','o',2), bd('c-or1','c','or1')],
+        arrows: [],
+        description: 'New ester R-COOR′ + R′′OH. The original alkoxide departed, the new OR′ is now bonded. Equilibrium — use excess R′OH to drive forward. Acid-catalyzed mechanism also works (protonation → attack → loss of ROH).',
+        shortLabel: "R-COOR′ + R′′OH",
+      },
+    ],
+    energyDiagram: [
+      { label: "Ester + R′OH", energy: 30 },
+      { label: 'TS', energy: 48, isTransitionState: true },
+      { label: "New ester + ROH", energy: 28 },
+    ],
+  },
+
+  // ── 8. Acid Hydrolysis of Esters ─────────────────────────────────────────────
+  {
+    id: 'ester-hydrolysis-acid',
+    category: 'carboxylic',
+    name: 'Acid Hydrolysis of Esters',
+    summary: 'Ester + H₃O⁺ + Δ → RCOOH + ROH. Exact reverse of Fischer esterification. Reversible — drive forward with excess water. Mechanism: protonate C=O → H₂O attacks → tetrahedral → lose ROH.',
+    reactants: 'R-COOR′ + H₃O⁺ (excess H₂O)',
+    products: 'RCOOH + R′OH',
+    conditions: 'Dilute H₂SO₄ or HCl; excess water; reflux; or NaOH (saponification if base)',
+    reactantSpecies: {
+      text: 'R-COOR′ + H₃O⁺ (excess H₂O)',
+      species: [
+        { smiles: '[R]C(=O)OC', label: 'Ester' },
+        { smiles: 'O', label: 'H₂O (excess)', showLonePairs: true },
+      ],
+    },
+    productSpecies: {
+      text: 'RCOOH + R′OH',
+      species: [
+        { smiles: '[R]C(=O)O', label: 'Carboxylic acid' },
+        { smiles: 'CO', label: "R'OH" },
+      ],
+    },
+    conditionSpecies: {
+      text: 'Dilute H₂SO₄ or HCl; excess water; reflux; or NaOH (saponification if base)',
+      species: [
+        { smiles: 'OS(=O)(=O)O', label: 'H₂SO₄ (dil.)', catalyst: true },
+        { smiles: 'O', label: 'H₂O (excess)' },
+      ],
+    },
+    reactionType: 'substitution',
+    regiochemistry: null,
+    stereochemistry: null,
+    intermediate: 'Protonated tetrahedral intermediate',
+    reversible: true,
+    importantInfo: [
+      'Exact reverse of Fischer esterification — the same equilibrium, same mechanism, run backward.',
+      'Acid-catalyzed: protonate C=O → H₂O (nucleophile) attacks → tetrahedral → ROH leaves → RCOOH.',
+      'Requires large excess water and heat (reflux) to drive equilibrium toward hydrolysis.',
+      'Compare to saponification (NaOH): saponification is irreversible; acid hydrolysis is reversible.',
+      'Used for hydrolysis of protecting groups and in routine ester saponification followed by acidification.',
+    ],
+    brownRef: 'Ch 18.6',
+    relatedReactions: ['fischer-esterification', 'saponification', 'nucleophilic-acyl-sub'],
+    tags: ['ester hydrolysis', 'acid hydrolysis', 'reversible', 'RCOOH', 'carboxylic', 'substitution', 'H₃O⁺'],
+    frames: [
+      {
+        atoms: [
+          mk('r',   'R',    190, 165, { role: 'r_group' }),
+          mk('c',   'C',    340, 165, { role: 'carbonyl_carbon' }),
+          mk('o1',  'O',    340,  55, { role: 'carbonyl_oxygen' }),
+          mk('or',  "OR′",  490, 165, { role: 'leaving_group' }),
+          mk('h',   'H⁺',   400,  20, { role: 'acid' }),
+          mk('h2o', 'H₂O',  560, 280, { role: 'nucleophile' }),
+        ],
+        bonds: [bd('r-c','r','c'), bd('c-o1','c','o1',2), bd('c-or','c','or')],
+        arrows: [
+          { from: { kind: 'atom', id: 'h' }, to: { kind: 'atom', id: 'o1' }, color: 'var(--c-alkali)' },
+          { from: { kind: 'atom', id: 'h2o' }, to: { kind: 'atom', id: 'c' }, color: 'var(--c-halogen)' },
+        ],
+        description: 'H⁺ protonates the ester C=O → activated (oxocarbenium). Water (nucleophile) attacks the carbonyl C. Requires large excess water to drive the hydrolysis equilibrium forward (Le Chatelier — dilute the ester in aqueous acid).',
+        shortLabel: 'Ester + H₂O + H⁺',
+      },
+      {
+        atoms: [
+          mk('r',   'R',    200, 165),
+          mk('c',   'C',    350, 165, { role: 'carbonyl_carbon' }),
+          mk('o1',  'O',    350,  55, { role: 'carbonyl_oxygen' }),
+          mk('oh',  'OH',   500, 165, { glow: true }),
+          mk('roh', "R′OH", 610, 285, { label: 'departs' }),
+        ],
+        bonds: [bd('r-c','r','c'), bd('c-o1','c','o1',2), bd('c-oh','c','oh')],
+        arrows: [],
+        description: 'Carboxylic acid RCOOH + R′OH. The tetrahedral intermediate lost R′OH as the leaving group (with acid catalysis). Contrast with saponification: base hydrolysis is irreversible; acid hydrolysis is reversible — both give the same products but via different mechanisms and with different thermodynamic driving forces.',
+        shortLabel: 'RCOOH + R′OH',
+      },
+    ],
+    energyDiagram: [
+      { label: 'Ester + H₃O⁺', energy: 30 },
+      { label: 'TS (protonation + attack)', energy: 48, isTransitionState: true },
+      { label: 'Tetrahedral intermediate', energy: 38 },
+      { label: 'RCOOH + R′OH', energy: 28 },
+    ],
+  },
+]

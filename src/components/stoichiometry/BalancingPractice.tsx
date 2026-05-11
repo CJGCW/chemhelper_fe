@@ -22,7 +22,7 @@ function BalanceViz({ leftAtoms, rightAtoms }: { leftAtoms: number; rightAtoms: 
   const total       = leftAtoms + rightAtoms
   const targetAngle = total > 0 ? Math.max(-20, Math.min(20, (diff / total) * 32)) : 0
   const isBalanced  = total > 0 && diff === 0
-  const beamColor   = isBalanced ? '#4ade80' : 'rgba(var(--overlay),0.38)'
+  const beamColor   = isBalanced ? 'rgb(var(--color-success))' : 'rgba(var(--overlay),0.38)'
 
   const springAngle = useSpring(0, { stiffness: 180, damping: 26 })
   const gRef        = useRef<SVGGElement>(null)
@@ -78,7 +78,7 @@ const DIFFICULTIES: { id: Difficulty | 'all'; label: string }[] = [
 const DIFF_COLORS: Record<Difficulty, string> = {
   easy:   '#86efac',
   medium: '#fbbf24',
-  hard:   '#f87171',
+  hard:   'rgb(var(--color-error))',
 }
 
 // ── Equation display with inputs ──────────────────────────────────────────────
@@ -115,7 +115,7 @@ function CoeffInput({ value, onChange, correct, disabled, inputRef, onEnter }: C
                  [&::-webkit-inner-spin-button]:appearance-none"
       style={{
         border: `1px solid ${borderColor}`,
-        color: correct === true ? '#6ee7b7' : correct === false ? '#fca5a5' : 'var(--c-bright)',
+        color: correct === true ? 'rgb(var(--color-success))' : correct === false ? 'rgb(var(--color-error))' : 'rgb(var(--color-bright))',
       }}
     />
   )
@@ -196,8 +196,8 @@ function AtomTable({ elements }: { elements: { element: string; left: number; ri
                        border-b border-border last:border-b-0 bg-surface"
           >
             <span className="font-mono text-sm font-semibold text-bright">{e.element}</span>
-            <span className={`font-mono text-sm text-center ${ok ? 'text-emerald-400' : 'text-rose-400'}`}>{e.left}</span>
-            <span className={`font-mono text-sm text-center ${ok ? 'text-emerald-400' : 'text-rose-400'}`}>{e.right}</span>
+            <span className={`font-mono text-sm text-center ${ok ? 'text-success' : 'text-error'}`}>{e.left}</span>
+            <span className={`font-mono text-sm text-center ${ok ? 'text-success' : 'text-error'}`}>{e.right}</span>
             <span className="font-mono text-sm text-center">{ok ? '✓' : '✗'}</span>
           </div>
         )
@@ -265,8 +265,8 @@ export default function BalancingPractice({ allowCustom: _allowCustom = true }: 
   const borderClass = result === null
     ? 'border-border bg-surface'
     : result.balanced
-      ? 'border-emerald-800/50 bg-emerald-950/20'
-      : 'border-rose-800/50 bg-rose-950/20'
+      ? 'feedback-success'
+      : 'feedback-error'
 
   // Live atom counts for the balance visualization
   const leftAtoms  = countAtoms(eq.reactants, rCoeffs)
@@ -366,19 +366,19 @@ export default function BalancingPractice({ allowCustom: _allowCustom = true }: 
               className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors
                          disabled:opacity-30 disabled:cursor-not-allowed"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               }}
             >
               Check
             </button>
           ) : (
-            <span className="font-sans text-sm font-medium text-emerald-400">✓ Balanced!</span>
+            <span className="font-sans text-sm font-medium text-success">✓ Balanced!</span>
           )}
 
           {result && !result.balanced && (
-            <span className="font-sans text-sm text-rose-400">✗ Not balanced — check the atom counts below</span>
+            <span className="font-sans text-sm text-error">✗ Not balanced — check the atom counts below</span>
           )}
         </div>
 

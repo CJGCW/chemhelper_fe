@@ -23,7 +23,7 @@ function Example({ scenario, steps, result }: { scenario: string; steps: string[
         {steps.map((s, i) => (
           <p key={i} className="font-mono text-sm text-primary print:text-gray-800">{s}</p>
         ))}
-        <p className="font-mono text-sm font-semibold text-emerald-400 print:text-green-700 mt-0.5">∴ {result}</p>
+        <p className="font-mono text-sm font-semibold text-success print:text-green-700 mt-0.5">∴ {result}</p>
       </div>
     </div>
   )
@@ -173,7 +173,7 @@ function OxidationSection() {
                 <span className="font-sans text-sm font-semibold text-bright print:text-black">{r.rule}</span>
                 <span
                   className="font-mono text-xs px-1.5 py-0.5 rounded-sm shrink-0"
-                  style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
+                  style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}
                 >{r.value}</span>
               </div>
               <p className="font-mono text-xs text-secondary print:text-gray-600">{r.example}</p>
@@ -241,7 +241,7 @@ function ReactionTypesSection() {
               <div className="flex items-center gap-2">
                 <span
                   className="font-mono text-sm font-bold w-7 h-7 rounded-sm flex items-center justify-center shrink-0"
-                  style={{ background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' }}
+                  style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))', color: 'var(--c-halogen)', border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}
                 >{rt.symbol}</span>
                 <h4 className="font-sans text-sm font-semibold text-bright print:text-black">{rt.type}</h4>
               </div>
@@ -343,7 +343,7 @@ function ActivitySection() {
                     </td>
                     <td className="font-mono text-sm text-secondary py-1.5 pr-4 print:text-gray-600">{m.ion}</td>
                     <td className={`font-sans text-xs py-1.5 pr-4 ${
-                      m.waterRxn === 'Cold water (violent)' ? 'text-red-400 print:text-red-700' :
+                      m.waterRxn === 'Cold water (violent)' ? 'text-error print:text-red-700' :
                       m.waterRxn === 'Cold water'           ? 'text-orange-400 print:text-orange-700' :
                       m.waterRxn === 'Hot water / steam'    ? 'text-yellow-400 print:text-yellow-700' :
                       m.waterRxn === 'Steam only'           ? 'text-lime-400 print:text-lime-700' :
@@ -353,7 +353,7 @@ function ActivitySection() {
                       {isDivider
                         ? <span className="text-dim print:text-gray-400">— H₂ reference line —</span>
                         : m.aboveH2
-                          ? <span className="text-green-400 print:text-green-700">Yes</span>
+                          ? <span className="text-success print:text-green-700">Yes</span>
                           : <span className="text-dim print:text-gray-400">No</span>}
                     </td>
                   </tr>
@@ -547,15 +547,15 @@ function RedoxConceptsSection() {
           <h4 className="font-sans text-sm font-semibold text-bright print:text-black">Spontaneity</h4>
           <div className="flex flex-col gap-1.5 text-xs font-mono">
             <div className="flex items-baseline gap-2">
-              <span className="text-green-400 print:text-green-700 shrink-0">E°cell &gt; 0</span>
+              <span className="text-success print:text-green-700 shrink-0">E°cell &gt; 0</span>
               <span className="text-secondary print:text-gray-600">→ spontaneous</span>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-red-400 print:text-red-700 shrink-0">E°cell &lt; 0</span>
+              <span className="text-error print:text-red-700 shrink-0">E°cell &lt; 0</span>
               <span className="text-secondary print:text-gray-600">→ non-spontaneous</span>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-green-400 print:text-green-700 shrink-0">ΔG° &lt; 0</span>
+              <span className="text-success print:text-green-700 shrink-0">ΔG° &lt; 0</span>
               <span className="text-secondary print:text-gray-600">→ spontaneous</span>
             </div>
             <div className="flex items-baseline gap-2">
@@ -668,7 +668,7 @@ function RedoxConceptsSection() {
                 <p className="font-mono text-xs text-primary print:text-gray-800">Red: MnO₄⁻ + 8H⁺ + 5e⁻ → Mn²⁺ + 4H₂O</p>
                 <p className="font-mono text-xs text-primary print:text-gray-800">Ox:  Fe²⁺ → Fe³⁺ + e⁻  (×5)</p>
                 <p className="font-mono text-xs text-primary print:text-gray-800">Overall: MnO₄⁻ + 5Fe²⁺ + 8H⁺ → Mn²⁺ + 5Fe³⁺ + 4H₂O</p>
-                <p className="font-mono text-xs font-semibold text-emerald-400 print:text-green-700 mt-0.5">∴ 5 electrons transferred; charges balance</p>
+                <p className="font-mono text-xs font-semibold text-success print:text-green-700 mt-0.5">∴ 5 electrons transferred; charges balance</p>
               </div>
             </div>
           </div>
@@ -692,8 +692,8 @@ function RedoxConceptsSection() {
                   <td className={`font-mono text-xs py-1.5 pr-4 ${r.ref ? 'text-secondary italic print:text-gray-500' : 'text-primary print:text-gray-800'}`}>{r.half}</td>
                   <td className={`font-mono text-sm text-right py-1.5 font-semibold ${
                     r.ref ? 'text-secondary print:text-gray-500' :
-                    parseFloat(r.e0) > 0 ? 'text-green-400 print:text-green-700' :
-                    'text-red-400 print:text-red-700'
+                    parseFloat(r.e0) > 0 ? 'text-success print:text-green-700' :
+                    'text-error print:text-red-700'
                   }`}>{r.e0}</td>
                 </tr>
               ))}

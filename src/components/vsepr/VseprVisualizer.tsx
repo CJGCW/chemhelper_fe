@@ -431,8 +431,8 @@ export default function VseprVisualizer({
         <span className="font-mono text-xs text-dim">central: {central}</span>
         {use3D && (
           <span className="font-mono text-[10px] px-1.5 py-0.5 rounded"
-            style={{ background:'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                     color:'var(--c-halogen)', border:'1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)' }}>
+            style={{ background:'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                     color:'var(--c-halogen)', border:'1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
             3D
           </span>
         )}
@@ -449,8 +449,8 @@ export default function VseprVisualizer({
               {active && (
                 <motion.span layoutId="vsv-step-pill" className="absolute inset-0 rounded-full"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                    border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                    border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   }}
                   transition={{ type:'spring', stiffness:400, damping:32 }} />
               )}
@@ -472,7 +472,7 @@ export default function VseprVisualizer({
                   border: `1px solid ${rotating
                     ? 'color-mix(in srgb, #f87171 30%, transparent)'
                     : 'color-mix(in srgb, var(--c-halogen) 22%, transparent)'}`,
-                  color: rotating ? '#f87171' : 'var(--c-halogen)',
+                  color: rotating ? 'rgb(var(--color-error))' : 'var(--c-halogen)',
                 }}>
                 {rotating ? '❙❙ Pause' : '▶ Resume'}
               </button>
@@ -507,8 +507,8 @@ export default function VseprVisualizer({
                 : 'color-mix(in srgb, var(--c-halogen) 8%, rgb(var(--color-raised)))',
               border: `1px solid ${playing
                 ? 'color-mix(in srgb, #f87171 35%, transparent)'
-                : 'color-mix(in srgb, var(--c-halogen) 25%, transparent)'}`,
-              color: playing ? '#f87171' : 'var(--c-halogen)',
+                : 'color-mix(in srgb, var(--c-halogen) 40%, transparent)'}`,
+              color: playing ? 'rgb(var(--color-error))' : 'var(--c-halogen)',
             }}>
             {playing ? '■ Stop' : '▶ Play All'}
           </button>
@@ -703,7 +703,7 @@ export default function VseprVisualizer({
               exit={{ opacity:0, x:-10 }} transition={{ duration:0.18 }}
               className="flex flex-col gap-2">
 
-              <span className="font-mono text-[11px] text-secondary tracking-widest uppercase">
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase">
                 {STEP_LABEL[activeStep]}
               </span>
 

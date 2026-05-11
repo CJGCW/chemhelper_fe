@@ -5,7 +5,7 @@ import { generateMolecularDiagramProblem, type MolecularDiagramProblem } from '.
 import { useShowAnswers } from '../../stores/preferencesStore'
 
 const COLOR_A: SpeciesColor = { fill: '#38bdf8', text: '#0c4a6e' }
-const COLOR_B: SpeciesColor = { fill: '#fb923c', text: '#7c2d12' }
+const COLOR_B: SpeciesColor = { fill: 'rgb(var(--color-warning))', text: '#7c2d12' }
 const COLOR_P: SpeciesColor = { fill: '#a855f7', text: '#3b0764' }
 
 function speciesColors(productLabel: string): Record<string, SpeciesColor> {
@@ -82,13 +82,13 @@ export default function MolecularDiagramLRTool({ allowCustom: _a = true }: Props
     const selected = lrChoice === choice
     if (checked && selected) {
       return lrCorrect
-        ? { background: 'color-mix(in srgb, #22c55e 20%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, #22c55e 40%, transparent)', color: '#22c55e' }
-        : { background: 'color-mix(in srgb, #ef4444 20%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, #ef4444 40%, transparent)', color: '#ef4444' }
+        ? { background: 'color-mix(in srgb, #22c55e 20%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, #22c55e 40%, transparent)', color: 'rgb(var(--color-success))' }
+        : { background: 'color-mix(in srgb, #ef4444 20%, rgb(var(--color-raised)))', border: '1px solid color-mix(in srgb, #ef4444 40%, transparent)', color: 'rgb(var(--color-error))' }
     }
     if (selected) {
       return {
-        background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-        border:     '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+        background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+        border:     '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
         color:      'var(--c-halogen)',
       }
     }
@@ -140,7 +140,7 @@ export default function MolecularDiagramLRTool({ allowCustom: _a = true }: Props
             </button>
           ))}
           {checked && lrCorrect !== null && (
-            <span className={`font-mono text-xs ${lrCorrect ? 'text-green-400' : 'text-red-400'}`}>
+            <span className={`font-mono text-xs ${lrCorrect ? 'text-success' : 'text-error'}`}>
               {lrCorrect ? '✓ Correct' : showAnswers ? `✗ Answer: ${problem.limiting}` : '✗ Incorrect — try again'}
             </span>
           )}
@@ -170,7 +170,7 @@ export default function MolecularDiagramLRTool({ allowCustom: _a = true }: Props
             }}
           />
           {checked && cntCorrect !== null && (
-            <span className={`font-mono text-xs ${cntCorrect ? 'text-green-400' : 'text-red-400'}`}>
+            <span className={`font-mono text-xs ${cntCorrect ? 'text-success' : 'text-error'}`}>
               {cntCorrect ? '✓ Correct' : showAnswers ? `✗ Answer: ${problem.productCount}` : '✗ Incorrect — try again'}
             </span>
           )}
@@ -183,7 +183,7 @@ export default function MolecularDiagramLRTool({ allowCustom: _a = true }: Props
           className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-            border:     '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            border:     '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color:      'var(--c-halogen)',
           }}>
           Check
@@ -212,7 +212,7 @@ export default function MolecularDiagramLRTool({ allowCustom: _a = true }: Props
 
       {/* Summary badge when both correct */}
       {bothOk && (
-        <p className="font-mono text-xs text-green-400">
+        <p className="font-mono text-xs text-success">
           ✓ {problem.limiting} is limiting — {problem.productCount} {problem.productLabel} form
           {problem.excessA > 0 ? `, ${problem.excessA} A remain` : ''}
           {problem.excessB > 0 ? `, ${problem.excessB} B remain` : ''}

@@ -89,14 +89,14 @@ export default function ChainedProblem({ scenario, steps, onComplete }: ChainedP
 
           const borderColor = isDone
             ? (isCorrect
-                ? 'color-mix(in srgb, #4ade80 38%, rgb(var(--color-border)))'
-                : 'color-mix(in srgb, #f87171 28%, rgb(var(--color-border)))')
+                ? 'color-mix(in srgb, rgb(var(--color-success)) 38%, rgb(var(--color-border)))'
+                : 'color-mix(in srgb, rgb(var(--color-error)) 28%, rgb(var(--color-border)))')
             : isActive
             ? 'color-mix(in srgb, var(--c-halogen) 35%, rgb(var(--color-border)))'
             : 'rgb(var(--color-border))'
 
           const badgeColor = isDone
-            ? (isCorrect ? '#4ade80' : '#f87171')
+            ? (isCorrect ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))')
             : isActive ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)'
 
           return (
@@ -112,7 +112,7 @@ export default function ChainedProblem({ scenario, steps, onComplete }: ChainedP
               {/* Header row */}
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-[11px] px-1.5 py-0.5 rounded-sm"
+                  <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm"
                     style={{
                       color: badgeColor,
                       background: `color-mix(in srgb, ${badgeColor} 13%, transparent)`,
@@ -122,7 +122,7 @@ export default function ChainedProblem({ scenario, steps, onComplete }: ChainedP
                   </span>
                   {isDone && (
                     <span className="font-mono text-xs"
-                      style={{ color: isCorrect ? '#4ade80' : '#f87171' }}>
+                      style={{ color: isCorrect ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                       {isCorrect ? '✓ correct' : isRevealed ? '→ shown' : '✗'}
                     </span>
                   )}
@@ -171,9 +171,9 @@ export default function ChainedProblem({ scenario, steps, onComplete }: ChainedP
                           onClick={() => patch(idx, { verify: 'none' })}
                           className="shrink-0 px-3 py-2 rounded-sm font-sans text-sm font-medium"
                           style={{
-                            background: 'color-mix(in srgb, #facc15 11%, rgb(var(--color-raised)))',
-                            border:     '1px solid color-mix(in srgb, #facc15 28%, transparent)',
-                            color:      '#facc15',
+                            background: 'color-mix(in srgb, rgb(var(--color-warning)) 11%, rgb(var(--color-raised)))',
+                            border:     '1px solid color-mix(in srgb, rgb(var(--color-warning)) 28%, transparent)',
+                            color:      'rgb(var(--color-warning))',
                           }}>
                           Try again
                         </button>
@@ -181,9 +181,9 @@ export default function ChainedProblem({ scenario, steps, onComplete }: ChainedP
                           onClick={() => handleReveal(idx)}
                           className="shrink-0 px-3 py-2 rounded-sm font-sans text-sm font-medium"
                           style={{
-                            background: 'color-mix(in srgb, #f87171 9%, rgb(var(--color-raised)))',
-                            border:     '1px solid color-mix(in srgb, #f87171 22%, transparent)',
-                            color:      '#f87171',
+                            background: 'color-mix(in srgb, rgb(var(--color-error)) 9%, rgb(var(--color-raised)))',
+                            border:     '1px solid color-mix(in srgb, rgb(var(--color-error)) 22%, transparent)',
+                            color:      'rgb(var(--color-error))',
                           }}>
                           Show &amp; continue
                         </button>
@@ -196,7 +196,7 @@ export default function ChainedProblem({ scenario, steps, onComplete }: ChainedP
                                    disabled:opacity-30 disabled:cursor-not-allowed"
                         style={{
                           background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-                          border:     '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                          border:     '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                           color:      'var(--c-halogen)',
                         }}>
                         Check
@@ -208,7 +208,7 @@ export default function ChainedProblem({ scenario, steps, onComplete }: ChainedP
 
               {/* Incorrect feedback */}
               {isActive && ss.verify === 'incorrect' && (
-                <p className="font-mono text-xs" style={{ color: '#f87171' }}>
+                <p className="font-mono text-xs" style={{ color: 'rgb(var(--color-error))' }}>
                   Not quite — check your numbers and try again, or show the answer to continue.
                 </p>
               )}
@@ -243,14 +243,14 @@ export default function ChainedProblem({ scenario, steps, onComplete }: ChainedP
             className="rounded-sm border p-4 flex items-center justify-between gap-3"
             style={{
               borderColor: correctCount === steps.length
-                ? 'color-mix(in srgb, #4ade80 38%, rgb(var(--color-border)))'
+                ? 'color-mix(in srgb, rgb(var(--color-success)) 38%, rgb(var(--color-border)))'
                 : 'color-mix(in srgb, var(--c-halogen) 35%, rgb(var(--color-border)))',
               background: correctCount === steps.length
-                ? 'color-mix(in srgb, #4ade80 6%, rgb(var(--color-surface)))'
+                ? 'color-mix(in srgb, rgb(var(--color-success)) 6%, rgb(var(--color-surface)))'
                 : 'color-mix(in srgb, var(--c-halogen) 6%, rgb(var(--color-surface)))',
             }}>
             <span className="font-sans text-sm font-semibold"
-              style={{ color: correctCount === steps.length ? '#4ade80' : 'var(--c-halogen)' }}>
+              style={{ color: correctCount === steps.length ? 'rgb(var(--color-success))' : 'var(--c-halogen)' }}>
               {correctCount === steps.length
                 ? `All ${steps.length} steps correct!`
                 : `${correctCount} of ${steps.length} steps solved correctly`}

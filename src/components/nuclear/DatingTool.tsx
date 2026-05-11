@@ -86,7 +86,7 @@ export default function DatingTool() {
         Activities can be in any consistent unit (dpm, Bq, counts/min). The ratio A₀/A is what matters.
       </p>
 
-      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      {error && <p className="font-mono text-xs text-error">{error}</p>}
 
       <div className="flex items-stretch gap-2">
         <button onClick={handleCalculate}
@@ -94,7 +94,7 @@ export default function DatingTool() {
           className="shrink-0 px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-40"
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           }}>
           Calculate

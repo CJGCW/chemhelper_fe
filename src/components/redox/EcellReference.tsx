@@ -74,7 +74,7 @@ export default function EcellReference() {
                 <tr key={r.half_reaction} className="border-b border-border last:border-0">
                   <td className="px-4 py-2 text-secondary">{r.half_reaction}</td>
                   <td className="px-4 py-2 text-right font-semibold"
-                    style={{ color: parseFloat(r.E) > 0 ? '#4ade80' : parseFloat(r.E) < 0 ? '#f87171' : 'var(--c-halogen)' }}>
+                    style={{ color: parseFloat(r.E) > 0 ? 'rgb(var(--color-success))' : parseFloat(r.E) < 0 ? 'rgb(var(--color-error))' : 'var(--c-halogen)' }}>
                     {r.E}
                   </td>
                 </tr>

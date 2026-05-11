@@ -104,15 +104,15 @@ export default function ConcentrationCellTool() {
           </div>
         </div>
 
-        {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+        {error && <p className="font-mono text-xs text-error">{error}</p>}
 
         <button
           onClick={handleCalculate}
           disabled={!highRaw.trim() || !lowRaw.trim() || !nRaw.trim()}
           className="self-start px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-30"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           }}
         >
@@ -136,7 +136,7 @@ export default function ConcentrationCellTool() {
           >
             <p className="font-mono text-xs tracking-widest uppercase text-secondary">Cell EMF</p>
             <div className="flex items-baseline gap-2">
-              <span className="font-mono text-3xl font-semibold" style={{ color: result.E > 0 ? '#4ade80' : '#f87171' }}>
+              <span className="font-mono text-3xl font-semibold" style={{ color: result.E > 0 ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                 {result.E >= 0 ? '+' : ''}{result.E.toFixed(5)} V
               </span>
             </div>

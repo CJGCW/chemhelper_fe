@@ -125,8 +125,8 @@ export default function FormalChargeTool({ allowCustom = true }: Props) {
     const hasValue = assigned !== null && assigned !== undefined
 
     const strokeColor =
-      result === 'correct'   ? '#4ade80'
-      : result === 'incorrect' ? '#f87171'
+      result === 'correct'   ? 'rgb(var(--color-success))'
+      : result === 'incorrect' ? 'rgb(var(--color-error))'
       : isSelected             ? 'var(--c-halogen)'
       : hasValue               ? '#60a5fa'
       : 'rgba(200,200,200,0.35)'
@@ -193,8 +193,8 @@ export default function FormalChargeTool({ allowCustom = true }: Props) {
                   {active && (
                     <motion.div layoutId="fc-diff-pill" className="absolute inset-0 rounded-full"
                       style={{
-                        background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                        border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                        background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                        border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                       }}
                       transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
                   )}
@@ -227,18 +227,18 @@ export default function FormalChargeTool({ allowCustom = true }: Props) {
             <h3 className="font-sans text-base font-semibold text-bright">{exercise.name}</h3>
             <span className="font-mono text-[10px] px-1.5 py-0.5 rounded-sm"
               style={{
-                color: exercise.difficulty === 'basic' ? '#4ade80'
-                  : exercise.difficulty === 'intermediate' ? '#fbbf24' : '#f87171',
+                color: exercise.difficulty === 'basic' ? 'rgb(var(--color-success))'
+                  : exercise.difficulty === 'intermediate' ? 'rgb(var(--color-warning))' : 'rgb(var(--color-error))',
                 background: exercise.difficulty === 'basic'
-                  ? 'color-mix(in srgb, #4ade80 12%, transparent)'
+                  ? 'color-mix(in srgb, rgb(var(--color-success)) 12%, transparent)'
                   : exercise.difficulty === 'intermediate'
-                  ? 'color-mix(in srgb, #fbbf24 12%, transparent)'
-                  : 'color-mix(in srgb, #f87171 12%, transparent)',
+                  ? 'color-mix(in srgb, rgb(var(--color-warning)) 12%, transparent)'
+                  : 'color-mix(in srgb, rgb(var(--color-error)) 12%, transparent)',
                 border: exercise.difficulty === 'basic'
-                  ? '1px solid color-mix(in srgb, #4ade80 25%, transparent)'
+                  ? '1px solid color-mix(in srgb, rgb(var(--color-success)) 25%, transparent)'
                   : exercise.difficulty === 'intermediate'
-                  ? '1px solid color-mix(in srgb, #fbbf24 25%, transparent)'
-                  : '1px solid color-mix(in srgb, #f87171 25%, transparent)',
+                  ? '1px solid color-mix(in srgb, rgb(var(--color-warning)) 25%, transparent)'
+                  : '1px solid color-mix(in srgb, rgb(var(--color-error)) 25%, transparent)',
               }}>
               {exercise.difficulty}
             </span>
@@ -309,7 +309,7 @@ export default function FormalChargeTool({ allowCustom = true }: Props) {
                         ? 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-surface)))'
                         : 'rgb(var(--color-surface))',
                       border: isSelected
-                        ? '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)'
+                        ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)'
                         : '1px solid rgb(var(--color-border))',
                       color: isSelected ? 'var(--c-halogen)'
                         : hasVal ? 'rgba(var(--overlay),0.7)'
@@ -332,7 +332,7 @@ export default function FormalChargeTool({ allowCustom = true }: Props) {
                          disabled:opacity-30 disabled:cursor-not-allowed"
               style={{
                 background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               }}>
               Check answers
@@ -350,7 +350,7 @@ export default function FormalChargeTool({ allowCustom = true }: Props) {
                 {/* Score line */}
                 <div className="flex items-center gap-3 flex-wrap">
                   <span className="font-sans text-sm font-semibold"
-                    style={{ color: allCorrect ? '#4ade80' : 'var(--c-halogen)' }}>
+                    style={{ color: allCorrect ? 'rgb(var(--color-success))' : 'var(--c-halogen)' }}>
                     {allCorrect
                       ? `All ${totalAtoms} correct!`
                       : `${correctCount} of ${totalAtoms} correct`}
@@ -372,13 +372,13 @@ export default function FormalChargeTool({ allowCustom = true }: Props) {
                       {incorrectAtoms.map(atom => (
                         <div key={atom.id} className="flex items-center gap-1 font-mono text-xs px-2 py-1 rounded-sm"
                           style={{
-                            background: 'color-mix(in srgb, #f87171 8%, rgb(var(--color-surface)))',
-                            border: '1px solid color-mix(in srgb, #f87171 22%, transparent)',
+                            background: 'color-mix(in srgb, rgb(var(--color-error)) 8%, rgb(var(--color-surface)))',
+                            border: '1px solid color-mix(in srgb, rgb(var(--color-error)) 22%, transparent)',
                           }}>
-                          <span style={{ color: '#f87171' }}>{atom.id}</span>
+                          <span style={{ color: 'rgb(var(--color-error))' }}>{atom.id}</span>
                           <span className="text-dim">
                             {' '}you: {fmtFC(assignments[atom.id]!)}{' '}
-                            {showAnswer && <>→ correct: <span style={{ color: '#4ade80' }}>{fmtFC(atom.formal_charge)}</span></>}
+                            {showAnswer && <>→ correct: <span style={{ color: 'rgb(var(--color-success))' }}>{fmtFC(atom.formal_charge)}</span></>}
                           </span>
                         </div>
                       ))}
@@ -401,7 +401,7 @@ export default function FormalChargeTool({ allowCustom = true }: Props) {
                   className="self-start px-5 py-2 rounded-sm font-sans text-sm font-medium transition-all"
                   style={{
                     background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-                    border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                    border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                     color: 'var(--c-halogen)',
                   }}>
                   Next exercise →

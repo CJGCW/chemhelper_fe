@@ -16,28 +16,32 @@ export default function ResultDisplay({ label, value, unit, sigFigsValue, verifi
   const isCorrect   = verified === 'correct'
   const isIncorrect = verified === 'incorrect'
 
+  const successToken = 'rgb(var(--color-success))'
+  const errorToken   = 'rgb(var(--color-error))'
+  const warningToken = 'rgb(var(--color-warning))'
+
   const borderColor = !hasVerification
     ? (value ? 'color-mix(in srgb, var(--c-halogen) 35%, rgb(var(--color-border)))' : 'rgb(var(--color-border))')
     : isSFWarning
-    ? 'color-mix(in srgb, #facc15 45%, rgb(var(--color-border)))'
+    ? `color-mix(in srgb, ${warningToken} 45%, rgb(var(--color-border)))`
     : isCorrect
-    ? 'color-mix(in srgb, #4ade80 45%, rgb(var(--color-border)))'
-    : 'color-mix(in srgb, #f87171 45%, rgb(var(--color-border)))'
+    ? `color-mix(in srgb, ${successToken} 45%, rgb(var(--color-border)))`
+    : `color-mix(in srgb, ${errorToken} 45%, rgb(var(--color-border)))`
 
   const bgColor = !hasVerification
     ? (value ? 'color-mix(in srgb, var(--c-halogen) 6%, rgb(var(--color-surface)))' : 'rgb(var(--color-surface))')
     : isSFWarning
-    ? 'color-mix(in srgb, #facc15 5%, rgb(var(--color-surface)))'
+    ? `color-mix(in srgb, ${warningToken} 5%, rgb(var(--color-surface)))`
     : isCorrect
-    ? 'color-mix(in srgb, #4ade80 6%, rgb(var(--color-surface)))'
-    : 'color-mix(in srgb, #f87171 6%, rgb(var(--color-surface)))'
+    ? `color-mix(in srgb, ${successToken} 6%, rgb(var(--color-surface)))`
+    : `color-mix(in srgb, ${errorToken} 6%, rgb(var(--color-surface)))`
 
-  const verifyColor  = isSFWarning ? '#facc15' : isCorrect ? '#4ade80' : '#f87171'
+  const verifyColor  = isSFWarning ? warningToken : isCorrect ? successToken : errorToken
   const verifyBorder = isSFWarning
-    ? 'color-mix(in srgb, #facc15 20%, transparent)'
+    ? `color-mix(in srgb, ${warningToken} 20%, transparent)`
     : isCorrect
-    ? 'color-mix(in srgb, #4ade80 20%, transparent)'
-    : 'color-mix(in srgb, #f87171 20%, transparent)'
+    ? `color-mix(in srgb, ${successToken} 20%, transparent)`
+    : `color-mix(in srgb, ${errorToken} 20%, transparent)`
   const verifyIcon   = isSFWarning ? '⚠' : isCorrect ? '✓' : '✗'
   const verifyLabel  = isSFWarning
     ? 'Correct value — check sig figs'
@@ -68,7 +72,7 @@ export default function ResultDisplay({ label, value, unit, sigFigsValue, verifi
             </span>
             <span className="font-mono text-base text-secondary">{unit}</span>
             {sigFigsValue && sigFigsValue !== value && (
-              <span className="font-mono text-sm" style={{ color: '#f97316' }}>
+              <span className="font-mono text-sm" style={{ color: 'rgb(var(--color-warning))' }}>
                 = <span className="font-semibold">{sigFigsValue}</span> {unit} with sig figs
               </span>
             )}

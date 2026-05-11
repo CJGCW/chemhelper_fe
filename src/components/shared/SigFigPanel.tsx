@@ -32,7 +32,7 @@ export function SigFigContent({ breakdown, open }: { breakdown: SigFigBreakdown 
                             ? 'color-mix(in srgb, #f97316 15%, transparent)'
                             : 'color-mix(in srgb, white 6%, transparent)',
                           color: inp.count === breakdown.limiting
-                            ? '#f97316'
+                            ? 'rgb(var(--color-warning))'
                             : 'rgba(var(--overlay),0.4)',
                           border: inp.count === breakdown.limiting
                             ? '1px solid color-mix(in srgb, #f97316 35%, transparent)'
@@ -63,7 +63,7 @@ export function SigFigContent({ breakdown, open }: { breakdown: SigFigBreakdown 
                 <span className="text-dim">→</span>
                 <div className="flex flex-col">
                   <span className="font-mono text-xs text-dim">Rounded ({breakdown.limiting} sf)</span>
-                  <span className="font-mono text-base" style={{ color: '#f97316' }}>
+                  <span className="font-mono text-base" style={{ color: 'rgb(var(--color-warning))' }}>
                     {breakdown.roundedStr}
                   </span>
                 </div>
@@ -85,7 +85,7 @@ export function SigFigTrigger({ breakdown, open, onToggle }: { breakdown: SigFig
       onClick={onToggle}
       className="flex items-center gap-2 px-3 rounded-sm font-sans text-sm font-medium transition-colors border h-full"
       style={{
-        color: open ? '#f97316' : 'rgba(var(--overlay),0.45)',
+        color: open ? 'rgb(var(--color-warning))' : 'rgba(var(--overlay),0.45)',
         borderColor: open ? 'color-mix(in srgb, #f97316 35%, transparent)' : 'color-mix(in srgb, white 10%, transparent)',
         background: open ? 'color-mix(in srgb, #f97316 8%, transparent)' : 'transparent',
       }}

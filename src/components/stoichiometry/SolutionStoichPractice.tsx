@@ -57,8 +57,8 @@ export default function SolutionStoichPractice({ allowCustom = true }: Props) {
   const canCheck = input.trim() !== '' && !checked
 
   const borderClass = !checked ? 'border-border bg-surface'
-    : correct ? 'border-emerald-800/50 bg-emerald-950/20'
-    : 'border-rose-800/50 bg-rose-950/20'
+    : correct ? 'feedback-success'
+    : 'feedback-error'
 
   return (
     <div className="flex flex-col gap-5 max-w-2xl">
@@ -128,8 +128,8 @@ export default function SolutionStoichPractice({ allowCustom = true }: Props) {
             className={`w-36 bg-raised border rounded-sm px-3 py-1.5 font-mono text-base
                         placeholder-dim focus:outline-none focus:border-muted
                         disabled:cursor-not-allowed transition-colors
-                        ${checked && correct  ? 'border-emerald-700/60 text-emerald-300'
-                        : checked && !correct ? 'border-rose-700/60 text-rose-300'
+                        ${checked && correct  ? 'border-success-border text-success-strong'
+                        : checked && !correct ? 'border-error-border text-error-strong'
                         : 'border-border text-bright'}`}
           />
           <span className="font-mono text-sm text-secondary">{problem.answerUnit}</span>
@@ -139,14 +139,14 @@ export default function SolutionStoichPractice({ allowCustom = true }: Props) {
               className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors
                          disabled:opacity-30 disabled:cursor-not-allowed"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               }}>
               Check
             </button>
           ) : (
-            <span className={`font-sans text-sm font-medium ${correct ? 'text-emerald-400' : 'text-rose-400'}`}>
+            <span className={`font-sans text-sm font-medium ${correct ? 'text-success' : 'text-error'}`}>
               {correct ? '✓ Correct' : '✗ Incorrect'}
             </span>
           )}

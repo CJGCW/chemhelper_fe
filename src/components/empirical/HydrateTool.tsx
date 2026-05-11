@@ -155,8 +155,8 @@ export default function HydrateTool() {
             {toolMode === m && (
               <motion.div layoutId="hydrate-tool-mode" className="absolute inset-0 rounded-full"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                  border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 }}
                 transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
             )}
@@ -234,7 +234,7 @@ export default function HydrateTool() {
         </div>
       )}
 
-      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      {error && <p className="font-mono text-xs text-error">{error}</p>}
 
       <div className="flex items-stretch gap-2">
         <button onClick={handleCalculate} disabled={!canCalc}
@@ -242,7 +242,7 @@ export default function HydrateTool() {
                      disabled:opacity-30 disabled:cursor-not-allowed"
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           }}>
           Calculate x

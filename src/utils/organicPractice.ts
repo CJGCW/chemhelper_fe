@@ -8,10 +8,18 @@ import { classifyHydrocarbon } from '../chem/organic'
 
 export interface HydrocarbonProblem {
   formula: string
+  smiles: string
   C: number
   H: number
   correctFamily: 'alkane' | 'alkene' | 'alkyne' | 'aromatic'
   options: string[]
+}
+
+function straightChainSmiles(n: number, family: 'alkane' | 'alkene' | 'alkyne'): string {
+  const chain = 'C'.repeat(n)
+  if (family === 'alkane') return chain
+  if (family === 'alkene') return chain.slice(0, n - 1) + '=' + 'C'
+  return chain.slice(0, n - 1) + '#' + 'C'
 }
 
 /** Generate a random hydrocarbon classification problem (C2–C8). */
@@ -34,8 +42,9 @@ export function genHydrocarbonProblem(): HydrocarbonProblem {
     formula = `C${n}H${H}`
   }
 
+  const smiles = straightChainSmiles(n, family)
   const options = ['alkane', 'alkene', 'alkyne']
-  return { formula, C, H, correctFamily: family, options }
+  return { formula, smiles, C, H, correctFamily: family, options }
 }
 
 /** Verify a hydrocarbon classification answer. */
@@ -59,21 +68,25 @@ export function hydrocarbonSolutionSteps(problem: HydrocarbonProblem): string[] 
 export interface IsomerProblem {
   formula1: string
   formula2: string
+  smiles1?: string
+  smiles2?: string
+  label1?: string
+  label2?: string
   areIsomers: boolean
   explanation: string
 }
 
-const ISOMER_PAIRS: { formula1: string; formula2: string; areIsomers: boolean; explanation: string }[] = [
-  { formula1: 'C4H10', formula2: 'C4H10', areIsomers: true,  explanation: 'Both C₄H₁₀ — butane and isobutane are structural isomers (same molecular formula, different connectivity).' },
-  { formula1: 'C4H10', formula2: 'C4H8',  areIsomers: false, explanation: 'C₄H₁₀ vs C₄H₈ — different molecular formulas (alkane vs alkene), not isomers.' },
-  { formula1: 'C3H8',  formula2: 'C3H8',  areIsomers: true,  explanation: 'Both C₃H₈ — propane has only one structural isomer (itself) among straight-chain alkanes.' },
-  { formula1: 'C5H12', formula2: 'C5H12', areIsomers: true,  explanation: 'Both C₅H₁₂ — pentane has three structural isomers (pentane, isopentane, neopentane).' },
-  { formula1: 'C2H6',  formula2: 'C3H8',  areIsomers: false, explanation: 'C₂H₆ vs C₃H₈ — ethane and propane have different molecular formulas.' },
-  { formula1: 'C4H8',  formula2: 'C4H8',  areIsomers: true,  explanation: 'Both C₄H₈ — 1-butene and 2-butene are structural isomers (alkenes); cis- and trans-2-butene are geometric isomers.' },
-  { formula1: 'C6H14', formula2: 'C6H14', areIsomers: true,  explanation: 'Both C₆H₁₄ — hexane has five structural isomers.' },
-  { formula1: 'C2H6',  formula2: 'C2H4',  areIsomers: false, explanation: 'C₂H₆ (ethane) vs C₂H₄ (ethene) — different molecular formulas.' },
-  { formula1: 'C3H6',  formula2: 'C3H6',  areIsomers: true,  explanation: 'Both C₃H₆ — propene and cyclopropane are constitutional isomers (one double bond vs one ring, DoU=1).' },
-  { formula1: 'C4H10', formula2: 'C3H8',  areIsomers: false, explanation: 'C₄H₁₀ vs C₃H₈ — butane and propane have different molecular formulas.' },
+const ISOMER_PAIRS: IsomerProblem[] = [
+  { formula1: 'C4H10', formula2: 'C4H10', smiles1: 'CCCC', smiles2: 'CC(C)C', label1: 'butane', label2: 'isobutane', areIsomers: true, explanation: 'Both C₄H₁₀ — butane and isobutane are structural isomers (same molecular formula, different connectivity).' },
+  { formula1: 'C4H10', formula2: 'C4H8',  smiles1: 'CCCC', smiles2: 'C=CCC', label1: 'butane', label2: '1-butene', areIsomers: false, explanation: 'C₄H₁₀ vs C₄H₈ — different molecular formulas (alkane vs alkene), not isomers.' },
+  { formula1: 'C3H8',  formula2: 'C3H8',  areIsomers: true, explanation: 'Both C₃H₈ — propane has only one structural isomer (itself) among straight-chain alkanes.' },
+  { formula1: 'C5H12', formula2: 'C5H12', smiles1: 'CCCCC', smiles2: 'CC(C)CC', label1: 'pentane', label2: 'isopentane', areIsomers: true, explanation: 'Both C₅H₁₂ — pentane has three structural isomers (pentane, isopentane, neopentane).' },
+  { formula1: 'C2H6',  formula2: 'C3H8',  smiles1: 'CC',    smiles2: 'CCC',    label1: 'ethane',  label2: 'propane',   areIsomers: false, explanation: 'C₂H₆ vs C₃H₈ — ethane and propane have different molecular formulas.' },
+  { formula1: 'C4H8',  formula2: 'C4H8',  smiles1: 'C=CCC', smiles2: 'CC=CC',  label1: '1-butene', label2: '2-butene', areIsomers: true, explanation: 'Both C₄H₈ — 1-butene and 2-butene are structural isomers (alkenes); cis- and trans-2-butene are geometric isomers.' },
+  { formula1: 'C6H14', formula2: 'C6H14', smiles1: 'CCCCCC', smiles2: 'CCC(C)CC', label1: 'hexane', label2: '2-methylpentane', areIsomers: true, explanation: 'Both C₆H₁₄ — hexane has five structural isomers.' },
+  { formula1: 'C2H6',  formula2: 'C2H4',  smiles1: 'CC',    smiles2: 'C=C',    label1: 'ethane',  label2: 'ethene',   areIsomers: false, explanation: 'C₂H₆ (ethane) vs C₂H₄ (ethene) — different molecular formulas.' },
+  { formula1: 'C3H6',  formula2: 'C3H6',  smiles1: 'CC=C',  smiles2: 'C1CC1',  label1: 'propene', label2: 'cyclopropane', areIsomers: true, explanation: 'Both C₃H₆ — propene and cyclopropane are constitutional isomers (one double bond vs one ring, DoU=1).' },
+  { formula1: 'C4H10', formula2: 'C3H8',  smiles1: 'CCCC',  smiles2: 'CCC',    label1: 'butane',  label2: 'propane',  areIsomers: false, explanation: 'C₄H₁₀ vs C₃H₈ — butane and propane have different molecular formulas.' },
 ]
 
 /** Generate a random isomer problem. */
@@ -107,6 +120,8 @@ export function checkNamingAnswer(correctName: string, answer: string): boolean 
 
 export interface FunctionalGroupProblem {
   description: string
+  exampleSmiles?: string
+  exampleName?: string
   correctId: string
   options: string[]  // group names
 }
@@ -133,7 +148,7 @@ export function genFunctionalGroupProblem(): FunctionalGroupProblem {
   }
   const options = [group.name, ...distractors].sort(() => Math.random() - 0.5)
 
-  return { description, correctId: group.name, options }
+  return { description, exampleSmiles: ex.smiles, exampleName: ex.name, correctId: group.name, options }
 }
 
 /** Check a functional group answer. */
@@ -145,6 +160,8 @@ export function checkFunctionalGroupAnswer(problem: FunctionalGroupProblem, answ
 
 export interface OrganicReactionProblem {
   scenario: string
+  reactantSmiles?: string
+  reactantLabel?: string
   correctType: string
   options: string[]
   explanation: string
@@ -155,72 +172,84 @@ const REACTION_TYPE_OPTIONS = ['Addition', 'Substitution', 'Elimination', 'Combu
 const REACTION_PROBLEMS: OrganicReactionProblem[] = [
   {
     scenario: 'CH₂=CH₂ + H₂ → CH₃-CH₃ (ethene reacts with hydrogen gas to give ethane)',
+    reactantSmiles: 'C=C', reactantLabel: 'ethene',
     correctType: 'Addition',
     options: REACTION_TYPE_OPTIONS,
     explanation: 'The double bond breaks and two atoms add across it — this is an addition reaction (hydrogenation).',
   },
   {
     scenario: 'CH₄ + Cl₂ → CH₃Cl + HCl (methane reacts with chlorine in UV light)',
+    reactantSmiles: 'C', reactantLabel: 'methane',
     correctType: 'Substitution',
     options: REACTION_TYPE_OPTIONS,
     explanation: 'A Cl replaces an H on methane. Alkane + halogen → haloalkane + HX is a halogenation substitution.',
   },
   {
     scenario: 'CH₃CH₂OH → CH₂=CH₂ + H₂O (ethanol heated with acid catalyst)',
+    reactantSmiles: 'CCO', reactantLabel: 'ethanol',
     correctType: 'Elimination',
     options: REACTION_TYPE_OPTIONS,
     explanation: 'H and OH are removed from adjacent carbons, forming a double bond — this is elimination (dehydration).',
   },
   {
     scenario: 'C₃H₈ + 5O₂ → 3CO₂ + 4H₂O',
+    reactantSmiles: 'CCC', reactantLabel: 'propane',
     correctType: 'Combustion',
     options: REACTION_TYPE_OPTIONS,
     explanation: 'Hydrocarbon + O₂ → CO₂ + H₂O is always a combustion reaction.',
   },
   {
     scenario: 'CH₃COOH + CH₃OH → CH₃COOCH₃ + H₂O (acetic acid + methanol)',
+    reactantSmiles: 'CC(=O)O', reactantLabel: 'acetic acid',
     correctType: 'Condensation',
     options: REACTION_TYPE_OPTIONS,
     explanation: 'An ester and water are formed from a carboxylic acid and alcohol — this is a condensation (esterification) reaction.',
   },
   {
     scenario: 'CH₂=CH₂ + Br₂ → CH₂Br-CH₂Br (ethene reacts with bromine)',
+    reactantSmiles: 'C=C', reactantLabel: 'ethene',
     correctType: 'Addition',
     options: REACTION_TYPE_OPTIONS,
     explanation: 'Br₂ adds across the double bond — classic addition reaction (halogenation of an alkene).',
   },
   {
     scenario: 'CH₃CH₂Cl + KOH(alc) → CH₂=CH₂ + KCl + H₂O',
+    reactantSmiles: 'CCCl', reactantLabel: 'chloroethane',
     correctType: 'Elimination',
     options: REACTION_TYPE_OPTIONS,
     explanation: 'H and Cl are removed from adjacent carbons, forming a double bond — elimination (dehydrohalogenation).',
   },
   {
     scenario: 'C₂H₅OH + HCOOH → HCOOC₂H₅ + H₂O (ethanol + formic acid)',
+    reactantSmiles: 'CCO', reactantLabel: 'ethanol',
     correctType: 'Condensation',
     options: REACTION_TYPE_OPTIONS,
     explanation: 'Ethyl formate (ester) + water form from the reaction of an alcohol and carboxylic acid — condensation.',
   },
   {
     scenario: 'C₆H₁₄ + 19/2 O₂ → 6CO₂ + 7H₂O',
+    reactantSmiles: 'CCCCCC', reactantLabel: 'hexane',
     correctType: 'Combustion',
     options: REACTION_TYPE_OPTIONS,
     explanation: 'Complete combustion of hexane — a hydrocarbon burning in excess oxygen produces CO₂ and H₂O.',
   },
   {
     scenario: 'C₂H₄ + H₂O → C₂H₅OH (ethene + water with acid catalyst)',
+    reactantSmiles: 'C=C', reactantLabel: 'ethene',
     correctType: 'Addition',
     options: REACTION_TYPE_OPTIONS,
     explanation: 'Water adds across the double bond of ethene to give ethanol — this is hydration (addition reaction).',
   },
   {
     scenario: 'CH₃Br + OH⁻ → CH₃OH + Br⁻',
+    reactantSmiles: 'CBr', reactantLabel: 'bromomethane',
     correctType: 'Substitution',
     options: REACTION_TYPE_OPTIONS,
     explanation: 'OH⁻ replaces Br⁻ on the carbon — nucleophilic substitution (SN2 mechanism).',
   },
   {
     scenario: 'CH₃CH₂Br + KOH(aq) → CH₃CH₂OH + KBr',
+    reactantSmiles: 'CCBr', reactantLabel: 'bromoethane',
     correctType: 'Substitution',
     options: REACTION_TYPE_OPTIONS,
     explanation: 'Aqueous KOH causes OH to substitute for Br — a nucleophilic substitution reaction.',

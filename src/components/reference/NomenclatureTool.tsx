@@ -162,8 +162,8 @@ export default function NomenclatureTool() {
               {mode === m && (
                 <motion.div layoutId="nom-mode" className="absolute inset-0 rounded-full"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                    border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                    border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   }}
                   transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
               )}
@@ -193,10 +193,10 @@ export default function NomenclatureTool() {
               style={{
                 color: active ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.35)',
                 background: active
-                  ? 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))'
+                  ? 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))'
                   : 'rgb(var(--color-surface))',
                 border: active
-                  ? '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)'
+                  ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)'
                   : '1px solid rgb(var(--color-border))',
               }}>
               {TYPE_LABELS[t]}

@@ -170,7 +170,7 @@ export default function EnthalpyReference() {
                 <span className="font-mono text-sm font-semibold text-bright">{e.formula}</span>
                 <span className="font-sans text-sm text-primary">{e.name}</span>
                 <span className="font-mono text-sm text-secondary">({e.state})</span>
-                <span className="font-mono text-sm text-right" style={{ color: e.dhf === 0 ? 'rgba(var(--overlay),0.35)' : e.dhf < 0 ? '#34d399' : '#f87171' }}>
+                <span className="font-mono text-sm text-right" style={{ color: e.dhf === 0 ? 'rgba(var(--overlay),0.35)' : e.dhf < 0 ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                   {e.dhf === 0 ? '0' : e.dhf}
                 </span>
               </div>
@@ -203,7 +203,7 @@ export default function EnthalpyReference() {
                           <span className="font-sans text-sm text-primary">{e.name}</span>
                           <span className="font-mono text-sm text-secondary">({e.state})</span>
                           <span className="font-mono text-sm text-right"
-                            style={{ color: e.dhf === 0 ? 'rgba(var(--overlay),0.35)' : e.dhf < 0 ? '#34d399' : '#f87171' }}>
+                            style={{ color: e.dhf === 0 ? 'rgba(var(--overlay),0.35)' : e.dhf < 0 ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                             {e.dhf === 0 ? '0' : e.dhf}
                           </span>
                         </div>
@@ -218,8 +218,8 @@ export default function EnthalpyReference() {
 
         <p className="font-mono text-xs text-secondary">
           Values in kJ/mol at 298 K, 1 atm.{' '}
-          <span style={{ color: '#34d399' }}>Green</span> = negative (stable),{' '}
-          <span style={{ color: '#f87171' }}>Red</span> = positive (unstable relative to elements).
+          <span style={{ color: 'rgb(var(--color-success))' }}>Green</span> = negative (stable),{' '}
+          <span style={{ color: 'rgb(var(--color-error))' }}>Red</span> = positive (unstable relative to elements).
         </p>
       </div>
 

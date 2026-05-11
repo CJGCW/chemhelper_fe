@@ -270,7 +270,7 @@ function ExamplesContent() {
                 {ex.steps.map((s, j) => (
                   <p key={j} className="font-mono text-sm text-primary">{s}</p>
                 ))}
-                <p className="font-mono text-sm font-semibold text-emerald-400 mt-0.5">∴ {ex.ans}</p>
+                <p className="font-mono text-sm font-semibold text-success mt-0.5">∴ {ex.ans}</p>
               </div>
             </div>
           ))}
@@ -291,7 +291,7 @@ function ExamplesContent() {
           <div className="flex flex-col gap-0.5 pl-3 border-l-2 border-border">
             <p className="font-mono text-sm text-primary">V₂ = (2.00 atm × 4.00 L × 400 K) / (300 K × 1.00 atm)</p>
             <p className="font-mono text-sm text-primary">V₂ = 3200 / 300</p>
-            <p className="font-mono text-sm font-semibold text-emerald-400">∴ V₂ = 10.7 L</p>
+            <p className="font-mono text-sm font-semibold text-success">∴ V₂ = 10.7 L</p>
           </div>
         </div>
       </div>
@@ -336,7 +336,7 @@ function ExamplesContent() {
                 {ex.steps.map((s, j) => (
                   <p key={j} className="font-mono text-sm text-primary">{s}</p>
                 ))}
-                <p className="font-mono text-sm font-semibold text-emerald-400 mt-0.5">∴ {ex.ans}</p>
+                <p className="font-mono text-sm font-semibold text-success mt-0.5">∴ {ex.ans}</p>
               </div>
             </div>
           ))}
@@ -383,7 +383,7 @@ function ExamplesContent() {
                 {ex.steps.map((s, j) => (
                   <p key={j} className="font-mono text-sm text-primary">{s}</p>
                 ))}
-                <p className="font-mono text-sm font-semibold text-emerald-400 mt-0.5">∴ {ex.ans}</p>
+                <p className="font-mono text-sm font-semibold text-success mt-0.5">∴ {ex.ans}</p>
               </div>
             </div>
           ))}
@@ -445,7 +445,7 @@ function ExamplesContent() {
                 {ex.steps.map((s, j) => (
                   <p key={j} className="font-mono text-sm text-primary">{s}</p>
                 ))}
-                <p className="font-mono text-sm font-semibold text-emerald-400 mt-0.5">∴ {ex.ans}</p>
+                <p className="font-mono text-sm font-semibold text-success mt-0.5">∴ {ex.ans}</p>
               </div>
             </div>
           ))}
@@ -476,8 +476,8 @@ export default function IdealGasReference() {
             {pill === p && (
               <motion.div layoutId="ideal-gas-ref-pill" className="absolute inset-0 rounded-sm"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                  border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
             )}

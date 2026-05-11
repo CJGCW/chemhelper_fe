@@ -30,7 +30,7 @@ const ML = 10, MR = 16, MT = 14, MB = 28
 const PW = SVG_W - ML - MR
 const PH = SVG_H - MT - MB
 
-const C2 = '#fb923c'    // comparison gas
+const C2 = 'rgb(var(--color-warning))'    // comparison gas
 const C_MP  = '#fbbf24' // v_mp
 const C_AVG = '#60a5fa' // v_avg
 const C_RMS = '#f472b6' // v_rms
@@ -108,7 +108,7 @@ export default function MaxwellBoltzmann() {
               <button key={p.label} onClick={() => setIdx1(i)}
                 className="px-2.5 py-1 rounded-sm font-mono text-sm transition-colors"
                 style={idx1 === i ? {
-                  background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                   border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                 } : {

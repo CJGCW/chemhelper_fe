@@ -18,7 +18,7 @@ function HeatingCurveDiagram() {
 
   const pts = bx.map((bxi, i) => ({ x: x(bxi), y: y(by[i]) }))
 
-  const phaseColors = ['#60a5fa', '#fb923c', '#34d399', '#f43f5e', '#c084fc']
+  const phaseColors = ['#60a5fa', 'rgb(var(--color-warning))', 'rgb(var(--color-success))', '#f43f5e', '#c084fc']
   const phaseLabels = [
     { label: 'Solid',   xi: 0.075, yi: 0.17 },
     { label: 'Melting', xi: 0.215, yi: 0.30 },
@@ -150,13 +150,13 @@ export default function HeatingCurveReference() {
             },
             {
               phase: 'Melting (fusion)',
-              color: '#fb923c',
+              color: 'rgb(var(--color-warning))',
               eq: 'q = n∆H_fus',
               desc: 'Temperature constant at the melting point. Energy breaks crystal lattice forces. No temperature change until all solid melts.',
             },
             {
               phase: 'Liquid heating',
-              color: '#34d399',
+              color: 'rgb(var(--color-success))',
               eq: 'q = mc_l∆T',
               desc: 'Liquid absorbs heat; temperature rises. Uses c_l (specific heat of liquid). For water, c_l = 4.184 J/(g·°C) — the highest of the three phases.',
             },
@@ -246,9 +246,9 @@ export default function HeatingCurveReference() {
                   <td className="px-3 py-2 text-secondary">{s.mp}</td>
                   <td className="px-3 py-2 text-secondary">{s.bp}</td>
                   <td className="px-3 py-2" style={{ color: '#60a5fa' }}>{s.cs}</td>
-                  <td className="px-3 py-2" style={{ color: '#34d399' }}>{s.cl}</td>
+                  <td className="px-3 py-2" style={{ color: 'rgb(var(--color-success))' }}>{s.cl}</td>
                   <td className="px-3 py-2" style={{ color: '#c084fc' }}>{s.cg}</td>
-                  <td className="px-3 py-2" style={{ color: '#fb923c' }}>{s.dHfus}</td>
+                  <td className="px-3 py-2" style={{ color: 'rgb(var(--color-warning))' }}>{s.dHfus}</td>
                   <td className="px-3 py-2" style={{ color: '#f43f5e' }}>{s.dHvap}</td>
                 </tr>
               ))}
@@ -269,12 +269,12 @@ export default function HeatingCurveReference() {
             },
             {
               title: 'Plateau length',
-              color: '#fb923c',
+              color: 'rgb(var(--color-warning))',
               body: 'A longer plateau means a larger enthalpy of transition. The vaporization plateau is almost always much longer than the melting plateau because ∆H_vap >> ∆H_fus.',
             },
             {
               title: 'Cooling curve',
-              color: '#34d399',
+              color: 'rgb(var(--color-success))',
               body: 'Reading from right to left gives the cooling curve. All equations and plateaus are the same — heat is released (q negative) instead of absorbed.',
             },
             {

@@ -167,7 +167,7 @@ function pick(excludeIdx?: number): { q: Question; idx: number } {
 // ── Component ──────────────────────────────────────────────────────────────────
 
 const STRUCTURE_COLORS: Record<string, string> = {
-  SC: '#fb923c', BCC: '#60a5fa', FCC: '#34d399',
+  SC: 'rgb(var(--color-warning))', BCC: '#60a5fa', FCC: 'rgb(var(--color-success))',
 }
 
 interface Props { allowCustom?: boolean }
@@ -255,7 +255,7 @@ export default function UnitCellPractice({ allowCustom = true }: Props) {
                   disabled={answered}
                   className="px-3 py-2.5 rounded-sm border font-sans text-sm text-left transition-all"
                   style={{
-                    color: showCorrect ? '#34d399' : showWrong ? '#f87171' : 'rgba(var(--overlay),0.7)',
+                    color: showCorrect ? 'rgb(var(--color-success))' : showWrong ? 'rgb(var(--color-error))' : 'rgba(var(--overlay),0.7)',
                     borderColor: showCorrect ? '#34d39960' : showWrong ? '#f8717160' : 'rgb(var(--color-border))',
                     background: showCorrect ? 'color-mix(in srgb, #34d399 8%, rgb(var(--color-surface)))'
                       : showWrong ? 'color-mix(in srgb, #f87171 8%, rgb(var(--color-surface)))'
@@ -279,7 +279,7 @@ export default function UnitCellPractice({ allowCustom = true }: Props) {
               >
                 <div className="px-4 py-3 flex flex-col gap-2">
                   <span className="font-sans text-sm font-semibold"
-                    style={{ color: correct ? '#34d399' : '#f87171' }}>
+                    style={{ color: correct ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                     {correct ? `Correct — ${q.options[q.answer]}` : `Incorrect — answer: ${q.options[q.answer]}`}
                   </span>
                   <p className="font-sans text-xs text-secondary leading-relaxed">{q.explanation}</p>

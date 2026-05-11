@@ -95,9 +95,9 @@ export default function PrecipitationTool() {
           onClick={handleCalculate}
           className="flex-1 py-2 px-4 rounded-sm font-sans text-sm font-medium transition-colors"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
             color: 'var(--c-halogen)',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           }}
         >
           Check Q vs Ksp
@@ -106,7 +106,7 @@ export default function PrecipitationTool() {
       </div>
       <StepsContent {...stepsState} />
 
-      {error && <p className="font-sans text-sm text-red-400">{error}</p>}
+      {error && <p className="font-sans text-sm text-error">{error}</p>}
 
       <AnimatePresence>
         {result && (
@@ -129,7 +129,7 @@ export default function PrecipitationTool() {
               <span className="text-2xl">{result.precipitates ? '🧫' : '✓'}</span>
               <div>
                 <p className="font-sans font-semibold text-base"
-                  style={{ color: result.precipitates ? '#f87171' : '#4ade80' }}>
+                  style={{ color: result.precipitates ? 'rgb(var(--color-error))' : 'rgb(var(--color-success))' }}>
                   {result.precipitates ? 'Precipitate forms!' : 'No precipitation'}
                 </p>
                 <p className="font-sans text-sm text-secondary">

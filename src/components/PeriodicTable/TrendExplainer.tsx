@@ -14,7 +14,7 @@ interface TrendInfo {
 const EXPLANATIONS: Record<Exclude<TrendMode, 'none'>, TrendInfo> = {
   electronegativity: {
     name:    'Electronegativity',
-    color:   '#f97316',
+    color:   'rgb(var(--color-warning))',
     concept: 'Effective Nuclear Charge (Zeff)',
     acrossPeriod:
       'Increases left → right. Nuclear charge (Z) rises while electrons fill the same shell, so shielding barely changes. Higher Zeff means the nucleus pulls bonding electrons more strongly.',
@@ -34,7 +34,7 @@ const EXPLANATIONS: Record<Exclude<TrendMode, 'none'>, TrendInfo> = {
   },
   ie1: {
     name:    'First Ionization Energy',
-    color:   '#4ade80',
+    color:   'rgb(var(--color-success))',
     concept: 'Zeff and orbital distance',
     acrossPeriod:
       'Generally increases left → right as Zeff rises — it takes more energy to remove a more tightly held electron. Notable dips: Group 13 (first p electron, slightly lower than filled s) and Group 16 (paired p electron is easier to remove due to e⁻ repulsion).',
@@ -56,7 +56,7 @@ const EXPLANATIONS: Record<Exclude<TrendMode, 'none'>, TrendInfo> = {
   },
   ionicRadius: {
     name:    'Ionic Radius',
-    color:   '#fb923c',
+    color:   'rgb(var(--color-warning))',
     concept: 'Electron count vs. nuclear charge balance',
     acrossPeriod:
       'Cations (metals, left of table) are smaller than their neutral atoms — losing electrons increases the Zeff-per-electron ratio, pulling the remaining cloud inward. Anions (nonmetals, right) are larger — extra electrons add repulsion, expanding the cloud.',
@@ -83,7 +83,7 @@ export default function TrendExplainer({ trendMode }: { trendMode: TrendMode }) 
         className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-surface/40 transition-colors"
       >
         <div className="w-2 h-2 rounded-full shrink-0" style={{ background: info.color }} />
-        <span className="font-mono text-[11px]" style={{ color: info.color }}>{info.name}</span>
+        <span className="font-mono text-xs" style={{ color: info.color }}>{info.name}</span>
         <span className="font-mono text-xs text-secondary">— why does this trend occur?</span>
         <motion.span
           animate={{ rotate: open ? 90 : 0 }}
@@ -136,7 +136,7 @@ export default function TrendExplainer({ trendMode }: { trendMode: TrendMode }) 
 
               {/* Extra note */}
               {info.extra && (
-                <p className="font-mono text-[11px] text-dim leading-relaxed border-t pt-2"
+                <p className="font-mono text-xs text-dim leading-relaxed border-t pt-2"
                   style={{ borderColor: 'rgba(var(--overlay),0.06)' }}>
                   {info.extra}
                 </p>

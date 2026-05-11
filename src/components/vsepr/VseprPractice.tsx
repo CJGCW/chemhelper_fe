@@ -225,7 +225,7 @@ function CombinedSection() {
                   {drawResult.checks.map((check, i) => (
                     <div key={i} className="flex items-start gap-1.5">
                       <span className="font-mono text-xs shrink-0 mt-px"
-                        style={{ color: check.passed ? '#4ade80' : '#f87171' }}>
+                        style={{ color: check.passed ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                         {check.passed ? '✓' : '✗'}
                       </span>
                       <div className="font-mono text-xs min-w-0">
@@ -243,7 +243,7 @@ function CombinedSection() {
                 className="w-full rounded-md border-2 border-dashed flex flex-col items-center justify-center gap-1 transition-colors hover:border-secondary"
                 style={{ borderColor: 'rgb(var(--color-border))', aspectRatio: '1', color: 'rgb(var(--color-dim))' }}>
                 <span className="font-mono text-xl">✎</span>
-                <span className="font-mono text-[11px]">Draw</span>
+                <span className="font-mono text-xs">Draw</span>
               </button>
             </div>
           )}
@@ -282,15 +282,15 @@ function CombinedSection() {
                     placeholder="…"
                     className="print:hidden w-full bg-transparent border-b font-mono text-sm text-primary outline-none placeholder:text-dim transition-colors"
                     style={{
-                      borderColor: isCorrect ? '#4ade80' : isWrong ? '#f87171' : 'rgb(var(--color-border))',
-                      color: isWrong ? '#f87171' : undefined,
+                      borderColor: isCorrect ? 'rgb(var(--color-success))' : isWrong ? 'rgb(var(--color-error))' : 'rgb(var(--color-border))',
+                      color: isWrong ? 'rgb(var(--color-error))' : undefined,
                     }}
                   />
                   <span className="hidden print:block border-b border-current w-48 h-5" />
                 </td>
                 <td className="py-2 pl-3 font-mono text-xs print:hidden">
-                  {isCorrect && <span style={{ color: '#4ade80' }}>✓</span>}
-                  {isWrong   && <span style={{ color: '#f87171' }}>✗ {correct}</span>}
+                  {isCorrect && <span style={{ color: 'rgb(var(--color-success))' }}>✓</span>}
+                  {isWrong   && <span style={{ color: 'rgb(var(--color-error))' }}>✗ {correct}</span>}
                 </td>
               </tr>
             )
@@ -332,7 +332,7 @@ function CombinedSection() {
             <div className="flex items-center justify-between px-5 py-3 border-b border-border shrink-0">
               <div className="flex flex-col">
                 <span className="font-mono text-xs text-secondary">Draw the structure of</span>
-                <span className="font-sans font-semibold text-bright text-lg">{entry.formula}</span>
+                <span className="font-sans font-semibold text-primary text-sm">{entry.formula}</span>
               </div>
               <button onClick={closeDraw}
                 className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-all"
@@ -490,7 +490,7 @@ function McqSection({ types }: { types: QuestionType[] }) {
                                : isWrong   ? 'color-mix(in srgb, #f87171 8%, rgb(var(--color-surface)))'
                                : isSelected ? 'color-mix(in srgb, var(--c-halogen) 8%, rgb(var(--color-surface)))'
                                : 'rgb(var(--color-surface))',
-                    color:       isRight ? '#4ade80' : isWrong ? '#f87171' : 'rgba(var(--overlay),0.75)',
+                    color:       isRight ? 'rgb(var(--color-success))' : isWrong ? 'rgb(var(--color-error))' : 'rgba(var(--overlay),0.75)',
                     cursor:      answered ? 'default' : 'pointer',
                   }}>
                   {opt}
@@ -506,7 +506,7 @@ function McqSection({ types }: { types: QuestionType[] }) {
                   borderColor: isCorrect ? 'color-mix(in srgb, #4ade80 30%, transparent)' : 'color-mix(in srgb, #f87171 30%, transparent)',
                   background:  isCorrect ? 'color-mix(in srgb, #4ade80 5%, rgb(var(--color-surface)))' : 'color-mix(in srgb, #f87171 5%, rgb(var(--color-surface)))',
                 }}>
-                <span className="font-sans text-sm font-medium" style={{ color: isCorrect ? '#4ade80' : '#f87171' }}>
+                <span className="font-sans text-sm font-medium" style={{ color: isCorrect ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                   {isCorrect ? '✓ Correct!' : `✗ The answer is ${q.correct}`}
                 </span>
                 <span className="font-mono text-xs text-secondary">
@@ -558,8 +558,8 @@ export default function VseprPractice({ allowCustom = true }: Props) {
               {active && (
                 <motion.span layoutId="vsepr-subtab-pill" className="absolute inset-0 rounded-full"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                    border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                    border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   }}
                   transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
               )}

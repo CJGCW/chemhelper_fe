@@ -11,9 +11,9 @@ const MAX_BOX_H = LH * 0.82
 const BASE_SPEED = 90   // px/s at temp = 1.0
 
 const COLORS = [
-  '#818cf8', '#60a5fa', '#34d399', '#f472b6',
-  '#fbbf24', '#a78bfa', '#fb923c', '#4ade80',
-  '#38bdf8', '#e879f9', '#f87171', '#2dd4bf',
+  '#818cf8', '#60a5fa', 'rgb(var(--color-success))', '#f472b6',
+  '#fbbf24', '#a78bfa', 'rgb(var(--color-warning))', 'rgb(var(--color-success))',
+  '#38bdf8', '#e879f9', 'rgb(var(--color-error))', '#2dd4bf',
 ]
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -188,9 +188,9 @@ export default function GasSimulation() {
     relP < 1.3  ? 'Moderate'  :
     relP < 2.0  ? 'High'      : 'Very High'
   const pressColor =
-    relP < 0.9  ? '#4ade80' :
+    relP < 0.9  ? 'rgb(var(--color-success))' :
     relP < 1.3  ? '#fbbf24' :
-    relP < 2.0  ? '#fb923c' : '#f87171'
+    relP < 2.0  ? 'rgb(var(--color-warning))' : 'rgb(var(--color-error))'
 
   return (
     <div className="flex flex-col gap-4">

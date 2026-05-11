@@ -58,8 +58,8 @@ export default function OrganicNamingTool() {
                   }}
                   className="px-4 py-1.5 rounded-sm font-sans text-sm capitalize transition-all relative"
                   style={family === f ? {
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                    border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                    border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                     color: 'var(--c-halogen)',
                   } : {
                     background: 'rgb(var(--color-raised))',

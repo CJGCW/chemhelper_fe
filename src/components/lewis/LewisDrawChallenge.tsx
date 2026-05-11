@@ -99,7 +99,7 @@ export default function LewisDrawChallenge() {
             <span className="font-sans font-semibold text-bright text-xl">{compound.label}</span>
             {fetching && <span className="font-mono text-xs text-secondary animate-pulse">loading…</span>}
           </div>
-          {fetchError && <p className="font-mono text-xs text-red-400 mt-1">{fetchError}</p>}
+          {fetchError && <p className="font-mono text-xs text-error mt-1">{fetchError}</p>}
         </div>
 
         {/* Score */}
@@ -110,7 +110,7 @@ export default function LewisDrawChallenge() {
                 <span className="text-bright">{score.correct}</span>
                 <span className="text-dim"> / {score.attempted}</span>
                 {pct !== null && (
-                  <span className="ml-1.5" style={{ color: pct >= 80 ? '#4ade80' : pct >= 60 ? '#fbbf24' : '#f87171' }}>
+                  <span className="ml-1.5" style={{ color: pct >= 80 ? 'rgb(var(--color-success))' : pct >= 60 ? 'rgb(var(--color-warning))' : 'rgb(var(--color-error))' }}>
                     {pct}%
                   </span>
                 )}
@@ -128,8 +128,8 @@ export default function LewisDrawChallenge() {
             onClick={nextProblem}
             className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
             style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-              border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+              border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
             }}
           >
@@ -149,15 +149,15 @@ export default function LewisDrawChallenge() {
             className="flex items-center gap-3 px-4 py-3 rounded-sm border"
             style={{
               borderColor: lastResult
-                ? 'color-mix(in srgb, #4ade80 30%, transparent)'
-                : 'color-mix(in srgb, #f87171 30%, transparent)',
-              background: lastResult ? 'rgba(74,222,128,0.06)' : 'rgba(248,113,113,0.06)',
+                ? 'color-mix(in srgb, rgb(var(--color-success)) 30%, transparent)'
+                : 'color-mix(in srgb, rgb(var(--color-error)) 30%, transparent)',
+              background: lastResult ? 'rgb(var(--color-success-bg) / 0.25)' : 'rgb(var(--color-error-bg) / 0.25)',
             }}
           >
-            <span className="font-mono text-base" style={{ color: lastResult ? '#4ade80' : '#f87171' }}>
+            <span className="font-mono text-base" style={{ color: lastResult ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
               {lastResult ? '✓' : '✗'}
             </span>
-            <span className="font-sans text-sm" style={{ color: lastResult ? '#4ade80' : '#f87171' }}>
+            <span className="font-sans text-sm" style={{ color: lastResult ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
               {lastResult ? 'Correct! Hit Next Problem to continue.' : 'Not quite — review the check details below, then try again or move on.'}
             </span>
           </motion.div>

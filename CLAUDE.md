@@ -2,124 +2,87 @@
 
 ## Philosophy
 
-ChemHelper is an educational chemistry tool — accuracy and pedagogical clarity come before feature breadth or visual polish. When in doubt:
+ChemHelper is an educational chemistry tool — accuracy and pedagogical clarity come before feature breadth or visual polish.
+
 - Prefer correctness with a textbook worked example over UI elegance.
 - Prefer verbose step-by-step output over terse "the answer is X".
 - Prefer pushing domain logic into `src/chem/` over inline component math.
-- Prefer adding tests (especially against Chang or Atkins worked examples) over just visual verification.
+- Prefer adding tests (especially against Chang or Atkins worked examples) over visual verification.
 
-Chang's *Chemistry* (14e, 2022) is the primary curriculum reference. When reference data and textbook values disagree, prefer matching Chang so students comparing in-app answers to homework see consistency. Exceptions (more rigorous modern values) should be footnoted, not silently adopted.
-
----
-
-## Every data file deserves a practice pipeline
-
-Strong data coverage without a practice tool means the data goes underused. Before adding a new topic, check whether relevant data already exists in `src/data/`:
-
-- `data/periodicTrends.ts` — IE1, EA, ionic radius for all known elements
-- `data/elementIsotopes.ts` — isotope masses and natural abundances
-- `data/elementIons.ts` — common cations/anions
-- `data/nomenclature.ts` — polyatomic ions, transition metal names, Greek prefixes
-- `data/bondEnthalpies.ts` — bond dissociation energies
-- `data/standardPotentials.ts` — reduction potentials
-
-If the topic's data is already present, build the practice/problems tool on top of it rather than duplicating the data. If it isn't, add the data file first with a clear type definition, then build the practice on top.
-
-**A useful heuristic:** if a topic has a reference page showing a data table but no practice/problems tab, that's a gap worth closing.
-
-**The full pipeline for any topic:** data file → chem/ solver → Practice component (with `allowCustom`) → problem generator in utils/ (with dynamic randomization) → tests (20+ iterations) → Problems tab wired with `allowCustom={false}`. If any link in this chain is missing, the topic is incomplete.
+Chang's *Chemistry* (14e, 2022) is the primary reference. When Chang and rigorous modern values disagree, prefer Chang for student consistency; footnote the exception in the reference component.
 
 ---
 
-## `src/chem/` purity rule (non-negotiable)
+## Architecture rules
 
-No module in `src/chem/` may import from:
-- React or any React-adjacent library
-- `../utils/*` (especially `sigfigs`)
-- `../components/*`
+### `src/chem/` purity (non-negotiable)
 
-Check before adding any import to a chem/ module: `grep "^import" src/chem/*.ts` — every line should start with `from './...'`, `from '../data/...'`, or be a bare ES import. **Importing from `../data/` is allowed** — data files are pure TypeScript and don't break the layer boundary. Importing from `../utils/` or anywhere else outside `chem/` and `data/` is not.
+No module in `src/chem/` may import from React, `../utils/*`, or `../components/*`. `../data/*` imports are allowed.
 
-If you need formatting or rounding inside a solver, accept it as a callback argument with a safe default:
-
+For formatting/rounding inside a solver, accept a callback with a safe default:
 ```ts
-function calcX(
-  ...,
-  fmt: (n: number) => string = defaultFmt,
-  rnd: (n: number) => number = defaultRnd,
-): Result
+function calcX(..., fmt: (n: number) => string = defaultFmt, rnd: (n: number) => number = defaultRnd): Result
+```
+`calcLimitingReagent` is the reference implementation. `calcStoich`, `calcTheoreticalYield`, `calcPercentYield`, `calcAdvancedPercentYield` still hardcode the formatter — add the pattern when touching them.
+
+### Worked-example generators must call the solver
+
+The "show me an example" button must call the same `chem/*` solver as the live tool — never re-implement the math. Hardcode "nice" inputs, call the solver, read steps/answer off the result.
+
+### File layout
+
+```
+src/
+  pages/           — RPP page shells, tab routing, no math
+  components/
+    <topic>/       — topic-specific tools, practice, reference
+    shared/        — cross-topic primitives (NumberField, StepsPanel, ...)
+    Layout/        — PageShell, nav
+    tools/         — interactive classifiers
+    calculations/  — legacy; topic components only (primitives moved to shared/)
+    reference/     — static reference linked from ReferencePage
+  utils/           — pure TS, no React (problem generators, formatters)
+  chem/            — domain math
+  data/            — pure data modules
+  stores/          — Zustand stores
 ```
 
-**One-and-done history:** `chem/stoich.ts` previously imported `formatSigFigs` from `utils/sigfigs`, which baked display assumptions into the domain layer. This was refactored to pass `fmt`/`rnd` as dependency-injected callbacks. **Do not re-introduce the import** — extend the callback pattern to any new solver instead. `calcLimitingReagent` is the reference implementation.
+Import shared primitives as `'../shared/X'` from any component subdir.
 
-**Pending adoption:** `calcStoich`, `calcTheoreticalYield`, `calcPercentYield`, and `calcAdvancedPercentYield` in `chem/stoich.ts` still hardcode the default formatter. They're pure (no utils import) but don't accept fmt/rnd parameters. Add the pattern when touching them.
+### State management
+
+- `useState` for everything local to one component.
+- Zustand only for cross-component shared state (currently only `elementStore`).
+- URL params (`useSearchParams`) for tab/mode selection — never component state alone, so deep links work.
+- Never store derived data; compute it.
+
+### Dependency discipline
+
+The project has 9 runtime deps. Don't add new ones without approval. Check `package.json` first. Most chemistry math inlines in a few lines.
 
 ---
 
-## Worked-example generators must call the solver
+## Page architecture: Reference | Practice | Problems (RPP)
 
-When a tool has both a "live" calculator and a "show me an example" button, the example generator must call the same `chem/*` solver — **not re-implement the math**. Hardcode "nice" input values, call the solver, read `.steps` / `.products[0].grams` / etc. off the result.
+**Every topic page must have all three modes** unless it's a pure property reference with no calculations (solubility rules, naming, periodic table). If a page has Practice, it must have Problems.
 
-```tsx
-function buildWorkedExample(rxn: Reaction) {
-  const sol = calcLimitingReagent(rxn, [
-    { val: 20, unit: 'g' },
-    { val: computeNiceB(rxn), unit: 'g' },
-  ])
-  return {
-    problem: `...`,
-    steps: sol.steps,
-    answer: `Limiting reagent: ${sol.limitingSpecies?.display}`,
-  }
-}
-```
+- **Reference** — static guides, diagrams, formula sheets. Print button visible **only here**.
+- **Practice** — calculator/solver tools. Student checks their own work.
+- **Problems** — dynamically generated random problems. Same components as Practice with `allowCustom={false}`. **Static problem pools are not acceptable** — every "Next" must produce a meaningfully different problem.
 
-**History:** `LimitingReagentTool.buildWorkedExample` previously re-implemented limiting-reagent math locally and reintroduced an inverted-ternary bug the main solver didn't have. One code path = one place to be wrong.
+### Mode/tab switching
 
----
+A rounded-full pill toggle drives `Mode = 'reference' | 'practice' | 'problems'`. Tabs use `?tab=` URL params. When mode changes, the topic is preserved via `TAB_TO_TOPIC` + `TOPIC_MODE_TAB`; otherwise fall back to `MODE_DEFAULT[mode]`.
 
-## Page Architecture: Reference | Practice | Problems (RPP)
-
-**Every topic page must have all three modes** unless it is a pure property reference with no calculations (e.g. solubility rules, naming conventions). If a topic has a Practice tab, it **must** also have a Problems tab — practice without auto-generated problems is incomplete.
-
-```
-Reference  |  Practice  |  Problems
-```
-
-- **Reference** — static guides, formula sheets, visual diagrams. Print button visible. **Print buttons appear ONLY in Reference mode** — never in Practice or Problems.
-- **Practice** — solver/calculator tools. Student uses the tool to check their own work.
-- **Problems** — **dynamically generated** random problems with verify/check. Uses the same tool components as Practice with `allowCustom={false}`. **Every Practice tool must have a corresponding problem generator** in `utils/*Practice.ts` that produces randomized problems with varied inputs. A practice tool shipped without a problem generator is a bug. A problem generator that produces the same problem every time is also a bug.
-
-### Mode switch
-A rounded-full pill toggle drives `Mode = 'reference' | 'practice' | 'problems'`. Tab changes via `?tab=` URL param — never component state — so deep links always work.
-
-### Tab groups
-Tabs within each mode are grouped (Basic / Stoichiometry / Advanced, etc.) using `TabGroup[]`:
+Tabs may be grouped via `TabGroup[]`:
 ```ts
 { id: string; label: string; pills: { id: Tab; label: string; formula: string }[] }
 ```
-The `formula` field is a short monospace annotation shown beside the label (e.g. `g↔mol`, `%Y`).
-
-### Switching modes
-When the user switches mode, the topic is preserved via `TAB_TO_TOPIC` + `TOPIC_MODE_TAB` maps. If no mapping exists for the current tab, fall back to `MODE_DEFAULT[mode]`.
-
-### Print
-- **All** navigation rows (`print:hidden`) — mode switch, tab pills, every group row.
-- Print / Print All buttons appear **only in Reference mode**, beside the page heading. Never in Practice or Problems — students should not be printing generated problems or calculator interfaces.
-- For "Print All", set a `printingAll` flag, render the full reference outside `AnimatePresence`, then call `window.print()` in a `requestAnimationFrame` after mount.
-
-### "What is this?" explanation button
-
-**Every topic page must have an ExplanationModal.** This is a small "?" or "What is this?" button in the page heading row that opens a modal explaining what the topic is, why it matters, and how to use the tools on the page. It's the first thing a confused student looks for.
-
-The explanation content should be 2–4 sentences: one sentence defining the topic, one saying when students encounter it in coursework, and one pointing them to the Reference tab for deeper material. Don't write a textbook — write an orientation.
-
-**Known violations to fix when touched:** `LewisPage`, `VseprPage`, `StructuresPage` are missing ExplanationModal.
+The `formula` field is a short monospace annotation (e.g. `g↔mol`, `%Y`).
 
 ### Page heading row
 
-Every topic page has a consistent heading row at the top:
-
+Every topic page has the same row at the top:
 ```tsx
 <div className="flex items-center gap-3">
   <h2 className="text-xl lg:text-2xl font-bold text-bright">{title}</h2>
@@ -127,507 +90,433 @@ Every topic page has a consistent heading row at the top:
   {mode === 'reference' && <PrintButton />}
 </div>
 ```
+Title + ExplanationModal + Print button (Reference only). Same order, every page.
 
-Title + "What is this?" button + Print button (Reference only). Same order, same styling, every page. Don't deviate.
+The ExplanationModal content is 2–4 sentences: define the topic, say where students encounter it, point to Reference for depth.
 
-### URL sync
+### Print
 
-**Every page with tabs must sync tab state to the URL** via `useSearchParams`. Tab state lives in `?tab=` query params, never in component state alone. This ensures deep links work (a student can share a URL that opens directly to the right tab) and browser back/forward navigate between tabs.
+- All nav rows are `print:hidden`.
+- Print buttons appear **only in Reference mode**.
+- For "Print All", set a `printingAll` flag, render the full reference outside `AnimatePresence`, then call `window.print()` in a `requestAnimationFrame`.
 
-**Known violations to fix when touched:** `LewisPage`, `VseprPage` have no `useSearchParams`.
+### Shell variants in use
 
-### Shell variants currently in use
+- **Full 3-groups** (canonical) — `StoichiometryPage`, `IdealGasPage`. Default to this.
+- **Section-based** — `ThermochemistryPage`. Each section holds its own RPP tabs.
+- **Mode without groups** — `EmpiricalPage`, `ElectronConfigPage`, `StructuresPage`, `LewisPage`. Few enough tools that groups aren't needed.
+- **Reference-only** — solubility, naming, periodic table. Adding a calculator promotes them to full RPP.
 
-- **Full 3-groups** (reference/practice/problems, all groups defined) — `StoichiometryPage`, `IdealGasPage`. This is the canonical pattern — **default to this for all new topic pages.**
-- **Section-based** — `ThermochemistryPage` only. Sections hold Reference/Practice/Problems tabs per subtopic. Pedagogically fits the subtopic-dense thermo material better; leave as-is unless there's a reason to converge.
-- **Mode without groups** — `EmpiricalPage`, `ElectronConfigPage`, `StructuresPage`, `LewisPage`. Topic has few enough tools that groups aren't needed. Still has all three modes (Reference/Practice/Problems).
-- **Partial groups** — `RedoxPage` (no REFERENCE_GROUPS, flat `REFERENCE_TABS`), `MolarCalculationsPage` (no PROBLEMS_GROUPS). These are drift and must converge to full 3-groups when touched for other reasons. **A page with Practice but no Problems is incomplete.**
-- **Reference-only pages** (no Practice/Problems modes) — allowed only for pure property lookups with no calculation component: solubility rules, naming conventions, periodic table. These are the exception to the RPP rule. If you later add a calculator to one of these, it must gain Practice + Problems modes.
+### Known drift to fix when touched
+
+| Page | Issue |
+|---|---|
+| LewisPage, VseprPage | No ExplanationModal, no `useSearchParams` |
+| StructuresPage | No ExplanationModal |
+| RedoxPage | No `REFERENCE_GROUPS` (flat tabs) |
+| MolarCalculationsPage | No `PROBLEMS_GROUPS` |
+| ElectromagneticSpectrum | Uses raw `<input>` for numerics — should be `NumberField` |
 
 ---
 
-## Calculator Tool Pattern ("heavy" pattern)
+## Calculator tool pattern
 
-Every calculator tool must use these shared primitives from `src/components/shared/`:
+Every calculator must use shared primitives from `src/components/shared/`:
 
 | Primitive | Purpose |
 |---|---|
-| `NumberField` | Labeled text input with `inputMode="decimal"` — **never `<input type="number">`** (see below) |
-| `useStepsPanelState` + `StepsTrigger` + `StepsContent` | Collapsible step-by-step panel; also drives the Example button |
+| `NumberField` | Labeled `<input type="text" inputMode="decimal">` |
+| `useStepsPanelState` + `StepsTrigger` + `StepsContent` | Collapsible steps panel + Example button |
 | `SigFigTrigger` + `SigFigContent` | Sig fig breakdown panel |
-| `ResultDisplay` | Animated result card with optional sig-fig alternate and verify state |
+| `ResultDisplay` | Animated result card with sig-fig alternate and verify state |
 
-### ⚠ Never use `<input type="number">` for numeric input
+### Never use `<input type="number">` for numeric input
 
-Always use `NumberField` (which uses `<input type="text" inputMode="decimal">`). `type="number"`:
-- Mangles `inputMode` on mobile (especially iOS), forcing users to hunt for the decimal key
-- Eats accidental mouse scrolls and silently changes values
-- Rounds in browser-specific ways (Firefox vs Chrome vs Safari all differ)
-- Rejects scientific notation (`1.5e-3`) in some browsers
+`type="number"` mangles `inputMode` on iOS, eats mouse scrolls, rounds inconsistently across browsers, and rejects scientific notation. Use `NumberField` for all numerics. Plain text inputs (names, search) can use `<input type="text">` directly.
 
-This rule is about **numeric** inputs. Plain text inputs (for naming answers, search boxes, etc.) can use `<input type="text">` directly — that's correct.
+### Wiring
 
-**Known violation to fix when touched:** `components/atomic/ElectromagneticSpectrum.tsx` uses raw `<input>` elements for wavelength/frequency/energy fields. These are numeric and should migrate to `NumberField`.
-
-### Wiring pattern
 ```tsx
-// State
-const [steps, setSteps]               = useState<string[]>([])
-const [breakdown, setBreakdown]       = useState<SigFigBreakdown | null>(null)
-const [sfOpen, setSfOpen]             = useState(false)
+const [steps, setSteps]         = useState<string[]>([])
+const [breakdown, setBreakdown] = useState<SigFigBreakdown | null>(null)
+const [sfOpen, setSfOpen]       = useState(false)
 
-// Steps panel — inline generator closes over current `rxn` or similar state
 const stepsState = useStepsPanelState(steps, () => {
   const ex = buildWorkedExample(rxn)
   return { scenario: ex.problem, steps: ex.steps, result: ex.answer }
 })
 
-// Calculate handler
 function handleTool() {
   const res = calcSomething(...)
   setSteps(res.steps)
   setBreakdown(buildSigFigBreakdown([...], res.rawAnswer, 'g'))
 }
 
-// Button row — StepsTrigger and SigFigTrigger sit beside the Calculate button
 <div className="flex items-stretch gap-2">
-  <button onClick={handleTool} ...>Calculate</button>
+  <button onClick={handleTool}>Calculate</button>
   <StepsTrigger {...stepsState} />
   <SigFigTrigger breakdown={breakdown} open={sfOpen} onToggle={() => setSfOpen(o => !o)} />
 </div>
 <StepsContent {...stepsState} />
 <SigFigContent breakdown={breakdown} open={sfOpen} />
 
-{result && (
-  <ResultDisplay label="..." value={String(result.answer)} unit="g" sigFigsValue={sfResult} />
-)}
+{result && <ResultDisplay label="..." value={String(result.answer)} unit="g" sigFigsValue={sfResult} />}
 ```
 
-### Rules
-- Reset `steps`, `breakdown`, and `result` to null/empty on every input change.
-- `ResultDisplay value` must be `string` — coerce with `String(n)` if the solver returns a number.
-- `SigFigBreakdown` only applies when the input unit is `'g'` (mass); skip it for mol inputs.
-- The example generator function is always defined inline (closure) when it depends on component state such as the current reaction.
-- **Every tool must have a worked-example button** via `useStepsPanelState`. Even reactive tools (no Calculate button) must have the "Show me an example" button. A tool without an example leaves students with no model of how to approach the problem.
+Rules:
+- Reset `steps`, `breakdown`, `result` on every input change.
+- `ResultDisplay value` is a string — coerce numbers with `String(n)`.
+- `SigFigBreakdown` only applies for mass inputs (`'g'`); skip for moles.
+- The example generator function is defined inline (closure) when it depends on component state.
+- **Every tool must have a worked-example button**, including reactive tools (no Calculate button).
 
----
+### Reactive tools (no Calculate button)
 
-## Verify state is standard for answer-checking tools
-
-Tools that ask the student to produce a numeric answer use the three-state verify pattern:
-
-- `'correct'` — answer matches within tolerance and sig figs are right
-- `'sig_fig_warning'` — numerically correct but sig figs are off
-- `'incorrect'` — value doesn't match
-
-This applies to all `*Tool` components with an answer field. Exceptions are tools without a single "answer" to check:
-- **Legitimate exceptions:** `HeatingCurveTool`, `ReactionProfileTool` (visualizers).
-- **Pending adoption:** `LimitingReagentTool`, `EmpiricalTool`, `GasStoichTool`, `PercentCompositionTool` should adopt verify-state when next touched.
-
-Tools where the answer is non-numeric (nomenclature, classification, ranking) use a two-state variant: `'correct'` or `'incorrect'`. Skip `'sig_fig_warning'` — it doesn't apply.
-
-A student navigating between topics should get consistent feedback. If you add a new answer-checking tool without verify state, you're breaking that expectation.
-
----
-
-## Reactive Tool Pattern (no Calculate button)
-
-Tools that compute live from inputs (EmpiricalTool, ClausiusClapeyronTool, EnthalpyTool) still need the Example button. Use a `noSteps` sentinel:
-
+For live-computing tools (EmpiricalTool, ClausiusClapeyronTool, EnthalpyTool), use a `noSteps` sentinel:
 ```tsx
 const [noSteps] = useState<string[]>([])
 const stepsState = useStepsPanelState(noSteps, generateMyExample)
 
-// Trigger sits alone in a flex row at the top of the tool
 <div className="flex items-stretch gap-2">
   <StepsTrigger {...stepsState} />
 </div>
 <StepsContent {...stepsState} />
 ```
 
-`useStepsPanelState` with an empty `steps` array and a `generate` function renders only the "Show me an example" button — it never shows calculation steps. Keep `AnimatePresence` for the reactive result display below.
+If the tool's internal steps are typed as `{ label: string; expr: string }[]`, map to strings before passing to `useStepsPanelState`.
 
-If the tool's internal steps are typed as `{ label: string; expr: string }[]` rather than `string[]`, map them before passing:
-```tsx
-const stringSteps = useMemo(() => steps.map(s => `${s.label}: ${s.expr}`), [steps])
-const stepsState = useStepsPanelState(stringSteps, generateExample)
-```
+### Verify state
 
----
+Numeric answer-checking tools use three states:
+- `'correct'` — value matches within tolerance and sig figs are right
+- `'sig_fig_warning'` — value correct, sig figs off
+- `'incorrect'` — value doesn't match
 
-## Component & File Conventions
+Non-numeric answer tools (nomenclature, classification, ranking) use only `'correct'` / `'incorrect'`.
 
-### File naming
-
-- All calculator/solver components: `*Tool.tsx`. Never `*Calc.tsx` or `*Solver.tsx`. The codebase was unified to this convention; don't drift back.
-- All reference components: `*Reference.tsx`.
-- All practice/problem generators: `*Practice.tsx` (component) and `*Practice.ts` (pure logic in utils/).
-- All data files: `src/data/*.ts` — pure TypeScript, no React, no logic beyond type definitions and const arrays.
-
-### PageShell
-
-Every page must use `PageShell` from `src/components/Layout/PageShell.tsx` for its root wrapper. This provides consistent padding, max-width, and gap spacing. Don't inline the padding string (`pl-4 pr-4 md:pl-6 ...`) manually — use PageShell.
-
-**Exceptions:** `LewisPage` and `VseprPage` are component-pages embedded in `StructuresPage` and have different layout needs. These are the only permitted exceptions.
-
-### Reference component root container
-
-All `*Reference.tsx` components must use the same root container:
-
-```tsx
-<div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
-```
-
-The only exception is `EnthalpyReference` which is a data table with a genuinely different layout.
-
-### Data source attribution
-
-When reference data values (specific heats, bond enthalpies, reduction potentials, ionization energies, etc.) differ from Chang's tables, add a brief footnote in the reference component explaining the source. Don't silently use a different value — students comparing app output to homework answers will notice and lose trust.
-
-Example: "Values from CRC Handbook (2023). Chang Table 6.2 uses slightly different values for some metals."
+Pending verify-state adoption: `LimitingReagentTool`, `EmpiricalTool`, `GasStoichTool`, `PercentCompositionTool`. Visualizers without an "answer" (`HeatingCurveTool`, `ReactionProfileTool`) are exempt.
 
 ---
 
-## Adding a New Topic or Practice Tool
+## Adding a new topic
 
-When a new calculator/practice topic is added, **all eight** of the following must be updated:
+When a new calculator/practice topic is added, **all eight** of these must be updated. A topic missing any one is incomplete.
 
-1. **Topic registry** — add the topic to `src/config/topicRegistry.ts`:
-   - Add a `TopicId` string literal to the union type.
-   - Add a `Topic` entry in `TOPICS` under the correct section.
-   - This is the single source of truth for visibility, settings UI, and preset filtering. Nothing is wired up until this entry exists.
-2. **Practice tab** — add the tool as a tab in the relevant `*Page.tsx` under the Practice mode group.
-3. **Problems tab with dynamic generation** — add a corresponding auto-generated problem mode under the Problems group. Every Practice tool must have a Problems counterpart powered by a `generate*Problem()` function. Wire it into the Problems tab with `allowCustom={false}`. **The Problems tab must produce a fresh, randomized problem every time the student clicks "Next."** Pre-defined static problem pools are not acceptable — problems must be dynamically generated with randomized inputs.
-4. **Problem generator** — create `utils/*Practice.ts` with a `generate*Problem()` function. The generator must:
-   - Produce **varied, realistic inputs** each time it's called — random values within sensible ranges, random reactions/compounds from curated pools, random directions (solve for volume vs. solve for molarity, etc.)
-   - Return the **correct answer** computed from the randomized inputs using the same formula the solver uses
-   - Return **step-by-step solution** strings showing the full worked solution
-   - Round generated inputs to "nice" values that match textbook style (multiples of 5 for mass, 0.1 for molality, 0.5 for pressure, etc.)
-   - Never produce the same problem twice in a row (use sufficient randomization in inputs and pool selection)
-5. **Automated tests for the generator** — create `utils/*Practice.test.ts` alongside the generator file. This is NOT optional. Every problem generator must ship with its test file in the same PR. The test file must include:
-   - **20+ random iteration test:** call the generator 20+ times, verify each problem has a correct answer by recomputing from the problem's inputs using the known formula
-   - **Answer correctness test:** for each generated problem, independently verify that `problem.answer` matches the result of applying the formula to `problem`'s inputs (within tolerance)
-   - **Edge case tests:** verify no division by zero, no negative concentrations, no NaN results
-   - **At least one hardcoded verification case** using a known textbook problem (e.g. Chang worked example) with exact input values and expected output
-   - **Steps non-empty test:** verify every generated problem has a non-empty `steps` array
-   - If the generator has a `check*Answer()` function, test that it returns `true` for the correct answer and `false` for a clearly wrong one
-6. **Navigation + search** — add the new topic to `NavSidebar.tsx`:
-   - Add the tab to the appropriate `*_GROUPS` data array (or add a new group if needed). Do not copy-paste a new `*GroupedItems` component — `GroupedNavSection` handles all tab-based sections generically.
-   - Add search keywords so students can find the tool by searching natural terms (e.g. "titration", "acid base", "neutralization" should all surface a titration tool).
-7. **Test Generator** — add the topic to `components/test/TestBuilder.tsx`:
-   - Add a `TopicDef` entry in `ALL_TOPICS` with the correct `kind`, `group`, `label`, and `formula`.
-   - Add the generator import and wire it into the `generate()` switch.
-   - The topic must respect visibility: `TestBuilder` filters `ALL_TOPICS` through `usePreferencesStore` so hidden topics don't appear in the test builder UI.
-8. **Print Reference** — if the topic has a Reference component, add it to `PrintPage.tsx`:
-   - Add the import for the Reference component.
-   - Add a `case` in the `ReferenceSection` switch.
-   - Add a `PrintTopicDef` entry in `ALL_PRINT_TOPICS` in `components/print/PrintBuilder.tsx`.
-   - The topic must respect visibility: `PrintBuilder` filters `ALL_PRINT_TOPICS` through `usePreferencesStore` so hidden topics don't appear in the print builder UI.
+1. **`src/config/topicRegistry.ts`** — add `TopicId` to the union; add the `Topic` entry under the right section. This is the single source of truth for visibility, settings, presets, TestBuilder, and PrintBuilder. Nothing is wired until this exists.
+2. **Practice tab** — add the tool as a tab in `*Page.tsx` under the Practice mode group.
+3. **Problems tab** — wire the same tool with `allowCustom={false}` under Problems mode.
+4. **Problem generator** — create `utils/*Practice.ts` with a `generate*Problem()` (see "Problem generator requirements" below).
+5. **Generator tests** — `utils/*Practice.test.ts` shipped in the same PR (see "Testing" below).
+6. **NavSidebar + search** — add the tab to the relevant `*_GROUPS` data array (do **not** copy-paste a new `*GroupedItems` component — `GroupedNavSection` handles tab-based sections generically). Add search keywords (e.g. "titration", "neutralization", "acid base").
+7. **PrintBuilder entry** — every reference component with an on-page Print button must also have a `PrintBuilder` entry. Either-or is a bug.
+8. **TestBuilder entry** — if the topic should appear on student tests. The test must render the problem **exactly as the Problems tab does** — same grid structure, same per-cell checking. Don't reduce a structured problem (ICE table, balancing) to `kind: 'numeric'`. Print fidelity matters too: `buildQuestionHtml()` in `TestSheet.tsx` must replicate the format. Extract shared logic (rendering, checking) to `utils/` on the first duplication — reference: `utils/equilibriumPractice.ts` exports used by both `ICETablePractice.tsx` and `TestSheet.tsx`.
 
-Skipping any one of these is a bug. **A problem generator shipped without a test file is a bug.** A test file that only tests the solver but not the generator is incomplete. **A topic with a Reference page that isn't in PrintPage is incomplete. A topic with a practice generator that isn't in TestBuilder is incomplete.**
+### Tab ID conventions
 
-### Every reference component must be printable — both on-page and in PrintBuilder
+- Reference tabs: `ref-` prefix (`ref-entropy`)
+- Practice tabs: kebab-case, no prefix (`entropy`)
+- Problems tabs: `-problems` suffix (`entropy-problems`)
 
-There are two independent requirements for print coverage. A reference component that meets only one of them is incomplete:
+Tab IDs must match across the page's `Tab` union, `TAB_TO_TOPIC`, `TOPIC_MODE_TAB`, `*_GROUPS` in NavSidebar, and `Topic.id` in the registry. A mismatch silently breaks visibility filtering or navigation.
 
-1. **On-page Print button:** The page that hosts the reference component must have a `⎙ Print` button in its heading row, visible only when `mode === 'reference'`. Call `window.print()` on click. This lets students print the current reference tab directly from the topic page.
+---
 
-2. **PrintBuilder entry:** The reference component must have a `PrintTopicDef` entry in `ALL_PRINT_TOPICS` in `PrintBuilder.tsx`, with a matching `case` in the `ReferenceSection` switch in `PrintPage.tsx`. This lets students include the reference in a custom multi-topic print sheet.
+## Problem generator requirements
 
-Both are required. A reference component with an on-page Print button but no `PrintBuilder` entry is invisible to the print sheet builder. A reference component in `PrintBuilder` but hosted on a page without a Print button gives students no single-page print path.
+Every Practice tool needs `utils/*Practice.ts` with a `generate*Problem()`:
 
-**When adding a new reference component:** add both the on-page button (step already covered by CLAUDE.md heading-row rule) and the `PrintBuilder` entry (step 7 in the checklist above). If you are touching an existing topic page for any other reason, check both requirements and fix any gap you find.
-
-### Test problems must replicate the practice page presentation
-
-When a topic is added to `TestBuilder.tsx`, the test must render the problem **exactly as the student sees it on the Problems tab** — same visual structure, same input format, same checking logic. The test is not allowed to "simplify" a structured problem into a different format.
-
-**The rule:** if the Problems tab shows a grid, the test shows a grid. If the Problems tab has multiple input cells, the test has multiple input cells. If the Problems tab checks per-cell with tolerance, the test checks per-cell with tolerance.
-
-**What this means in practice:**
-
-- **ICE tables** render as a full I/C/E × species grid with given/blank cells — not as a single "Find [X] at equilibrium" numeric question. This was fixed; `ice_table` now has kind `'ice_table'` in `testTypes.ts` with a proper `ICETableTestProblem` type.
-- **Balancing equations** render as coefficient inputs per species (the comma-separated format matches the practice page's instruction style).
-- **Heating curve / phase diagram / reaction profile** problems include the SVG diagram — they already do this and set the standard.
-- **Lewis draw / VSEPR draw** open the same draw modal — already correct.
-- **Any future interactive problem type** must carry its interactive format into the test.
-
-**Anti-pattern to avoid:** reducing a structured problem to `kind: 'numeric'` or `kind: 'classification'` in `TestBuilder.tsx` when the practice page has custom UI. The `numeric` and `classification` fallback kinds exist only for problems that genuinely have a single typed answer.
-
-**Shared utilities:** when the practice component and the test component both need the same rendering or checking logic (e.g. `generateICEPrefilled`, `checkConcentrationAnswer`, `fmtICECell`), extract that logic to the shared `utils/` file — not duplicated in both places. The ICE table implementation follows this pattern: all three utilities are exported from `utils/equilibriumPractice.ts` and imported by both `ICETablePractice.tsx` and `TestSheet.tsx`.
-
-**Print fidelity:** `buildQuestionHtml()` in `TestSheet.tsx` must also replicate the problem format for print. ICE tables print as an HTML `<table>` with given values filled and blank cells as empty bordered boxes. The printed test should look like a worksheet a professor would hand out — not a wall of text questions.
-
-**Known violations fixed:**
-
-| Topic | Was | Now |
-|---|---|---|
-| ICE Table (`ice_table`) | `numeric` — single answer box | Full I/C/E grid, per-cell ±2% checking |
-
-### NavSidebar must reflect page layout
-
-The sidebar navigation structure should mirror what the student sees when they arrive at a page. If a page has tabs for "Limiting Reagent", "Theoretical Yield", and "Percent Yield" under Practice, the sidebar should show those as sub-entries under the topic — not just a single "Stoichiometry" link. When a new tab is added to a page, add a corresponding sidebar entry.
-
-Search entries should include common synonyms and related terms. A student searching "moles to grams" should find the moles tool; a student searching "neutralization" should find titration practice.
-
-**NavSidebar is data-driven — do not copy-paste `*GroupedItems` components.** All tab-based topic sections use the generic `GroupedNavSection` component. To add a new tab: add it to the relevant `*_GROUPS` data array. To add a new topic section: add a `SectionConfig` entry to `SECTION_CONFIGS`. The three special-case renderers (`TableGroupedItems`, the inline base-calc block, and the inline structures block) exist because they use `?topic=` params or flat path lists — do not add a fourth.
-
-### `topicRegistry.ts` is the single source of truth for topic visibility
-
-`src/config/topicRegistry.ts` defines every topic the app knows about. The Settings page, the Gen Chem 1/2 presets, the `usePreferencesStore` visibility checks, the `TestBuilder` topic list, and the `PrintBuilder` topic list all derive from it. **When you add a topic, you must add it to the registry first.** A tab that exists on a page but has no registry entry will never appear in settings, will not be hidden when the user hides its section, and cannot be shown or hidden by the Gen Chem presets.
-
-### Extract shared utilities before the second caller
-
-When a practice component and a test component (or two pages) both need the same rendering or checking logic, extract it to `utils/` on the first duplication. Do not let the same logic live in two places "temporarily." The ICE table case — `generateICEPrefilled`, `checkConcentrationAnswer`, `fmtICECell` all exported from `utils/equilibriumPractice.ts` and imported by both `ICETablePractice.tsx` and `TestSheet.tsx` — is the reference pattern.
-
-### Backend package creation conventions
-
-When adding a new Go backend package under `chemhelper/` (e.g. `organic/`, `nuclear/`):
-- Package directory name = lowercase single word matching the chemistry domain.
-- Exported solver functions return `(Result, error)` where `Result` is a named struct.
-- HTTP handler lives in `api/` and calls the domain package — domain packages must not import `net/http`.
-- Errors are `422 Unprocessable Entity` with a `{"error": "descriptive message"}` body — use the existing `writeError` helper.
-- Check `chemhelper/` before building frontend-only: molarity, Lewis structures, SMILES, BPE/FPD are already server-side.
-
-### Tab value naming conventions
-
-Tab IDs in `*Page.tsx` and the registry follow these conventions:
-- **Reference tabs:** prefix `ref-` (e.g. `ref-entropy`, `ref-rate-law`).
-- **Practice/tool tabs:** no prefix, kebab-case (e.g. `entropy`, `rate-law`).
-- **Problems tabs:** suffix `-problems` (e.g. `entropy-problems`, `gibbs-k-problems`).
-- Tab IDs must match between the page's `Tab` union type, the `TAB_TO_TOPIC` map, the `TOPIC_MODE_TAB` map, the `*_GROUPS` data arrays in `NavSidebar.tsx`, and the `Topic.id` in `topicRegistry.ts`. A mismatch in any one place will break visibility filtering or navigation.
-
-### Problem generator requirements (non-negotiable)
-
-Every Practice tool must have a corresponding `utils/*Practice.ts` file containing a `generate*Problem()` function. This function is the source of all Problems-mode content. It must meet these requirements:
-
-**Dynamic generation:** Problems are created algorithmically at runtime, not pulled from a static list. The generator picks random values, random reactions, random compounds, and random solve-directions each time it's called. A student who clicks "Next" 20 times must see 20 meaningfully different problems.
-
-**Generator structure:**
 ```ts
 export interface SomeProblem {
-  scenario: string          // the problem statement shown to the student
-  answer: number | string   // the correct answer
-  answerUnit?: string       // unit of the answer
+  scenario: string          // problem statement shown to student
+  answer: number | string   // correct answer
+  answerUnit?: string
   steps: string[]           // full worked solution
 }
 
 export function generateSomeProblem(): SomeProblem {
   // 1. Pick random inputs from sensible ranges
-  // 2. Compute the correct answer using the same formula as the solver
-  // 3. Build a human-readable scenario string
+  // 2. Compute the answer using the same chem/ function as the solver — never hardcode
+  // 3. Build human-readable scenario string
   // 4. Build step-by-step solution strings
-  // 5. Return the complete problem
 }
 ```
 
-**Curated pools + randomized values:** The best generators combine a curated pool of realistic context (real reactions, real compounds, real elements) with randomized numeric values. Example: pick a random acid-base pair from `acidBasePairs.ts`, then generate random concentrations in [0.05, 0.50] M and random volumes in [10, 50] mL.
+**Curated pools + randomized values.** Best generators combine a curated pool (real reactions, real compounds) with random numerics. Round inputs to "nice" textbook values: multiples of 5 for mass, 0.1 for molality, 0.5 for pressure.
 
-**Answer correctness:** The generator MUST compute the answer using the same chem/ function that the solver uses. Never hardcode answers. If the formula changes, both the solver and the generator update automatically.
-
-**Testing:** Every generator must have a test that runs 20+ iterations and verifies each generated problem has a correct answer. If the generator can produce edge cases that break the formula (division by zero, negative concentrations, etc.), the test must catch them.
-
-**What is NOT acceptable:**
-- A static array of 10 problems that repeats
-- A generator that always uses the same numeric values with only the compound name changing
-- A generator with no `steps` array (students need to see the worked solution after checking)
-- A Practice component with no corresponding generator (meaning Problems mode is identical to Practice mode)
+**Not acceptable:**
+- Static array of N problems that repeats
+- Same numerics with only the compound name changing
+- Empty `steps` array
+- A Practice component with no generator (Problems mode would be identical to Practice)
 
 ---
 
-## File Layout
+## File & component conventions
 
-```
-src/
-  pages/           — RPP page shells, tab routing, no math
-  components/
-    <topic>/       — topic-specific tools, practice, reference components
-    shared/        — cross-topic UI primitives (NumberField, StepsPanel, etc.)
-    Layout/        — PageShell, nav
-    tools/         — interactive classifiers (ReactionClassifier, NetIonicTool, etc.)
-    calculations/  — legacy location; being migrated to shared/
-    reference/     — static-reference pages linked from ReferencePage (solubility, naming)
-  utils/           — pure TS, no React (problem generators, formatters)
-  chem/            — domain math (stoich, amounts, solutions, sig figs, nomenclature)
-  data/            — pure data modules (no logic). Used by both chem/ and components/
-  stores/          — Zustand stores (elementStore, etc.)
-```
+- Calculator/solver components: `*Tool.tsx`. Never `*Calc.tsx` or `*Solver.tsx`.
+- Reference components: `*Reference.tsx`. Root container:
+  ```tsx
+  <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
+  ```
+  (Exception: `EnthalpyReference` is a genuinely different table layout.)
+- Practice components: `*Practice.tsx`. Generators: `utils/*Practice.ts`.
+- Data files: `src/data/*.ts` — pure TS, no React, no logic beyond types and constants.
+- Every page uses `PageShell` from `Layout/`. Don't inline padding strings. Exception: `LewisPage` and `VseprPage` are embedded in `StructuresPage`.
 
-Import shared primitives as `'../shared/X'` from any component subdir.
-
-The `calculations/` entry above is now empty of shared primitives (all moved to `shared/`). It still holds topic-specific components like `MolarReference`, `MolesTool`, etc. — those belong there.
+When reference data values differ from Chang's tables (specific heats, bond enthalpies, reduction potentials), add a brief footnote. Don't silently use a different value.
 
 ---
 
-## Domain math migration
+## Styling
 
-Stoichiometry is fully migrated to `src/chem/stoich.ts`. The fmt/rnd callback pattern there is the template — follow it for any new chem/ solver.
-
-Other domains (thermo, idealgas, empirical, molar calculations) still compute locally. Migrate opportunistically: when you touch a tool for any other reason, check whether its math is a candidate for `chem/`, and extract if so. Don't do speculative migrations — each one needs tests and costs review time.
-
----
-
-## Curriculum coverage (Gen Chem 101)
-
-Coverage against Chang 14e chapters, as of the most recent review:
-
-| Ch | Topic | Status |
-|---|---|---|
-| 1 | Measurement, sig figs, conversions | ✓ Strong |
-| 2 | Atoms, ions, molecules | ✓ Strong |
-| 2 | Nomenclature practice | ✓ Complete (NomenclatureTool on ElectronConfigPage) |
-| 3 | Stoichiometry | ✓ Strong (chained yield, molecular diagrams added) |
-| 3 | Weighted atomic mass from isotopes | ✓ Complete (isotopePractice + ReverseIsotopeTool) |
-| 3 | **Combustion analysis mode for EmpiricalTool** | ⚠ Missing |
-| 4 | Aqueous reactions | ✓ Strong (titration arithmetic added) |
-| 4 | **Titration curves** (pH vs volume) | ⚠ Missing |
-| 5 | Gases | ✓ Complete (custom T/P, reverse density, gas-over-water added) |
-| 6 | Thermochemistry | ✓ Complete (expansion work, heat of soln/neut, ΔU↔ΔH, energy balance added) |
-| 7 | Quantum theory / electron config | ✓ Reference strong |
-| 7 | **Bohr/photoelectric/deBroglie practice** | ⚠ Missing computational tools |
-| 8 | Periodic trends | ⚠ Data + comparison exist; no dedicated reference or practice |
-| 9 | Lewis structures, bonding | ✓ Complete |
-| 9 | **Lattice energy / Born-Haber** | ⚠ Missing (medium priority) |
-| 10 | VSEPR / molecular geometry | ✓ Complete |
-| 10 | **Hybridization practice tool** | ⚠ Reference only (embedded in VSEPR data) |
-| 10 | **Dipole moment / polarity tool** | ⚠ Missing |
-| 10 | **Molecular orbital theory** | ⚠ Missing (syllabus-dependent) |
-
-When adding a new topic, consult this table. If the topic is marked `⚠`, data or reference material likely already exists — build on it rather than duplicating.
-
-When a topic is completed, flip its row to `✓` and update the review summary.
+- `color-mix(in srgb, var(--c-halogen) N%, ...)` for tinted backgrounds and borders. Never hard-coded hex for accents.
+- Active pill: bg `color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))`, border `color-mix(in srgb, var(--c-halogen) 30%, transparent)`.
+- Pill spring: `{ type: 'spring', stiffness: 400, damping: 32 }`.
+- `layoutId` strings unique across the page.
+- `print:hidden` on every nav/pill row.
 
 ---
 
-## `ReferencePage.tsx`
+## Testing (Vitest)
 
-ReferencePage is now a single-purpose page showing only Solubility Rules (21 lines, renders `SolubilityReference`). Naming reference and nomenclature practice were moved to `ElectronConfigPage` as a topic.
+`npm test` (single) or `npm run test:watch`.
 
-Don't add new topics to ReferencePage — dedicated topic pages handle everything else. If the solubility rules eventually gain a practice component, ReferencePage should gain Practice/Problems modes at that point.
+Locations: `src/chem/__tests__/*.test.ts`, `src/utils/*Practice.test.ts`, `src/components/<topic>/*.test.ts`.
 
----
+**Required tests:**
 
-## Backend API Scaffold
-
-`src/api/` contains `client.ts` (axios, baseURL `/api`, 15s timeout, error interceptor) and stubs `calculations.ts`, `elements.ts`. Nothing is wired through it yet. If server-side routing is added, this is the right place — keep all fetch calls in `src/api/` files, not inside components or utils.
-
----
-
-## Styling Conventions
-
-- Use `color-mix(in srgb, var(--c-halogen) N%, ...)` for tinted backgrounds and borders — never hard-coded hex for accent colors.
-- Active pill background: `color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))` with border `color-mix(in srgb, var(--c-halogen) 30%, transparent)`.
-- Spring animation for pill transitions: `{ type: 'spring', stiffness: 400, damping: 32 }`.
-- `layoutId` strings must be unique across the whole page to avoid framer-motion conflicts.
-- `print:hidden` on every nav/pill row — no exceptions.
-
----
-
-## Testing Conventions
-
-**Framework:** Vitest. Run with `npm test` (single run) or `npm run test:watch` (watch mode).
-
-**Test file locations:**
-- Domain logic tests: `src/chem/__tests__/*.test.ts` — co-located under the chem/ folder
-- Practice generator tests: alongside the generator, e.g. `src/utils/daltonsPractice.test.ts`
-- Component tests: alongside the component, e.g. `src/components/lewis/LewisEditor.test.ts`
-
-**Mandatory test coverage — no exceptions:**
-
-1. **Every `src/chem/` function** must have tests with edge cases. These protect chemistry correctness — the most valuable tests in the project.
-
-2. **Every `utils/*Practice.ts` generator must have a corresponding `utils/*Practice.test.ts`.** A generator shipped without tests is a bug. The test file must include:
+1. **Every `src/chem/` function** has tests with edge cases.
+2. **Every `utils/*Practice.ts` generator** has a `*Practice.test.ts` with:
+   - 20+ random iterations recomputing each answer from inputs
+   - At least one Chang-verbatim case with hardcoded inputs and expected output
+   - Range/validity checks (no NaN, pH 0–14, concentrations > 0, non-empty steps)
+   - If a `check*Answer()` exists, test it returns `true` for correct and `false` for clearly wrong
 
 ```ts
 describe('generateSomeProblem', () => {
-  // REQUIRED: 20+ iteration correctness check
   it('produces correct answers across 20+ runs', () => {
     for (let i = 0; i < 25; i++) {
       const p = generateSomeProblem()
-      // Recompute answer from p's inputs using the known formula
+      // Recompute from p's inputs using the formula
       expect(recomputed).toBeCloseTo(p.answer, tolerance)
     }
   })
-
-  // REQUIRED: hardcoded verification case
-  it('matches Chang Example X.Y', () => {
-    // Use exact textbook values
-  })
-
-  // REQUIRED: range/validity checks
-  it('all values in valid ranges', () => {
+  it('matches Chang Example X.Y', () => { /* exact textbook values */ })
+  it('all values valid', () => {
     for (let i = 0; i < 20; i++) {
       const p = generateSomeProblem()
       expect(p.answer).not.toBeNaN()
       expect(p.steps.length).toBeGreaterThan(0)
-      // Topic-specific: pH 0-14, concentrations > 0, etc.
     }
-  })
-
-  // RECOMMENDED: if generator has check*Answer(), test it
-  it('checkAnswer returns true for correct, false for wrong', () => {
-    const p = generateSomeProblem()
-    expect(checkAnswer(p.answer.toString(), p)).toBe(true)
-    expect(checkAnswer('999999', p)).toBe(false)
   })
 })
 ```
 
-3. At least one **Chang-verbatim verification case** per solver. Pick a worked example from the textbook, hardcode its inputs, and verify the output matches Chang's published answer.
-
-**What NOT to test:**
-- Don't test React rendering behavior unless it's a complex interactive component (like ChainedProblem or LewisEditor). Simple display components don't need tests.
-- Don't test Tailwind classes or animation parameters.
+**Don't test:** React rendering of simple display components, Tailwind classes, animation parameters.
 
 ---
 
-## Framer Motion Gotchas
+## Framer Motion gotchas
 
-These are bugs discovered in this project:
-
-- **Never use `layoutId` on many elements.** `AnimatePresence` with `layoutId` on 118 periodic table cells blocks page transitions. Use simple scale/fade instead. If you have more than ~20 elements with `layoutId`, performance will degrade.
-- **Don't wrap `<Outlet />` in `AnimatePresence`.** This breaks React Router's route transitions.
-- **JSX `animate` prop vs imperative `animate()` are different APIs** with different keyframe formats. Per-keyframe timing requires `useAnimate` + `useEffect`, not the JSX prop. Hooks can't be called inside `.map()` — extract to a standalone component if you need per-item animation.
-- **`AnimatePresence` requires `key` on direct children.** If children don't have stable unique keys, exit animations won't fire.
+- **No `layoutId` on many elements.** `AnimatePresence` with `layoutId` on 118 periodic table cells blocks page transitions. >20 elements with `layoutId` = perf cliff. Use simple scale/fade.
+- **Don't wrap `<Outlet />` in `AnimatePresence`** — breaks React Router transitions.
+- **JSX `animate` prop ≠ imperative `animate()`.** Different keyframe formats. Per-keyframe timing needs `useAnimate` + `useEffect`. Hooks can't be called inside `.map()` — extract to a standalone component.
+- **`AnimatePresence` requires `key` on direct children.** No stable key, no exit animation.
 
 ---
 
-## Chemistry-Specific Rules
+## Chemistry-specific rules
 
-Learned from bugs found during code review:
-
-- **Van't Hoff factor (i) must never affect sig fig count.** The factor i is an exact integer (or treated as one) — it doesn't limit the significant figures of the result.
-- **Never output scientific notation as `1e+1`.** Always format as `1.0 × 10¹` or similar. Students don't recognize JS exponential notation as a valid answer. Use `toFixed` or a custom formatter, never raw `.toString()` on large/small numbers.
-- **Sign conventions in calorimetry:** q_system = −q_surroundings. The existing tools handle this correctly; don't invert it when adding new modes. When the temperature drops (endothermic dissolution), q_water is negative, q_rxn is positive, ΔH_soln is positive.
-- **Formal charge formula:** FC = (valence electrons) − (lone pair electrons) − (number of bonds). Not bond *order* — count each bond (single, double, triple) as 1 for the bond count in the FC formula, regardless of bond order. (The existing LewisEditor uses bond degree sum, which is equivalent for FC because the formula actually uses shared electrons / 2.)
-- **Sig figs on constants:** Tabulated constants (Kb, Kf, R, F, etc.) are exact or have more sig figs than student data. They should never limit the sig fig count of a result.
-- **Reduction potentials:** E°cell = E°cathode − E°anode (not the other way around). The sign of E° for a half-reaction never changes when you reverse it — that's the modern IUPAC convention. Only the cell potential uses the subtraction.
+- **Van't Hoff factor (i) never affects sig fig count.** It's an exact integer.
+- **Never output `1e+1`-style scientific notation.** Format as `1.0 × 10¹`. Students don't recognize raw JS exponentials.
+- **Calorimetry:** q_system = −q_surroundings. Endothermic dissolution → q_water negative, q_rxn positive, ΔH_soln positive.
+- **Formal charge:** FC = valence − lone pair electrons − bond count. Count each bond as 1 regardless of order.
+- **Constants don't limit sig figs.** Tabulated Kb, Kf, R, F are exact or have more sig figs than student data.
+- **Reduction potentials:** E°cell = E°cathode − E°anode. The sign of E° for a half-reaction never changes when reversed (modern IUPAC).
 
 ---
 
-## Dependency Discipline
+## Backend coordination
 
-The project has 9 runtime dependencies. Keep it lean.
+The Go backend at `chemhelper/` has domain packages (`element/`, `solution/`, `thermo/`, `structure/`, `smiles/`, `units/`).
 
-- **Do not add new npm dependencies without explicit approval.** If a task seems to need a library, first check whether the functionality exists in the current deps or can be implemented in a few lines. Most chemistry math is simple enough to inline.
-- **Current runtime deps:** React, React-DOM, React-Router, Framer Motion, Zustand, Axios, and a few others. Check `package.json` before assuming a library is available.
-- **Allowed dev deps:** Vitest, TypeScript, Tailwind, Vite, ESLint. Don't add testing libraries beyond Vitest (no Jest, no Testing Library unless it's already present).
+- **Check for existing backend implementations** before building new frontend math. Molarity, molality, BPE/FPD, Lewis structures, SMILES are server-side.
+- **API errors return 422** with descriptive messages: `writeError(w, http.StatusUnprocessableEntity, "...")`. Never generic 404s.
+- **All fetch calls go through `src/api/client.ts`** (axios, baseURL `/api`, 15s timeout). No `fetch` or `axios` inside components or utils.
 
----
-
-## State Management
-
-- **`useState` for everything local to one component.** Calculator inputs, verify state, steps panel state, toggle booleans — all local.
-- **Zustand only for cross-component shared state.** Currently only `elementStore.ts` (periodic table data). The planned scratchpad (for sharing reactions between tools) will be a second Zustand store when it's built. Don't create new Zustand stores for tool-specific state.
-- **URL params for navigation state.** Tab selection, mode selection — these go in `useSearchParams`, not in component state or Zustand. This is how deep links work.
-- **Never store derived data.** If you can compute it from other state, compute it. Don't store both `moles` and `grams` when one is derived from the other via molar mass.
+When adding a new Go package:
+- Lowercase single word matching the chemistry domain.
+- Solvers return `(Result, error)` where `Result` is a named struct.
+- HTTP handlers in `api/`; domain packages don't import `net/http`.
 
 ---
 
-## Backend Coordination
+## Mechanism animation consistency
 
-The Go backend at `chemhelper/` has its own domain packages (`element/`, `solution/`, `thermo/`, `structure/`, `smiles/`, `units/`) that overlap with some frontend logic. When building new features:
+All mechanism reaction data lives in `src/data/mechanisms/`. Every new reaction file follows these rules — no exceptions.
 
-- **Check whether the backend already has the calculation.** Molarity, molality, BPE/FPD, Lewis structures, and SMILES resolution are already server-side. Don't build a second implementation on the frontend if the backend can serve it.
-- **API errors should return 422 with descriptive messages**, not generic 404s. Follow the existing `writeError(w, http.StatusUnprocessableEntity, "descriptive message")` pattern in the Go handlers.
-- **Frontend `src/api/` is the only place that calls the backend.** Don't put `fetch` or `axios` calls inside components or utils. All API calls go through the `src/api/client.ts` axios instance.
+### Use template functions, not raw coordinates
+
+For atom placement, use template functions in `sceneTemplates.ts`:
+- `sp3CarbonScene()` — tetrahedral with wedge/dash slots
+- `alkeneScene()` — sp² C=C with 120° substituents
+- `alkyneScene()` — sp linear C≡C
+- `benzeneScene()` — hexagonal ring, ids `b1`–`b6`
+- `carbonylScene()` — trigonal C=O
+
+When a geometry doesn't fit a template, use `SceneBuilder` with `atomFrom()` (polar from an anchor). Never type raw x/y values for substrate atoms. Standard scene: **700×320**. Standard bond length: **`BOND_LENGTH = 100`px**.
+
+For animations, use `ArrowBuilder` — never raw `from`/`to` in primitives:
+```ts
+const ab = new ArrowBuilder(scene)
+ab.fromAtomToAtom('nu', 'c', { color: 'var(--c-alkali)', duration: 0.6 })  // ✓
+ab.translateAtom('br', 650, 150, { duration: 0.8, delay: 0.3 })            // ✓
+
+{ type: 'curved_arrow', from: {x:130, y:150}, to: {x:326, y:150} }         // ✗
+{ type: 'atom_translate', from: {x:555, y:150}, to: {x:650, y:150} }       // ✗ missing targetId
+```
+
+Exception for hand-written primitives: when an atom has been moved by a previous step's `atom_translate`, `ArrowBuilder` doesn't know its new position (it reads from the original scene). In that case, use a hand-written primitive with a comment explaining the committed position. Keep these rare.
+
+### Reagent placement: stay close to the reactive site
+
+**Reagents must start close enough to their final position that the translate path doesn't cross any rendered bond.** A 200px diagonal translate across the canvas will cross the substrate. A 30-50px translate stays local to the bond it's forming.
+
+Concrete rule for alkene reactions (alkene at y=175): place attacking reagents at **y=110-130** (just above the alkene) or **y=240-260** (just below). Do not place reagents at y=50 and then translate them through the C=C to land at y=240. The straight-line path crosses y=175 and visually flies through the double bond.
+
+Same rule for any reaction with a substrate bond: reagents start ~50px from their landing position, on the same side of the substrate they'll attach to. If the reagent will become a wedge substituent (above the page), it starts above. If it will become a dash substituent (below the page), it starts below.
+
+The textbook depiction of mechanisms doesn't actually show atoms flying — bonds appear formed in the next frame. We can't fully replicate that, but we can shorten translate paths until the visible motion is "settle into place" rather than "fly across the canvas."
+
+### `atom_translate` uses `targetId`
+
+Every `atom_translate` must include `targetId`. The legacy distance-matching path stays for backward compat but no new data should rely on it. The validator warns when `from` is more than 5px from the targetId's actual position.
+
+For atoms that move multiple times in one step (e.g. an attacker that drops below the substrate then crosses laterally), use **two sequential `atom_translate` primitives** with explicit `from` matching the previous segment's `to`:
+
+```ts
+{ type: 'atom_translate', targetId: 'br2', from: { x: 120, y: 175 }, to: { x: 120, y: 270 }, duration: 0.3, delay: 0.1 },
+{ type: 'atom_translate', targetId: 'br2', from: { x: 120, y: 270 }, to: { x: 420, y: 245 }, duration: 0.5, delay: 0.4 },
+```
+
+This routes the atom around the substrate instead of through it.
+
+### `bond_break` vs `bond_order_change`
+
+`bond_break` removes a bond from the scene entirely (it goes into `brokenBondIds` and is filtered out of rendering). It does NOT downgrade order.
+
+For a double bond becoming a single bond (every alkene addition reaction), use `bond_order_change`:
+```ts
+// Wrong — removes the C-C bond entirely, leaving floating atoms:
+{ type: 'bond_break', targetId: 'c1-c2', delay: 0.3 },
+
+// Right — keeps the C-C single bond:
+{ type: 'bond_order_change', targetId: 'c1-c2', text: '1', delay: 0.3 },
+```
+
+Use `bond_break` only for bonds that fully disappear: the H–X bond when HX adds, the X–X bond in halogenation, the H–H bond in hydrogenation, the bond from a leaving group to its parent.
+
+### Cyclic intermediates: break the ring when it opens
+
+When a cyclic intermediate (halonium, mercurinium, epoxide-like) opens in the next step, you must explicitly `bond_break` the bond that no longer exists in the product. Otherwise the final structure has both the ring-opening attacker AND the original ring bond — three bonds where there should be two.
+
+Halogenation example:
+- Step 1 forms `c1-br1` and `c2-br1` (the bromonium ring)
+- Step 2 forms `c2-br2` (the attacking Br⁻)
+- Step 2 must also `bond_break` `c2-br1` — the ring opens on the c2 side
+
+Without that break, the product has br1 bonded to both c1 AND c2, which is not a 1,2-dihalide.
+
+### Stereo bonds (wedge/dash) must be applied during the step that creates the stereo product
+
+The reaction's `stereochemistry: 'syn'` / `'anti'` / `'inversion'` is a chemistry tag — it doesn't render anything. To make stereochemistry visible, emit `bond_style_change` primitives during the appropriate step:
+
+- **Syn additions** (hydroboration, epoxidation, hydrogenation, OsO₄): both new bonds set to `'wedge'` in the same step. Same-face delivery is shown by both bonds pointing toward the viewer.
+- **Anti additions** (halogenation, anti epoxide opening): one new bond `'wedge'`, the other `'dash-wedge'`. Opposite-face is shown by one toward, one away.
+- **SN2 / Williamson / inversion**: use `invert_stereocenter` to flip all wedge↔dash on the central C. Never translate H atoms to fake inversion.
+- **E2**: β-H on wedge, leaving group on dash-wedge of adjacent C — visualizes anti-periplanar.
+- **SN1**: carbocation is sp² planar — no wedge/dash on bonds to the cationic C. Show racemization with the description; one curved arrow from solvent is the standard textbook depiction.
+
+### Final-frame integrity
+
+After the last step's animations complete, every atom must be at a position the product's structural drawing would put it. **Atoms that occupied intermediate positions (carbocation, halonium bridge, mercurinium bridge) must be translated to their final substrate position before the step ends.**
+
+Halogenation example: br1 starts at (350, 110) as the bromonium-bridge atom. After step 2's ring-opening, br1 should be a normal substituent on c1, not still floating above the C=C midpoint. Add an `atom_translate` at delay 0.5 to move it from (350, 110) to (230, 105) — c1's upper-left wedge slot.
+
+The committed final scene is what the student studies. Make it look like the product's structural drawing.
+
+### Atom IDs and roles
+
+Standard IDs:
+- `c`, `c1`, `c2` — reactive carbons; `c_alpha`, `c_beta` — Greek-named positions
+- `nu` — nucleophile; `lg`/`br`/`cl`/`x` — leaving group
+- `base`, `b1`–`b6` (benzene), `me1`–`me3` (methyls), `r1`–`r3` (R groups)
+- `h_proton` — added H from acid; `h_added` — H from a reagent like BH₃ or H₂
+
+Apply `role` on key atoms:
+- `'nucleophile'`, `'leaving_group'`, `'base'`, `'acid'`
+- `'alpha_carbon'`, `'beta_carbon'`, `'carbonyl_carbon'`, `'carbonyl_oxygen'`
+- `'more_substituted'`, `'less_substituted'`
+- `'r_group'`, `'h_substituent'`
+
+Use `findByRole(scene, role)`, `getNucleophile(scene)`, `getLeavingGroup(scene)` in animations rather than hardcoded IDs.
+
+### Step animation timing convention
+
+Within a step, `delay` orders the animations. Standard pattern:
+```
+delay 0.0  bond_break / bond_order_change (committed state changes can fire first)
+delay 0.0  curved_arrow (electron movement starts visualizing)
+delay 0.2  atom_translate (atom moves into position)
+delay 0.3  bond_form (new bond appears)
+delay 0.4  charge_appear / charge_disappear (charges update)
+delay 0.4  bond_style_change (wedge/dash/solid update)
+delay 0.5  intermediate_glow (highlight the intermediate)
+delay 0.5  atom_translate for "settle into product position" moves
+delay 0.7  step_label (text caption at bottom)
+```
+Don't deviate without a reason. Fiddling with delays to make something "look right" usually means the chemistry is being misrepresented.
+
+### Font sizes — match the rest of the app
+
+The mechanism player and cards should match the typography elsewhere in the app. The rest of ChemHelper uses `text-sm` (14px) for body and `text-xs` (12px) for labels. Reference components rarely go below 12px.
+
+For mechanism cards (`MechanismCard.tsx`):
+- `text-sm` for reaction name, summary, reactants→products, conditions value, key-points text, chevron
+- `text-xs` for section labels (Conditions / Key Points / Mechanism / Related), Brown ref, metadata flags, related-reaction tags
+- `text-[10px]` only for the badges (intentionally compact pills for the dense badge row)
+
+For the SVG canvas (`MechanismPlayer.tsx`):
+- `fontSize={14}` for atom symbols (was 12)
+- `fontSize={11}` for charge superscripts (was 9)
+- `fontSize={10}` for atom labels and energy axis labels (was 8)
+- `fontSize={13}` for in-scene step labels (was 11)
+- `fontSize={9}` for energy diagram point labels (was 7)
+- Atom circle radius `r={16}` to fit the larger text
+
+### Validation
+
+`validateAllReactions(ALL_REACTIONS)` runs at module load in dev. It warns on:
+- Coordinate drift in `atom_translate` (>5px from targetId's actual position)
+- `atom_translate` without `targetId` and no atom within 50px
+- Orphan `targetId` (atom/bond doesn't exist)
+- Off-canvas atoms
+- Overlapping atoms (<25px apart)
+- Stereocenter in inversion reaction missing wedge/dash
+
+A clean console is the acceptance criterion. **Don't ship a reaction with warnings.** If a warning is wrong, fix the validator, don't suppress.
+
+### Common bugs and their fixes
+
+A reference for the bug patterns we've seen during the alkene rollout. If a new reaction's animation looks wrong, check whether one of these applies before debugging the engine.
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| C=C disappears at end of step 1 | `bond_break` on `c1-c2` instead of order change | Use `bond_order_change` to text `'1'` |
+| Atom flies through the C=C bond | Reagent placed too far from substrate | Move reagent start to y=110-130 (above) or y=240-260 (below) |
+| Atom enters the alkene zone laterally | Long horizontal translate at substrate's y | Split into two `atom_translate` primitives: drop below first, then cross |
+| Final product has the bridge atom floating above C=C | Intermediate-stage atom not translated to product position | Add `atom_translate` at end of last step to move to substituent slot |
+| Cyclic ring still in product | Ring-opening bond not broken | Add `bond_break` for the bond that opens (e.g. `c2-br1` in halogenation) |
+| Stereo product looks flat | Missing `bond_style_change` to wedge/dash | Add wedge for syn, wedge+dash for anti, in step that forms the new bonds |
+| Atom symbols look small | SVG fontSize at default | Use the size table above (atom symbols at 14, not 12) |
+| Card text is hard to read | Mix of text-[9px] and text-[10px] | Use text-sm/text-xs/text-[10px] only — match the rest of the app |

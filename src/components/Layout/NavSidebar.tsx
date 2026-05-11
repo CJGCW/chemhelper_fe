@@ -485,6 +485,23 @@ const NUCLEAR_GROUPS: NavTabGroup[] = [
   },
 ]
 
+const SPECTROSCOPY_GROUPS: NavTabGroup[] = [
+  {
+    label: 'Spectroscopy',
+    items: [
+      { tab: 'ir-spectroscopy',  label: 'IR Spectroscopy',   formula: 'cm⁻¹' },
+      { tab: 'nmr-spectroscopy', label: 'NMR',               formula: 'δ ppm' },
+      { tab: 'ms-spectroscopy',  label: 'Mass Spectrometry', formula: 'm/z'   },
+    ],
+  },
+  {
+    label: 'Spectral Analysis',
+    items: [
+      { tab: 'spectral-analysis-tools', label: 'Spectral Analysis', formula: '↑/draw' },
+    ],
+  },
+]
+
 const ORGANIC_GROUPS: NavTabGroup[] = [
   {
     label: 'Hydrocarbons',
@@ -497,11 +514,105 @@ const ORGANIC_GROUPS: NavTabGroup[] = [
   {
     label: 'Functional Groups',
     items: [
-      { tab: 'ref-func-groups', label: 'Functional Groups', formula: 'R-OH' },
-      { tab: 'ref-organic-rxn', label: 'Common Reactions',  formula: 'rxn'  },
+      { tab: 'ref-func-groups',  label: 'Functional Groups', formula: 'R-OH' },
+      { tab: 'ref-organic-rxn',  label: 'Common Reactions',  formula: 'rxn'  },
+      { tab: 'predict-practice', label: 'Predict Product',   formula: '→?'   },
+    ],
+  },
+  {
+    label: 'Conformations',
+    items: [
+      { tab: 'ref-newman', label: 'Newman Projections',  formula: '↻' },
+      { tab: 'ref-chair',  label: 'Chair Conformations', formula: '⬡' },
+    ],
+  },
+  {
+    label: 'Stereochemistry',
+    items: [
+      { tab: 'ref-stereochem', label: 'Stereochemistry',  formula: 'R/S' },
+      { tab: 'ref-fischer',    label: 'Fischer / D–L',    formula: 'D/L' },
+    ],
+  },
+  {
+    label: 'Aromaticity',
+    items: [
+      { tab: 'ref-aromaticity', label: 'Aromaticity',       formula: '4n+2'  },
+      { tab: 'ref-directing',   label: 'Directing Effects',  formula: 'o/p/m' },
+      { tab: 'ref-conjugation', label: 'Conjugated Dienes',  formula: '1,4'   },
+    ],
+  },
+  {
+    label: 'Acid-Base',
+    items: [
+      { tab: 'ref-acid-base',     label: 'pKₐ Table',         formula: 'pKₐ'  },
+      { tab: 'acid-base-practice',       label: 'Most Acidic H',   formula: 'H⁺' },
+      { tab: 'acidity-ranking-practice', label: 'Acidity Ranking', formula: '↕'  },
+      { tab: 'acidity-factors',         label: 'Equil. Predictor', formula: '⇌'  },
+    ],
+  },
+  {
+    label: 'Structure & Bonding',
+    items: [
+      { tab: 'ref-resonance',     label: 'Resonance',      formula: '↔'   },
+      { tab: 'ref-hybridization', label: 'Hybridization',  formula: 'sp³' },
+      { tab: 'ref-curved-arrow',  label: 'Curved Arrows',  formula: '⟶'   },
+    ],
+  },
+  {
+    label: 'Carbohydrates',
+    items: [
+      { tab: 'ref-sugars',          label: 'Monosaccharides',  formula: 'C₆' },
+      { tab: 'fischer-haworth',     label: 'Fischer→Haworth',  formula: 'D/L' },
+      { tab: 'anomers-mutarotation', label: 'Anomers',         formula: 'α/β' },
+      { tab: 'sugar-reactions',     label: 'Sugar Reactions',  formula: 'rxn' },
+    ],
+  },
+  {
+    label: 'Synthesis',
+    items: [
+      { tab: 'ref-fgi',            label: 'FGI Table',         formula: 'FGI' },
+      { tab: 'synthesis-fillin',   label: 'Fill-In Reagents',  formula: '→?'  },
+      { tab: 'synthesis-ordering', label: 'Step Ordering',     formula: '1→2' },
+      { tab: 'retro-disconnection', label: 'Retrosynthesis',   formula: '⟸'  },
+      { tab: 'transform-drill',    label: 'Transform Drill',   formula: 'A→B' },
+    ],
+  },
+  {
+    label: 'Amino Acids',
+    items: [
+      { tab: 'ref-amino-acids',  label: 'AA Synthesis',  formula: 'AA'   },
+      { tab: 'amino-acid-table', label: 'AA Table (20)', formula: '20'   },
+      { tab: 'peptide-bonds',    label: 'Peptide Bonds', formula: 'C-N'  },
+      { tab: 'zwitterions-pi',   label: 'Zwitterions/pI', formula: 'pI'  },
+    ],
+  },
+  {
+    label: 'Lipids',
+    items: [
+      { tab: 'ref-fatty-acids',       label: 'Fatty Acids',    formula: 'FA'   },
+      { tab: 'ref-triglycerides',     label: 'Triglycerides',  formula: '3×FA' },
+      { tab: 'ref-phospholipids',     label: 'Phospholipids',  formula: 'PL'   },
+      { tab: 'ref-terpenes-steroids', label: 'Terpenes',       formula: 'C₅n'  },
+    ],
+  },
+  {
+    label: 'Polymers',
+    items: [
+      { tab: 'ref-polymerization',     label: 'Mechanisms',      formula: 'Mn'   },
+      { tab: 'ref-common-polymers',    label: 'Common Polymers', formula: 'list' },
+      { tab: 'polymerization-practice', label: 'Practice',       formula: 'type?'},
+    ],
+  },
+  {
+    label: 'Nucleic Acids',
+    items: [
+      { tab: 'ref-nucleobases', label: 'Nucleobases', formula: 'ACGT' },
+      { tab: 'ref-nucleotides', label: 'Nucleotides', formula: '5′P'  },
+      { tab: 'ref-dna-rna',     label: 'DNA / RNA',   formula: 'helix'},
     ],
   },
 ]
+
 
 // ── Generic grouped nav section (replaces all *GroupedItems + *SubItem) ───────
 
@@ -600,6 +711,7 @@ interface SectionConfig {
   defaultTab: string
   defaultGroup: string
   groups: NavTabGroup[]
+  flat?: boolean  // render groups directly without an ExpandableSection wrapper
 }
 
 const SECTION_CONFIGS: SectionConfig[] = [
@@ -614,7 +726,23 @@ const SECTION_CONFIGS: SectionConfig[] = [
   { key: 'buffers',        icon: 'β',    label: 'Buffers & Solubility',  basePath: '/buffers',         groups: BUFFERS_GROUPS,        defaultTab: 'ref-buffer',           defaultGroup: 'Buffers'             },
   { key: 'thermodynamics', icon: 'ΔG',   label: 'Thermodynamics',        basePath: '/thermodynamics',  groups: THERMODYNAMICS_GROUPS, defaultTab: 'ref-entropy',          defaultGroup: 'Entropy'             },
   { key: 'nuclear',        icon: '⚛',   label: 'Nuclear Chemistry',     basePath: '/nuclear',         groups: NUCLEAR_GROUPS,        defaultTab: 'ref-decay',            defaultGroup: 'Nuclear Reactions'   },
-  { key: 'organic',        icon: 'C',    label: 'Organic Chemistry',     basePath: '/organic',         groups: ORGANIC_GROUPS,        defaultTab: 'ref-hydrocarbons',     defaultGroup: 'Hydrocarbons'        },
+  { key: 'organic',        icon: 'C',    label: 'Organic Chemistry',     basePath: '/organic',         groups: ORGANIC_GROUPS,        defaultTab: 'ref-hydrocarbons',     defaultGroup: 'Hydrocarbons',        flat: true },
+  { key: 'spectroscopy',   icon: 'λ',   label: 'Spectroscopy',          basePath: '/spectral',        groups: SPECTROSCOPY_GROUPS,   defaultTab: 'ir-spectroscopy',      defaultGroup: 'Spectroscopy'        },
+]
+
+// ── Course groups — splits SECTION_CONFIGS into Gen Chem / Organic ────────────
+
+const COURSE_GROUPS: { key: string; label: string; sectionKeys: string[] }[] = [
+  {
+    key: 'genchem',
+    label: 'General Chemistry',
+    sectionKeys: ['idealGas', 'molar', 'redox', 'stoich', 'thermo', 'kinetics', 'equilibrium', 'acidBase', 'buffers', 'thermodynamics', 'nuclear'],
+  },
+  {
+    key: 'organic',
+    label: 'Organic Chemistry',
+    sectionKeys: ['organic', 'spectroscopy'],
+  },
 ]
 
 // ── Top-level nav items ───────────────────────────────────────────────────────
@@ -732,12 +860,28 @@ export default function NavSidebar({ open, onClose, theme, onToggleTheme }: Prop
     currentPath === '/tools' || currentPath === '/compound' || currentPath === '/reference' || currentPath === '/settings'
   )
 
+  // Course group expansion (Gen Chem / Organic)
+  const [expandedCourseGroups, setExpandedCourseGroups] = useState<Set<string>>(() => {
+    const initial = new Set<string>(['genchem'])
+    if (currentPath === '/organic' || currentPath === '/spectral' || currentPath === '/mechanisms') initial.add('organic')
+    return initial
+  })
+
+  function toggleCourseGroup(key: string) {
+    setExpandedCourseGroups(prev => {
+      const next = new Set(prev)
+      if (next.has(key)) { next.delete(key) } else { next.add(key) }
+      return next
+    })
+  }
+
   // All topic expandables in one Set (key = SectionConfig.key or special key)
   const [expandedSections, setExpandedSections] = useState<Set<string>>(() => {
     const initial = new Set<string>()
     if (currentPath === '/table' || currentPath === '/electron-config') initial.add('table')
     if (currentPath === '/base-calculations' || currentPath === '/empirical') initial.add('baseCalc')
     if (currentPath === '/structures') initial.add('struct')
+    if (currentPath === '/spectral') initial.add('spectroscopy')
     SECTION_CONFIGS.forEach(cfg => {
       if (currentPath === cfg.basePath) initial.add(cfg.key)
     })
@@ -814,7 +958,7 @@ export default function NavSidebar({ open, onClose, theme, onToggleTheme }: Prop
 
         {/* Normal nav — hidden during search */}
         {!query.trim() && (<>
-          {/* Topics */}
+          {/* Utility sections (always under Topics) */}
           <NavGroup label="Topics" expanded={refCalcOpen} onToggle={() => setRefCalcOpen(e => !e)} />
           <AnimatePresence initial={false}>
             {refCalcOpen && (
@@ -867,28 +1011,65 @@ export default function NavSidebar({ open, onClose, theme, onToggleTheme }: Prop
                   </ExpandableSection>
                 )}
 
-                <PracticeNavItem path="/reference?tab=solubility" icon="S/I" label="Solubility" onNavigate={onClose} />
-
-                {SECTION_CONFIGS.map(cfg => {
-                  const hasVisible = cfg.groups.flatMap(g => g.items.map(i => i.tab)).some(t => isTabVisible(t))
-                  if (!hasVisible) return null
+                {/* Gen Chem / Organic course groups */}
+                {COURSE_GROUPS.map(cg => {
+                  const cgSections = SECTION_CONFIGS.filter(cfg => cg.sectionKeys.includes(cfg.key))
+                  const hasSomethingVisible = cgSections.some(cfg =>
+                    cfg.groups.flatMap(g => g.items).some(i => isTabVisible(i.tab))
+                  )
+                  if (!hasSomethingVisible) return null
+                  const cgExpanded = expandedCourseGroups.has(cg.key)
                   return (
-                    <ExpandableSection
-                      key={cfg.key}
-                      icon={cfg.icon}
-                      label={cfg.label}
-                      isActive={currentPath === cfg.basePath}
-                      expanded={expandedSections.has(cfg.key)}
-                      onToggle={() => toggleSection(cfg.key)}
-                    >
-                      <GroupedNavSection
-                        groups={cfg.groups}
-                        basePath={cfg.basePath}
-                        defaultTab={cfg.defaultTab}
-                        defaultGroup={cfg.defaultGroup}
-                        onNavigate={onClose}
-                      />
-                    </ExpandableSection>
+                    <div key={cg.key}>
+                      <NavGroup label={cg.label} expanded={cgExpanded} onToggle={() => toggleCourseGroup(cg.key)} />
+                      <AnimatePresence initial={false}>
+                        {cgExpanded && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }}
+                            style={{ overflow: 'hidden' }}
+                          >
+                            {cgSections.map(cfg => {
+                              const hasVisible = cfg.groups.flatMap(g => g.items).some(i => isTabVisible(i.tab))
+                              if (!hasVisible) return null
+                              if (cfg.flat) {
+                                return (
+                                  <GroupedNavSection
+                                    key={cfg.key}
+                                    groups={cfg.groups}
+                                    basePath={cfg.basePath}
+                                    defaultTab={cfg.defaultTab}
+                                    defaultGroup={cfg.defaultGroup}
+                                    onNavigate={onClose}
+                                  />
+                                )
+                              }
+                              return (
+                                <ExpandableSection
+                                  key={cfg.key}
+                                  icon={cfg.icon}
+                                  label={cfg.label}
+                                  isActive={currentPath === cfg.basePath}
+                                  expanded={expandedSections.has(cfg.key)}
+                                  onToggle={() => toggleSection(cfg.key)}
+                                >
+                                  <GroupedNavSection
+                                    groups={cfg.groups}
+                                    basePath={cfg.basePath}
+                                    defaultTab={cfg.defaultTab}
+                                    defaultGroup={cfg.defaultGroup}
+                                    onNavigate={onClose}
+                                  />
+                                </ExpandableSection>
+                              )
+                            })}
+                            {cg.key === 'organic' && isTabVisible('reaction-mechanisms') && (
+                              <PracticeNavItem path="/mechanisms" icon="⚗" label="Reaction Mechanisms" onNavigate={onClose} />
+                            )}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   )
                 })}
 

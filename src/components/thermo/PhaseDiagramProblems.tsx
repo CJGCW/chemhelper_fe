@@ -17,14 +17,14 @@ const PW = W - ML - MR
 const PH = H - MT - MB
 
 const CURVE_COLOR = {
-  sublimation:  '#fb923c',
+  sublimation:  'rgb(var(--color-warning))',
   vaporization: '#f43f5e',
   fusion:       '#60a5fa',
 }
 
 const REGION_COLOR: Record<string, string> = {
   Solid:   '#60a5fa',
-  Liquid:  '#34d399',
+  Liquid:  'rgb(var(--color-success))',
   Gas:     '#c084fc',
 }
 
@@ -88,7 +88,7 @@ function InteractiveSVG({
   // Region labels — shown after answering, or dimmed if not the correct one
   const regionLabels = [
     { key: 'Solid',  label: 'SOLID',  pos: data.labelSolid,    color: '#60a5fa' },
-    { key: 'Liquid', label: 'LIQUID', pos: data.labelLiquid,   color: '#34d399' },
+    { key: 'Liquid', label: 'LIQUID', pos: data.labelLiquid,   color: 'rgb(var(--color-success))' },
     { key: 'Gas',    label: 'GAS',    pos: data.labelGas,      color: '#c084fc' },
   ]
 
@@ -229,7 +229,7 @@ function InteractiveSVG({
       {/* User click marker */}
       {clickSvgPos && (
         <circle cx={clickSvgPos.x} cy={clickSvgPos.y} r="8"
-          fill={isCorrect ? '#34d399' : '#f87171'}
+          fill={isCorrect ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))'}
           stroke="rgba(var(--overlay),0.85)" strokeWidth="2"
           clipPath="url(#pd-prob-plot)" />
       )}
@@ -465,7 +465,7 @@ export default function PhaseDiagramProblems() {
                 <div className="px-4 py-3 flex flex-col gap-2">
                   <div className="flex items-center gap-2">
                     <span className="font-sans text-sm font-semibold"
-                      style={{ color: isCorrect ? '#34d399' : '#f87171' }}>
+                      style={{ color: isCorrect ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                       {isCorrect ? 'Correct' : 'Incorrect'}
                     </span>
                     {!isCorrect && (

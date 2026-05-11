@@ -83,7 +83,7 @@ function Example({ scenario, steps, result }: { scenario: string; steps: string[
         {steps.map((s, i) => (
           <p key={i} className="font-mono text-sm text-primary print:text-gray-800">{s}</p>
         ))}
-        <p className="font-mono text-sm font-semibold text-emerald-400 print:text-green-700 mt-0.5">
+        <p className="font-mono text-sm font-semibold text-success print:text-green-700 mt-0.5">
           ∴ {result}
         </p>
       </div>

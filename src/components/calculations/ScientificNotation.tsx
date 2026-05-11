@@ -165,7 +165,7 @@ export function ScientificNotationReference() {
                     style={{
                       background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)',
                       color: 'var(--c-halogen)',
-                      border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)',
+                      border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                     }}>
                     {row.sf} sf
                   </span>
@@ -207,7 +207,7 @@ export function ScientificNotationReference() {
                   style={{
                     background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)',
                     color: 'var(--c-halogen)',
-                    border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)',
+                    border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   }}
                 >
                   {op.tag}

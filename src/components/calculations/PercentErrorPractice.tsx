@@ -112,7 +112,7 @@ export default function PercentErrorPractice({ allowCustom = true }: Props) {
                 <div className="flex items-center gap-2">
                   <span className="font-mono text-lg">{isCorrect ? '✓' : '✗'}</span>
                   <span className="font-sans text-sm font-medium"
-                    style={{ color: isCorrect ? '#4ade80' : '#f87171' }}>
+                    style={{ color: isCorrect ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                     {isCorrect ? 'Correct!' : `Incorrect — answer is ${problem.answer.toFixed(2)}%`}
                   </span>
                 </div>

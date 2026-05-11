@@ -11,7 +11,7 @@ export default function ICETableReference() {
     <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       <section className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-primary text-lg">The ICE Table Method</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">The ICE Table Method</h3>
         <p className="font-sans text-sm text-secondary leading-relaxed">
           ICE stands for <strong className="text-primary">Initial, Change, Equilibrium</strong>. It is a systematic way
           to find equilibrium concentrations when K and initial concentrations are known.
@@ -33,7 +33,7 @@ export default function ICETableReference() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-primary text-lg">Worked Example (Chang Ex 14.5)</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Worked Example (Chang Ex 14.5)</h3>
         <p className="font-sans text-sm text-secondary leading-relaxed">
           N₂O₄(g) ⇌ 2NO₂(g) &nbsp; K<sub>c</sub> = 4.63 × 10<sup>-3</sup> at 25°C.
           Initial: [N₂O₄]₀ = 0.0400 M, [NO₂]₀ = 0.
@@ -59,7 +59,7 @@ export default function ICETableReference() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-primary text-lg">The 5% Rule (Approximation)</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">The 5% Rule (Approximation)</h3>
         <p className="font-sans text-sm text-secondary leading-relaxed">
           When K is small, x is small relative to the initial concentration. You can simplify by assuming
           <span className="font-mono text-primary"> x &lt;&lt; [A]₀</span>, so <span className="font-mono text-primary">[A]₀ - x ≈ [A]₀</span>.
@@ -72,7 +72,7 @@ export default function ICETableReference() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-primary text-lg">General Steps</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">General Steps</h3>
         <ol className="flex flex-col gap-2 font-sans text-sm text-secondary leading-relaxed list-none">
           {[
             'Identify all active species (omit solids and liquids).',

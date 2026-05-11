@@ -62,7 +62,7 @@ export default function OrganicReactionReference() {
     <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       <div className="flex flex-col gap-3">
-        <h3 className="font-sans font-semibold text-bright text-lg">Common Organic Reaction Types</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Common Organic Reaction Types</h3>
         <p className="font-sans text-sm text-secondary leading-relaxed">
           Organic reactions are classified by the type of bond change that occurs. The four main categories
           encountered in Gen Chem are: <strong>addition</strong>, <strong>substitution</strong>,
@@ -101,7 +101,7 @@ export default function OrganicReactionReference() {
 
       {/* Summary table */}
       <div className="flex flex-col gap-3">
-        <h3 className="font-sans font-semibold text-bright text-lg">Quick Reference</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Quick Reference</h3>
         <div className="overflow-x-auto rounded-sm border border-border">
           <table className="w-full text-sm font-sans border-collapse">
             <thead>

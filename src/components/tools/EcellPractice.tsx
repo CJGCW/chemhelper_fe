@@ -60,8 +60,8 @@ export default function EcellPractice({ allowCustom = true }: Props) {
 
   const borderClass = checked
     ? correct
-      ? 'border-emerald-800/50 bg-emerald-950/20'
-      : 'border-rose-800/50 bg-rose-950/20'
+      ? 'feedback-success'
+      : 'feedback-error'
     : 'border-border bg-surface'
 
   const isNumeric = problem.subtype !== 'spontaneity'
@@ -80,8 +80,8 @@ export default function EcellPractice({ allowCustom = true }: Props) {
             <button key={t.id} onClick={() => handleTypeChange(t.id)}
               className="flex flex-col items-start px-3 py-2 rounded-sm font-sans text-sm font-medium transition-colors text-left"
               style={isActive ? {
-                background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               } : {
                 background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))', color: 'rgba(var(--overlay),0.45)',
@@ -155,14 +155,14 @@ export default function EcellPractice({ allowCustom = true }: Props) {
                           disabled:cursor-not-allowed
                           ${checked
                             ? correct
-                              ? 'border-emerald-700/60 text-emerald-300'
-                              : 'border-rose-700/60 text-rose-300'
+                              ? 'border-success-border text-success-strong'
+                              : 'border-error-border text-error-strong'
                             : 'border-border text-bright'}`}
             />
             {problem.answerUnit && (
               <span className={`flex items-center px-2 font-mono text-xs rounded-r-sm border border-l-0 shrink-0
                                 ${checked
-                                  ? correct ? 'border-emerald-700/60 text-emerald-400' : 'border-rose-700/60 text-rose-400'
+                                  ? correct ? 'border-success-border text-success' : 'border-error-border text-error'
                                   : 'border-border text-dim'}`}
                 style={{ background: 'rgb(var(--color-base))' }}>
                 {problem.answerUnit}
@@ -174,14 +174,14 @@ export default function EcellPractice({ allowCustom = true }: Props) {
             <button onClick={handleCheck} disabled={!answer.trim()}
               className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors disabled:opacity-30"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               }}>
               Check
             </button>
           ) : (
-            <span className={`font-sans text-sm font-medium ${correct ? 'text-emerald-400' : 'text-rose-400'}`}>
+            <span className={`font-sans text-sm font-medium ${correct ? 'text-success' : 'text-error'}`}>
                 {correct ? '✓ Correct' : '✗ Incorrect'}
               </span>
           )}

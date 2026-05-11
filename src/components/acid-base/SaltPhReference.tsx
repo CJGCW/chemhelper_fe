@@ -11,7 +11,7 @@ export default function SaltPhReference() {
               salt: 'Strong Acid + Strong Base',
               example: 'NaCl, KNO₃',
               pH: 'Neutral (pH = 7)',
-              color: '#22c55e',
+              color: 'rgb(var(--color-success))',
               reason: 'Neither Na⁺ nor Cl⁻ hydrolyzes — no change to [H⁺].',
             },
             {
@@ -25,14 +25,14 @@ export default function SaltPhReference() {
               salt: 'Strong Acid + Weak Base',
               example: 'NH₄Cl, CH₃NH₃Cl',
               pH: 'Acidic (pH < 7)',
-              color: '#ef4444',
+              color: 'rgb(var(--color-error))',
               reason: 'Conjugate acid BH⁺ ionizes: BH⁺ ⇌ B + H⁺. Ka = Kw/Kb.',
             },
             {
               salt: 'Weak Acid + Weak Base',
               example: 'NH₄CH₃COO',
               pH: 'Compare Ka vs Kb',
-              color: '#f97316',
+              color: 'rgb(var(--color-warning))',
               reason: 'Ka > Kb → acidic; Ka < Kb → basic; Ka ≈ Kb → ≈neutral.',
             },
           ].map(({ salt, example, pH, color, reason }) => (
@@ -90,7 +90,7 @@ export default function SaltPhReference() {
                 { salt: 'NH₄Cl',      acid: 'HCl (strong)',         base: 'NH₃ (Kb=1.8e-5)', ph: 'Acidic'  },
                 { salt: 'NH₄CH₃COO', acid: 'CH₃COOH (Ka=1.8e-5)',  base: 'NH₃ (Kb=1.8e-5)', ph: '≈Neutral'},
               ].map(({ salt, acid, base, ph }) => {
-                const phColor = ph === 'Basic' ? '#6366f1' : ph === 'Acidic' ? '#ef4444' : '#22c55e'
+                const phColor = ph === 'Basic' ? '#6366f1' : ph === 'Acidic' ? 'rgb(var(--color-error))' : 'rgb(var(--color-success))'
                 return (
                   <tr key={salt}>
                     <td className="border border-border px-3 py-1 text-primary font-semibold">{salt}</td>

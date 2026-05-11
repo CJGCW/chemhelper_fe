@@ -193,8 +193,8 @@ export default function ICETablePractice({ allowCustom = true }: Props) {
   const { equation, skeletonEquation, balancingRequired, K, kType, species, reactantSpecies, productSpecies, initial, solution, prefilled } = problem
 
   function stateColor(state: CellState | undefined, type: 'border' | 'text') {
-    if (state === 'correct') return type === 'border' ? 'border-emerald-700/60' : 'text-emerald-300'
-    if (state === 'wrong')   return type === 'border' ? 'border-rose-700/60'    : 'text-rose-300'
+    if (state === 'correct') return type === 'border' ? 'border-success-border' : 'text-success-strong'
+    if (state === 'wrong')   return type === 'border' ? 'border-error-border'    : 'text-error-strong'
     return type === 'border' ? 'border-border' : 'text-primary'
   }
 
@@ -225,7 +225,7 @@ export default function ICETablePractice({ allowCustom = true }: Props) {
             {get(sp, row) || '—'}
           </span>
           {state === 'wrong' && (
-            <span className="text-xs text-emerald-400">{fmt(val)}</span>
+            <span className="text-xs text-success">{fmt(val)}</span>
           )}
         </div>
       )
@@ -265,7 +265,7 @@ export default function ICETablePractice({ allowCustom = true }: Props) {
             placeholder="1"
             className={`w-10 text-center bg-raised border rounded-sm px-1 py-0.5 font-mono text-sm
               focus:outline-none focus:border-muted transition-colors
-              ${isWrong ? 'border-rose-700/60 text-rose-300' : 'border-border text-primary'}`}
+              ${isWrong ? 'border-error-border text-error-strong' : 'border-border text-primary'}`}
           />
           <span className="font-mono text-sm text-primary">
             {s.formula}<span className="text-dim text-xs">({s.state})</span>
@@ -303,8 +303,8 @@ export default function ICETablePractice({ allowCustom = true }: Props) {
               <button key={d} onClick={() => handleDifficulty(d)}
                 className="flex items-center gap-1.5 px-3 py-1 rounded-sm font-sans text-xs transition-colors"
                 style={isActive ? {
-                  background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                  border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                 } : {
                   background: 'rgb(var(--color-raised))',
@@ -383,7 +383,7 @@ export default function ICETablePractice({ allowCustom = true }: Props) {
                 </div>
 
                 {coeffError && !coeffRevealed && (
-                  <p className="font-sans text-sm text-rose-400">
+                  <p className="font-sans text-sm text-error">
                     Some coefficients are incorrect — check your work and try again.
                   </p>
                 )}
@@ -392,8 +392,8 @@ export default function ICETablePractice({ allowCustom = true }: Props) {
                   <button onClick={handleSubmitCoefficients}
                     className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
                     style={{
-                      background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                      border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                      background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                      border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                       color: 'var(--c-halogen)',
                     }}>
                     Submit
@@ -455,8 +455,8 @@ export default function ICETablePractice({ allowCustom = true }: Props) {
                     <button onClick={handleCheck}
                       className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
                       style={{
-                        background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                        border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                        background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                        border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                         color: 'var(--c-halogen)',
                       }}>
                       Check
@@ -464,7 +464,7 @@ export default function ICETablePractice({ allowCustom = true }: Props) {
                     <span className="font-mono text-xs text-dim">Enter/Tab to advance cells</span>
                   </div>
                 ) : (
-                  <span className={`font-sans text-sm font-medium ${allBlankCorrect ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  <span className={`font-sans text-sm font-medium ${allBlankCorrect ? 'text-success' : 'text-error'}`}>
                     {allBlankCorrect ? '✓ All correct' : '✗ See corrections above in green'}
                   </span>
                 )}

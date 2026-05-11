@@ -70,8 +70,8 @@ function ClickableOrbitalBox({
 }) {
   const borderColor = {
     neutral:     'rgba(var(--overlay),0.18)',
-    correct:     '#22c55e',
-    'wrong-count': '#ef4444',
+    correct:     'rgb(var(--color-success))',
+    'wrong-count': 'rgb(var(--color-error))',
     'wrong-hund':  '#f59e0b',
   }[status]
 
@@ -141,8 +141,8 @@ function BoxDiagramInput({
                 <div key={sub.label} className="flex flex-col items-start gap-1">
                   <span className="font-mono text-[10px] tracking-wide"
                     style={{
-                      color: status === 'correct' ? '#22c55e'
-                           : status === 'wrong-count' ? '#ef4444'
+                      color: status === 'correct' ? 'rgb(var(--color-success))'
+                           : status === 'wrong-count' ? 'rgb(var(--color-error))'
                            : status === 'wrong-hund' ? '#f59e0b'
                            : 'rgba(var(--overlay),0.35)',
                     }}>
@@ -447,16 +447,16 @@ export default function ElectronConfigPractice({ allowCustom = true }: Props) {
                 <span className="font-mono text-sm font-semibold w-12 shrink-0"
                   style={{ color: 'var(--c-halogen)' }}>{label}</span>
                 <span className="font-sans text-xs text-secondary flex-1">{el.name}</span>
-                <span className="font-mono text-xs" style={{ color: r.writtenCorrect ? '#22c55e' : '#ef4444' }}>
+                <span className="font-mono text-xs" style={{ color: r.writtenCorrect ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                   cfg {r.writtenCorrect ? '✓' : '✗'}
                 </span>
-                <span className="font-mono text-xs" style={{ color: r.boxCorrect ? '#22c55e' : '#ef4444' }}>
+                <span className="font-mono text-xs" style={{ color: r.boxCorrect ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                   box {r.boxCorrect ? '✓' : '✗'}
                 </span>
                 {hasMagnetic && (
                   <span className="font-mono text-xs" style={{
                     color: r.magneticCorrect === null ? 'rgba(var(--overlay),0.3)'
-                         : r.magneticCorrect ? '#22c55e' : '#ef4444',
+                         : r.magneticCorrect ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))',
                   }}>
                     mag {r.magneticCorrect === null ? '—' : r.magneticCorrect ? '✓' : '✗'}
                   </span>
@@ -545,8 +545,8 @@ export default function ElectronConfigPractice({ allowCustom = true }: Props) {
                      placeholder-dim focus:outline-none transition-colors"
           style={{
             borderColor: checked
-              ? writtenResult?.correct ? '#22c55e' : '#ef4444'
-              : 'var(--border)',
+              ? writtenResult?.correct ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))'
+              : 'rgb(var(--color-border))',
           }}
         />
         <AnimatePresence>
@@ -555,12 +555,12 @@ export default function ElectronConfigPractice({ allowCustom = true }: Props) {
               className="flex flex-col gap-1 p-3 rounded-sm"
               style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)' }}>
               {writtenResult.missingSubshells.length > 0 && (
-                <p className="font-mono text-xs" style={{ color: '#ef4444' }}>
+                <p className="font-mono text-xs" style={{ color: 'rgb(var(--color-error))' }}>
                   Missing: {writtenResult.missingSubshells.join(', ')}
                 </p>
               )}
               {writtenResult.wrongSubshells.map(w => (
-                <p key={w.label} className="font-mono text-xs" style={{ color: '#ef4444' }}>
+                <p key={w.label} className="font-mono text-xs" style={{ color: 'rgb(var(--color-error))' }}>
                   {w.label}: got {w.got}, expected {w.expected}
                 </p>
               ))}
@@ -576,7 +576,7 @@ export default function ElectronConfigPractice({ allowCustom = true }: Props) {
           )}
           {checked && writtenResult?.correct && (
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="font-mono text-xs" style={{ color: '#22c55e' }}>
+              className="font-mono text-xs" style={{ color: 'rgb(var(--color-success))' }}>
               ✓ Correct
             </motion.p>
           )}
@@ -607,7 +607,7 @@ export default function ElectronConfigPractice({ allowCustom = true }: Props) {
               className="flex flex-col gap-1 p-3 rounded-sm"
               style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)' }}>
               {boxResults.filter(r => !r.electronCountCorrect).map(r => (
-                <p key={r.label} className="font-mono text-xs" style={{ color: '#ef4444' }}>
+                <p key={r.label} className="font-mono text-xs" style={{ color: 'rgb(var(--color-error))' }}>
                   {r.label}: {r.gotElectrons} electrons, expected {r.expectedElectrons}
                 </p>
               ))}
@@ -662,7 +662,7 @@ export default function ElectronConfigPractice({ allowCustom = true }: Props) {
                       ? opt === 'para' ? 'rgba(245,158,11,0.1)' : 'rgba(52,211,153,0.1)'
                       : 'transparent',
                     color: magneticAnswer === opt
-                      ? opt === 'para' ? '#f59e0b' : '#34d399'
+                      ? opt === 'para' ? '#f59e0b' : 'rgb(var(--color-success))'
                       : 'rgba(var(--overlay),0.5)',
                   }}>
                   {opt === 'para' ? 'Paramagnetic' : 'Diamagnetic'}
@@ -713,10 +713,10 @@ export default function ElectronConfigPractice({ allowCustom = true }: Props) {
                   ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)',
               }}>
               <p className="font-mono text-xs tracking-widest uppercase text-secondary">Magnetic Result</p>
-              <p className="font-mono text-xs" style={{ color: last.magneticCorrect ? '#22c55e' : '#ef4444' }}>
+              <p className="font-mono text-xs" style={{ color: last.magneticCorrect ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                 {isPara ? 'Paramagnetic' : 'Diamagnetic'} — {last.magneticCorrect ? '✓' : '✗'}
               </p>
-              <p className="font-mono text-xs" style={{ color: last.unpairedCorrect ? '#22c55e' : '#ef4444' }}>
+              <p className="font-mono text-xs" style={{ color: last.unpairedCorrect ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                 {correctUnpaired} unpaired electron{correctUnpaired !== 1 ? 's' : ''} — {last.unpairedCorrect ? '✓' : '✗'}
               </p>
             </motion.div>

@@ -21,7 +21,7 @@ export default function SigmaPiReference() {
               type: 'σ bond',
               description: 'Head-on orbital overlap along the internuclear axis. Electron density is concentrated between the two nuclei.',
               strength: 'Stronger — free rotation around the axis is possible.',
-              color: '#4ade80',
+              color: 'rgb(var(--color-success))',
             },
             {
               type: 'π bond',
@@ -60,7 +60,7 @@ export default function SigmaPiReference() {
               ].map(r => (
                 <tr key={r.order} className="border-b border-border last:border-0">
                   <td className="px-4 py-2 font-semibold text-primary">{r.order}</td>
-                  <td className="px-4 py-2" style={{ color: '#4ade80' }}>{r.sigma}</td>
+                  <td className="px-4 py-2" style={{ color: 'rgb(var(--color-success))' }}>{r.sigma}</td>
                   <td className="px-4 py-2" style={{ color: '#818cf8' }}>{r.pi}</td>
                   <td className="px-4 py-2 text-secondary">{r.ex}</td>
                 </tr>

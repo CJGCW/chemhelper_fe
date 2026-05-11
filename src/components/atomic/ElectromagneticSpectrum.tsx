@@ -56,7 +56,7 @@ const REGIONS: {
   {
     name: 'Radio',
     lambdaMin: 0.1, lambdaMax: 1e4,
-    color: '#047857', textColor: '#6ee7b7',
+    color: '#047857', textColor: 'rgb(var(--color-success-strong))',
     examples: ['AM/FM radio', 'MRI', 'WiFi'],
   },
 ]

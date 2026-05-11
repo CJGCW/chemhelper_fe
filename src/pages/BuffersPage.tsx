@@ -172,8 +172,8 @@ function Pill({ pill, active, onClick }: { pill: TabPill; active: boolean; onCli
       onClick={onClick}
       className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-full font-sans text-sm transition-colors whitespace-nowrap"
       style={active ? {
-        background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-        border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+        background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+        border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
         color: 'var(--c-halogen)',
       } : {
         background: 'transparent',
@@ -185,7 +185,7 @@ function Pill({ pill, active, onClick }: { pill: TabPill; active: boolean; onCli
         <motion.span
           layoutId="buffers-pill-bg"
           className="absolute inset-0 rounded-full"
-          style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))' }}
+          style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))' }}
           transition={{ type: 'spring', stiffness: 400, damping: 32 }}
         />
       )}
@@ -203,8 +203,8 @@ function ModePill({ label, active, onClick }: { mode?: Mode; label: string; acti
       onClick={onClick}
       className="relative px-4 py-1.5 rounded-full font-sans text-sm transition-colors"
       style={active ? {
-        background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-        border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+        background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+        border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
         color: 'var(--c-halogen)',
       } : {
         border: '1px solid rgb(var(--color-border))',
@@ -215,7 +215,7 @@ function ModePill({ label, active, onClick }: { mode?: Mode; label: string; acti
         <motion.span
           layoutId="buffers-mode-bg"
           className="absolute inset-0 rounded-full"
-          style={{ background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))' }}
+          style={{ background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))' }}
           transition={{ type: 'spring', stiffness: 400, damping: 32 }}
         />
       )}
@@ -267,7 +267,7 @@ export default function BuffersPage() {
     <PageShell>
       {/* Heading row */}
       <div className="flex items-center gap-3 print:hidden">
-        <h2 className="text-xl lg:text-2xl font-bold text-bright">Buffers &amp; Solubility</h2>
+        <h2 className="font-sans font-semibold text-bright text-xl lg:text-2xl">Buffers &amp; Solubility</h2>
         <button
           onClick={() => setShowExplanation(true)}
           className="flex items-center gap-1.5 px-2.5 py-1 rounded-full font-sans text-xs border border-border text-secondary hover:text-primary transition-colors"

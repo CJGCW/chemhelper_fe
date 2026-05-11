@@ -41,7 +41,7 @@ export default function BufferReference() {
             Calculate the pH of a buffer that is 0.10 M in acetic acid (CH₃COOH, pKa = 4.74) and
             0.10 M in sodium acetate (CH₃COONa).
           </p>
-          <div className="flex flex-col gap-1.5 pl-3 border-l-2" style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 35%, transparent)' }}>
+          <div className="flex flex-col gap-1.5 pl-3 border-l-2" style={{ borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)' }}>
             {[
               'pH = pKa + log([CH₃COO⁻]/[CH₃COOH])',
               'pH = 4.74 + log(0.10/0.10)',

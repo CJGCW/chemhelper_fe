@@ -397,8 +397,8 @@ export default function BaseCalculationsPage() {
                   {isActive && (
                     <motion.div layoutId="base-calc-mode-switch" className="absolute inset-0 rounded-full"
                       style={{
-                        background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                        border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                        background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                        border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                       }}
                       transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
                   )}
@@ -609,7 +609,7 @@ export default function BaseCalculationsPage() {
                   />
                 </div>
 
-                {opError && <p className="font-mono text-xs text-red-400">{opError}</p>}
+                {opError && <p className="font-mono text-xs text-error">{opError}</p>}
 
                 <button
                   onClick={calculate}
@@ -674,7 +674,7 @@ export default function BaseCalculationsPage() {
                         style={{
                           background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)',
                           color: 'var(--c-halogen)',
-                          border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)',
+                          border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                         }}
                       >
                         {r.sigFigs} sf
@@ -718,7 +718,7 @@ export default function BaseCalculationsPage() {
                         style={{
                           background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)',
                           color: 'var(--c-halogen)',
-                          border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)',
+                          border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                         }}
                       >
                         {ex.tag}
@@ -767,7 +767,7 @@ export default function BaseCalculationsPage() {
                         style={{
                           background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)',
                           color: 'var(--c-halogen)',
-                          border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)',
+                          border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                         }}>
                         {ex.sigFigs} sf
                       </span>
@@ -797,7 +797,7 @@ export default function BaseCalculationsPage() {
                       <span className="font-mono text-xs px-1.5 py-0.5 rounded-sm shrink-0"
                         style={{
                           background: 'color-mix(in srgb, #34d399 12%, transparent)',
-                          color: '#34d399',
+                          color: 'rgb(var(--color-success))',
                           border: '1px solid color-mix(in srgb, #34d399 25%, transparent)',
                         }}>
                         {ex.badge}

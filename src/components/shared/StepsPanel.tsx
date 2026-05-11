@@ -72,7 +72,7 @@ export function StepsTrigger({ open, toggle, hasCalcSteps, hasContent }: Pick<St
       className="flex items-center gap-2 px-3 rounded-sm font-sans text-sm transition-colors border h-full"
       style={{
         color: 'var(--c-halogen)',
-        borderColor: 'color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+        borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
         background: 'color-mix(in srgb, var(--c-halogen) 8%, transparent)',
       }}
     >
@@ -109,7 +109,7 @@ export function StepsContent({ open, hasCalcSteps, exampleData, activeSteps, rev
                   </motion.p>
                 ))}
                 {!hasCalcSteps && exampleData && revealed > exampleData.steps.length && (
-                  <motion.p initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.2 }} className="font-mono text-sm font-semibold text-emerald-400 mt-1">
+                  <motion.p initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.2 }} className="font-mono text-sm font-semibold text-success mt-1">
                     ∴ {exampleData.result}
                   </motion.p>
                 )}
@@ -141,7 +141,7 @@ export default function StepsPanel({ steps, generate }: Props) {
         className="self-start flex items-center gap-2 px-3 py-1.5 rounded-sm font-sans text-sm transition-colors border"
         style={{
           color: 'var(--c-halogen)',
-          borderColor: 'color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+          borderColor: 'color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           background: 'color-mix(in srgb, var(--c-halogen) 8%, transparent)',
         }}
       >

@@ -72,8 +72,8 @@ export default function SaltPhTool() {
   }
 
   const classColor = result?.classification === 'basic' ? '#6366f1'
-    : result?.classification === 'acidic' ? '#ef4444'
-    : '#22c55e'
+    : result?.classification === 'acidic' ? 'rgb(var(--color-error))'
+    : 'rgb(var(--color-success))'
 
   const isManual = selectedPreset === 'Manual'
 
@@ -90,8 +90,8 @@ export default function SaltPhTool() {
               className="px-3 py-1 rounded-full font-mono text-xs transition-colors"
               style={{
                 color: selectedPreset === p.label ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
-                background: selectedPreset === p.label ? 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))' : 'transparent',
-                border: selectedPreset === p.label ? '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)' : '1px solid rgb(var(--color-border))',
+                background: selectedPreset === p.label ? 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))' : 'transparent',
+                border: selectedPreset === p.label ? '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)' : '1px solid rgb(var(--color-border))',
               }}
             >
               {p.label}
@@ -158,8 +158,8 @@ export default function SaltPhTool() {
           onClick={handleCalculate}
           className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors"
           style={{
-            background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           }}
         >
@@ -175,7 +175,7 @@ export default function SaltPhTool() {
         )}
       </div>
 
-      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      {error && <p className="font-mono text-xs text-error">{error}</p>}
 
       {stepsOpen && result && (
         <div className="flex flex-col gap-1 p-3 rounded-sm border border-border" style={{ background: 'rgb(var(--color-surface))' }}>

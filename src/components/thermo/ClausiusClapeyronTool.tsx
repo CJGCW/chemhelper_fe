@@ -295,7 +295,7 @@ export default function ClausiusClapeyronTool() {
               className="flex flex-col items-start px-3 py-2 rounded-sm border transition-colors text-left"
               style={sf === o.id ? {
                 borderColor: 'color-mix(in srgb, var(--c-halogen) 50%, transparent)',
-                background:  'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))',
+                background:  'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                 color: 'var(--c-halogen)',
               } : {
                 borderColor: 'rgb(var(--color-border))', background: 'rgb(var(--color-surface))',

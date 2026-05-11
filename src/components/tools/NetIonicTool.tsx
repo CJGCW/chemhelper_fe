@@ -569,7 +569,7 @@ const REACTIONS: Reaction[] = [
 
 const CATEGORY_META: Record<RxnCategory, { label: string; color: string }> = {
   precipitation: { label: 'Precipitation',          color: '#60a5fa' },
-  acid_base:     { label: 'Acid-Base',               color: '#4ade80' },
+  acid_base:     { label: 'Acid-Base',               color: 'rgb(var(--color-success))' },
   gas_forming:   { label: 'Gas-Forming',             color: '#fbbf24' },
   redox:         { label: 'Redox',                   color: '#f472b6' },
 }
@@ -843,7 +843,7 @@ export default function NetIonicTool() {
                     />
                     {niVerify !== 'none' && (
                       <span className="font-mono text-sm font-medium shrink-0"
-                        style={{ color: niVerify === 'correct' ? '#4ade80' : '#f87171' }}>
+                        style={{ color: niVerify === 'correct' ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                         {niVerify === 'correct' ? '✓ Correct' : '✗ Incorrect'}
                       </span>
                     )}
@@ -914,7 +914,7 @@ export default function NetIonicTool() {
                     <span className="font-sans text-base text-primary w-44 shrink-0">{r.label}</span>
                     <span className="font-mono text-sm text-secondary">{r.examples}</span>
                     <span className="font-mono text-sm shrink-0 ml-4"
-                      style={{ color: r.split ? '#4ade80' : '#f87171' }}>
+                      style={{ color: r.split ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                       {r.split ? 'Split → ions' : 'Keep molecular'}
                     </span>
                   </div>

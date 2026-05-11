@@ -175,7 +175,7 @@ export default function PeriodicTrendsPractice({ allowCustom: _allowCustom = tru
             }
           } else if (isRanked) {
             borderColor = 'color-mix(in srgb, var(--c-halogen) 40%, transparent)'
-            bgColor = 'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))'
+            bgColor = 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))'
           }
 
           const cardStyle = {

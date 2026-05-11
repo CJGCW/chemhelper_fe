@@ -935,7 +935,7 @@ function HCInteractive({ p, answer, onAnswer, result, checked }: {
   const dotIdx   = answer ? p.segments.findIndex(s => s.phase === answer) : -1
   const dotSvgX  = dotIdx >= 0 ? xS((p.pts[dotIdx].x + p.pts[dotIdx + 1].x) / 2) : null
   const dotSvgY  = dotIdx >= 0 ? yS((p.pts[dotIdx].t + p.pts[dotIdx + 1].t) / 2) : null
-  const dotColor = result === 'correct' ? '#22c55e' : result === 'wrong' ? '#ef4444' : '#f59e0b'
+  const dotColor = result === 'correct' ? 'rgb(var(--color-success))' : result === 'wrong' ? 'rgb(var(--color-error))' : '#f59e0b'
 
   // After checking wrong: also show correct segment midpoints in green
   const correctDots = (checked && result === 'wrong')
@@ -1036,7 +1036,7 @@ function PDInteractive({ p, qId, dotPos, onAnswer, onDotPos, result, checked }: 
     pts.filter(([, P]) => { const lp = Math.log10(P); return lp >= logPmin - 0.2 && lp <= logPmax + 0.2 })
        .map(([T, P], i) => `${i === 0 ? 'M' : 'L'} ${xS(T).toFixed(1)} ${yS(P).toFixed(1)}`).join(' ')
 
-  const dotColor = result === 'correct' ? '#22c55e' : result === 'wrong' ? '#ef4444' : '#f59e0b'
+  const dotColor = result === 'correct' ? 'rgb(var(--color-success))' : result === 'wrong' ? 'rgb(var(--color-error))' : '#f59e0b'
 
   // After wrong: show where the correct answer is
   const correctDotPos = (checked && result === 'wrong') ? (() => {
@@ -1161,8 +1161,8 @@ export default function TestSheet({ test, onBack }: Props) {
   function renderQuestion(q: TestQuestion) {
     const result: Result | undefined = results?.[q.id]
 
-    const bgClass = result === 'correct' ? 'border-emerald-800/50 bg-emerald-950/20'
-      : (result === 'wrong' || result === 'wrong_sf') ? 'border-rose-800/50 bg-rose-950/20'
+    const bgClass = result === 'correct' ? 'feedback-success'
+      : (result === 'wrong' || result === 'wrong_sf') ? 'feedback-error'
       : result === 'blank' ? 'border-amber-800/40 bg-amber-950/10'
       : 'border-border bg-surface'
 
@@ -1455,10 +1455,10 @@ export default function TestSheet({ test, onBack }: Props) {
           <span className="font-mono text-xs text-secondary border border-border px-2 py-0.5 rounded-sm">
             {q.topic}
           </span>
-          {result === 'correct'  && <span className="ml-auto font-mono text-sm text-emerald-400">✓</span>}
-          {result === 'wrong'    && <span className="ml-auto font-mono text-sm text-rose-400">✗</span>}
+          {result === 'correct'  && <span className="ml-auto font-mono text-sm text-success">✓</span>}
+          {result === 'wrong'    && <span className="ml-auto font-mono text-sm text-error">✗</span>}
           {result === 'wrong_sf' && <span className="ml-auto font-sans text-xs text-orange-400">right value, check sig figs</span>}
-          {result === 'blank'    && <span className="ml-auto font-mono text-xs text-amber-500">no answer</span>}
+          {result === 'blank'    && <span className="ml-auto font-mono text-xs text-warning">no answer</span>}
         </div>
 
         {questionText}
@@ -1539,10 +1539,10 @@ export default function TestSheet({ test, onBack }: Props) {
                           return (
                             <td key={sp} className="border border-border p-1">
                               <div className="flex flex-col items-center gap-0.5 py-1 px-2">
-                                <span className={`text-sm font-mono ${isOk ? 'text-emerald-300' : 'text-rose-300'}`}>
+                                <span className={`text-sm font-mono ${isOk ? 'text-success-strong' : 'text-error-strong'}`}>
                                   {cellVal || '—'}
                                 </span>
-                                {!isOk && <span className="text-xs text-emerald-400">{fmtICECell(correct)}</span>}
+                                {!isOk && <span className="text-xs text-success">{fmtICECell(correct)}</span>}
                               </div>
                             </td>
                           )
@@ -1594,15 +1594,15 @@ export default function TestSheet({ test, onBack }: Props) {
               onClick={() => setDrawModal({ q, review: false })}
               className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               }}
             >
               {submissions[q.id] ? 'Redraw →' : 'Open Editor →'}
             </button>
             {submissions[q.id]
-              ? <span className="font-mono text-xs text-emerald-400">drawing submitted</span>
+              ? <span className="font-mono text-xs text-success">drawing submitted</span>
               : <span className="font-mono text-xs text-dim">not yet submitted</span>
             }
             {checked && (
@@ -1687,8 +1687,8 @@ export default function TestSheet({ test, onBack }: Props) {
                         placeholder-dim focus:outline-none focus:border-muted
                         disabled:cursor-not-allowed transition-colors
                         ${(empiricalP || atomicP?.isTextAnswer || lewisP?.isTextAnswer || vseprP?.isTextAnswer || stoichP?.isTextAnswer || redoxP?.isTextAnswer || balancingP) ? 'w-44' : 'w-36'}
-                        ${result === 'correct' ? 'border-emerald-700/60 text-emerald-300'
-                          : (result === 'wrong' || result === 'wrong_sf') ? 'border-rose-700/60 text-rose-300'
+                        ${result === 'correct' ? 'border-success-border text-success-strong'
+                          : (result === 'wrong' || result === 'wrong_sf') ? 'border-error-border text-error-strong'
                           : 'border-border text-bright'}`}
           />
           {molarP && (
@@ -1746,8 +1746,8 @@ export default function TestSheet({ test, onBack }: Props) {
               className={`w-20 bg-raised border rounded-sm px-3 py-1.5 font-mono text-base
                           placeholder-dim focus:outline-none focus:border-muted
                           disabled:cursor-not-allowed transition-colors
-                          ${result === 'correct' ? 'border-emerald-700/60 text-emerald-300'
-                            : result === 'wrong' ? 'border-rose-700/60 text-rose-300'
+                          ${result === 'correct' ? 'border-success-border text-success-strong'
+                            : result === 'wrong' ? 'border-error-border text-error-strong'
                             : 'border-border text-bright'}`}
             />
             <span className="font-mono text-sm text-secondary">π =</span>
@@ -1763,8 +1763,8 @@ export default function TestSheet({ test, onBack }: Props) {
               className={`w-20 bg-raised border rounded-sm px-3 py-1.5 font-mono text-base
                           placeholder-dim focus:outline-none focus:border-muted
                           disabled:cursor-not-allowed transition-colors
-                          ${result === 'correct' ? 'border-emerald-700/60 text-emerald-300'
-                            : result === 'wrong' ? 'border-rose-700/60 text-rose-300'
+                          ${result === 'correct' ? 'border-success-border text-success-strong'
+                            : result === 'wrong' ? 'border-error-border text-error-strong'
                             : 'border-border text-bright'}`}
             />
             {checked && (
@@ -1791,8 +1791,8 @@ export default function TestSheet({ test, onBack }: Props) {
               className={`bg-raised border rounded-sm px-3 py-1.5 font-mono text-base
                           placeholder-dim focus:outline-none focus:border-muted
                           disabled:cursor-not-allowed transition-colors w-36
-                          ${result === 'correct' ? 'border-emerald-700/60 text-emerald-300'
-                            : (result === 'wrong' || result === 'wrong_sf') ? 'border-rose-700/60 text-rose-300'
+                          ${result === 'correct' ? 'border-success-border text-success-strong'
+                            : (result === 'wrong' || result === 'wrong_sf') ? 'border-error-border text-error-strong'
                             : 'border-border text-bright'}`}
             />
             {numericP?.unit && (
@@ -1913,8 +1913,8 @@ export default function TestSheet({ test, onBack }: Props) {
                 className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors
                            disabled:opacity-30 disabled:cursor-not-allowed"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                  border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                 }}
               >
@@ -1950,7 +1950,7 @@ export default function TestSheet({ test, onBack }: Props) {
 
       {/* Test title */}
       <div>
-        <h3 className="font-sans font-semibold text-bright text-lg">{test.title}</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">{test.title}</h3>
         <p className="font-mono text-xs text-dim mt-0.5">
           {test.questions.length} questions ·{' '}
           {test.generatedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -1971,8 +1971,8 @@ export default function TestSheet({ test, onBack }: Props) {
             className="px-5 py-2 rounded-sm font-sans text-sm font-medium transition-colors
                        disabled:opacity-30 disabled:cursor-not-allowed"
             style={{
-              background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-              border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+              background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+              border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
               color: 'var(--c-halogen)',
             }}
           >

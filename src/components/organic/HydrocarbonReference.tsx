@@ -1,4 +1,20 @@
 import { HYDROCARBON_FAMILIES, IUPAC_PREFIXES } from '../../data/functionalGroups'
+import CompoundDisplay from '../shared/CompoundDisplay'
+
+const FAMILY_SMILES: Record<string, { smiles: string; label: string }[]> = {
+  alkane: [
+    { smiles: 'CC', label: 'ethane' },
+    { smiles: 'CCCC', label: 'butane' },
+  ],
+  alkene: [
+    { smiles: 'C=C', label: 'ethene' },
+    { smiles: 'CC=CC', label: '2-butene' },
+  ],
+  alkyne: [
+    { smiles: 'C#C', label: 'ethyne' },
+    { smiles: 'CC#CC', label: '2-butyne' },
+  ],
+}
 
 export default function HydrocarbonReference() {
   return (
@@ -45,6 +61,13 @@ export default function HydrocarbonReference() {
           <div className="flex flex-col gap-1 p-4 rounded-sm border border-border bg-surface">
             <p className="font-sans text-sm text-secondary mb-2"><strong className="text-primary">Bond type:</strong> {family.bondType}</p>
             <p className="font-sans text-sm text-secondary mb-3"><strong className="text-primary">Hybridization:</strong> {family.hybridization}</p>
+            {FAMILY_SMILES[family.id] && (
+              <div className="flex flex-wrap gap-3 mb-3">
+                {FAMILY_SMILES[family.id].map(ex => (
+                  <CompoundDisplay key={ex.smiles} smiles={ex.smiles} label={ex.label} width={140} height={110} />
+                ))}
+              </div>
+            )}
             <div className="overflow-x-auto">
               <table className="font-sans text-sm border-collapse">
                 <thead>

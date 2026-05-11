@@ -38,9 +38,9 @@ export default function KExpressionPractice({ allowCustom = true }: Props) {
   const omitted = [...reaction.products, ...reaction.reactants].filter(s => s.state === 's' || s.state === 'l')
 
   const borderClass = checkState === 'correct'
-    ? 'border-emerald-800/50 bg-emerald-950/20'
+    ? 'feedback-success'
     : checkState === 'wrong'
-    ? 'border-rose-800/50 bg-rose-950/20'
+    ? 'feedback-error'
     : 'border-border bg-surface'
 
   return (
@@ -84,8 +84,8 @@ export default function KExpressionPractice({ allowCustom = true }: Props) {
             <button onClick={handleReveal}
               className="self-start px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors"
               style={{
-                background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               }}>
               Reveal Answer
@@ -103,11 +103,11 @@ export default function KExpressionPractice({ allowCustom = true }: Props) {
                 <p className="font-sans text-sm text-secondary">Did you get it right?</p>
                 <div className="flex gap-2">
                   <button onClick={() => handleSelfAssess(true)}
-                    className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium border border-emerald-700/50 text-emerald-400 hover:bg-emerald-950/20 transition-colors">
+                    className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium border border-success-border text-success transition-colors" style={{ background: 'rgb(var(--color-success-bg) / 0.1)' }}>
                     Yes, correct
                   </button>
                   <button onClick={() => handleSelfAssess(false)}
-                    className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium border border-rose-700/50 text-rose-400 hover:bg-rose-950/20 transition-colors">
+                    className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium border border-error-border text-error transition-colors" style={{ background: 'rgb(var(--color-error-bg) / 0.1)' }}>
                     No, incorrect
                   </button>
                 </div>
@@ -121,7 +121,7 @@ export default function KExpressionPractice({ allowCustom = true }: Props) {
                 style={{ background: 'rgb(var(--color-surface))', border: '1px solid rgb(var(--color-border))' }}>
                 <p className="font-mono text-base text-primary">K<sub>c</sub> = {answer}</p>
               </div>
-              <p className={`font-sans text-sm font-medium ${checkState === 'correct' ? 'text-emerald-400' : 'text-rose-400'}`}>
+              <p className={`font-sans text-sm font-medium ${checkState === 'correct' ? 'text-success' : 'text-error'}`}>
                 {checkState === 'correct' ? '\u2713 Marked correct' : '\u2717 Marked incorrect'}
               </p>
             </div>

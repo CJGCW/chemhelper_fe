@@ -69,7 +69,7 @@ function StepTable({ result, mode }: { result: SolverResult; mode: 'percent' | '
               {result.multiplier > 1 && (
                 <td className="px-3 py-2 text-secondary">{fmt(r.ratio * result.multiplier, 4)}</td>
               )}
-              <td className="px-3 py-2 font-bold text-sm" style={{ color: '#4ade80' }}>{r.subscript}</td>
+              <td className="px-3 py-2 font-bold text-sm" style={{ color: 'rgb(var(--color-success))' }}>{r.subscript}</td>
             </motion.tr>
           ))}
         </tbody>
@@ -88,7 +88,7 @@ function FormulaDisplay({ label, formula, sub }: { label: string; formula: strin
       style={{ background: 'color-mix(in srgb, #4ade80 6%, rgb(var(--color-base)))', borderColor: 'color-mix(in srgb, #4ade80 25%, transparent)' }}
     >
       <span className="font-mono text-xs text-secondary tracking-widest uppercase">{label}</span>
-      <span className="font-mono text-2xl font-bold" style={{ color: '#4ade80' }}>{formula}</span>
+      <span className="font-mono text-2xl font-bold" style={{ color: 'rgb(var(--color-success))' }}>{formula}</span>
       {sub && <span className="font-sans text-[10px] text-secondary">{sub}</span>}
     </motion.div>
   )
@@ -102,7 +102,7 @@ function PctRemaining({ rows }: { rows: Row[] }) {
   const remaining = 100 - total
   const over = remaining < -0.5
   const balanced = Math.abs(remaining) <= 0.5
-  const color = over ? '#f87171' : balanced ? '#4ade80' : '#fb923c'
+  const color = over ? 'rgb(var(--color-error))' : balanced ? 'rgb(var(--color-success))' : 'rgb(var(--color-warning))'
   return (
     <span className="font-mono text-[10px]" style={{ color }}>
       {balanced ? '✓ 100%' : over ? `${fmt(total, 5)}% (over by ${fmt(-remaining, 3)}%)` : `${fmt(remaining, 3)}% remaining`}
@@ -214,8 +214,8 @@ export default function EmpiricalTool() {
               {toolMode === tm && (
                 <motion.div layoutId="tool-mode-bg" className="absolute inset-0 rounded-sm"
                   style={{
-                    background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                    border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                    background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                    border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   }}
                   transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
               )}
@@ -256,8 +256,8 @@ export default function EmpiricalTool() {
                     {mode === m && (
                       <motion.div layoutId="solver-mode-bg" className="absolute inset-0 rounded-sm"
                         style={{
-                          background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                          border: '1px solid color-mix(in srgb, var(--c-halogen) 30%, transparent)',
+                          background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                          border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                         }}
                         transition={{ type: 'spring', stiffness: 400, damping: 32 }} />
                     )}
@@ -314,7 +314,7 @@ export default function EmpiricalTool() {
 
               <button
                 onClick={addRow}
-                className="self-start font-mono text-[11px] px-3 py-1 rounded-sm border transition-colors mt-1"
+                className="self-start font-mono text-xs px-3 py-1 rounded-sm border transition-colors mt-1"
                 style={{ borderColor: 'rgba(var(--overlay),0.12)', color: 'rgba(var(--overlay),0.4)' }}
               >
                 + add element
@@ -337,7 +337,7 @@ export default function EmpiricalTool() {
 
             {/* Error */}
             {hasUnknown && unknownSymbols.length > 0 && (
-              <p className="font-sans text-xs" style={{ color: '#f87171' }}>
+              <p className="font-sans text-xs" style={{ color: 'rgb(var(--color-error))' }}>
                 Unknown element{unknownSymbols.length > 1 ? 's' : ''}: {unknownSymbols.join(', ')}
               </p>
             )}
@@ -418,7 +418,7 @@ export default function EmpiricalTool() {
                       />
                       {formulaVerify !== 'none' && (
                         <span className="font-mono text-sm font-medium"
-                          style={{ color: formulaVerify === 'correct' ? '#4ade80' : '#f87171' }}>
+                          style={{ color: formulaVerify === 'correct' ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                           {formulaVerify === 'correct' ? '✓ Correct' : '✗ Incorrect'}
                         </span>
                       )}
@@ -497,7 +497,7 @@ export default function EmpiricalTool() {
             {/* Error */}
             {combError && (
               <p className="font-mono text-xs border rounded-sm px-3 py-2"
-                style={{ color: '#f87171', borderColor: 'rgba(248,113,113,0.3)', background: 'rgba(248,113,113,0.05)' }}>
+                style={{ color: 'rgb(var(--color-error))', borderColor: 'rgba(248,113,113,0.3)', background: 'rgba(248,113,113,0.05)' }}>
                 ⚠ {combError}
               </p>
             )}
@@ -542,7 +542,7 @@ export default function EmpiricalTool() {
                       />
                       {combFormulaVerify !== 'none' && (
                         <span className="font-mono text-sm font-medium"
-                          style={{ color: combFormulaVerify === 'correct' ? '#4ade80' : '#f87171' }}>
+                          style={{ color: combFormulaVerify === 'correct' ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                           {combFormulaVerify === 'correct' ? '✓ Correct' : '✗ Incorrect'}
                         </span>
                       )}

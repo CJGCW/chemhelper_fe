@@ -142,13 +142,13 @@ function fmtAtm(P: number): string {
 
 const PHASE_COLOR: Record<string, string> = {
   Solid:        '#60a5fa',
-  Liquid:       '#34d399',
+  Liquid:       'rgb(var(--color-success))',
   Gas:          '#c084fc',
   Supercritical:'#fbbf24',
 }
 
 const CURVE_COLOR = {
-  sublimation:  '#fb923c',
+  sublimation:  'rgb(var(--color-warning))',
   vaporization: '#f43f5e',
   fusion:       '#60a5fa',
 }
@@ -461,7 +461,7 @@ export default function PhaseDiagram() {
               className="flex flex-col items-start px-3 py-2 rounded-sm border transition-colors text-left"
               style={subIdx === i ? {
                 borderColor: 'color-mix(in srgb, var(--c-halogen) 50%, transparent)',
-                background:  'color-mix(in srgb, var(--c-halogen) 10%, rgb(var(--color-raised)))',
+                background:  'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
                 color: 'var(--c-halogen)',
               } : {
                 borderColor: 'rgb(var(--color-border))', background: 'rgb(var(--color-surface))',

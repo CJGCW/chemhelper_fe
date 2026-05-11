@@ -6,7 +6,7 @@ export default function GeneratedBadge() {
         style={{
           background: 'color-mix(in srgb, var(--c-halogen) 12%, transparent)',
           color: 'var(--c-halogen)',
-          border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)',
+          border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
         }}
       >
         generated
@@ -17,7 +17,7 @@ export default function GeneratedBadge() {
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 10%, transparent)',
             color: 'var(--c-halogen)',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 25%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
           }}
         >
           ?

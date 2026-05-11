@@ -144,7 +144,7 @@ export default function ReverseIsotopeTool() {
         </div>
       </div>
 
-      {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+      {error && <p className="font-mono text-xs text-error">{error}</p>}
 
       <div className="flex items-stretch gap-2">
         <button onClick={handleCalculate} disabled={!canCalc}
@@ -152,7 +152,7 @@ export default function ReverseIsotopeTool() {
                      disabled:opacity-30 disabled:cursor-not-allowed"
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           }}>
           Calculate

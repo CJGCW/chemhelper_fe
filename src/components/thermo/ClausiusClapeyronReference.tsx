@@ -92,7 +92,7 @@ export default function ClausiusClapeyronReference() {
           ].map(v => (
             <div key={v.sym} className="flex flex-col gap-0.5">
               <span className="font-mono text-xs font-semibold" style={{ color: 'var(--c-halogen)' }}>{v.sym}</span>
-              <span className="font-sans text-[11px] text-secondary">{v.desc}</span>
+              <span className="font-sans text-xs text-secondary">{v.desc}</span>
               <span className="font-mono text-xs text-secondary">{v.unit}</span>
             </div>
           ))}

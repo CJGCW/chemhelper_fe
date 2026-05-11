@@ -168,7 +168,7 @@ export default function MultiElectronAtoms() {
               name: 'Penetration',
               rule: 's > p > d > f',
               detail: 's-orbitals have significant electron density near the nucleus; they penetrate more and are less effectively shielded.',
-              color: '#34d399',
+              color: 'rgb(var(--color-success))',
             },
           ].map(r => (
             <div key={r.name} className="flex flex-col gap-1.5 px-4 py-3 rounded-sm bg-raised border border-border">
@@ -191,7 +191,7 @@ export default function MultiElectronAtoms() {
         {[
           { label: 'Nuclear Charge Z',    val: `${z}`, color: 'var(--c-halogen)' },
           { label: 'Shielding σ (outer)', val: `${outermost.sigma}`, color: '#f59e0b' },
-          { label: 'Z_eff (outer)',        val: `${outermost.zeff}`, color: '#34d399' },
+          { label: 'Z_eff (outer)',        val: `${outermost.zeff}`, color: 'rgb(var(--color-success))' },
           { label: 'Outer subshell',       val: config.filter(s => s.electrons > 0).slice(-1)[0]?.label ?? '—', color: 'rgba(var(--overlay),0.6)' },
         ].map(item => (
           <div key={item.label} className="flex flex-col gap-1 px-4 py-3 rounded-sm bg-surface border border-border">
@@ -234,7 +234,7 @@ export default function MultiElectronAtoms() {
                     </td>
                     <td className="px-4 py-2 text-secondary">{g.electrons}</td>
                     <td className="px-4 py-2" style={{ color: '#f59e0b' }}>{g.sigma}</td>
-                    <td className="px-4 py-2 font-semibold" style={{ color: '#34d399' }}>{g.zeff}</td>
+                    <td className="px-4 py-2 font-semibold" style={{ color: 'rgb(var(--color-success))' }}>{g.zeff}</td>
                   </tr>
                 )
               })}

@@ -4,13 +4,13 @@ export default function SpontaneityReference() {
       dH: '< 0', dS: '> 0',
       result: 'Always spontaneous',
       note: 'Exothermic + entropy increase — ΔG < 0 at all T',
-      color: 'text-emerald-400',
+      color: 'text-success',
     },
     {
       dH: '> 0', dS: '< 0',
       result: 'Never spontaneous',
       note: 'Endothermic + entropy decrease — ΔG > 0 at all T',
-      color: 'text-red-400',
+      color: 'text-error',
     },
     {
       dH: '< 0', dS: '< 0',
@@ -47,7 +47,7 @@ export default function SpontaneityReference() {
           </div>
           <div className="text-center">
             <p className="text-secondary text-xs mb-1">ΔG &gt; 0</p>
-            <p className="text-red-400">Non-spontaneous</p>
+            <p className="text-error">Non-spontaneous</p>
           </div>
         </div>
       </section>
@@ -97,8 +97,8 @@ export default function SpontaneityReference() {
         <h3 className="font-mono text-xs tracking-widest text-secondary uppercase">Decision Flowchart</h3>
         <div className="p-4 rounded-sm border border-border bg-raised font-mono text-xs flex flex-col gap-2 text-secondary">
           <p>1. Determine sign of ΔH° (exo: −, endo: +) and ΔS° (+ or −)</p>
-          <p className="pl-4">├─ ΔH° &lt; 0, ΔS° &gt; 0 → <span className="text-emerald-400">Always spontaneous</span></p>
-          <p className="pl-4">├─ ΔH° &gt; 0, ΔS° &lt; 0 → <span className="text-red-400">Never spontaneous</span></p>
+          <p className="pl-4">├─ ΔH° &lt; 0, ΔS° &gt; 0 → <span className="text-success">Always spontaneous</span></p>
+          <p className="pl-4">├─ ΔH° &gt; 0, ΔS° &lt; 0 → <span className="text-error">Never spontaneous</span></p>
           <p className="pl-4">├─ ΔH° &lt; 0, ΔS° &lt; 0 → <span className="text-amber-400">Spontaneous at T &lt; Tc</span></p>
           <p className="pl-4">└─ ΔH° &gt; 0, ΔS° &gt; 0 → <span className="text-amber-400">Spontaneous at T &gt; Tc</span></p>
           <p>2. If mixed signs: Tc = ΔH°(J) / ΔS° and check whether T is above or below Tc</p>

@@ -48,7 +48,7 @@ function getTrendConfig(mode: TrendMode, element: Element): TrendConfig {
       return {
         fillFrac: normEN(v),
         circFrac: 0,
-        color: '#f97316',
+        color: 'rgb(var(--color-warning))',
         label: v > 0 ? v.toFixed(2) : '—',
       }
     }
@@ -66,7 +66,7 @@ function getTrendConfig(mode: TrendMode, element: Element): TrendConfig {
       return {
         fillFrac: normIE1(v),
         circFrac: 0,
-        color: '#4ade80',
+        color: 'rgb(var(--color-success))',
         label: v > 0 ? String(v) : '—',
       }
     }
@@ -84,7 +84,7 @@ function getTrendConfig(mode: TrendMode, element: Element): TrendConfig {
       return {
         fillFrac: 0,
         circFrac: circleFrac(v, 0, IONIC_MAX),
-        color: '#fb923c',
+        color: 'rgb(var(--color-warning))',
         label: v > 0 ? String(v) : '—',
       }
     }

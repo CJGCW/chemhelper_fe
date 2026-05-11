@@ -146,9 +146,9 @@ export default function CompoundInput({ onResolved }: Props) {
               <div className="flex gap-0 rounded-sm overflow-hidden border border-border self-start">
                 {(['formula', 'smiles'] as Mode[]).map(m => (
                   <button key={m} onClick={() => handleModeChange(m)}
-                    className="px-3 py-1 font-mono text-[11px] transition-colors"
+                    className="px-3 py-1 font-mono text-xs transition-colors"
                     style={{
-                      background: mode === m ? 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))' : 'rgb(var(--color-raised))',
+                      background: mode === m ? 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))' : 'rgb(var(--color-raised))',
                       color: mode === m ? 'var(--c-halogen)' : 'rgba(var(--overlay),0.4)',
                       borderRight: m === 'formula' ? '1px solid rgb(var(--color-border))' : 'none',
                     }}>
@@ -173,10 +173,10 @@ export default function CompoundInput({ onResolved }: Props) {
                     placeholder={mode === 'formula' ? 'e.g. H2O' : 'e.g. [Na+].[Cl-]'}
                     className="w-full font-mono text-sm bg-surface border rounded-sm px-3 py-2
                                text-primary placeholder-dim focus:outline-none transition-colors"
-                    style={{ borderColor: inputError ? '#f87171' : 'rgb(var(--color-border))' }}
+                    style={{ borderColor: inputError ? 'rgb(var(--color-error))' : 'rgb(var(--color-border))' }}
                     autoFocus
                   />
-                  {inputError && <p className="font-mono text-[10px] text-red-400">{inputError}</p>}
+                  {inputError && <p className="font-mono text-xs text-error">{inputError}</p>}
                 </div>
                 <button onClick={handleResolve} disabled={loading || !input.trim() || !!inputError}
                   className="px-4 font-sans text-sm font-medium rounded-sm border transition-colors disabled:opacity-40 shrink-0 self-start mt-0"
@@ -190,7 +190,7 @@ export default function CompoundInput({ onResolved }: Props) {
                 </button>
               </div>
 
-              {error && <p className="font-mono text-[10px] text-red-400">{error}</p>}
+              {error && <p className="font-mono text-xs text-error">{error}</p>}
             </div>
           </motion.div>
         )}

@@ -11,7 +11,7 @@ export default function KExpressionReference() {
     <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       <section className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-primary text-lg">The Equilibrium Constant Expression</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">The Equilibrium Constant Expression</h3>
         <p className="font-sans text-sm text-secondary leading-relaxed">
           For a general reaction <span className="font-mono text-primary">aA + bB \u21cc cC + dD</span>, the equilibrium
           constant expression is:
@@ -49,7 +49,7 @@ export default function KExpressionReference() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-primary text-lg">Worked Example</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Worked Example</h3>
         <p className="font-sans text-sm text-secondary">
           Write K<sub>c</sub> for <span className="font-mono text-primary">N\u2082O\u2084(g) \u21cc 2NO\u2082(g)</span>
         </p>
@@ -64,7 +64,7 @@ export default function KExpressionReference() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-primary text-lg">Heterogeneous Equilibria — Omitting Solids & Liquids</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Heterogeneous Equilibria — Omitting Solids & Liquids</h3>
         <p className="font-sans text-sm text-secondary leading-relaxed">
           For <span className="font-mono text-primary">CaCO\u2083(s) \u21cc CaO(s) + CO\u2082(g)</span>:
         </p>
@@ -76,7 +76,7 @@ export default function KExpressionReference() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-primary text-lg">Interpreting K</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Interpreting K</h3>
         <div className="grid grid-cols-3 gap-3">
           {[
             { range: 'K >> 1', meaning: 'Equilibrium lies far to the right — mostly products.', color: 'rgb(34 197 94)' },
@@ -93,7 +93,7 @@ export default function KExpressionReference() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-primary text-lg">ICE Table Preview</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">ICE Table Preview</h3>
         <p className="font-sans text-sm text-secondary">
           K expressions are solved using ICE tables. Here is the structure for N\u2082O\u2084 \u21cc 2NO\u2082:
         </p>

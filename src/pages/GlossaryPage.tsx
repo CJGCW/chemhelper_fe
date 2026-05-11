@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import PageShell from '../components/Layout/PageShell'
 import ExplanationModal, { type ExplanationContent } from '../components/calculations/ExplanationModal'
+import CompoundDisplay from '../components/shared/CompoundDisplay'
 
 const EXPLANATION: ExplanationContent = {
   title: 'Chemistry Glossary',
@@ -12,6 +13,7 @@ interface Term {
   formula?: string
   category: string
   definition: string
+  smiles?: string
 }
 
 const TERMS: Term[] = [
@@ -32,9 +34,9 @@ const TERMS: Term[] = [
   { term: 'Bond Order',            category: 'Bonding',  definition: 'Number of bonding electron pairs between two atoms; single = 1, double = 2, triple = 3.' },
   { term: 'Polar Covalent Bond',   category: 'Bonding',  definition: 'Covalent bond where electrons are shared unequally due to electronegativity difference (0.4–1.7 Δχ).' },
   { term: 'Dipole Moment',         formula: 'μ',         category: 'Bonding',  definition: 'Measure of bond polarity: μ = q·d, expressed in debyes (D).' },
-  { term: 'Lewis Structure',       category: 'Bonding',  definition: 'Diagram showing bonding electron pairs and lone pairs for a molecule or ion.' },
+  { term: 'Lewis Structure',       category: 'Bonding',  definition: 'Diagram showing bonding electron pairs and lone pairs for a molecule or ion.', smiles: 'O' },
   { term: 'Formal Charge',         category: 'Bonding',  definition: 'Hypothetical charge on an atom assuming equal sharing: FC = V − L − B/2.' },
-  { term: 'Resonance',             category: 'Bonding',  definition: 'Representation of a molecule as two or more Lewis structures (resonance structures) that together describe delocalized electrons.' },
+  { term: 'Resonance',             category: 'Bonding',  definition: 'Representation of a molecule as two or more Lewis structures (resonance structures) that together describe delocalized electrons.', smiles: 'c1ccccc1' },
   { term: 'VSEPR',                 category: 'Bonding',  definition: 'Valence Shell Electron Pair Repulsion theory: electron domains arrange to minimize repulsion, determining molecular geometry.' },
   { term: 'Hybridization',         category: 'Bonding',  definition: 'Mixing of atomic orbitals to form hybrid orbitals (sp, sp², sp³, sp³d, sp³d²).' },
   // Stoichiometry
@@ -175,7 +177,7 @@ export default function GlossaryPage() {
         <div className="flex flex-wrap gap-1.5">
           <button
             onClick={() => setActiveCategory(null)}
-            className="font-mono text-[11px] px-2.5 py-0.5 rounded-sm transition-colors"
+            className="font-mono text-xs px-2.5 py-0.5 rounded-sm transition-colors"
             style={pillStyle(activeCategory === null)}
           >
             All
@@ -184,7 +186,7 @@ export default function GlossaryPage() {
             <button
               key={cat}
               onClick={() => setActiveCategory(c => c === cat ? null : cat)}
-              className="font-mono text-[11px] px-2.5 py-0.5 rounded-sm transition-colors"
+              className="font-mono text-xs px-2.5 py-0.5 rounded-sm transition-colors"
               style={pillStyle(activeCategory === cat)}
             >
               {cat}
@@ -205,12 +207,19 @@ export default function GlossaryPage() {
                   <span className="font-mono text-xs" style={{ color: 'var(--c-halogen)' }}>{t.formula}</span>
                 )}
               </div>
-              <div className="flex flex-col gap-0.5 min-w-0">
+              <div className="flex flex-col gap-0.5 min-w-0 flex-1">
                 <div className="flex items-baseline gap-2 flex-wrap">
                   <span className="font-sans font-semibold text-sm text-bright">{t.term}</span>
                   <span className="font-mono text-[9px] text-dim uppercase tracking-widest">{t.category}</span>
                 </div>
-                <p className="font-sans text-sm text-secondary leading-relaxed">{t.definition}</p>
+                <div className={t.smiles ? 'flex items-start gap-4' : ''}>
+                  <p className="font-sans text-sm text-secondary leading-relaxed">{t.definition}</p>
+                  {t.smiles && (
+                    <div className="shrink-0">
+                      <CompoundDisplay smiles={t.smiles} label="" width={100} height={80} />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           ))}

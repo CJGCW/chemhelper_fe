@@ -12,8 +12,8 @@ interface Question {
 }
 
 const SOLID_COLORS: Record<SolidId, string> = {
-  ionic:     '#fb923c',
-  molecular: '#34d399',
+  ionic:     'rgb(var(--color-warning))',
+  molecular: 'rgb(var(--color-success))',
   metallic:  '#60a5fa',
   network:   '#c084fc',
 }
@@ -242,8 +242,8 @@ export default function SolidTypesPractice({ allowCustom = true }: Props) {
                   disabled={answered}
                   className="px-3 py-2.5 rounded-sm border font-sans text-sm font-medium text-left transition-all"
                   style={{
-                    color: showCorrect ? '#34d399'
-                      : showWrong ? '#f87171'
+                    color: showCorrect ? 'rgb(var(--color-success))'
+                      : showWrong ? 'rgb(var(--color-error))'
                       : 'rgba(var(--overlay),0.6)',
                     borderColor: showCorrect ? '#34d39960'
                       : showWrong ? '#f8717160'
@@ -270,7 +270,7 @@ export default function SolidTypesPractice({ allowCustom = true }: Props) {
               >
                 <div className="px-4 py-3 flex flex-col gap-2">
                   <span className="font-sans text-sm font-semibold"
-                    style={{ color: correct ? '#34d399' : '#f87171' }}>
+                    style={{ color: correct ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                     {correct
                       ? `Correct — ${SOLID_NAMES[q.answer]}`
                       : `Incorrect — answer: ${SOLID_NAMES[q.answer]}`}

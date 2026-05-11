@@ -46,7 +46,7 @@ function clamp(y: number) { return Math.max(14, Math.min(H - 16, y)) }
 function ProfileDiagram({ problem }: { problem: ProfileProblem }) {
   const { dh, ea, reactantE, showValues } = problem
   const isExo = dh < 0
-  const accent = isExo ? '#34d399' : '#f87171'
+  const accent = isExo ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))'
 
   const effEa   = Math.max(ea, dh > 0 ? dh + 10 : 0, 8)
   const rY      = BASE_Y
@@ -183,8 +183,8 @@ export default function ReactionProfilePractice({ allowCustom = true }: Props) {
 
   const borderClass = checked
     ? correct
-      ? 'border-emerald-800/50 bg-emerald-950/20'
-      : 'border-rose-800/50 bg-rose-950/20'
+      ? 'feedback-success'
+      : 'feedback-error'
     : 'border-border bg-surface'
 
   const choices = CHOICE_OPTIONS[problem.subtype]
@@ -203,8 +203,8 @@ export default function ReactionProfilePractice({ allowCustom = true }: Props) {
               className="flex flex-col items-start px-3 py-2 rounded-sm font-sans text-sm
                          font-medium transition-colors text-left"
               style={isActive ? {
-                background: 'color-mix(in srgb, var(--c-halogen) 12%, rgb(var(--color-raised)))',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               } : {
                 background: 'rgb(var(--color-surface))',
@@ -281,13 +281,13 @@ export default function ReactionProfilePractice({ allowCustom = true }: Props) {
                   style = {
                     background: 'color-mix(in srgb, #34d399 15%, rgb(var(--color-raised)))',
                     border: '1px solid color-mix(in srgb, #34d399 50%, transparent)',
-                    color: '#34d399',
+                    color: 'rgb(var(--color-success))',
                   }
                 } else if (isSelected && !correct) {
                   style = {
                     background: 'color-mix(in srgb, #f87171 15%, rgb(var(--color-raised)))',
                     border: '1px solid color-mix(in srgb, #f87171 50%, transparent)',
-                    color: '#f87171',
+                    color: 'rgb(var(--color-error))',
                   }
                 } else if (!isSelected && checked && isCorrectAnswer) {
                   style = {
@@ -319,7 +319,7 @@ export default function ReactionProfilePractice({ allowCustom = true }: Props) {
 
             {checked && (
               <div className="flex items-center gap-3">
-                <span className={`font-sans text-sm font-medium ${correct ? 'text-emerald-400' : 'text-rose-400'}`}>
+                <span className={`font-sans text-sm font-medium ${correct ? 'text-success' : 'text-error'}`}>
                   {correct ? '✓ Correct' : '✗ Incorrect'}
                 </span>
                 <button
@@ -347,8 +347,8 @@ export default function ReactionProfilePractice({ allowCustom = true }: Props) {
                           disabled:cursor-not-allowed transition-colors w-40
                           ${checked
                             ? correct
-                              ? 'border-emerald-700/60 text-emerald-300'
-                              : 'border-rose-700/60 text-rose-300'
+                              ? 'border-success-border text-success-strong'
+                              : 'border-error-border text-error-strong'
                             : 'border-border text-bright'}`}
             />
             {!checked ? (
@@ -358,8 +358,8 @@ export default function ReactionProfilePractice({ allowCustom = true }: Props) {
                 className="px-4 py-1.5 rounded-sm font-sans text-sm font-medium transition-colors
                            disabled:opacity-30 disabled:cursor-not-allowed"
                 style={{
-                  background: 'color-mix(in srgb, var(--c-halogen) 15%, rgb(var(--color-raised)))',
-                  border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                  background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
+                  border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                   color: 'var(--c-halogen)',
                 }}
               >
@@ -367,7 +367,7 @@ export default function ReactionProfilePractice({ allowCustom = true }: Props) {
               </button>
             ) : (
               <>
-                <span className={`font-sans text-sm font-medium ${correct ? 'text-emerald-400' : 'text-rose-400'}`}>
+                <span className={`font-sans text-sm font-medium ${correct ? 'text-success' : 'text-error'}`}>
                   {correct ? '✓ Correct' : '✗ Incorrect'}
                 </span>
                 <button

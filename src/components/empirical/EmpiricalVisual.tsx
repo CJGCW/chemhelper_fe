@@ -19,9 +19,9 @@ const PRESETS = [
 // ── Colors ────────────────────────────────────────────────────────────────────
 
 const PALETTE: Record<string, string> = {
-  H:  '#60a5fa', C:  '#9ca3af', N:  '#818cf8', O:  '#ef4444',
-  Na: '#fbbf24', Mg: '#2dd4bf', Cl: '#4ade80', Ca: '#f472b6',
-  Fe: '#f97316', Cu: '#f59e0b', S:  '#facc15', P:  '#fb923c',
+  H:  '#60a5fa', C:  '#9ca3af', N:  '#818cf8', O:  'rgb(var(--color-error))',
+  Na: '#fbbf24', Mg: '#2dd4bf', Cl: 'rgb(var(--color-success))', Ca: '#f472b6',
+  Fe: 'rgb(var(--color-warning))', Cu: '#f59e0b', S:  '#facc15', P:  'rgb(var(--color-warning))',
   K:  '#d946ef', Al: '#94a3b8', Si: '#84cc16', Br: '#e8622e',
 }
 const FALLBACK = '#818cf8'
@@ -206,7 +206,7 @@ export default function EmpiricalVisual() {
         >
           Draw
         </button>
-        {error && <span className="font-mono text-xs" style={{ color: '#f87171' }}>{error}</span>}
+        {error && <span className="font-mono text-xs" style={{ color: 'rgb(var(--color-error))' }}>{error}</span>}
       </div>
 
       {/* Loading */}

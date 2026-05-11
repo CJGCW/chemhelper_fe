@@ -3,7 +3,7 @@ export default function QvsKReference() {
     <div className="flex flex-col gap-8 max-w-3xl print:max-w-none">
 
       <section className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-primary text-lg">The Reaction Quotient Q</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">The Reaction Quotient Q</h3>
         <p className="font-sans text-sm text-secondary leading-relaxed">
           Q has the <em>same form</em> as K, but uses <em>current</em> (non-equilibrium) concentrations or pressures.
           Comparing Q to K tells us which direction the reaction must shift to reach equilibrium.
@@ -15,7 +15,7 @@ export default function QvsKReference() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-primary text-lg">Q vs K: Three Cases</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Q vs K: Three Cases</h3>
         <div className="flex flex-col gap-3">
           {[
             {
@@ -53,7 +53,7 @@ export default function QvsKReference() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-primary text-lg">Worked Example</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Worked Example</h3>
         <p className="font-sans text-sm text-secondary">
           For <span className="font-mono text-primary">N\u2082O\u2084(g) \u21cc 2NO\u2082(g)</span>, K<sub>c</sub> = 4.63 \u00d7 10<sup>-3</sup>.
           At some moment, [N\u2082O\u2084] = 0.100 M and [NO\u2082] = 0.0200 M.
@@ -67,7 +67,7 @@ export default function QvsKReference() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h3 className="font-sans font-semibold text-primary text-lg">Key Points</h3>
+        <h3 className="font-sans font-semibold text-primary text-sm">Key Points</h3>
         <ul className="flex flex-col gap-2 font-sans text-sm text-secondary leading-relaxed list-none">
           <li className="flex gap-2"><span className="text-primary">&#x2022;</span> Q and K have the same mathematical form — Q is K evaluated at any moment, not just equilibrium.</li>
           <li className="flex gap-2"><span className="text-primary">&#x2022;</span> Omit solids and liquids in Q, just as in K.</li>

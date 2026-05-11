@@ -11,8 +11,8 @@ const genProblem = genHCProblem
 
 const PHASE_INFO: Record<Phase, { color: string; label: string }> = {
   solid:        { color: '#60a5fa', label: 'Solid'        },
-  melting:      { color: '#fb923c', label: 'Melting'      },
-  liquid:       { color: '#34d399', label: 'Liquid'       },
+  melting:      { color: 'rgb(var(--color-warning))', label: 'Melting'      },
+  liquid:       { color: 'rgb(var(--color-success))', label: 'Liquid'       },
   vaporization: { color: '#f43f5e', label: 'Vaporization' },
   gas:          { color: '#c084fc', label: 'Gas'          },
 }
@@ -180,7 +180,7 @@ function InteractiveCurve({
       {/* User click marker */}
       {clickSvgPos && (
         <circle cx={clickSvgPos.x} cy={clickSvgPos.y} r="8"
-          fill={isCorrect ? '#34d399' : '#f87171'}
+          fill={isCorrect ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))'}
           stroke="rgba(var(--overlay),0.85)" strokeWidth="2" />
       )}
     </svg>
@@ -316,7 +316,7 @@ export default function HeatingCurveProblems() {
                 <div className="px-4 py-3 flex flex-col gap-2">
                   <div className="flex items-center gap-2">
                     <span className="font-sans text-sm font-semibold"
-                      style={{ color: isCorrect ? '#34d399' : '#f87171' }}>
+                      style={{ color: isCorrect ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>
                       {isCorrect ? 'Correct' : 'Incorrect'}
                     </span>
                     {!isCorrect && (

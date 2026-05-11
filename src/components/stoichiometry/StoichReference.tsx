@@ -26,7 +26,7 @@ function Example({ scenario, steps, result }: { scenario: string; steps: string[
         {steps.map((s, i) => (
           <p key={i} className="font-mono text-sm text-primary print:text-gray-800">{s}</p>
         ))}
-        <p className="font-mono text-sm font-semibold text-emerald-400 print:text-green-700 mt-0.5">
+        <p className="font-mono text-sm font-semibold text-success print:text-green-700 mt-0.5">
           ∴ {result}
         </p>
       </div>
@@ -103,7 +103,7 @@ function BalancingCard() {
           <p className="font-mono text-sm text-primary print:text-gray-800">Fe: 1 left vs 2 right → need coefficient 4 on Fe</p>
           <p className="font-mono text-sm text-primary print:text-gray-800">O: 2 left vs 3 right → need coefficient 3 on O₂, 2 on Fe₂O₃</p>
           <p className="font-mono text-sm text-primary print:text-gray-800">Check: Fe 4 = 4 ✓, O 6 = 6 ✓</p>
-          <p className="font-mono text-sm font-semibold text-emerald-400 print:text-green-700 mt-0.5">
+          <p className="font-mono text-sm font-semibold text-success print:text-green-700 mt-0.5">
             ∴ 4 Fe + 3 O₂ → 2 Fe₂O₃
           </p>
         </div>

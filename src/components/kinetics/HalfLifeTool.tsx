@@ -76,7 +76,7 @@ export default function HalfLifeTool() {
               className="px-4 py-1.5 rounded-sm font-mono text-sm transition-colors"
               style={order === o ? {
                 background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               } : { border: '1px solid rgba(var(--overlay),0.15)', color: 'rgba(var(--overlay),0.5)' }}>
               {o === 0 ? '0th' : o === 1 ? '1st' : '2nd'}
@@ -97,7 +97,7 @@ export default function HalfLifeTool() {
               className="px-4 py-1.5 rounded-sm font-sans text-sm transition-colors"
               style={mode === opt.id ? {
                 background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-                border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
                 color: 'var(--c-halogen)',
               } : { border: '1px solid rgba(var(--overlay),0.15)', color: 'rgba(var(--overlay),0.5)' }}>
               {opt.label}
@@ -116,14 +116,14 @@ export default function HalfLifeTool() {
         )}
       </div>
 
-      {error && <p className="font-sans text-sm text-rose-400">{error}</p>}
+      {error && <p className="font-sans text-sm text-error">{error}</p>}
 
       <div className="flex items-stretch gap-2">
         <button onClick={handleSolve}
           className="px-5 py-2 rounded-sm font-sans text-sm font-medium"
           style={{
             background: 'color-mix(in srgb, var(--c-halogen) 18%, rgb(var(--color-raised)))',
-            border: '1px solid color-mix(in srgb, var(--c-halogen) 35%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--c-halogen) 40%, transparent)',
             color: 'var(--c-halogen)',
           }}>
           Calculate
