@@ -56,6 +56,19 @@ import { ALL_REACTIONS } from '../../data/mechanisms/index'
 import { FGI_TABLE, type FunctionalGroup } from '../../data/organic/fgiTable'
 import { SYNTHESIS_PROBLEMS } from '../../data/organic/synthesisProblems'
 import { generatePredictProductProblem, shuffleChoices } from '../../utils/predictProductPractice'
+import { generateCrossCouplingProblem } from '../../utils/crossCouplingPractice'
+import { generateLipidProblem, makeDistractors, LIPID_CLASS_LABELS } from '../../utils/lipidPractice'
+import { generateNucleicAcidProblem } from '../../utils/nucleicAcidPractice'
+import { generateRankingProblem } from '../../utils/acidityRankingPractice'
+import {
+  generateChairProblem, generateNewmanProblem, generateHybridizationProblem,
+  generateAromaticityProblem, generateRSProblem, generateEZProblem,
+  generateStereoisomerProblem, generateConformationalProblem, generateCurvedArrowProblem,
+  generatePolymerizationProblem, generateConjugatedDieneProblem, generateFormalChargeProblem,
+  generateResonanceProblem, generateMostAcidicHProblem, generateRetroProblem,
+  generateSynthesisOrderProblem, generateAminoAcidPIProblem,
+  generateIRProblem, generateNMRProblem, generateMSProblem,
+} from '../../utils/organicTestGenerators'
 import { usePreferencesStore } from '../../stores/preferencesStore'
 import type { GeneratedTest, TestQuestion } from './testTypes'
 
@@ -72,8 +85,13 @@ type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | '
   | 'hydrocarbon' | 'isomer' | 'organic_naming' | 'func_group' | 'organic_rxn' | 'mechanism_id'
   | 'mechanism_identify' | 'mechanism_product' | 'mechanism_reagent' | 'mechanism_regio'
   | 'transform_drill' | 'synthesis_fillin' | 'predict_product'
+  | 'chair' | 'newman' | 'hybridization' | 'aromaticity' | 'rs_assignment' | 'ez_assignment'
+  | 'stereoisomer' | 'conformational' | 'curved_arrows' | 'polymerization' | 'conjugated_diene'
+  | 'formal_charge_org' | 'resonance' | 'most_acidic_h' | 'retro_disconn' | 'synthesis_order'
+  | 'amino_acid_pi' | 'acidity_ranking' | 'cross_coupling' | 'lipid_id' | 'nucleic_acid'
+  | 'ir_interp' | 'nmr_interp' | 'ms_interp'
 type TopicGroup = 'core' | 'atomic_molecular' | 'structures' | 'molar_solutions' | 'stoichiometry' | 'gases' | 'redox' | 'thermochemistry'
-  | 'kinetics' | 'equilibrium' | 'acid_base' | 'buffers_ksp' | 'thermo_dynamics' | 'nuclear' | 'organic'
+  | 'kinetics' | 'equilibrium' | 'acid_base' | 'buffers_ksp' | 'thermo_dynamics' | 'nuclear' | 'organic' | 'spectroscopy'
 
 const GROUP_LABELS: Record<TopicGroup, string> = {
   core:             'Core Skills',
@@ -91,10 +109,11 @@ const GROUP_LABELS: Record<TopicGroup, string> = {
   thermo_dynamics:  'Thermodynamics',
   nuclear:          'Nuclear Chemistry',
   organic:          'Organic Chemistry',
+  spectroscopy:     'Spectroscopy',
 }
 const GROUP_ORDER: TopicGroup[] = [
   'core', 'atomic_molecular', 'structures', 'molar_solutions', 'stoichiometry', 'gases', 'redox', 'thermochemistry',
-  'kinetics', 'equilibrium', 'acid_base', 'buffers_ksp', 'thermo_dynamics', 'nuclear', 'organic',
+  'kinetics', 'equilibrium', 'acid_base', 'buffers_ksp', 'thermo_dynamics', 'nuclear', 'organic', 'spectroscopy',
 ]
 
 interface TopicDef {
@@ -119,62 +138,62 @@ interface TopicDef {
 }
 
 const ALL_TOPICS: TopicDef[] = [
-  { id: 'sigfig',     kind: 'sigfig',     group: 'core',             label: 'Significant Figures',    formula: 'sf'                    },
-  { id: 'conversion', kind: 'conversion', group: 'core',             label: 'Unit Conversions',        formula: 'g↔kg, L↔mL, °C↔K'    },
-  { id: 'empirical',  kind: 'empirical',  group: 'core',             label: 'Empirical Formula',       formula: '% → EF'               },
-  { id: 'atomic',     kind: 'atomic',     group: 'atomic_molecular', label: 'Atomic Structure',        formula: 'e⁻ config, QN, Bohr'  },
-  { id: 'lewis',      kind: 'lewis',      group: 'structures',       label: 'Lewis Structure',         formula: 'valence e⁻, geometry'  },
-  { id: 'lewis-draw', kind: 'lewis_draw', group: 'structures',      label: 'Lewis Draw',              formula: 'draw bonds & lone pairs' },
-  { id: 'vsepr',      kind: 'vsepr',      group: 'structures',       label: 'VSEPR',                   formula: 'geometry, hybrid.'     },
-  { id: 'vsepr-draw', kind: 'vsepr_draw', group: 'structures',       label: 'VSEPR Draw',              formula: '3D structure drawing'  },
-  { id: 'sigma-pi',   kind: 'sigma_pi',  group: 'structures',       label: 'σ / π Bonds',             formula: 'σ, π count'            },
-  { id: 'moles',      kind: 'molar',      group: 'molar_solutions',  label: 'Moles',                   formula: 'n = m/M',              molarType: 'moles'    },
-  { id: 'molarity',   kind: 'molar',      group: 'molar_solutions',  label: 'Molarity',                formula: 'C = n/V',              molarType: 'molarity' },
-  { id: 'molality',   kind: 'molar',      group: 'molar_solutions',  label: 'Molality',                formula: 'b = n/m',              molarType: 'molality' },
-  { id: 'bpe',        kind: 'molar',      group: 'molar_solutions',  label: 'Boiling Pt Elevation',    formula: 'ΔTb = i·Kb·b',         molarType: 'bpe'      },
-  { id: 'fpd',        kind: 'molar',      group: 'molar_solutions',  label: 'Freezing Pt Depression',  formula: 'ΔTf = i·Kf·b',         molarType: 'fpd'      },
-  { id: 'perc-comp',  kind: 'perc_comp',  group: 'molar_solutions',  label: '% Composition',           formula: '% mass'                                       },
-  { id: 'stoich-mr',  kind: 'stoich',     group: 'stoichiometry',    label: 'Mole Ratios',             formula: 'n₁/n₂',                stoichType: 'mole_ratio'        },
-  { id: 'stoich-mm',  kind: 'stoich',     group: 'stoichiometry',    label: 'Mass-to-Mass',            formula: 'g → mol → g',           stoichType: 'mass_to_mass'      },
-  { id: 'stoich-lr',  kind: 'stoich',     group: 'stoichiometry',    label: 'Limiting Reagent',        formula: 'LR',                    stoichType: 'limiting_reagent'  },
-  { id: 'stoich-ty',  kind: 'stoich',     group: 'stoichiometry',    label: 'Theoretical Yield',       formula: 'TY (g)',                stoichType: 'theoretical_yield' },
-  { id: 'stoich-py',  kind: 'stoich',     group: 'stoichiometry',    label: 'Percent Yield',           formula: '% yield',               stoichType: 'percent_yield'     },
-  { id: 'gas-stp',        kind: 'gas_stoich', group: 'stoichiometry',  label: 'Gas Stoich (STP)',         formula: 'L → mol @ STP',            gasStandard: 'STP'  },
-  { id: 'gas-satp',      kind: 'gas_stoich', group: 'stoichiometry',  label: 'Gas Stoich (SATP)',        formula: 'L → mol @ SATP',           gasStandard: 'SATP' },
-  { id: 'sol-stoich',  kind: 'sol_stoich', group: 'stoichiometry',    label: 'Solution Stoich',         formula: 'M·V → mol → g'                                                      },
-  { id: 'bal-easy',    kind: 'balancing',  group: 'stoichiometry',    label: 'Balancing (Easy)',        formula: '_□ + _□ → _□',          balDifficulty: 'easy'                       },
-  { id: 'bal-medium',  kind: 'balancing',  group: 'stoichiometry',    label: 'Balancing (Medium)',      formula: '_□ + _□ → _□',          balDifficulty: 'medium'                     },
-  { id: 'bal-hard',    kind: 'balancing',  group: 'stoichiometry',    label: 'Balancing (Hard)',        formula: '_□ + _□ → _□',          balDifficulty: 'hard'                       },
-  { id: 'dilution-c2', kind: 'dilution', group: 'molar_solutions', label: 'Dilution (find C₂)',     formula: 'C₁V₁=C₂V₂',  dilutionSubtype: 'find_c2' },
-  { id: 'dilution-v2', kind: 'dilution', group: 'molar_solutions', label: 'Dilution (find V₂)',     formula: 'C₁V₁=C₂V₂',  dilutionSubtype: 'find_v2' },
-  { id: 'dilution-v1', kind: 'dilution', group: 'molar_solutions', label: 'Dilution (find V₁)',     formula: 'C₁V₁=C₂V₂',  dilutionSubtype: 'find_v1' },
-  { id: 'conc-pct-mol', kind: 'conc', group: 'molar_solutions', label: 'Conc: % → Molarity',      formula: '%m/v → M',      concSubtype: 'percent_to_molarity'  },
-  { id: 'conc-mol-pct', kind: 'conc', group: 'molar_solutions', label: 'Conc: Molarity → %',      formula: 'M → %m/v',      concSubtype: 'molarity_to_percent'  },
-  { id: 'conc-ppm',     kind: 'conc', group: 'molar_solutions', label: 'Conc: ppm → Molarity',    formula: 'ppm → M',       concSubtype: 'ppm_to_molarity'      },
-  { id: 'conc-xf',      kind: 'conc', group: 'molar_solutions', label: 'Mole Fraction',           formula: 'χ = n/nₜ',      concSubtype: 'mole_fraction'        },
-  { id: 'rxn-pred-occ',  kind: 'rxn_pred', group: 'stoichiometry', label: 'Reaction: Occurs?',        formula: 'ppt?',     rxnSubtype: 'predict_occurs'      },
-  { id: 'rxn-pred-name', kind: 'rxn_pred', group: 'stoichiometry', label: 'Reaction: Name Precipitate', formula: 'ppt name', rxnSubtype: 'name_precipitate'   },
-  { id: 'rxn-pred-sol',  kind: 'rxn_pred', group: 'stoichiometry', label: 'Reaction: Solubility',     formula: 'S/I/SS',   rxnSubtype: 'identify_solubility' },
-  { id: 'ideal-gas',  kind: 'ideal_gas', group: 'gases', label: 'Ideal Gas Law',   formula: 'PV=nRT'     },
-  { id: 'vdw',        kind: 'vdw',       group: 'gases', label: 'Real Gas (vdW)',  formula: 'van der Waals' },
-  { id: 'redox-ox',   kind: 'redox',      group: 'redox',            label: 'Oxidation Numbers',        formula: 'ox. #',                 redoxType: 'ox_state'           },
-  { id: 'redox-id',   kind: 'redox',      group: 'redox',            label: 'Identify Oxidised/Reduced', formula: 'OA / RA',              redoxType: 'identify_redox'     },
-  { id: 'redox-chg',  kind: 'redox',      group: 'redox',            label: 'Oxidation State Change',   formula: 'Δox',                   redoxType: 'ox_change'          },
-  { id: 'ecell-e0',   kind: 'ecell', group: 'redox', label: 'Cell Potential (E°)',   formula: 'E°cell',  ecellType: 'calc_e0cell'  },
-  { id: 'ecell-spon', kind: 'ecell', group: 'redox', label: 'Spontaneity',          formula: 'ΔG / E°', ecellType: 'spontaneity'  },
-  { id: 'ecell-nern', kind: 'ecell', group: 'redox', label: 'Nernst Equation',      formula: 'E=E°−RT/nF·lnQ', ecellType: 'nernst'  },
-  { id: 'ecell-dg',   kind: 'ecell', group: 'redox', label: 'ΔG from E°',           formula: 'ΔG=−nFE',  ecellType: 'delta_g'   },
-  { id: 'calorimetry',   kind: 'calorimetry',   group: 'thermochemistry', label: 'Calorimetry',          formula: 'q=mcΔT' },
-  { id: 'enthalpy',     kind: 'enthalpy',     group: 'thermochemistry', label: 'Enthalpy of Reaction',   formula: 'ΔHrxn'  },
-  { id: 'hess',         kind: 'hess',         group: 'thermochemistry', label: "Hess's Law",             formula: 'ΣΔH'    },
-  { id: 'bond-enthalpy',  kind: 'bond_enthalpy',  group: 'thermochemistry', label: 'Bond Enthalpy',   formula: 'BE'      },
-  { id: 'heat-transfer',       kind: 'heat_transfer',       group: 'thermochemistry', label: 'Heat Transfer',        formula: 'q₁=−q₂'  },
-  { id: 'clausius-clapeyron', kind: 'clausius_clapeyron', group: 'thermochemistry', label: 'Clausius-Clapeyron',  formula: 'ln P₂/P₁' },
-  { id: 'heating-curve',      kind: 'heating_curve',      group: 'thermochemistry', label: 'Heating Curve',              formula: 'q/T diagram' },
-  { id: 'phase-diagram',      kind: 'phase_diagram',      group: 'thermochemistry', label: 'Phase Diagram',              formula: 'P-T diagram' },
-  { id: 'rxn-profile-id',   kind: 'reaction_profile', group: 'thermochemistry', label: 'Reaction Profile: Exo/Endo',  formula: 'sign ΔH',  profileSubtype: 'identify'   },
-  { id: 'rxn-profile-calc', kind: 'reaction_profile', group: 'thermochemistry', label: 'Reaction Profile: ΔH & Eₐ',  formula: 'ΔH / Eₐ'                               },
-  { id: 'rxn-profile-cat',  kind: 'reaction_profile', group: 'thermochemistry', label: 'Reaction Profile: Catalyst',  formula: 'cat.',     profileSubtype: 'catalyst'   },
+  { id: 'sigfig',     kind: 'sigfig',     group: 'core',             label: 'Significant Figures',    formula: 'sf',                   registryId: 'sig-figs'           },
+  { id: 'conversion', kind: 'conversion', group: 'core',             label: 'Unit Conversions',        formula: 'g↔kg, L↔mL, °C↔K',   registryId: 'unit-conversions'   },
+  { id: 'empirical',  kind: 'empirical',  group: 'core',             label: 'Empirical Formula',       formula: '% → EF',              registryId: 'empirical-formula'  },
+  { id: 'atomic',     kind: 'atomic',     group: 'atomic_molecular', label: 'Atomic Structure',        formula: 'e⁻ config, QN, Bohr', registryId: 'electron-configuration' },
+  { id: 'lewis',      kind: 'lewis',      group: 'structures',       label: 'Lewis Structure',         formula: 'valence e⁻, geometry', registryId: 'lewis-structures'   },
+  { id: 'lewis-draw', kind: 'lewis_draw', group: 'structures',       label: 'Lewis Draw',              formula: 'draw bonds & lone pairs', registryId: 'lewis-structures' },
+  { id: 'vsepr',      kind: 'vsepr',      group: 'structures',       label: 'VSEPR',                   formula: 'geometry, hybrid.',    registryId: 'vsepr'              },
+  { id: 'vsepr-draw', kind: 'vsepr_draw', group: 'structures',       label: 'VSEPR Draw',              formula: '3D structure drawing', registryId: 'vsepr'              },
+  { id: 'sigma-pi',   kind: 'sigma_pi',   group: 'structures',       label: 'σ / π Bonds',             formula: 'σ, π count',           registryId: 'sigma-pi'           },
+  { id: 'moles',      kind: 'molar',      group: 'molar_solutions',  label: 'Moles',                   formula: 'n = m/M',              molarType: 'moles',    registryId: 'moles-calc'       },
+  { id: 'molarity',   kind: 'molar',      group: 'molar_solutions',  label: 'Molarity',                formula: 'C = n/V',              molarType: 'molarity', registryId: 'molarity'         },
+  { id: 'molality',   kind: 'molar',      group: 'molar_solutions',  label: 'Molality',                formula: 'b = n/m',              molarType: 'molality', registryId: 'molality'         },
+  { id: 'bpe',        kind: 'molar',      group: 'molar_solutions',  label: 'Boiling Pt Elevation',    formula: 'ΔTb = i·Kb·b',         molarType: 'bpe',      registryId: 'colligative-bpe'  },
+  { id: 'fpd',        kind: 'molar',      group: 'molar_solutions',  label: 'Freezing Pt Depression',  formula: 'ΔTf = i·Kf·b',         molarType: 'fpd',      registryId: 'colligative-fpd'  },
+  { id: 'perc-comp',  kind: 'perc_comp',  group: 'molar_solutions',  label: '% Composition',           formula: '% mass',               registryId: 'percent-comp'       },
+  { id: 'stoich-mr',  kind: 'stoich',     group: 'stoichiometry',    label: 'Mole Ratios',             formula: 'n₁/n₂',                stoichType: 'mole_ratio',        registryId: 'stoich-calc'        },
+  { id: 'stoich-mm',  kind: 'stoich',     group: 'stoichiometry',    label: 'Mass-to-Mass',            formula: 'g → mol → g',           stoichType: 'mass_to_mass',      registryId: 'stoich-calc'        },
+  { id: 'stoich-lr',  kind: 'stoich',     group: 'stoichiometry',    label: 'Limiting Reagent',        formula: 'LR',                    stoichType: 'limiting_reagent',  registryId: 'limiting-reagent'   },
+  { id: 'stoich-ty',  kind: 'stoich',     group: 'stoichiometry',    label: 'Theoretical Yield',       formula: 'TY (g)',                stoichType: 'theoretical_yield', registryId: 'theoretical-yield'  },
+  { id: 'stoich-py',  kind: 'stoich',     group: 'stoichiometry',    label: 'Percent Yield',           formula: '% yield',               stoichType: 'percent_yield',     registryId: 'percent-yield'      },
+  { id: 'gas-stp',    kind: 'gas_stoich', group: 'stoichiometry',    label: 'Gas Stoich (STP)',         formula: 'L → mol @ STP',         gasStandard: 'STP',              registryId: 'gas-stoich-topic'   },
+  { id: 'gas-satp',   kind: 'gas_stoich', group: 'stoichiometry',    label: 'Gas Stoich (SATP)',        formula: 'L → mol @ SATP',        gasStandard: 'SATP',             registryId: 'gas-stoich-topic'   },
+  { id: 'sol-stoich', kind: 'sol_stoich', group: 'stoichiometry',    label: 'Solution Stoich',          formula: 'M·V → mol → g',        registryId: 'solution-stoich'    },
+  { id: 'bal-easy',   kind: 'balancing',  group: 'stoichiometry',    label: 'Balancing (Easy)',         formula: '_□ + _□ → _□',          balDifficulty: 'easy',           registryId: 'balancing'          },
+  { id: 'bal-medium', kind: 'balancing',  group: 'stoichiometry',    label: 'Balancing (Medium)',       formula: '_□ + _□ → _□',          balDifficulty: 'medium',         registryId: 'balancing'          },
+  { id: 'bal-hard',   kind: 'balancing',  group: 'stoichiometry',    label: 'Balancing (Hard)',         formula: '_□ + _□ → _□',          balDifficulty: 'hard',           registryId: 'balancing'          },
+  { id: 'dilution-c2', kind: 'dilution', group: 'molar_solutions', label: 'Dilution (find C₂)',      formula: 'C₁V₁=C₂V₂', dilutionSubtype: 'find_c2', registryId: 'dilution' },
+  { id: 'dilution-v2', kind: 'dilution', group: 'molar_solutions', label: 'Dilution (find V₂)',      formula: 'C₁V₁=C₂V₂', dilutionSubtype: 'find_v2', registryId: 'dilution' },
+  { id: 'dilution-v1', kind: 'dilution', group: 'molar_solutions', label: 'Dilution (find V₁)',      formula: 'C₁V₁=C₂V₂', dilutionSubtype: 'find_v1', registryId: 'dilution' },
+  { id: 'conc-pct-mol', kind: 'conc', group: 'molar_solutions', label: 'Conc: % → Molarity',       formula: '%m/v → M',  concSubtype: 'percent_to_molarity', registryId: 'conc-converter' },
+  { id: 'conc-mol-pct', kind: 'conc', group: 'molar_solutions', label: 'Conc: Molarity → %',       formula: 'M → %m/v',  concSubtype: 'molarity_to_percent', registryId: 'conc-converter' },
+  { id: 'conc-ppm',     kind: 'conc', group: 'molar_solutions', label: 'Conc: ppm → Molarity',     formula: 'ppm → M',   concSubtype: 'ppm_to_molarity',    registryId: 'conc-converter' },
+  { id: 'conc-xf',      kind: 'conc', group: 'molar_solutions', label: 'Mole Fraction',            formula: 'χ = n/nₜ',  concSubtype: 'mole_fraction',      registryId: 'conc-converter' },
+  { id: 'rxn-pred-occ',  kind: 'rxn_pred', group: 'stoichiometry', label: 'Reaction: Occurs?',          formula: 'ppt?',    rxnSubtype: 'predict_occurs',     registryId: 'rxn-predictor' },
+  { id: 'rxn-pred-name', kind: 'rxn_pred', group: 'stoichiometry', label: 'Reaction: Name Precipitate', formula: 'ppt name', rxnSubtype: 'name_precipitate',  registryId: 'rxn-predictor' },
+  { id: 'rxn-pred-sol',  kind: 'rxn_pred', group: 'stoichiometry', label: 'Reaction: Solubility',       formula: 'S/I/SS',  rxnSubtype: 'identify_solubility', registryId: 'rxn-predictor' },
+  { id: 'ideal-gas', kind: 'ideal_gas', group: 'gases', label: 'Ideal Gas Law',  formula: 'PV=nRT',       registryId: 'ideal-gas-law'  },
+  { id: 'vdw',       kind: 'vdw',       group: 'gases', label: 'Real Gas (vdW)', formula: 'van der Waals', registryId: 'van-der-waals'  },
+  { id: 'redox-ox',  kind: 'redox', group: 'redox', label: 'Oxidation Numbers',          formula: 'ox. #',  redoxType: 'ox_state',      registryId: 'oxidation-states' },
+  { id: 'redox-id',  kind: 'redox', group: 'redox', label: 'Identify Oxidised/Reduced',  formula: 'OA / RA', redoxType: 'identify_redox', registryId: 'oxidation-states' },
+  { id: 'redox-chg', kind: 'redox', group: 'redox', label: 'Oxidation State Change',     formula: 'Δox',    redoxType: 'ox_change',     registryId: 'oxidation-states' },
+  { id: 'ecell-e0',   kind: 'ecell', group: 'redox', label: 'Cell Potential (E°)',   formula: 'E°cell',       ecellType: 'calc_e0cell', registryId: 'ecell-nernst' },
+  { id: 'ecell-spon', kind: 'ecell', group: 'redox', label: 'Spontaneity',           formula: 'ΔG / E°',      ecellType: 'spontaneity', registryId: 'ecell-nernst' },
+  { id: 'ecell-nern', kind: 'ecell', group: 'redox', label: 'Nernst Equation',       formula: 'E=E°−RT/nF·lnQ', ecellType: 'nernst',  registryId: 'ecell-nernst' },
+  { id: 'ecell-dg',   kind: 'ecell', group: 'redox', label: 'ΔG from E°',            formula: 'ΔG=−nFE',      ecellType: 'delta_g', registryId: 'ecell-nernst'  },
+  { id: 'calorimetry',      kind: 'calorimetry',      group: 'thermochemistry', label: 'Calorimetry',        formula: 'q=mcΔT',    registryId: 'calorimetry'        },
+  { id: 'enthalpy',         kind: 'enthalpy',         group: 'thermochemistry', label: 'Enthalpy of Reaction', formula: 'ΔHrxn',   registryId: 'enthalpy-rxn'      },
+  { id: 'hess',             kind: 'hess',             group: 'thermochemistry', label: "Hess's Law",          formula: 'ΣΔH',     registryId: 'hess-law'          },
+  { id: 'bond-enthalpy',    kind: 'bond_enthalpy',    group: 'thermochemistry', label: 'Bond Enthalpy',       formula: 'BE',      registryId: 'bond-enthalpy'     },
+  { id: 'heat-transfer',    kind: 'heat_transfer',    group: 'thermochemistry', label: 'Heat Transfer',       formula: 'q₁=−q₂', registryId: 'heat-transfer'     },
+  { id: 'clausius-clapeyron', kind: 'clausius_clapeyron', group: 'thermochemistry', label: 'Clausius-Clapeyron', formula: 'ln P₂/P₁', registryId: 'clausius-clapeyron' },
+  { id: 'heating-curve',    kind: 'heating_curve',    group: 'thermochemistry', label: 'Heating Curve',       formula: 'q/T diagram', registryId: 'heating-curves' },
+  { id: 'phase-diagram',    kind: 'phase_diagram',    group: 'thermochemistry', label: 'Phase Diagram',       formula: 'P-T diagram', registryId: 'phase-diagrams' },
+  { id: 'rxn-profile-id',   kind: 'reaction_profile', group: 'thermochemistry', label: 'Reaction Profile: Exo/Endo', formula: 'sign ΔH', profileSubtype: 'identify',  registryId: 'reaction-profiles' },
+  { id: 'rxn-profile-calc', kind: 'reaction_profile', group: 'thermochemistry', label: 'Reaction Profile: ΔH & Eₐ', formula: 'ΔH / Eₐ',                              registryId: 'reaction-profiles' },
+  { id: 'rxn-profile-cat',  kind: 'reaction_profile', group: 'thermochemistry', label: 'Reaction Profile: Catalyst', formula: 'cat.',    profileSubtype: 'catalyst',   registryId: 'reaction-profiles' },
 
   // ── Kinetics ────────────────────────────────────────────────────────────────
   { id: 'rate-law',        kind: 'rate_law',       group: 'kinetics', label: 'Rate Law',            formula: 'rate=k[A]ⁿ',    registryId: 'rate-law'        },
@@ -231,6 +250,34 @@ const ALL_TOPICS: TopicDef[] = [
   { id: 'transform-drill',    kind: 'transform_drill',    group: 'organic', label: 'FGI Transform Drill',  formula: 'A→B',      registryId: 'organic-synthesis'    },
   { id: 'synthesis-fillin',   kind: 'synthesis_fillin',   group: 'organic', label: 'Synthesis Fill-In',    formula: '→?',       registryId: 'organic-synthesis'    },
   { id: 'predict-product',    kind: 'predict_product',    group: 'organic', label: 'Predict the Product',  formula: 'A+B→?',    registryId: 'predict-product'      },
+
+  // ── Organic — additional ─────────────────────────────────────────────────────
+  { id: 'chair',            kind: 'chair',            group: 'organic', label: 'Chair Conformations',       formula: 'ax/eq',        registryId: 'org-chair'            },
+  { id: 'newman',           kind: 'newman',           group: 'organic', label: 'Newman Projections',        formula: 'anti/gauche',  registryId: 'org-newman'           },
+  { id: 'hybridization',    kind: 'hybridization',    group: 'organic', label: 'Hybridization',             formula: 'sp/sp²/sp³',   registryId: 'organic-hybridization' },
+  { id: 'aromaticity-cls',  kind: 'aromaticity',      group: 'organic', label: 'Aromaticity',               formula: '4n+2',         registryId: 'aromaticity'          },
+  { id: 'rs-assignment',    kind: 'rs_assignment',    group: 'organic', label: 'R/S Assignment',            formula: 'CIP priority', registryId: 'rs-assignment'        },
+  { id: 'ez-assignment',    kind: 'ez_assignment',    group: 'organic', label: 'E/Z Assignment',            formula: 'E vs Z',       registryId: 'ez-nomenclature'      },
+  { id: 'stereoisomer-cls', kind: 'stereoisomer',     group: 'organic', label: 'Stereoisomer Classifier',   formula: 'enant/diast',  registryId: 'stereoisomer'         },
+  { id: 'conformational',   kind: 'conformational',   group: 'organic', label: 'Conformational Analysis',   formula: 'strain/ΔE',    registryId: 'org-chair'            },
+  { id: 'curved-arrows',    kind: 'curved_arrows',    group: 'organic', label: 'Curved Arrow Mechanism',    formula: 'e⁻ flow',      registryId: 'organic-curved-arrow' },
+  { id: 'polymerization',   kind: 'polymerization',   group: 'organic', label: 'Polymerization Mechanisms', formula: 'add/cond',     registryId: 'polymers'             },
+  { id: 'conjugated-diene', kind: 'conjugated_diene', group: 'organic', label: 'Conjugated Dienes',         formula: '1,2 vs 1,4',   registryId: 'conjugated-diene'     },
+  { id: 'formal-charge-org', kind: 'formal_charge_org', group: 'organic', label: 'Formal Charge',          formula: 'FC',           registryId: 'organic-formal-charge' },
+  { id: 'resonance-org',    kind: 'resonance',        group: 'organic', label: 'Resonance Structures',      formula: '↔',            registryId: 'organic-resonance'    },
+  { id: 'most-acidic-h',    kind: 'most_acidic_h',    group: 'organic', label: 'Most Acidic H',             formula: 'lowest pKa',   registryId: 'org-acid-base'        },
+  { id: 'retro-disconn',    kind: 'retro_disconn',    group: 'organic', label: 'Retro Disconnection',        formula: 'A ⇒ B',       registryId: 'organic-synthesis'    },
+  { id: 'synthesis-order',  kind: 'synthesis_order',  group: 'organic', label: 'Synthesis Ordering',        formula: 'step order',   registryId: 'organic-synthesis'    },
+  { id: 'amino-acid-pi',    kind: 'amino_acid_pi',    group: 'organic', label: 'Amino Acid pI / Zwitterion', formula: 'pI calc',    registryId: 'amino-acids'          },
+  { id: 'acidity-ranking',  kind: 'acidity_ranking',  group: 'organic', label: 'Acidity Ranking',           formula: 'pKa order',    registryId: 'org-acid-base'        },
+  { id: 'cross-coupling',   kind: 'cross_coupling',   group: 'organic', label: 'Cross-Coupling Reactions',  formula: 'Suzuki/Heck',  registryId: 'reaction-mechanisms'  },
+  { id: 'lipid-id',         kind: 'lipid_id',         group: 'organic', label: 'Lipid Identification',      formula: 'fatty acid/trigl', registryId: 'lipids'           },
+  { id: 'nucleic-acid',     kind: 'nucleic_acid',     group: 'organic', label: 'Nucleic Acids',             formula: 'A T G C U',    registryId: 'nucleic-acids'        },
+
+  // ── Spectroscopy ─────────────────────────────────────────────────────────────
+  { id: 'ir-interp',  kind: 'ir_interp',  group: 'spectroscopy', label: 'IR Interpretation',  formula: 'cm⁻¹ peaks', registryId: 'spectroscopy-tool' },
+  { id: 'nmr-interp', kind: 'nmr_interp', group: 'spectroscopy', label: 'NMR Interpretation', formula: 'δ ppm',       registryId: 'spectroscopy-tool' },
+  { id: 'ms-interp',  kind: 'ms_interp',  group: 'spectroscopy', label: 'MS Interpretation',  formula: 'm/z',         registryId: 'spectroscopy-tool' },
 ]
 
 const STYLES: ProblemStyle[] = ['word', 'arithmetic']
@@ -675,6 +722,69 @@ export default function TestBuilder({ onGenerate }: Props) {
         const choices = shuffleChoices(prob).map(c => c.label)
         const q = `Substrate: ${prob.substrate}\nReagent/Conditions: ${prob.reagent}${prob.conditions ? `\n${prob.conditions}` : ''}\n\nWhat is the major product?`
         return cls(q, prob.correctProduct.label, choices, [prob.hint, prob.explanation])
+      }
+
+      // ── New organic generators via organicTestGenerators.ts ──────────────────
+      function orgText(p: { question: string; answer: string; options: string[]; explanation: string }) {
+        return cls(p.question, p.answer, p.options, [p.explanation])
+      }
+
+      if (t.kind === 'chair')             return orgText(generateChairProblem())
+      if (t.kind === 'newman')            return orgText(generateNewmanProblem())
+      if (t.kind === 'hybridization')     return orgText(generateHybridizationProblem())
+      if (t.kind === 'aromaticity')       return orgText(generateAromaticityProblem())
+      if (t.kind === 'rs_assignment')     return orgText(generateRSProblem())
+      if (t.kind === 'ez_assignment')     return orgText(generateEZProblem())
+      if (t.kind === 'stereoisomer')      return orgText(generateStereoisomerProblem())
+      if (t.kind === 'conformational')    return orgText(generateConformationalProblem())
+      if (t.kind === 'curved_arrows')     return orgText(generateCurvedArrowProblem())
+      if (t.kind === 'polymerization')    return orgText(generatePolymerizationProblem())
+      if (t.kind === 'conjugated_diene')  return orgText(generateConjugatedDieneProblem())
+      if (t.kind === 'formal_charge_org') return orgText(generateFormalChargeProblem())
+      if (t.kind === 'resonance')         return orgText(generateResonanceProblem())
+      if (t.kind === 'most_acidic_h')     return orgText(generateMostAcidicHProblem())
+      if (t.kind === 'retro_disconn')     return orgText(generateRetroProblem())
+      if (t.kind === 'synthesis_order')   return orgText(generateSynthesisOrderProblem())
+      if (t.kind === 'amino_acid_pi')     return orgText(generateAminoAcidPIProblem())
+      if (t.kind === 'ir_interp')         return orgText(generateIRProblem())
+      if (t.kind === 'nmr_interp')        return orgText(generateNMRProblem())
+      if (t.kind === 'ms_interp')         return orgText(generateMSProblem())
+
+      if (t.kind === 'acidity_ranking') {
+        const p = generateRankingProblem()
+        const mostAcidic = p.compounds.find(c => c.correctRank === 0)?.label ?? p.compounds[0].label
+        const options = [...p.compounds.map(c => c.label)].sort(() => Math.random() - 0.5)
+        return cls(
+          `${p.prompt}\nWhich compound is the MOST acidic?`,
+          mostAcidic, options, [p.explanation]
+        )
+      }
+
+      if (t.kind === 'cross_coupling') {
+        const p = generateCrossCouplingProblem()
+        return cls(
+          `${p.scenario}\n\n${p.question}`,
+          p.answer, p.choices, [p.explanation]
+        )
+      }
+
+      if (t.kind === 'lipid_id') {
+        const p = generateLipidProblem()
+        const distractors = makeDistractors(p.lipidClass, 3)
+        const options = [LIPID_CLASS_LABELS[p.lipidClass], ...distractors.map(d => LIPID_CLASS_LABELS[d])]
+          .sort(() => Math.random() - 0.5)
+        return cls(
+          p.scenario,
+          LIPID_CLASS_LABELS[p.lipidClass], options, [p.explanation]
+        )
+      }
+
+      if (t.kind === 'nucleic_acid') {
+        const p = generateNucleicAcidProblem()
+        return cls(
+          `${p.scenario}\n\n${p.question}`,
+          p.answer, p.choices, [p.explanation]
+        )
       }
 
       return { topic: t.label, topicFormula: t.formula, problem: { kind: 'molar', data: generateMolarProblem(t.molarType!, randomStyle()) } }

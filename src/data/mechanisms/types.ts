@@ -170,6 +170,8 @@ export interface MechanismFrame {
   caption?: string
   description: string
   shortLabel: string
+  /** Reagents/conditions shown above the arrow leading to the next frame. */
+  interStepReagents?: { label: string; smiles?: string }[]
 }
 
 // ── Structural species for rendered representations ────────────────────────────

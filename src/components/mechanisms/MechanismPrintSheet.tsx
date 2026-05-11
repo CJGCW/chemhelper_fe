@@ -1,11 +1,9 @@
-import { Fragment } from 'react'
 import type { ReactionDef } from '../../data/mechanisms/types'
-import MechanismFrameInline from './MechanismFrameInline'
+import MechanismFlatDiagram from './MechanismFlatDiagram'
 
 // ── Print row for a single reaction ───────────────────────────────────────────
 
 function MechanismPrintRow({ reaction }: { reaction: ReactionDef }) {
-  const frames = reaction.frames ?? []
   return (
     <div className="mechanism-print-row">
       {/* Reaction header */}
@@ -16,32 +14,11 @@ function MechanismPrintRow({ reaction }: { reaction: ReactionDef }) {
       <p className="font-mono text-xs text-secondary mb-2">{reaction.conditions}</p>
 
       {/* Frame sequence */}
-      {frames.length > 0 ? (
-        <div className="flex items-center gap-2 overflow-x-auto pb-1">
-          {frames.map((frame, i) => (
-            <Fragment key={i}>
-              <div className="flex flex-col items-center shrink-0">
-                <MechanismFrameInline
-                  frame={frame}
-                  width={180}
-                  height={120}
-                  showCaption
-                  showArrows
-                />
-                <span className="font-mono text-[9px] text-dim mt-0.5">{frame.shortLabel}</span>
-              </div>
-              {i < frames.length - 1 && (
-                <span className="font-mono text-base text-dim shrink-0">→</span>
-              )}
-            </Fragment>
-          ))}
-        </div>
-      ) : (
-        /* Legacy reactions: show the summary row */
-        <p className="font-mono text-xs text-secondary italic">
-          {reaction.reactants} → {reaction.products}
-        </p>
-      )}
+      <MechanismFlatDiagram
+        reaction={reaction}
+        frameWidth={180}
+        frameHeight={120}
+      />
 
       {/* Summary */}
       <p className="font-sans text-xs text-secondary leading-relaxed mt-1">{reaction.summary}</p>

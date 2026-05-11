@@ -1,11 +1,11 @@
-import { Fragment, useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { motion, AnimatePresence, useAnimate } from 'framer-motion'
 import type {
   ReactionDef, AnimPrimitive, AtomPosition, MoleculeScene, MechanismStep,
   CurvedArrowOverlay, ArrowAnchor, MechanismFrame, BondPosition,
 } from '../../data/mechanisms/types'
 import { usePreferencesStore } from '../../stores/preferencesStore'
-import MechanismFrameInline from './MechanismFrameInline'
+import MechanismFlatDiagram from './MechanismFlatDiagram'
 
 interface Props {
   reaction: ReactionDef
@@ -566,67 +566,95 @@ function FrameArrow({ arrow, atoms, bonds }: {
   )
 }
 
-function FrameAtom({ atom, bonds, allAtoms, reactionId }: {
+const FRAME_TRANS = { type: 'tween' as const, duration: 0.4, ease: 'easeInOut' as const }
+
+function FrameAtom({ atom, bonds, allAtoms }: {
   atom: AtomPosition
   bonds: BondPosition[]
   allAtoms: AtomPosition[]
-  reactionId: string
 }) {
   const off = atom.label ? labelOffset(atom, allAtoms, bonds) : { dx: 0, dy: 0 }
   return (
-    <g key={`${reactionId}:${atom.id}`}>
+    <motion.g
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25 }}
+    >
       {atom.glow && (
-        <circle cx={atom.x} cy={atom.y} r={22} fill="var(--c-alkali)" opacity={0.35} />
+        <motion.circle cx={atom.x} cy={atom.y} r={22} fill="var(--c-alkali)" opacity={0.35}
+          initial={false} animate={{ cx: atom.x, cy: atom.y }} transition={FRAME_TRANS} />
       )}
-      <circle
+      <motion.circle
         cx={atom.x} cy={atom.y} r={16}
         fill="rgb(var(--color-surface))"
         stroke="rgba(var(--overlay),0.2)" strokeWidth={1.5}
+        initial={false}
+        animate={{ cx: atom.x, cy: atom.y }}
+        transition={FRAME_TRANS}
       />
-      <text
+      <motion.text
         x={atom.x} y={atom.y}
         textAnchor="middle" dominantBaseline="central"
         fill="rgb(var(--color-primary))"
         fontFamily="monospace" fontSize={14} fontWeight={600}
+        initial={false}
+        animate={{ x: atom.x, y: atom.y }}
+        transition={FRAME_TRANS}
       >
         {atom.symbol}
-      </text>
+      </motion.text>
       {atom.charge && (
-        <text x={atom.x + 11} y={atom.y - 11} fill="var(--c-halogen)" fontFamily="monospace" fontSize={11}>
+        <motion.text x={atom.x + 11} y={atom.y - 11} fill="var(--c-halogen)" fontFamily="monospace" fontSize={11}
+          initial={false} animate={{ x: atom.x + 11, y: atom.y - 11 }} transition={FRAME_TRANS}>
           {atom.charge}
-        </text>
+        </motion.text>
       )}
       {atom.label && (
-        <text
+        <motion.text
           x={atom.x + off.dx} y={atom.y + off.dy}
           textAnchor="middle"
           fill="rgb(var(--color-primary))" fillOpacity={0.45}
           fontFamily="monospace" fontSize={10}
+          initial={false}
+          animate={{ x: atom.x + off.dx, y: atom.y + off.dy }}
+          transition={FRAME_TRANS}
         >
           {atom.label}
-        </text>
+        </motion.text>
       )}
-    </g>
+    </motion.g>
   )
 }
 
-function FrameCanvas({ frame, reactionId }: { frame: MechanismFrame; reactionId: string }) {
+function FrameCanvas({ frame }: { frame: MechanismFrame }) {
   return (
     <>
-      {frame.bonds.map(bond => {
-        const fa = frame.atoms.find(a => a.id === bond.from)
-        const ta = frame.atoms.find(a => a.id === bond.to)
-        if (!fa || !ta) return null
-        return <g key={bond.id}><BondSegments from={fa} to={ta} order={bond.order} style={bond.style} /></g>
-      })}
+      <AnimatePresence>
+        {frame.bonds.map(bond => {
+          const fa = frame.atoms.find(a => a.id === bond.from)
+          const ta = frame.atoms.find(a => a.id === bond.to)
+          if (!fa || !ta) return null
+          return (
+            <motion.g key={bond.id}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+            >
+              <BondSegments from={fa} to={ta} order={bond.order} style={bond.style} />
+            </motion.g>
+          )
+        })}
+      </AnimatePresence>
 
       {frame.arrows.map((arrow, i) => (
         <FrameArrow key={i} arrow={arrow} atoms={frame.atoms} bonds={frame.bonds} />
       ))}
 
-      {frame.atoms.map(atom => (
-        <FrameAtom key={atom.id} atom={atom} bonds={frame.bonds} allAtoms={frame.atoms} reactionId={reactionId} />
-      ))}
+      <AnimatePresence>
+        {frame.atoms.map(atom => (
+          <FrameAtom key={atom.id} atom={atom} bonds={frame.bonds} allAtoms={frame.atoms} />
+        ))}
+      </AnimatePresence>
     </>
   )
 }
@@ -634,36 +662,7 @@ function FrameCanvas({ frame, reactionId }: { frame: MechanismFrame; reactionId:
 // ── Static mechanism view ──────────────────────────────────────────────────────
 
 function StaticMechanismView({ reaction }: { reaction: ReactionDef }) {
-  const frames = reaction.frames ?? []
-  if (frames.length === 0) {
-    return (
-      <p className="font-sans text-sm text-dim py-4 text-center">No frame data available for static view.</p>
-    )
-  }
-  return (
-    <div className="overflow-x-auto pb-2">
-      <div className="flex items-center gap-2 min-w-max">
-        {frames.map((frame, i) => (
-          <Fragment key={i}>
-            <div className="flex flex-col items-center gap-1 shrink-0">
-              <div className="rounded-sm border border-border overflow-hidden" style={{ background: 'rgb(var(--color-surface))' }}>
-                <MechanismFrameInline frame={frame} width={300} height={200} showArrows />
-              </div>
-              <span className="font-mono text-xs text-dim">{frame.shortLabel}</span>
-              {frame.caption && (
-                <span className="font-sans text-xs text-secondary text-center max-w-[300px] leading-tight">
-                  {frame.caption}
-                </span>
-              )}
-            </div>
-            {i < frames.length - 1 && (
-              <span className="font-mono text-xl text-dim shrink-0 self-start mt-20">→</span>
-            )}
-          </Fragment>
-        ))}
-      </div>
-    </div>
-  )
+  return <MechanismFlatDiagram reaction={reaction} frameWidth={300} frameHeight={200} />
 }
 
 // ── View mode pill toggle ──────────────────────────────────────────────────────
@@ -771,19 +770,9 @@ function FramePlayer({ reaction, compact }: { reaction: ReactionDef; compact: bo
     <div className="flex flex-col gap-3">
       <ViewModePill />
       <div className="rounded-sm border border-border overflow-hidden bg-[rgb(var(--color-surface))]">
-        <AnimatePresence mode="wait">
-          <motion.svg
-            key={`${reaction.id}-f${frameIdx}`}
-            viewBox="0 0 700 320"
-            style={{ width: '100%', display: 'block' }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-          >
-            <FrameCanvas frame={frame} reactionId={reaction.id} />
-          </motion.svg>
-        </AnimatePresence>
+        <svg viewBox="0 0 700 320" style={{ width: '100%', display: 'block' }}>
+          <FrameCanvas frame={frame} />
+        </svg>
       </div>
 
       {/* Controls */}
