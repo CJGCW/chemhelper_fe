@@ -141,7 +141,7 @@ export default function VanDerWaalsTool() {
 
   const devColor = result
     ? Math.abs(result.deviationPct) < 2  ? 'rgb(var(--color-success))'
-    : Math.abs(result.deviationPct) < 10 ? '#fbbf24'
+    : Math.abs(result.deviationPct) < 10 ? 'rgb(var(--color-warning))'
     : 'rgb(var(--color-error))'
     : 'var(--c-halogen)'
 

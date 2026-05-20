@@ -389,7 +389,7 @@ export default function EmpiricalTool() {
                     )}
                   </div>
                   {result.molecularMassWarning && (
-                    <p className="font-mono text-xs text-amber-400 border border-amber-700/40 bg-amber-950/20 rounded-sm px-3 py-2">
+                    <p className="font-mono text-xs text-warning border border-warning/40 bg-warning/10 rounded-sm px-3 py-2">
                       ⚠ {result.molecularMassWarning}
                     </p>
                   )}
@@ -497,7 +497,7 @@ export default function EmpiricalTool() {
             {/* Error */}
             {combError && (
               <p className="font-mono text-xs border rounded-sm px-3 py-2"
-                style={{ color: 'rgb(var(--color-error))', borderColor: 'rgba(248,113,113,0.3)', background: 'rgba(248,113,113,0.05)' }}>
+                style={{ color: 'rgb(var(--color-error))', borderColor: 'rgb(var(--color-error) / 0.3)', background: 'rgb(var(--color-error) / 0.05)' }}>
                 ⚠ {combError}
               </p>
             )}

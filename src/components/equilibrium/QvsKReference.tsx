@@ -23,7 +23,7 @@ export default function QvsKReference() {
               shift: 'Forward (left \u2192 right)',
               reason: 'Too few products relative to equilibrium. The reaction produces more products until Q rises to equal K.',
               color: 'rgb(34 197 94)',
-              bg: 'rgba(34,197,94,0.05)',
+              bg: 'rgb(var(--color-success) / 0.05)',
             },
             {
               condition: 'Q = K',
@@ -37,7 +37,7 @@ export default function QvsKReference() {
               shift: 'Reverse (right \u2192 left)',
               reason: 'Too many products relative to equilibrium. The reaction consumes products until Q falls back to K.',
               color: 'rgb(239 68 68)',
-              bg: 'rgba(239,68,68,0.05)',
+              bg: 'rgb(var(--color-error) / 0.05)',
             },
           ].map(({ condition, shift, reason, color, bg }) => (
             <div key={condition} className="rounded-sm p-4 flex flex-col gap-1.5"

@@ -88,8 +88,8 @@ export default function BondEnthalpyReference() {
       </div>
 
       {/* Approximation note */}
-      <div className="rounded-sm border border-amber-500/20 bg-amber-500/5 p-4 flex flex-col gap-1">
-        <span className="font-mono text-xs text-amber-400/80 tracking-widest uppercase">Approximation Note</span>
+      <div className="rounded-sm border border-warning/20 bg-warning/5 p-4 flex flex-col gap-1">
+        <span className="font-mono text-xs text-warning/80 tracking-widest uppercase">Approximation Note</span>
         <p className="font-sans text-sm text-secondary leading-relaxed">
           Bond enthalpies are <em>average</em> values across many molecules. The calculated ΔH will differ from
           the exact thermodynamic value (from ΔHf° data) because actual bond strengths vary by molecular environment.

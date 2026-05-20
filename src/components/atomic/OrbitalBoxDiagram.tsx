@@ -35,7 +35,7 @@ function OrbBox({ up, down, unpaired }: { up: boolean; down: boolean; unpaired: 
     <div
       className={`w-10 h-8 border rounded-sm flex flex-row items-center justify-center gap-0.5 select-none transition-colors
         ${unpaired
-          ? 'border-amber-500/50 bg-amber-500/5'
+          ? 'border-warning/50 bg-warning/5'
           : up && down
             ? 'border-border bg-raised'
             : up || down
@@ -85,7 +85,7 @@ function SubshellRow({ sub }: { sub: SubshellFill }) {
           style={{
             background: 'color-mix(in srgb, #fbbf24 10%, transparent)',
             border: '1px solid color-mix(in srgb, #fbbf24 30%, transparent)',
-            color: '#fbbf24',
+            color: 'rgb(var(--color-warning))',
           }}>
           {halfFilled ? "Hund's — singly fill first" : "Hund's — pairing begins"}
         </span>
@@ -309,8 +309,8 @@ export default function OrbitalBoxDiagram() {
         <div className="flex items-center justify-between">
           <span className="font-mono text-xs text-secondary tracking-widest uppercase">Orbital Box Diagram</span>
           <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded-sm border border-amber-500/50 bg-amber-500/5" />
-            <span className="font-mono text-[9px] text-amber-400/80">Hund's rule active</span>
+            <div className="w-3 h-3 rounded-sm border border-warning/50 bg-warning/5" />
+            <span className="font-mono text-[9px] text-warning/80">Hund's rule active</span>
           </div>
         </div>
 
@@ -334,7 +334,7 @@ export default function OrbitalBoxDiagram() {
             Unpaired electrons: <span className="text-bright font-semibold">{totalUnpaired}</span>
           </span>
           <span className="text-dim">·</span>
-          <span className={`font-mono text-xs font-semibold ${totalUnpaired > 0 ? 'text-amber-400' : 'text-success'}`}>
+          <span className={`font-mono text-xs font-semibold ${totalUnpaired > 0 ? 'text-warning' : 'text-success'}`}>
             {totalUnpaired > 0 ? `Paramagnetic (${totalUnpaired} unpaired)` : 'Diamagnetic (all paired)'}
           </span>
         </div>

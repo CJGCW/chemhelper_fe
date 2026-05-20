@@ -584,6 +584,7 @@ const ORGANIC_GROUPS: NavTabGroup[] = [
       { tab: 'amino-acid-table', label: 'AA Table (20)', formula: '20'   },
       { tab: 'peptide-bonds',    label: 'Peptide Bonds', formula: 'C-N'  },
       { tab: 'zwitterions-pi',   label: 'Zwitterions/pI', formula: 'pI'  },
+      { tab: 'amino-acid-id',    label: 'AA ID Practice', formula: 'ID'  },
     ],
   },
   {

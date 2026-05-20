@@ -278,7 +278,7 @@ export default function SpectralUpload() {
 
       {error && (
         <p className="font-mono text-xs rounded-sm px-3 py-2 border"
-          style={{ color: 'rgb(var(--color-error))', background: 'rgba(248,113,113,0.08)', borderColor: 'rgba(248,113,113,0.2)' }}>
+          style={{ color: 'rgb(var(--color-error))', background: 'rgb(var(--color-error) / 0.08)', borderColor: 'rgb(var(--color-error) / 0.2)' }}>
           {error}
         </p>
       )}

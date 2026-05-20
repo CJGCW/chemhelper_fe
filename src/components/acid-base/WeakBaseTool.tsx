@@ -146,7 +146,7 @@ export default function WeakBaseTool() {
           </div>
 
           {!result.approximationValid && (
-            <p className="font-mono text-xs text-yellow-400">
+            <p className="font-mono text-xs text-warning">
               ⚠ 5% approximation failed — exact ICE table solution used.
             </p>
           )}

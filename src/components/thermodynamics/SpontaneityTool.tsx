@@ -13,8 +13,8 @@ const CLASS_LABEL: Record<string, string> = {
 const CLASS_COLOR: Record<string, string> = {
   always:  'text-success',
   never:   'text-error',
-  'low-T': 'text-amber-400',
-  'high-T':'text-amber-400',
+  'low-T': 'text-warning',
+  'high-T':'text-warning',
 }
 
 export default function SpontaneityTool() {

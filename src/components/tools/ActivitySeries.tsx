@@ -161,7 +161,7 @@ const HALOGEN_EXAMPLES: Partial<Record<string, string[]>> = {
 const WATER_RXN_META: Record<WaterRxn, { label: string; color: string }> = {
   cold_violent: { label: 'Cold water (violent)', color: 'rgb(var(--color-error))' },
   cold:         { label: 'Cold water',           color: 'rgb(var(--color-warning))' },
-  hot:          { label: 'Hot water / steam',    color: '#fbbf24' },
+  hot:          { label: 'Hot water / steam',    color: 'rgb(var(--color-warning))' },
   steam:        { label: 'Steam only',           color: '#a3e635' },
   acid_only:    { label: 'Acid only — not water', color: '#60a5fa' },
   none:         { label: 'No reaction',           color: '#6b7280' },
@@ -170,14 +170,14 @@ const WATER_RXN_META: Record<WaterRxn, { label: string; color: string }> = {
 function metalColor(metal: ActivityMetal, selected: ActivityMetal | null): string {
   if (!selected) return 'rgba(var(--overlay),0.72)'
   if (metal.symbol === selected.symbol) return 'var(--c-halogen)'
-  if (metal.rank < selected.rank) return '#fbbf24'   // amber  — more active, can displace selected
+  if (metal.rank < selected.rank) return 'rgb(var(--color-warning))'   // amber  — more active, can displace selected
   return 'rgb(var(--color-success))'                                    // green  — less active, selected can displace this
 }
 
 function halogenColor(h: ActivityHalogen, selected: ActivityHalogen | null): string {
   if (!selected) return 'rgba(var(--overlay),0.72)'
   if (h.formula === selected.formula) return 'var(--c-halogen)'
-  if (h.rank < selected.rank) return '#fbbf24'
+  if (h.rank < selected.rank) return 'rgb(var(--color-warning))'
   return 'rgb(var(--color-success))'
 }
 
@@ -278,7 +278,7 @@ function Legend({ show }: { show: boolean }) {
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-3 py-1">
       {[
-        { color: '#fbbf24', label: 'More active — displaces the selected' },
+        { color: 'rgb(var(--color-warning))', label: 'More active — displaces the selected' },
         { color: 'var(--c-halogen)', label: 'Selected' },
         { color: 'rgb(var(--color-success))', label: 'Less active — displaced by the selected' },
       ].map(e => (
@@ -317,7 +317,7 @@ function MetalDetail({ metal, all }: { metal: ActivityMetal; all: ActivityMetal[
               <div className="flex flex-wrap gap-1">
                 {canDisplace.map(m => (
                   <span key={m.symbol} className="font-mono text-xs px-1.5 py-0.5 rounded-sm border"
-                    style={{ borderColor: 'rgba(74,222,128,0.3)', color: 'rgb(var(--color-success))', background: 'rgba(74,222,128,0.08)' }}>
+                    style={{ borderColor: 'rgb(var(--color-success) / 0.3)', color: 'rgb(var(--color-success))', background: 'rgb(var(--color-success) / 0.08)' }}>
                     {m.symbol}
                   </span>
                 ))}
@@ -328,11 +328,11 @@ function MetalDetail({ metal, all }: { metal: ActivityMetal; all: ActivityMetal[
           )}
           {displacedBy.length > 0 && (
             <div className="flex items-start gap-2 mt-1">
-              <span className="font-mono text-xs shrink-0" style={{ color: '#fbbf24' }}>Displaced by</span>
+              <span className="font-mono text-xs shrink-0" style={{ color: 'rgb(var(--color-warning))' }}>Displaced by</span>
               <div className="flex flex-wrap gap-1">
                 {displacedBy.map(m => (
                   <span key={m.symbol} className="font-mono text-xs px-1.5 py-0.5 rounded-sm border"
-                    style={{ borderColor: 'rgba(251,191,36,0.3)', color: '#fbbf24', background: 'rgba(251,191,36,0.08)' }}>
+                    style={{ borderColor: 'rgb(var(--color-warning) / 0.3)', color: 'rgb(var(--color-warning))', background: 'rgb(var(--color-warning) / 0.08)' }}>
                     {m.symbol}
                   </span>
                 ))}
@@ -411,7 +411,7 @@ function HalogenDetail({ halogen, all }: { halogen: ActivityHalogen; all: Activi
               <div className="flex flex-wrap gap-1">
                 {canDisplace.map(h => (
                   <span key={h.formula} className="font-mono text-xs px-1.5 py-0.5 rounded-sm border"
-                    style={{ borderColor: 'rgba(74,222,128,0.3)', color: 'rgb(var(--color-success))', background: 'rgba(74,222,128,0.08)' }}>
+                    style={{ borderColor: 'rgb(var(--color-success) / 0.3)', color: 'rgb(var(--color-success))', background: 'rgb(var(--color-success) / 0.08)' }}>
                     {h.ion}
                   </span>
                 ))}
@@ -422,11 +422,11 @@ function HalogenDetail({ halogen, all }: { halogen: ActivityHalogen; all: Activi
           )}
           {displacedBy.length > 0 && (
             <div className="flex items-start gap-2 mt-1">
-              <span className="font-mono text-xs shrink-0" style={{ color: '#fbbf24' }}>Ion displaced by</span>
+              <span className="font-mono text-xs shrink-0" style={{ color: 'rgb(var(--color-warning))' }}>Ion displaced by</span>
               <div className="flex flex-wrap gap-1">
                 {displacedBy.map(h => (
                   <span key={h.formula} className="font-mono text-xs px-1.5 py-0.5 rounded-sm border"
-                    style={{ borderColor: 'rgba(251,191,36,0.3)', color: '#fbbf24', background: 'rgba(251,191,36,0.08)' }}>
+                    style={{ borderColor: 'rgb(var(--color-warning) / 0.3)', color: 'rgb(var(--color-warning))', background: 'rgb(var(--color-warning) / 0.08)' }}>
                     {h.formula}
                   </span>
                 ))}
@@ -509,8 +509,8 @@ function DisplacementChecker() {
             exit={{ opacity: 0 }} transition={{ duration: 0.15 }}
             className="flex items-start gap-3 rounded-sm border px-4 py-3"
             style={{
-              borderColor: displaces ? 'rgba(74,222,128,0.35)' : 'rgba(248,113,113,0.35)',
-              background:  displaces ? 'rgba(74,222,128,0.06)'  : 'rgba(248,113,113,0.06)',
+              borderColor: displaces ? 'rgb(var(--color-success) / 0.35)' : 'rgb(var(--color-error) / 0.35)',
+              background:  displaces ? 'rgb(var(--color-success) / 0.06)'  : 'rgb(var(--color-error) / 0.06)',
             }}
           >
             <span className="font-mono text-lg mt-0.5" style={{ color: displaces ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>

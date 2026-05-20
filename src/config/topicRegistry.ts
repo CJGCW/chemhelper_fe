@@ -391,7 +391,8 @@ export const TOPICS: Topic[] = [
   { id: 'organic-synthesis',     label: 'Synthesis / Retrosynthesis', sectionId: 'org-synthesis', tabs: ['ref-fgi', 'synthesis-fillin', 'synthesis-ordering', 'retro-disconnection', 'transform-drill', 'synthesis-problems'] },
 
   // ── Amino Acids & Peptides ────────────────────────────────────────────────
-  { id: 'amino-acids',           label: 'Amino Acids & Peptides',    sectionId: 'org-amino-acids',   tabs: ['ref-amino-acids', 'amino-acid-table', 'peptide-bonds', 'zwitterions-pi', 'amino-acid-problems'] },
+  { id: 'amino-acids',           label: 'Amino Acids & Peptides',    sectionId: 'org-amino-acids',   tabs: ['ref-amino-acids', 'amino-acid-table', 'peptide-bonds', 'ref-zwitterion-pi', 'zwitterions-pi', 'amino-acid-problems'] },
+  { id: 'amino-acid-id',        label: 'Amino Acid Identification', sectionId: 'org-amino-acids',   tabs: ['amino-acid-id', 'amino-acid-id-problems'] },
 
   // ── Lipids ────────────────────────────────────────────────────────────────
   { id: 'lipids',                label: 'Lipids',                    sectionId: 'org-lipids',        tabs: ['ref-fatty-acids', 'ref-triglycerides', 'ref-phospholipids', 'ref-terpenes-steroids'] },

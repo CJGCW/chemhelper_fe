@@ -287,7 +287,7 @@ function DiagramSVG({ data, onHover }: {
         <g>
           <circle cx={xS(subAtm)} cy={y_atm} r="4" fill="#fb923c" stroke="rgb(var(--color-base))" strokeWidth="1.5" />
           <text x={xS(subAtm) + 6} y={y_atm - 6}
-            fill="rgba(251,146,60,0.8)" fontSize="8.5" fontFamily="monospace">
+            fill="rgb(var(--color-warning) / 0.8)" fontSize="8.5" fontFamily="monospace">
             sub {subAtm.toFixed(1)}°C
           </text>
         </g>
@@ -307,7 +307,7 @@ function DiagramSVG({ data, onHover }: {
             </text>
             <text x={labelRight ? tx + 9 : tx - 9} y={ty + 5}
               textAnchor={labelRight ? 'start' : 'end'}
-              fill="rgba(251,191,36,0.65)" fontSize="8" fontFamily="monospace">
+              fill="rgb(var(--color-warning) / 0.65)" fontSize="8" fontFamily="monospace">
               {data.tp.T.toFixed(2)}°C · {fmtP(data.tp.P)}
             </text>
           </g>
@@ -357,7 +357,7 @@ function DiagramSVG({ data, onHover }: {
         { label: 'SOLID',         pos: data.labelSolid,     color: 'rgba(96,165,250,0.45)'  },
         { label: 'LIQUID',        pos: data.labelLiquid,    color: 'rgba(52,211,153,0.45)'  },
         { label: 'GAS',           pos: data.labelGas,       color: 'rgba(192,132,252,0.45)' },
-        { label: 'SUPERCRITICAL', pos: data.labelSupercrit, color: 'rgba(251,191,36,0.4)'   },
+        { label: 'SUPERCRITICAL', pos: data.labelSupercrit, color: 'rgb(var(--color-warning) / 0.4)'   },
       ] as const).map(({ label, pos, color }) => {
         const sx = xS(pos[0]), sy = yS(10 ** pos[1])
         if (sx < ML + 4 || sx > ML + PW - 4 || sy < MT + 4 || sy > MT + PH - 4) return null

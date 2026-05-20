@@ -77,7 +77,7 @@ const DIFFICULTIES: { id: Difficulty | 'all'; label: string }[] = [
 
 const DIFF_COLORS: Record<Difficulty, string> = {
   easy:   '#86efac',
-  medium: '#fbbf24',
+  medium: 'rgb(var(--color-warning))',
   hard:   'rgb(var(--color-error))',
 }
 
@@ -95,7 +95,7 @@ interface CoeffInputProps {
 function CoeffInput({ value, onChange, correct, disabled, inputRef, onEnter }: CoeffInputProps) {
   const borderColor =
     correct === true  ? 'rgba(52,211,153,0.7)'  :
-    correct === false ? 'rgba(248,113,113,0.7)'  :
+    correct === false ? 'rgb(var(--color-error) / 0.7)'  :
                         'rgba(var(--overlay),0.2)'
 
   return (

@@ -325,7 +325,7 @@ function ResultValue({ value, numUnit, denUnit }: { value: string; numUnit: stri
             <div className="flex items-baseline pb-[3px]">
               <AnimatedUnitTag unit={numUnit} cancelled={false} result />
             </div>
-            <div className="w-full h-px" style={{ background: 'rgba(74,222,128,0.4)' }} />
+            <div className="w-full h-px" style={{ background: 'rgb(var(--color-success) / 0.4)' }} />
             <div className="flex items-baseline pt-[3px]">
               <AnimatedUnitTag unit={denUnit} cancelled={false} result />
             </div>

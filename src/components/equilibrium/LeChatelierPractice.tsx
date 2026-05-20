@@ -177,12 +177,12 @@ export default function LeChatelierPractice({ allowCustom = true }: Props) {
 
                 if (checkState !== 'idle') {
                   if (isCorrectAnswer) {
-                    borderColor = 'rgba(34,197,94,0.5)'
-                    bgColor = 'rgba(34,197,94,0.05)'
+                    borderColor = 'rgb(var(--color-success) / 0.5)'
+                    bgColor = 'rgb(var(--color-success) / 0.05)'
                     textColor = 'rgb(34 197 94)'
                   } else if (isSelected && !isCorrectAnswer) {
-                    borderColor = 'rgba(239,68,68,0.5)'
-                    bgColor = 'rgba(239,68,68,0.05)'
+                    borderColor = 'rgb(var(--color-error) / 0.5)'
+                    bgColor = 'rgb(var(--color-error) / 0.05)'
                     textColor = 'rgb(239 68 68)'
                   }
                 }

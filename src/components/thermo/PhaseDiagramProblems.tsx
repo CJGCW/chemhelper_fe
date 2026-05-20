@@ -175,13 +175,13 @@ function InteractiveSVG({
             <circle cx={tpX} cy={tpY} r="5.5" fill="#fbbf24" stroke="rgb(var(--color-base))" strokeWidth="1.5" />
             <text x={labelRight ? tpX + 9 : tpX - 9} y={tpY - 6}
               textAnchor={labelRight ? 'start' : 'end'}
-              fill={isTarget ? '#fbbf24' : 'rgba(251,191,36,0.35)'}
+              fill={isTarget ? '#fbbf24' : 'rgb(var(--color-warning) / 0.35)'}
               fontSize="9" fontFamily="monospace" fontWeight="600">
               Triple Point
             </text>
             <text x={labelRight ? tpX + 9 : tpX - 9} y={tpY + 5}
               textAnchor={labelRight ? 'start' : 'end'}
-              fill={isTarget ? 'rgba(251,191,36,0.65)' : 'rgba(251,191,36,0.2)'}
+              fill={isTarget ? 'rgb(var(--color-warning) / 0.65)' : 'rgb(var(--color-warning) / 0.2)'}
               fontSize="8" fontFamily="monospace">
               {data.tp.T.toFixed(2)}°C
             </text>

@@ -425,7 +425,7 @@ function AtomSvg({ atom, allAtoms, bonds, hovered, onLP, onDelete }: {
           <g onClick={e => { e.stopPropagation(); onDelete() }} style={{ cursor: 'pointer' }}>
             <circle cx={atom.x+hw+9} cy={atom.y-hh} r={7} fill="#1c2030" stroke="#2d3555" strokeWidth={0.75}/>
             <text x={atom.x+hw+9} y={atom.y-hh} textAnchor="middle" dominantBaseline="central"
-              fill="rgba(248,113,113,0.85)" fontSize={8} fontFamily="system-ui" style={{ userSelect: 'none' }}>✕</text>
+              fill="rgb(var(--color-error) / 0.85)" fontSize={8} fontFamily="system-ui" style={{ userSelect: 'none' }}>✕</text>
           </g>
         </g>
       )}

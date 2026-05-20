@@ -88,6 +88,36 @@ export interface NumericTestProblem {
   }
 }
 
+// ── Visual payload (optional, carried by classification problems) ────────────
+
+export interface SpectrumPeak {
+  x: number
+  y: number
+  label: string
+  width: number
+  splitting?: string
+  integration?: number
+}
+
+export interface NuclearSpecies {
+  symbol: string
+  massNumber: number
+  atomicNumber: number
+}
+
+export interface RenderableSpeciesPayload {
+  smiles: string
+  label: string
+  showLonePairs?: boolean
+  catalyst?: boolean
+}
+
+export type VisualPayload =
+  | { kind: 'spectrum'; spectrumType: 'ir' | '1h_nmr' | '13c_nmr' | 'mass_spec'; peaks: SpectrumPeak[]; title?: string }
+  | { kind: 'reaction'; reactantSpecies: RenderableSpeciesPayload[]; conditionSpecies?: RenderableSpeciesPayload[]; productSpecies?: RenderableSpeciesPayload[] }
+  | { kind: 'nuclearEquation'; parent: NuclearSpecies; daughter?: NuclearSpecies }
+  | { kind: 'compound-display'; smiles: string; label?: string; width?: number; height?: number }
+
 export interface ClassificationTestProblem {
   kind: 'classification'
   data: {
@@ -95,6 +125,7 @@ export interface ClassificationTestProblem {
     answer:   string       // correct answer text (case-insensitive match)
     options?: string[]     // shown as hint chips in interactive + print
     steps?:   string[]
+    visual?:  VisualPayload
   }
 }
 

@@ -16,13 +16,13 @@ export default function SpontaneityReference() {
       dH: '< 0', dS: '< 0',
       result: 'Spontaneous at low T',
       note: 'Enthalpy dominates at low T. T < ΔH/ΔS (crossover)',
-      color: 'text-amber-400',
+      color: 'text-warning',
     },
     {
       dH: '> 0', dS: '> 0',
       result: 'Spontaneous at high T',
       note: 'Entropy dominates at high T. T > ΔH/ΔS (crossover)',
-      color: 'text-amber-400',
+      color: 'text-warning',
     },
   ]
 
@@ -99,8 +99,8 @@ export default function SpontaneityReference() {
           <p>1. Determine sign of ΔH° (exo: −, endo: +) and ΔS° (+ or −)</p>
           <p className="pl-4">├─ ΔH° &lt; 0, ΔS° &gt; 0 → <span className="text-success">Always spontaneous</span></p>
           <p className="pl-4">├─ ΔH° &gt; 0, ΔS° &lt; 0 → <span className="text-error">Never spontaneous</span></p>
-          <p className="pl-4">├─ ΔH° &lt; 0, ΔS° &lt; 0 → <span className="text-amber-400">Spontaneous at T &lt; Tc</span></p>
-          <p className="pl-4">└─ ΔH° &gt; 0, ΔS° &gt; 0 → <span className="text-amber-400">Spontaneous at T &gt; Tc</span></p>
+          <p className="pl-4">├─ ΔH° &lt; 0, ΔS° &lt; 0 → <span className="text-warning">Spontaneous at T &lt; Tc</span></p>
+          <p className="pl-4">└─ ΔH° &gt; 0, ΔS° &gt; 0 → <span className="text-warning">Spontaneous at T &gt; Tc</span></p>
           <p>2. If mixed signs: Tc = ΔH°(J) / ΔS° and check whether T is above or below Tc</p>
         </div>
       </section>

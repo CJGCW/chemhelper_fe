@@ -600,7 +600,7 @@ export default function UnitCellTool() {
               </div>
               {densityVerify !== null && (
                 <span className="font-mono text-sm font-medium self-end mb-1.5"
-                  style={{ color: densityVerify === 'correct' ? 'rgb(var(--color-success))' : densityVerify === 'sig_fig_warning' ? '#fbbf24' : 'rgb(var(--color-error))' }}>
+                  style={{ color: densityVerify === 'correct' ? 'rgb(var(--color-success))' : densityVerify === 'sig_fig_warning' ? 'rgb(var(--color-warning))' : 'rgb(var(--color-error))' }}>
                   {densityVerify === 'correct' ? '✓ Correct' : densityVerify === 'sig_fig_warning' ? '~ Check sig figs' : '✗ Incorrect'}
                 </span>
               )}

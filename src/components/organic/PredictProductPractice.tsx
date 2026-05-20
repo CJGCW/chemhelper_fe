@@ -147,7 +147,7 @@ export default function PredictProductPractice({ allowCustom = true }: Props) {
                 color: problem.difficulty === 'hard'
                   ? 'rgb(var(--color-error))'
                   : problem.difficulty === 'medium'
-                  ? '#fbbf24'
+                  ? 'rgb(var(--color-warning))'
                   : 'rgb(var(--color-success))',
               }}
             >

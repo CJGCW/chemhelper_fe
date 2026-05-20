@@ -7,7 +7,7 @@ import { usePreferencesStore } from '../../stores/preferencesStore'
 export type PrintGroup =
   | 'reference' | 'atomic' | 'structures' | 'molar'
   | 'stoichiometry' | 'gases' | 'redox' | 'thermochemistry'
-  | 'kinetics' | 'equilibrium' | 'acid_base' | 'buffers_ksp' | 'thermo_dynamics' | 'nuclear' | 'organic'
+  | 'kinetics' | 'equilibrium' | 'acid_base' | 'buffers_ksp' | 'thermo_dynamics' | 'nuclear' | 'organic' | 'spectroscopy'
 
 const GROUP_LABELS: Record<PrintGroup, string> = {
   reference:      'General Reference',
@@ -25,12 +25,13 @@ const GROUP_LABELS: Record<PrintGroup, string> = {
   thermo_dynamics:'Thermodynamics',
   nuclear:        'Nuclear Chemistry',
   organic:        'Organic Chemistry',
+  spectroscopy:   'Spectroscopy',
 }
 
 const GROUP_ORDER: PrintGroup[] = [
   'reference', 'atomic', 'structures', 'molar',
   'stoichiometry', 'gases', 'redox', 'thermochemistry',
-  'kinetics', 'equilibrium', 'acid_base', 'buffers_ksp', 'thermo_dynamics', 'nuclear', 'organic',
+  'kinetics', 'equilibrium', 'acid_base', 'buffers_ksp', 'thermo_dynamics', 'nuclear', 'organic', 'spectroscopy',
 ]
 
 export interface PrintTopicDef {
@@ -156,6 +157,24 @@ export const ALL_PRINT_TOPICS: PrintTopicDef[] = [
   { id: 'functional-groups',  group: 'organic', label: 'Functional Groups',    formula: '-OH, C=O', registryId: 'functional-group-id' },
   { id: 'organic-reactions',  group: 'organic', label: 'Organic Reactions',    formula: 'rxn type', registryId: 'organic-reactions'  },
   { id: 'fgi-table',          group: 'organic', label: 'FGI Table',            formula: 'A→B',      registryId: 'organic-synthesis'  },
+  // ── Organic — structure & stereochemistry ────────────────────────────────────
+  { id: 'stereochemistry',    group: 'organic', label: 'Stereochemistry',      formula: 'R/S, E/Z', registryId: 'stereochemistry'      },
+  { id: 'aromaticity',        group: 'organic', label: 'Aromaticity',          formula: '4n+2',     registryId: 'aromaticity'          },
+  { id: 'directing-effects',  group: 'organic', label: 'Directing Effects',    formula: 'EAS',      registryId: 'directing-effects'    },
+  { id: 'conjugated-diene',   group: 'organic', label: 'Conjugated Dienes',    formula: '1,2/1,4',  registryId: 'conjugated-diene'     },
+  { id: 'curved-arrows',      group: 'organic', label: 'Curved Arrows',        formula: 'e⁻ flow',  registryId: 'organic-curved-arrow' },
+  { id: 'chair-ref',          group: 'organic', label: 'Chair Conformations',  formula: 'ax/eq',    registryId: 'org-chair'            },
+  { id: 'newman-ref',         group: 'organic', label: 'Newman Projections',   formula: 'anti/gauche', registryId: 'org-newman'        },
+  { id: 'conformational-ref', group: 'organic', label: 'Conformational Analysis', formula: 'strain/ΔE', registryId: 'org-chair'        },
+  { id: 'acidity-factors',    group: 'organic', label: 'pKₐ & Acidity Factors', formula: 'pKa',    registryId: 'organic-acid-base'    },
+  // ── Organic — biomolecules ────────────────────────────────────────────────────
+  { id: 'amino-acids-ref',    group: 'organic', label: 'Amino Acids',          formula: 'pI/zwitterion', registryId: 'amino-acids'    },
+  { id: 'lipids-ref',         group: 'organic', label: 'Lipids',               formula: 'fatty/trigl',   registryId: 'lipids'         },
+  { id: 'nucleic-acids-ref',  group: 'organic', label: 'Nucleic Acids',        formula: 'A T G C U',     registryId: 'nucleic-acids'  },
+  // ── Spectroscopy ─────────────────────────────────────────────────────────────
+  { id: 'ir-table',    group: 'spectroscopy', label: 'IR Correlation Table', formula: 'cm⁻¹', registryId: 'spectroscopy-tool' },
+  { id: 'nmr-table',   group: 'spectroscopy', label: 'NMR Chemical Shifts',  formula: 'δ ppm', registryId: 'spectroscopy-tool' },
+  { id: 'ms-table',    group: 'spectroscopy', label: 'MS Fragmentation',     formula: 'm/z',   registryId: 'spectroscopy-tool' },
 ]
 
 // ── Checkbox button ───────────────────────────────────────────────────────────

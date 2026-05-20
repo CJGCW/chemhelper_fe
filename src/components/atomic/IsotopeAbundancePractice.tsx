@@ -44,7 +44,7 @@ export default function IsotopeAbundancePractice({ allowCustom = true }: Props) 
   const borderStyle = checked
     ? correct
       ? { borderColor: 'rgba(52,211,153,0.3)', background: 'rgba(6,78,59,0.12)' }
-      : { borderColor: 'rgba(248,113,113,0.3)', background: 'rgba(69,10,10,0.12)' }
+      : { borderColor: 'rgb(var(--color-error) / 0.3)', background: 'rgba(69,10,10,0.12)' }
     : { borderColor: 'rgb(var(--color-border))', background: 'rgb(var(--color-surface))' }
 
   const questionLines = problem.question.split('\n')

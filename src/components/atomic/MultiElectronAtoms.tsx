@@ -121,7 +121,7 @@ function ElementSelector({ z, onChange }: { z: number; onChange: (z: number) => 
       </div>
       {EXCEPTIONS[z] && (
         <span className="font-mono text-[10px] px-2 py-0.5 rounded-sm"
-          style={{ background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.3)', color: '#fbbf24' }}>
+          style={{ background: 'rgb(var(--color-warning) / 0.1)', border: '1px solid rgb(var(--color-warning) / 0.3)', color: 'rgb(var(--color-warning))' }}>
           Aufbau exception
         </span>
       )}

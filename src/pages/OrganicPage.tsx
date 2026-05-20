@@ -54,6 +54,8 @@ import AminoAcidSynthesis from '../components/organic/AminoAcidSynthesis'
 import AminoAcidTable from '../components/organic/AminoAcidTable'
 import PeptideBondReference from '../components/organic/PeptideBondReference'
 import ZwitterionAndPI from '../components/organic/ZwitterionAndPI'
+import AminoAcidIdentificationPractice from '../components/organic/AminoAcidIdentificationPractice'
+import ZwitterionReference from '../components/organic/ZwitterionReference'
 import FattyAcidsReference from '../components/organic/FattyAcidsReference'
 import TriglyceridesReference from '../components/organic/TriglyceridesReference'
 import PhospholipidsReference from '../components/organic/PhospholipidsReference'
@@ -99,7 +101,8 @@ type Tab =
   | 'ref-fgi' | 'synthesis-fillin' | 'synthesis-ordering' | 'retro-disconnection' | 'transform-drill'
   | 'synthesis-problems'
   // amino acid tabs
-  | 'ref-amino-acids' | 'amino-acid-table' | 'peptide-bonds' | 'zwitterions-pi' | 'amino-acid-problems'
+  | 'ref-amino-acids' | 'amino-acid-table' | 'peptide-bonds' | 'ref-zwitterion-pi' | 'zwitterions-pi' | 'amino-acid-problems'
+  | 'amino-acid-id' | 'amino-acid-id-problems'
   // lipid tabs
   | 'ref-fatty-acids' | 'ref-triglycerides' | 'ref-phospholipids' | 'ref-terpenes-steroids'
   | 'lipids-practice' | 'lipids-problems'
@@ -195,9 +198,10 @@ const REFERENCE_GROUPS: TabGroup[] = [
     id: 'rg10',
     label: 'Amino Acids',
     pills: [
-      { id: 'ref-amino-acids',  label: 'AA Synthesis',  formula: 'AA'   },
-      { id: 'amino-acid-table', label: 'AA Table',       formula: '20'   },
-      { id: 'peptide-bonds',    label: 'Peptide Bonds',  formula: 'C-N'  },
+      { id: 'ref-amino-acids',    label: 'AA Synthesis',   formula: 'AA'  },
+      { id: 'amino-acid-table',  label: 'AA Table',        formula: '20'  },
+      { id: 'peptide-bonds',     label: 'Peptide Bonds',   formula: 'C-N' },
+      { id: 'ref-zwitterion-pi', label: 'Zwitterions & pI', formula: 'pI' },
     ],
   },
   {
@@ -317,7 +321,8 @@ const PRACTICE_GROUPS: TabGroup[] = [
     id: 'pg10',
     label: 'Amino Acids',
     pills: [
-      { id: 'zwitterions-pi', label: 'Zwitterions & pI', formula: 'pI' },
+      { id: 'zwitterions-pi',  label: 'Zwitterions & pI',      formula: 'pI'    },
+      { id: 'amino-acid-id',   label: 'Amino Acid ID',         formula: 'ID'    },
     ],
   },
   {
@@ -431,7 +436,8 @@ const PROBLEMS_GROUPS: TabGroup[] = [
     id: 'pp10',
     label: 'Amino Acids',
     pills: [
-      { id: 'amino-acid-problems', label: 'Amino Acids', formula: 'pI?' },
+      { id: 'amino-acid-problems',     label: 'Amino Acids', formula: 'pI?'  },
+      { id: 'amino-acid-id-problems',  label: 'AA ID',       formula: 'ID?'  },
     ],
   },
   {
@@ -490,7 +496,8 @@ const TAB_TO_TOPIC: Partial<Record<Tab, string>> = {
   'sugar-reactions':    'carbohydrates',      'sugars-problems':    'carbohydrates',
   'ref-fgi':            'organic-synthesis',  'synthesis-fillin':   'organic-synthesis',  'synthesis-ordering': 'organic-synthesis',
   'retro-disconnection': 'organic-synthesis', 'transform-drill':   'organic-synthesis',  'synthesis-problems': 'organic-synthesis',
-  'ref-amino-acids': 'amino-acids', 'amino-acid-table': 'amino-acids', 'peptide-bonds': 'amino-acids', 'zwitterions-pi': 'amino-acids', 'amino-acid-problems': 'amino-acids',
+  'ref-amino-acids': 'amino-acids', 'amino-acid-table': 'amino-acids', 'peptide-bonds': 'amino-acids', 'ref-zwitterion-pi': 'amino-acids', 'zwitterions-pi': 'amino-acids', 'amino-acid-problems': 'amino-acids',
+  'amino-acid-id': 'amino-acid-id', 'amino-acid-id-problems': 'amino-acid-id',
   'ref-fatty-acids': 'lipids', 'ref-triglycerides': 'lipids', 'ref-phospholipids': 'lipids', 'ref-terpenes-steroids': 'lipids',
   'lipids-practice': 'lipids', 'lipids-problems': 'lipids',
   'ref-polymerization': 'polymers', 'ref-common-polymers': 'polymers', 'polymerization-practice': 'polymers', 'polymerization-problems': 'polymers',
@@ -523,6 +530,7 @@ const TOPIC_MODE_TAB: Record<string, Partial<Record<Mode, Tab>>> = {
   'carbohydrates':          { reference: 'ref-sugars',        practice: 'fischer-haworth',        problems: 'sugars-problems'         },
   'organic-synthesis':      { reference: 'ref-fgi',           practice: 'synthesis-fillin',       problems: 'synthesis-problems'      },
   'amino-acids':            { reference: 'ref-amino-acids',   practice: 'zwitterions-pi',         problems: 'amino-acid-problems'     },
+  'amino-acid-id':          { practice: 'amino-acid-id',      problems: 'amino-acid-id-problems'  },
   'lipids':                 { reference: 'ref-fatty-acids',   practice: 'lipids-practice',          problems: 'lipids-problems'            },
   'polymers':               { reference: 'ref-polymerization', practice: 'polymerization-practice', problems: 'polymerization-problems' },
   'nucleic-acids':          { reference: 'ref-nucleobases',   practice: 'nucleic-acid-practice',    problems: 'nucleic-acid-problems'    },
@@ -1165,9 +1173,19 @@ export default function OrganicPage() {
             <PeptideBondReference />
           </motion.div>
         )}
+        {activeTab === 'ref-zwitterion-pi' && (
+          <motion.div key="ref-zwitterion-pi" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <ZwitterionReference />
+          </motion.div>
+        )}
         {(activeTab === 'zwitterions-pi' || activeTab === 'amino-acid-problems') && (
           <motion.div key={activeTab} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
             <ZwitterionAndPI allowCustom={activeTab === 'zwitterions-pi'} />
+          </motion.div>
+        )}
+        {(activeTab === 'amino-acid-id' || activeTab === 'amino-acid-id-problems') && (
+          <motion.div key={activeTab} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+            <AminoAcidIdentificationPractice allowCustom={activeTab === 'amino-acid-id-problems'} />
           </motion.div>
         )}
 

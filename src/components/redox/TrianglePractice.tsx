@@ -156,7 +156,7 @@ export default function TrianglePractice({ allowCustom = true }: Props) {
         </div>
 
         {checked && showAnswers && (
-          <p className="font-mono text-xs" style={{ color: '#fbbf24' }}>
+          <p className="font-mono text-xs" style={{ color: 'rgb(var(--color-warning))' }}>
             Answer: {problem.answerDisplay}
           </p>
         )}

@@ -36,7 +36,8 @@ import { checkProfileAnswer } from '../../utils/reactionProfilePractice'
 import type { ProfileProblem } from '../../utils/reactionProfilePractice'
 import { checkConcentrationAnswer, fmtICECell } from '../../utils/equilibriumPractice'
 import type { ICERowKey as RowKey } from '../../utils/equilibriumPractice'
-import type { GeneratedTest, TestQuestion, ICETableTestProblem } from './testTypes'
+import type { GeneratedTest, TestQuestion, ICETableTestProblem, VisualPayload } from './testTypes'
+import QuestionVisual from './QuestionVisual'
 
 // ── Answer checking ───────────────────────────────────────────────────────────
 
@@ -163,6 +164,76 @@ function checkQuestion(q: TestQuestion, answer: string): Result {
 }
 
 // ── Print window helpers ──────────────────────────────────────────────────────
+
+function buildVisualHtml(visual: VisualPayload): string {
+  if (visual.kind === 'spectrum') {
+    const W = 440, H = 120
+    const ML = 32, MR = 10, MT = 8, MB = 28
+    const PW = W - ML - MR, PH = H - MT - MB
+
+    const peaks = visual.peaks
+    if (!peaks.length) return ''
+
+    const xMin = Math.min(...peaks.map(p => p.x))
+    const xMax = Math.max(...peaks.map(p => p.x))
+    const xRange = xMax - xMin || 1
+    const xPad = xRange * 0.1
+
+    // IR peaks: higher wavenumber = left side (inverted axis)
+    const isIR = visual.spectrumType === 'ir'
+    const xScale = (v: number) =>
+      isIR
+        ? ML + PW - ((v - (xMin - xPad)) / (xRange + 2 * xPad)) * PW
+        : ML + ((v - (xMin - xPad)) / (xRange + 2 * xPad)) * PW
+
+    const peakBars = peaks.map(p => {
+      const px = xScale(p.x).toFixed(1)
+      const barH = PH * Math.min(1, p.y / 100)
+      const barY = (MT + PH - barH).toFixed(1)
+      const labelY = (MT + PH + 11).toFixed(1)
+      return `<line x1="${px}" y1="${barY}" x2="${px}" y2="${(MT + PH).toFixed(1)}" stroke="#333" stroke-width="1.5"/>` +
+        `<text x="${px}" y="${labelY}" text-anchor="middle" font-size="6.5" font-family="monospace" fill="#555">${p.x}</text>`
+    }).join('')
+
+    const xLabel = visual.spectrumType === 'ir' ? 'cm⁻¹' : visual.spectrumType === 'mass_spec' ? 'm/z' : 'ppm'
+    const axisLabel = `<text x="${(ML + PW / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle" font-size="7.5" font-family="monospace" fill="#666">${xLabel}</text>`
+
+    const titleHtml = visual.title
+      ? `<p style="margin:0 0 3px 0;font-family:monospace;font-size:9pt;color:#555;">${visual.title} — ${visual.spectrumType.toUpperCase()} Spectrum</p>`
+      : ''
+
+    return `<div style="margin:8px 0 6px 22px;">${titleHtml}<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:block;border:1px solid #ccc;background:#fafafa;">
+      <line x1="${ML}" y1="${MT}" x2="${ML}" y2="${MT + PH}" stroke="#666" stroke-width="1"/>
+      <line x1="${ML}" y1="${MT + PH}" x2="${ML + PW}" y2="${MT + PH}" stroke="#666" stroke-width="1"/>
+      ${peakBars}${axisLabel}
+    </svg></div>`
+  }
+
+  if (visual.kind === 'reaction') {
+    const reactantLabels = visual.reactantSpecies.map(s => s.label).join(' + ')
+    const conditionLabels = visual.conditionSpecies?.map(s => s.label).join(', ') ?? ''
+    const productLabels = visual.productSpecies?.map(s => s.label).join(' + ') ?? '?'
+    const condHtml = conditionLabels
+      ? `<span style="font-size:8pt;color:#666;display:block;text-align:center;">${conditionLabels}</span>`
+      : ''
+    return `<div style="margin:8px 0 6px 22px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:monospace;font-size:10pt;">
+      <span>${reactantLabels}</span>
+      <span style="display:flex;flex-direction:column;align-items:center;min-width:60px;">${condHtml}<span>→</span></span>
+      <span>${productLabels}</span>
+    </div>`
+  }
+
+  if (visual.kind === 'nuclearEquation') {
+    const fmt = (s: { massNumber: number; atomicNumber: number; symbol: string }) =>
+      `<sup>${s.massNumber}</sup><sub>${s.atomicNumber}</sub>${s.symbol}`
+    const daughterHtml = visual.daughter ? fmt(visual.daughter) : '?'
+    return `<div style="margin:8px 0 6px 22px;font-family:monospace;font-size:14pt;">
+      ${fmt(visual.parent)} → ${daughterHtml} + ?
+    </div>`
+  }
+
+  return ''
+}
 
 function buildQuestionHtml(q: TestQuestion): string {
   const header = `<div class="q-header"><span class="q-num">${q.id}.</span><span class="q-topic">${q.topic}</span></div>`
@@ -526,12 +597,13 @@ function buildQuestionHtml(q: TestQuestion): string {
   }
 
   if (q.problem.kind === 'classification') {
-    const { question, options } = q.problem.data
+    const { question, options, visual } = q.problem.data
     const textHtml = question.split('\n').map(l => `<p class="q-text">${l}</p>`).join('')
     const optionsHtml = options?.length
       ? `<div class="given">${options.map(o => `<span class="chip">${o}</span>`).join('')}</div>`
       : ''
-    return `<div class="question">${header}${textHtml}${optionsHtml}<div class="answer-row"><span class="solve-for">Answer:</span><span class="answer-line"></span></div></div>`
+    const visualHtml = visual ? buildVisualHtml(visual) : ''
+    return `<div class="question">${header}${visualHtml}${textHtml}${optionsHtml}<div class="answer-row"><span class="solve-for">Answer:</span><span class="answer-line"></span></div></div>`
   }
 
   // molar
@@ -1163,7 +1235,7 @@ export default function TestSheet({ test, onBack }: Props) {
 
     const bgClass = result === 'correct' ? 'feedback-success'
       : (result === 'wrong' || result === 'wrong_sf') ? 'feedback-error'
-      : result === 'blank' ? 'border-amber-800/40 bg-amber-950/10'
+      : result === 'blank' ? 'border-warning/40 bg-warning/5'
       : 'border-border bg-surface'
 
     const sfProblem   = q.problem.kind === 'sigfig'     ? q.problem.data : null
@@ -1288,6 +1360,7 @@ export default function TestSheet({ test, onBack }: Props) {
         </div>
       : (numericP || classifP)
       ? <div className="pl-8 flex flex-col gap-1">
+          {classifP?.visual && <QuestionVisual visual={classifP.visual} />}
           {(numericP?.question ?? classifP!.question).split('\n').map((line, i) => (
             <p key={i} className="font-sans text-base text-bright leading-relaxed">{line}</p>
           ))}

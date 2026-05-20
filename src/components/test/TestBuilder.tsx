@@ -67,10 +67,11 @@ import {
   generatePolymerizationProblem, generateConjugatedDieneProblem, generateFormalChargeProblem,
   generateResonanceProblem, generateMostAcidicHProblem, generateRetroProblem,
   generateSynthesisOrderProblem, generateAminoAcidPIProblem,
+  generateAminoAcidNameAsOrgText, generateAminoAcidClassAsOrgText,
   generateIRProblem, generateNMRProblem, generateMSProblem,
 } from '../../utils/organicTestGenerators'
 import { usePreferencesStore } from '../../stores/preferencesStore'
-import type { GeneratedTest, TestQuestion } from './testTypes'
+import type { GeneratedTest, TestQuestion, VisualPayload } from './testTypes'
 
 // ── Topic definitions ─────────────────────────────────────────────────────────
 
@@ -88,7 +89,8 @@ type TopicKind  = 'molar' | 'sigfig' | 'empirical' | 'conversion' | 'atomic' | '
   | 'chair' | 'newman' | 'hybridization' | 'aromaticity' | 'rs_assignment' | 'ez_assignment'
   | 'stereoisomer' | 'conformational' | 'curved_arrows' | 'polymerization' | 'conjugated_diene'
   | 'formal_charge_org' | 'resonance' | 'most_acidic_h' | 'retro_disconn' | 'synthesis_order'
-  | 'amino_acid_pi' | 'acidity_ranking' | 'cross_coupling' | 'lipid_id' | 'nucleic_acid'
+  | 'amino_acid_pi' | 'amino_acid_name' | 'amino_acid_class'
+  | 'acidity_ranking' | 'cross_coupling' | 'lipid_id' | 'nucleic_acid'
   | 'ir_interp' | 'nmr_interp' | 'ms_interp'
 type TopicGroup = 'core' | 'atomic_molecular' | 'structures' | 'molar_solutions' | 'stoichiometry' | 'gases' | 'redox' | 'thermochemistry'
   | 'kinetics' | 'equilibrium' | 'acid_base' | 'buffers_ksp' | 'thermo_dynamics' | 'nuclear' | 'organic' | 'spectroscopy'
@@ -269,6 +271,8 @@ const ALL_TOPICS: TopicDef[] = [
   { id: 'retro-disconn',    kind: 'retro_disconn',    group: 'organic', label: 'Retro Disconnection',        formula: 'A ⇒ B',       registryId: 'organic-synthesis'    },
   { id: 'synthesis-order',  kind: 'synthesis_order',  group: 'organic', label: 'Synthesis Ordering',        formula: 'step order',   registryId: 'organic-synthesis'    },
   { id: 'amino-acid-pi',    kind: 'amino_acid_pi',    group: 'organic', label: 'Amino Acid pI / Zwitterion', formula: 'pI calc',    registryId: 'amino-acids'          },
+  { id: 'amino-acid-name',  kind: 'amino_acid_name',  group: 'organic', label: 'Amino Acid Name',            formula: 'name',         registryId: 'amino-acid-id'        },
+  { id: 'amino-acid-class', kind: 'amino_acid_class', group: 'organic', label: 'Amino Acid Class',           formula: 'class?',       registryId: 'amino-acid-id'        },
   { id: 'acidity-ranking',  kind: 'acidity_ranking',  group: 'organic', label: 'Acidity Ranking',           formula: 'pKa order',    registryId: 'org-acid-base'        },
   { id: 'cross-coupling',   kind: 'cross_coupling',   group: 'organic', label: 'Cross-Coupling Reactions',  formula: 'Suzuki/Heck',  registryId: 'reaction-mechanisms'  },
   { id: 'lipid-id',         kind: 'lipid_id',         group: 'organic', label: 'Lipid Identification',      formula: 'fatty acid/trigl', registryId: 'lipids'           },
@@ -438,8 +442,8 @@ export default function TestBuilder({ onGenerate }: Props) {
       function num(question: string, answer: number, unit: string, tolerance: number, steps?: string[]) {
         return { topic: t.label, topicFormula: t.formula, problem: { kind: 'numeric' as const, data: { question, answer, unit, tolerance, steps } } }
       }
-      function cls(question: string, answer: string, options?: string[], steps?: string[]) {
-        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'classification' as const, data: { question, answer, options, steps } } }
+      function cls(question: string, answer: string, options?: string[], steps?: string[], visual?: VisualPayload) {
+        return { topic: t.label, topicFormula: t.formula, problem: { kind: 'classification' as const, data: { question, answer, options, steps, visual } } }
       }
 
       if (t.kind === 'rate_law') {
@@ -587,8 +591,15 @@ export default function TestBuilder({ onGenerate }: Props) {
       }
       if (t.kind === 'nuclear_decay') {
         const p = generateDecayProblem()
-        const q = `${p.parentSymbol} (Z=${p.parentZ}, A=${p.parentA}) undergoes ${p.decayType} decay.\nWhat is the mass number A of the daughter nuclide?`
-        return num(q, p.answerA, '', 0.1, p.steps)
+        const nucVisual: VisualPayload = {
+          kind: 'nuclearEquation',
+          parent: { symbol: p.parentSymbol, massNumber: p.parentA, atomicNumber: p.parentZ },
+          daughter: { symbol: p.answerSymbol, massNumber: p.answerA, atomicNumber: p.answerZ },
+        }
+        return cls(
+          `What is the daughter nuclide formed? Give mass number A.`,
+          String(p.answerA), undefined, p.steps, nucVisual
+        )
       }
       if (t.kind === 'nuclear_halflife') {
         const p = generateHalfLifeProblem()
@@ -651,26 +662,36 @@ export default function TestBuilder({ onGenerate }: Props) {
         const wrongTypes = allTypes.filter(x => x !== r.reactionType)
         const options = [r.reactionType, ...wrongTypes.sort(() => Math.random() - 0.5).slice(0, 3)]
           .sort(() => Math.random() - 0.5)
+        const rxnVisual: VisualPayload | undefined = r.reactantSpecies?.species?.length
+          ? { kind: 'reaction', reactantSpecies: r.reactantSpecies.species, conditionSpecies: r.conditionSpecies?.species, productSpecies: r.productSpecies?.species }
+          : undefined
         return cls(
-          `Reactants: ${r.reactants}\nConditions: ${r.conditions}\nProduct: ${r.products}\n\nClassify the mechanism type.`,
-          r.reactionType, options, [r.name + ': ' + r.summary]
+          `Classify the mechanism type for this reaction.`,
+          r.reactionType, options, [r.name + ': ' + r.summary], rxnVisual
         )
       }
 
       if (t.kind === 'mechanism_product') {
         const r = ALL_REACTIONS[Math.floor(Math.random() * ALL_REACTIONS.length)]
+        const rxnVisual: VisualPayload | undefined = r.reactantSpecies?.species?.length
+          ? { kind: 'reaction', reactantSpecies: r.reactantSpecies.species, conditionSpecies: r.conditionSpecies?.species }
+          : undefined
         return cls(
-          `What is the major product when ${r.reactants} reacts under the following conditions?\nConditions: ${r.conditions}`,
+          `What is the major product of this reaction?`,
           r.products, undefined,
-          [r.name + ': ' + r.summary, ...(r.importantInfo ?? []).slice(0, 2)]
+          [r.name + ': ' + r.summary, ...(r.importantInfo ?? []).slice(0, 2)],
+          rxnVisual
         )
       }
 
       if (t.kind === 'mechanism_reagent') {
         const r = ALL_REACTIONS[Math.floor(Math.random() * ALL_REACTIONS.length)]
+        const rxnVisual: VisualPayload | undefined = r.reactantSpecies?.species?.length
+          ? { kind: 'reaction', reactantSpecies: r.reactantSpecies.species, productSpecies: r.productSpecies?.species }
+          : undefined
         return cls(
-          `What reagents/conditions convert ${r.reactants} to ${r.products}?`,
-          r.conditions, undefined, [r.name + ': ' + r.summary]
+          `What reagents/conditions are needed for this transformation?`,
+          r.conditions, undefined, [r.name + ': ' + r.summary], rxnVisual
         )
       }
 
@@ -685,9 +706,12 @@ export default function TestBuilder({ onGenerate }: Props) {
           : ['syn', 'anti', 'inversion', 'retention', 'racemization']
         const options = [correctAnswer, ...pool.filter(x => x !== correctAnswer).slice(0, 3)]
           .sort(() => Math.random() - 0.5)
+        const rxnVisual: VisualPayload | undefined = r.reactantSpecies?.species?.length
+          ? { kind: 'reaction', reactantSpecies: r.reactantSpecies.species, conditionSpecies: r.conditionSpecies?.species, productSpecies: r.productSpecies?.species }
+          : undefined
         return cls(
-          `For the reaction: ${r.reactants} → ${r.products}\nConditions: ${r.conditions}\n\nWhat is the ${aspect} of this reaction?`,
-          correctAnswer, options, [r.name + ': ' + r.summary]
+          `What is the ${aspect} of this reaction?`,
+          correctAnswer, options, [r.name + ': ' + r.summary], rxnVisual
         )
       }
 
@@ -725,8 +749,8 @@ export default function TestBuilder({ onGenerate }: Props) {
       }
 
       // ── New organic generators via organicTestGenerators.ts ──────────────────
-      function orgText(p: { question: string; answer: string; options: string[]; explanation: string }) {
-        return cls(p.question, p.answer, p.options, [p.explanation])
+      function orgText(p: { question: string; answer: string; options: string[]; explanation: string; visual?: VisualPayload }) {
+        return cls(p.question, p.answer, p.options, [p.explanation], p.visual)
       }
 
       if (t.kind === 'chair')             return orgText(generateChairProblem())
@@ -746,6 +770,8 @@ export default function TestBuilder({ onGenerate }: Props) {
       if (t.kind === 'retro_disconn')     return orgText(generateRetroProblem())
       if (t.kind === 'synthesis_order')   return orgText(generateSynthesisOrderProblem())
       if (t.kind === 'amino_acid_pi')     return orgText(generateAminoAcidPIProblem())
+      if (t.kind === 'amino_acid_name')   return orgText(generateAminoAcidNameAsOrgText())
+      if (t.kind === 'amino_acid_class')  return orgText(generateAminoAcidClassAsOrgText())
       if (t.kind === 'ir_interp')         return orgText(generateIRProblem())
       if (t.kind === 'nmr_interp')        return orgText(generateNMRProblem())
       if (t.kind === 'ms_interp')         return orgText(generateMSProblem())

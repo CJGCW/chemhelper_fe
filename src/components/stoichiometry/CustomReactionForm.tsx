@@ -166,19 +166,19 @@ export default function CustomReactionForm({ onApply }: Props) {
                   <div className={`rounded-sm border px-3 py-2.5 flex flex-col gap-2 ${
                     validationResult.status === 'balanced'   ? 'feedback-success'
                     : validationResult.status === 'impossible' ? 'feedback-error'
-                    : 'border-amber-700/50 bg-amber-950/20'
+                    : 'border-warning/50 bg-warning/10'
                   }`}>
                     <p className={`font-mono text-xs ${
                       validationResult.status === 'balanced'   ? 'text-success'
                       : validationResult.status === 'impossible' ? 'text-error'
-                      : 'text-amber-400'
+                      : 'text-warning'
                     }`}>
                       {validationResult.status === 'balanced' ? '✓ ' : '✗ '}{validationResult.message}
                     </p>
                     {validationResult.atomCounts && (
                       <div className="flex flex-wrap gap-x-4 gap-y-1">
                         {validationResult.atomCounts.map(({ elem, left, right }) => (
-                          <span key={elem} className={`font-mono text-xs ${left === right ? 'text-secondary' : 'text-amber-400'}`}>
+                          <span key={elem} className={`font-mono text-xs ${left === right ? 'text-secondary' : 'text-warning'}`}>
                             {elem}: {left} → {right}{left !== right ? ' ✗' : ''}
                           </span>
                         ))}

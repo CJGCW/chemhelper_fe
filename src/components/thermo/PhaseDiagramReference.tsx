@@ -45,7 +45,7 @@ function PhaseDiagramSVG() {
       {/* Liquid region */}
       <polygon
         points={`${x(tp.t)},${y(tp.p)} ${vaporization.map(([t,p]) => `${x(t)},${y(p)}`).join(' ')} ${x(1)},${y(cp.p+0.1)} ${fusion.map(([t,p]) => `${x(t)},${y(p)}`).reverse().join(' ')}`}
-        fill="rgba(251,146,60,0.07)" />
+        fill="rgb(var(--color-warning) / 0.07)" />
 
       {/* 1 atm dashed line */}
       <line x1={ML} y1={y(atm1)} x2={ML + PW} y2={y(atm1)}
@@ -83,7 +83,7 @@ function PhaseDiagramSVG() {
         SOLID
       </text>
       <text x={x(0.55)} y={y(0.55)} textAnchor="middle"
-        fill="rgba(251,146,60,0.8)" fontSize="12" fontFamily="system-ui" fontWeight="600">
+        fill="rgb(var(--color-warning) / 0.8)" fontSize="12" fontFamily="system-ui" fontWeight="600">
         LIQUID
       </text>
       <text x={x(0.65)} y={y(0.12)} textAnchor="middle"

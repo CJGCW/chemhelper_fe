@@ -50,7 +50,7 @@ function SubshellGroup({ sub, active }: { sub: SubshellFill; active?: boolean })
             style={{
               background: 'rgba(245,158,11,0.12)',
               border: '1px solid rgba(245,158,11,0.3)',
-              color: '#fbbf24',
+              color: 'rgb(var(--color-warning))',
             }}>
             {sub.electrons <= sub.orbitals ? "Hund's" : 'pairing'}
           </span>

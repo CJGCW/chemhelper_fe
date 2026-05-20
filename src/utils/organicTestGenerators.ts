@@ -14,7 +14,7 @@ function pick<T>(arr: T[]): T {
 
 // ── Chair Conformations ─────────────────────────────────────────────────────
 
-const CHAIR_POOL: OrgTextProblem[] = [
+export const CHAIR_POOL: OrgTextProblem[] = [
   {
     question: 'A cyclohexane ring has CH₃ in the axial position. Which statement is correct?',
     answer: 'The equatorial conformer is more stable by ~7.6 kJ/mol',
@@ -57,7 +57,7 @@ export function generateChairProblem(): OrgTextProblem { return pick(CHAIR_POOL)
 
 // ── Newman Projections ──────────────────────────────────────────────────────
 
-const NEWMAN_POOL: OrgTextProblem[] = [
+export const NEWMAN_POOL: OrgTextProblem[] = [
   {
     question: 'In a Newman projection of butane with φ = 180°, the two CH₃ groups are:',
     answer: 'Anti — most stable, 0 kJ/mol relative energy',
@@ -100,7 +100,7 @@ export function generateNewmanProblem(): OrgTextProblem { return pick(NEWMAN_POO
 
 // ── Hybridization ──────────────────────────────────────────────────────────
 
-const HYBRIDIZATION_POOL: OrgTextProblem[] = [
+export const HYBRIDIZATION_POOL: OrgTextProblem[] = [
   { question: 'What is the hybridization of the carbon in CH₄?', answer: 'sp³', options: ['sp³', 'sp²', 'sp', 'sp³d'], explanation: 'Methane C has 4 single bonds, 0 lone pairs → 4 electron groups → sp³.' },
   { question: 'What is the hybridization of the carbonyl carbon (C=O) in formaldehyde (H₂C=O)?', answer: 'sp²', options: ['sp²', 'sp³', 'sp', 'sp³d'], explanation: 'The carbonyl C has a double bond to O and two single bonds to H → 3 electron groups → sp².' },
   { question: 'What is the hybridization of carbon in acetylene (HC≡CH)?', answer: 'sp', options: ['sp', 'sp²', 'sp³', 'sp³d'], explanation: 'A triple bond + one single bond = 2 electron groups → sp hybridization; angle = 180°.' },
@@ -115,7 +115,7 @@ export function generateHybridizationProblem(): OrgTextProblem { return pick(HYB
 
 // ── Aromaticity ─────────────────────────────────────────────────────────────
 
-const AROMATICITY_POOL: OrgTextProblem[] = [
+export const AROMATICITY_POOL: OrgTextProblem[] = [
   { question: 'Benzene (6π electrons). Classify:', answer: 'Aromatic', options: ['Aromatic', 'Antiaromatic', 'Nonaromatic'], explanation: '6π = 4(1)+2 → aromatic. Planar, conjugated ring.' },
   { question: 'Cyclobutadiene (4π electrons, planar, conjugated). Classify:', answer: 'Antiaromatic', options: ['Aromatic', 'Antiaromatic', 'Nonaromatic'], explanation: '4π = 4(1) → antiaromatic. Planar and conjugated but 4n electrons.' },
   { question: 'Cyclopentadienyl anion (Cp⁻, 6π electrons). Classify:', answer: 'Aromatic', options: ['Aromatic', 'Antiaromatic', 'Nonaromatic'], explanation: 'Lone pair on sp² carbanion contributes 2π → total 6π → aromatic.' },
@@ -130,7 +130,7 @@ export function generateAromaticityProblem(): OrgTextProblem { return pick(AROMA
 
 // ── R/S Assignment ──────────────────────────────────────────────────────────
 
-const RS_POOL: OrgTextProblem[] = [
+export const RS_POOL: OrgTextProblem[] = [
   {
     question: 'A chiral center has substituents: Br (highest priority), CH₂CH₃, CH₃, H (lowest). With H pointing away, 1→2→3 is clockwise. Assign:',
     answer: 'R',
@@ -167,7 +167,7 @@ export function generateRSProblem(): OrgTextProblem { return pick(RS_POOL) }
 
 // ── E/Z Assignment ──────────────────────────────────────────────────────────
 
-const EZ_POOL: OrgTextProblem[] = [
+export const EZ_POOL: OrgTextProblem[] = [
   {
     question: 'C1=C2 with CH₃(1)>H on C1 and CH₃(1)>H on C2. High-priority groups (CH₃) on the SAME side. Assign:',
     answer: 'Z',
@@ -210,7 +210,7 @@ export function generateEZProblem(): OrgTextProblem { return pick(EZ_POOL) }
 
 // ── Stereoisomer Classification ─────────────────────────────────────────────
 
-const STEREO_POOL: OrgTextProblem[] = [
+export const STEREO_POOL: OrgTextProblem[] = [
   {
     question: '(R)-lactic acid and (S)-lactic acid are non-superimposable mirror images. They are:',
     answer: 'Enantiomers',
@@ -247,7 +247,7 @@ export function generateStereoisomerProblem(): OrgTextProblem { return pick(STER
 
 // ── Conformational Analysis (general) ──────────────────────────────────────
 
-const CONFORMATIONAL_POOL: OrgTextProblem[] = [
+export const CONFORMATIONAL_POOL: OrgTextProblem[] = [
   {
     question: 'Which type of conformational strain arises when bonds are eclipsed in a Newman projection?',
     answer: 'Torsional (eclipsing) strain',
@@ -284,7 +284,7 @@ export function generateConformationalProblem(): OrgTextProblem { return pick(CO
 
 // ── Curved Arrow Mechanisms ─────────────────────────────────────────────────
 
-const CURVED_ARROW_POOL: OrgTextProblem[] = [
+export const CURVED_ARROW_POOL: OrgTextProblem[] = [
   {
     question: 'In a curved arrow notation, an arrow starting from a lone pair and ending at an atom represents:',
     answer: 'The lone pair attacks the atom, forming a new bond',
@@ -327,7 +327,7 @@ export function generateCurvedArrowProblem(): OrgTextProblem { return pick(CURVE
 
 // ── Polymerization ──────────────────────────────────────────────────────────
 
-const POLYMERIZATION_POOL: OrgTextProblem[] = [
+export const POLYMERIZATION_POOL: OrgTextProblem[] = [
   {
     question: 'Ethylene (CH₂=CH₂) is converted to polyethylene via:',
     answer: 'Addition (chain-growth) polymerization',
@@ -364,7 +364,7 @@ export function generatePolymerizationProblem(): OrgTextProblem { return pick(PO
 
 // ── Conjugated Dienes ───────────────────────────────────────────────────────
 
-const CONJUGATED_DIENE_POOL: OrgTextProblem[] = [
+export const CONJUGATED_DIENE_POOL: OrgTextProblem[] = [
   {
     question: 'The Diels-Alder [4+2] cycloaddition between 1,3-butadiene and a dienophile produces a ring of size:',
     answer: '6-membered ring',
@@ -401,7 +401,7 @@ export function generateConjugatedDieneProblem(): OrgTextProblem { return pick(C
 
 // ── Formal Charge (Organic) ─────────────────────────────────────────────────
 
-const FORMAL_CHARGE_POOL: OrgTextProblem[] = [
+export const FORMAL_CHARGE_POOL: OrgTextProblem[] = [
   {
     question: 'In a carbocation (R₃C⁺), carbon has 3 bonds and 0 lone pairs. Formal charge = valence − lone pair e⁻ − bonds. Calculate:',
     answer: '+1',
@@ -438,7 +438,7 @@ export function generateFormalChargeProblem(): OrgTextProblem { return pick(FORM
 
 // ── Resonance Structures ─────────────────────────────────────────────────────
 
-const RESONANCE_POOL: OrgTextProblem[] = [
+export const RESONANCE_POOL: OrgTextProblem[] = [
   {
     question: 'Which is the MAJOR resonance contributor of an amide (R–CO–NH₂)?',
     answer: 'C=O form (neutral N): R–C(=O)–NH₂',
@@ -475,7 +475,7 @@ export function generateResonanceProblem(): OrgTextProblem { return pick(RESONAN
 
 // ── Most Acidic H ───────────────────────────────────────────────────────────
 
-const MOST_ACIDIC_H_POOL: OrgTextProblem[] = [
+export const MOST_ACIDIC_H_POOL: OrgTextProblem[] = [
   {
     question: 'Which hydrogen is most acidic in acetoacetic acid (CH₃COCH₂COOH)?',
     answer: 'The methylene H (flanked by two C=O groups, pKa ~11)',
@@ -512,7 +512,7 @@ export function generateMostAcidicHProblem(): OrgTextProblem { return pick(MOST_
 
 // ── Retrosynthetic Disconnection ─────────────────────────────────────────────
 
-const RETRO_POOL: OrgTextProblem[] = [
+export const RETRO_POOL: OrgTextProblem[] = [
   {
     question: 'In retrosynthetic analysis, the symbol ⇒ means:',
     answer: 'This compound can be made from the disconnected synthon',
@@ -549,7 +549,7 @@ export function generateRetroProblem(): OrgTextProblem { return pick(RETRO_POOL)
 
 // ── Synthesis Ordering ──────────────────────────────────────────────────────
 
-const SYNTHESIS_ORDER_POOL: OrgTextProblem[] = [
+export const SYNTHESIS_ORDER_POOL: OrgTextProblem[] = [
   {
     question: 'To convert a primary alcohol to a carboxylic acid, which reagent should be used (NOT PCC)?',
     answer: 'Jones reagent (CrO₃/H₂SO₄) or KMnO₄',
@@ -580,7 +580,7 @@ export function generateSynthesisOrderProblem(): OrgTextProblem { return pick(SY
 
 // ── Amino Acid pI / Zwitterion ──────────────────────────────────────────────
 
-const AMINO_ACID_PI_POOL: OrgTextProblem[] = [
+export const AMINO_ACID_PI_POOL: OrgTextProblem[] = [
   {
     question: 'At pH = pI, an amino acid exists as a:',
     answer: 'Zwitterion (positive and negative charges balanced, net charge = 0)',
@@ -615,6 +615,95 @@ const AMINO_ACID_PI_POOL: OrgTextProblem[] = [
 
 export function generateAminoAcidPIProblem(): OrgTextProblem { return pick(AMINO_ACID_PI_POOL) }
 
+// ── Amino Acid Identification (name from structure, class identification) ────
+// Note: Draw-mode (Mode B) is excluded from test generators — Ketcher drawing
+// can't be represented in a printed test. Mode B is interactive-only.
+
+import { AMINO_ACIDS, CLASS_LABELS } from '../data/aminoAcids'
+import type { AminoAcid } from '../data/aminoAcids'
+
+export interface AminoAcidNameProblem {
+  type: 'amino-acid-name-from-structure'
+  prompt: string
+  visualType: 'compound-display'
+  smiles: string
+  answer: { name: string; three: string; one: string }
+  answerFormat: 'text'
+}
+
+export interface AminoAcidClassProblem {
+  type: 'amino-acid-class'
+  prompt: string
+  visualType: 'compound-display'
+  smiles: string
+  answer: AminoAcid['class']
+  answerFormat: 'multiple-choice'
+  options: AminoAcid['class'][]
+}
+
+export function generateAminoAcidNameFromStructure(): AminoAcidNameProblem {
+  const aa = pick(AMINO_ACIDS)
+  return {
+    type:        'amino-acid-name-from-structure',
+    prompt:      'Name this amino acid (full name or 3-letter code).',
+    visualType:  'compound-display',
+    smiles:      aa.fullSmiles,
+    answer:      { name: aa.name, three: aa.three, one: aa.one },
+    answerFormat: 'text',
+  }
+}
+
+export function generateAminoAcidClass(): AminoAcidClassProblem {
+  const aa = pick(AMINO_ACIDS)
+  return {
+    type:        'amino-acid-class',
+    prompt:      `What class is ${aa.name} (${aa.three})?`,
+    visualType:  'compound-display',
+    smiles:      aa.fullSmiles,
+    answer:      aa.class,
+    answerFormat: 'multiple-choice',
+    options:     ['nonpolar', 'aromatic', 'polar', 'acidic', 'basic'],
+  }
+}
+
+// Helper: check name-from-structure answer (case-insensitive, accepts 1L/3L/full)
+export function checkAminoAcidNameAnswer(input: string, answer: AminoAcidNameProblem['answer']): boolean {
+  const t = input.trim()
+  return (
+    t.toLowerCase() === answer.name.toLowerCase() ||
+    t.toLowerCase() === answer.three.toLowerCase() ||
+    t === answer.one
+  )
+}
+
+// TestBuilder integration: wrap as OrgTextProblem for classification questions
+export function generateAminoAcidNameAsOrgText(): OrgTextProblem {
+  const aa = pick(AMINO_ACIDS)
+  const distractors = AMINO_ACIDS
+    .filter(x => x.name !== aa.name)
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 3)
+    .map(x => x.name)
+  return {
+    question: `What is the name of this amino acid? (SMILES: ${aa.fullSmiles})`,
+    answer: aa.name,
+    options: [aa.name, ...distractors].sort(() => Math.random() - 0.5),
+    explanation: `${aa.name} (${aa.three} / ${aa.one}) — ${CLASS_LABELS[aa.class]} amino acid.`,
+  }
+}
+
+export function generateAminoAcidClassAsOrgText(): OrgTextProblem {
+  const aa = pick(AMINO_ACIDS)
+  const allClasses: AminoAcid['class'][] = ['nonpolar', 'aromatic', 'polar', 'acidic', 'basic']
+  const distractors = allClasses.filter(c => c !== aa.class).sort(() => Math.random() - 0.5).slice(0, 3)
+  return {
+    question: `${aa.name} (${aa.three}) — What class of amino acid is this?`,
+    answer: CLASS_LABELS[aa.class],
+    options: [CLASS_LABELS[aa.class], ...distractors.map(c => CLASS_LABELS[c])].sort(() => Math.random() - 0.5),
+    explanation: `${aa.name} is ${CLASS_LABELS[aa.class]}. Its R-group is ${aa.rGroup}.`,
+  }
+}
+
 // ── IR Interpretation ───────────────────────────────────────────────────────
 
 import { IR_PROBLEMS } from '../data/spectral/irProblems'
@@ -624,6 +713,7 @@ export interface IRTextProblem {
   answer: string
   options: string[]
   explanation: string
+  visual?: { kind: 'spectrum'; spectrumType: 'ir' | '1h_nmr' | '13c_nmr' | 'mass_spec'; peaks: { x: number; y: number; label: string; width: number; splitting?: string; integration?: number }[]; title?: string }
 }
 
 export function generateIRProblem(): IRTextProblem {
@@ -633,10 +723,11 @@ export function generateIRProblem(): IRTextProblem {
   const distractors = all.filter(g => !p.presentGroups.includes(g)).sort(() => Math.random() - 0.5).slice(0, 2)
   const options = [correct, ...distractors.map(d => 'Primarily ' + d)].sort(() => Math.random() - 0.5)
   return {
-    question: `IR Spectrum — ${p.title}. Key peaks: ${p.peaks.map(pk => `${pk.x} cm⁻¹ (${pk.label})`).join(', ')}.\n\nWhich functional group(s) are present?`,
+    question: `Which functional group(s) are present in this IR spectrum of ${p.title}?`,
     answer: correct,
     options,
     explanation: p.explanation,
+    visual: { kind: 'spectrum', spectrumType: 'ir', peaks: p.peaks, title: p.title },
   }
 }
 
@@ -647,23 +738,24 @@ import { NMR_PROBLEMS } from '../data/spectral/nmrProblems'
 export function generateNMRProblem(): IRTextProblem {
   const p = NMR_PROBLEMS[Math.floor(Math.random() * NMR_PROBLEMS.length)]
   const mcQuestions = p.questions.filter(q => q.type === 'mc' && q.options && q.options.length > 0)
-  const peakSummary = p.peaks.map(pk => `δ ${pk.x} ppm (${pk.label}${pk.splitting ? ', ' + pk.splitting : ''})`).join('; ')
   if (mcQuestions.length === 0) {
     const q = p.questions[0]
     const answer = String(q.correct)
     return {
-      question: `¹H NMR — ${p.title}.\nPeaks: ${peakSummary}\n\n${q.stem}`,
+      question: `¹H NMR — ${p.title}.\n\n${q.stem}`,
       answer,
       options: [answer, 'Cannot be determined', 'None of the above'],
       explanation: q.explanation,
+      visual: { kind: 'spectrum', spectrumType: '1h_nmr', peaks: p.peaks, title: p.title },
     }
   }
   const q = mcQuestions[Math.floor(Math.random() * mcQuestions.length)]
   return {
-    question: `¹H NMR — ${p.title}.\nPeaks: ${peakSummary}\n\n${q.stem}`,
+    question: `¹H NMR — ${p.title}.\n\n${q.stem}`,
     answer: String(q.correct),
     options: q.options!,
     explanation: q.explanation,
+    visual: { kind: 'spectrum', spectrumType: '1h_nmr', peaks: p.peaks, title: p.title },
   }
 }
 
@@ -674,22 +766,24 @@ import { MS_PROBLEMS } from '../data/spectral/msProblems'
 export function generateMSProblem(): IRTextProblem {
   const p = MS_PROBLEMS[Math.floor(Math.random() * MS_PROBLEMS.length)]
   const mcQuestions = p.questions.filter(q => q.type === 'mc' && q.options && q.options.length > 0)
-  const peakSummary = p.peaks.map(pk => `m/z ${pk.x} (${pk.label})`).join(', ')
+  const specVisual = { kind: 'spectrum' as const, spectrumType: 'mass_spec' as const, peaks: p.peaks, title: `${p.compound} (${p.formula})` }
   if (mcQuestions.length === 0) {
     const q = p.questions[0]
     const answer = String(q.correct)
     return {
-      question: `Mass Spectrum — ${p.compound} (${p.formula}).\nKey peaks: ${peakSummary}.\n\n${q.stem}`,
+      question: `Mass Spectrum — ${p.compound} (${p.formula}).\n\n${q.stem}`,
       answer,
       options: [answer, 'Cannot be determined', 'None of the above'],
       explanation: q.explanation,
+      visual: specVisual,
     }
   }
   const q = mcQuestions[Math.floor(Math.random() * mcQuestions.length)]
   return {
-    question: `Mass Spectrum — ${p.compound} (${p.formula}).\nKey peaks: ${peakSummary}.\n\n${q.stem}`,
+    question: `Mass Spectrum — ${p.compound} (${p.formula}).\n\n${q.stem}`,
     answer: String(q.correct),
     options: q.options!,
     explanation: q.explanation,
+    visual: specVisual,
   }
 }

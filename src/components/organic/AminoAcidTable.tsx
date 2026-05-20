@@ -1,66 +1,7 @@
 import { useState } from 'react'
 import CompoundDisplay from '../shared/CompoundDisplay'
-
-interface AminoAcid {
-  name: string
-  three: string
-  one: string
-  rGroup: string
-  /** SMILES for the R group fragment. Uses [R] as the Cα attachment point. */
-  rGroupSmiles?: string
-  class: 'nonpolar' | 'aromatic' | 'polar' | 'acidic' | 'basic'
-  pKa1: number   // α-COOH
-  pKa2: number   // α-NH₃⁺
-  pKaR?: number  // side chain
-  pI: number
-  notes?: string
-}
-
-const AMINO_ACIDS: AminoAcid[] = [
-  // Nonpolar / aliphatic
-  { name: 'Glycine',       three: 'Gly', one: 'G', rGroup: 'H',                   rGroupSmiles: '[H]',              class: 'nonpolar', pKa1: 2.34, pKa2: 9.60,                pI: 5.97 },
-  { name: 'Alanine',       three: 'Ala', one: 'A', rGroup: 'CH₃',                 rGroupSmiles: '[R]C',             class: 'nonpolar', pKa1: 2.34, pKa2: 9.69,                pI: 6.00 },
-  { name: 'Valine',        three: 'Val', one: 'V', rGroup: 'CH(CH₃)₂',            rGroupSmiles: '[R]C(C)C',         class: 'nonpolar', pKa1: 2.32, pKa2: 9.62,                pI: 5.96 },
-  { name: 'Leucine',       three: 'Leu', one: 'L', rGroup: 'CH₂CH(CH₃)₂',        rGroupSmiles: '[R]CC(C)C',        class: 'nonpolar', pKa1: 2.36, pKa2: 9.60,                pI: 5.98 },
-  { name: 'Isoleucine',    three: 'Ile', one: 'I', rGroup: 'CH(CH₃)CH₂CH₃',      rGroupSmiles: '[R]C(C)CC',        class: 'nonpolar', pKa1: 2.36, pKa2: 9.60,                pI: 6.02 },
-  { name: 'Proline',       three: 'Pro', one: 'P', rGroup: '(pyrrolidine ring)',                                     class: 'nonpolar', pKa1: 1.99, pKa2: 10.60,               pI: 6.30, notes: 'Secondary amine — disrupts α-helices and β-sheets' },
-  { name: 'Methionine',    three: 'Met', one: 'M', rGroup: 'CH₂CH₂SCH₃',         rGroupSmiles: '[R]CCSC',          class: 'nonpolar', pKa1: 2.28, pKa2: 9.21,                pI: 5.74 },
-  // Aromatic
-  { name: 'Phenylalanine', three: 'Phe', one: 'F', rGroup: 'CH₂C₆H₅',                                              class: 'aromatic', pKa1: 1.83, pKa2: 9.13,                pI: 5.48 },
-  { name: 'Tyrosine',      three: 'Tyr', one: 'Y', rGroup: 'CH₂C₆H₄OH',                                            class: 'aromatic', pKa1: 2.20, pKa2: 9.11, pKaR: 10.07,  pI: 5.66 },
-  { name: 'Tryptophan',    three: 'Trp', one: 'W', rGroup: 'CH₂-indole',                                            class: 'aromatic', pKa1: 2.38, pKa2: 9.39,                pI: 5.89 },
-  // Polar uncharged
-  { name: 'Serine',        three: 'Ser', one: 'S', rGroup: 'CH₂OH',               rGroupSmiles: '[R]CO',            class: 'polar',    pKa1: 2.21, pKa2: 9.15,                pI: 5.68 },
-  { name: 'Threonine',     three: 'Thr', one: 'T', rGroup: 'CH(OH)CH₃',           rGroupSmiles: '[R]C(O)C',         class: 'polar',    pKa1: 2.11, pKa2: 9.62,                pI: 5.87 },
-  { name: 'Cysteine',      three: 'Cys', one: 'C', rGroup: 'CH₂SH',               rGroupSmiles: '[R]CS',            class: 'polar',    pKa1: 1.96, pKa2: 8.18,  pKaR: 8.30,  pI: 5.07, notes: 'Forms disulfide bonds (Cys-S-S-Cys) critical for protein structure' },
-  { name: 'Asparagine',    three: 'Asn', one: 'N', rGroup: 'CH₂CONH₂',            rGroupSmiles: '[R]CC(=O)N',       class: 'polar',    pKa1: 2.02, pKa2: 8.80,                pI: 5.41 },
-  { name: 'Glutamine',     three: 'Gln', one: 'Q', rGroup: 'CH₂CH₂CONH₂',        rGroupSmiles: '[R]CCC(=O)N',      class: 'polar',    pKa1: 2.17, pKa2: 9.13,                pI: 5.65 },
-  // Acidic
-  { name: 'Aspartate',     three: 'Asp', one: 'D', rGroup: 'CH₂COOH',             rGroupSmiles: '[R]CC(=O)O',       class: 'acidic',   pKa1: 1.88, pKa2: 9.60,  pKaR: 3.65,  pI: 2.77 },
-  { name: 'Glutamate',     three: 'Glu', one: 'E', rGroup: 'CH₂CH₂COOH',         rGroupSmiles: '[R]CCC(=O)O',      class: 'acidic',   pKa1: 2.19, pKa2: 9.67,  pKaR: 4.25,  pI: 3.22 },
-  // Basic
-  { name: 'Lysine',        three: 'Lys', one: 'K', rGroup: '(CH₂)₄NH₂',           rGroupSmiles: '[R]CCCCN',         class: 'basic',    pKa1: 2.18, pKa2: 8.95,  pKaR: 10.50, pI: 9.74 },
-  { name: 'Arginine',      three: 'Arg', one: 'R', rGroup: '(CH₂)₃NHC(=NH)NH₂',                                    class: 'basic',    pKa1: 2.17, pKa2: 9.04,  pKaR: 12.50, pI: 10.76, notes: 'Guanidinium group — pKa > 12, always protonated at physiological pH' },
-  { name: 'Histidine',     three: 'His', one: 'H', rGroup: 'CH₂-imidazole',                                         class: 'basic',    pKa1: 1.82, pKa2: 9.17,  pKaR: 6.00,  pI: 7.59,  notes: 'pKa ~6 → partially protonated at pH 7.4. Key catalytic residue in enzymes.' },
-]
-
-const CLASS_LABELS: Record<AminoAcid['class'], string> = {
-  nonpolar: 'Nonpolar / Aliphatic',
-  aromatic: 'Aromatic',
-  polar:    'Polar Uncharged',
-  acidic:   'Acidic',
-  basic:    'Basic',
-}
-
-const CLASS_COLORS: Record<AminoAcid['class'], string> = {
-  nonpolar: 'var(--c-alkane)',
-  aromatic: 'var(--c-aromatic)',
-  polar:    'var(--c-alcohol)',
-  acidic:   'var(--c-acid)',
-  basic:    'var(--c-amine)',
-}
-
-type FilterClass = AminoAcid['class'] | 'all'
+import HoverPreview from '../shared/HoverPreview'
+import { AMINO_ACIDS, CLASS_COLORS, CLASS_LABELS, type AminoAcid, type FilterClass } from '../../data/aminoAcids'
 
 export default function AminoAcidTable() {
   const [filter, setFilter] = useState<FilterClass>('all')
@@ -84,6 +25,38 @@ export default function AminoAcidTable() {
     { id: 'basic',    label: 'Basic (3)' },
   ]
 
+  function classPill(aa: AminoAcid) {
+    const c = CLASS_COLORS[aa.class]
+    return (
+      <span
+        className="px-2 py-0.5 rounded-full whitespace-nowrap inline-block"
+        style={{
+          background: `color-mix(in srgb, ${c} 25%, transparent)`,
+          color: c,
+          border: `1px solid color-mix(in srgb, ${c} 50%, transparent)`,
+          fontSize: 10,
+        }}
+      >
+        {CLASS_LABELS[aa.class]}
+      </span>
+    )
+  }
+
+  function rGroupCell(aa: AminoAcid) {
+    if (aa.rGroupSmiles) {
+      return <CompoundDisplay smiles={aa.rGroupSmiles} label={aa.rGroup} width={80} height={64} />
+    }
+    if (aa.rGroupFullStructure) {
+      return (
+        <div className="flex flex-col gap-1">
+          <CompoundDisplay smiles={aa.rGroupFullStructure} width={100} height={80} />
+          <span className="font-mono text-secondary" style={{ fontSize: 10 }}>side chain forms ring</span>
+        </div>
+      )
+    }
+    return <span className="font-mono text-secondary">{aa.rGroup}</span>
+  }
+
   return (
     <div className="flex flex-col gap-5 max-w-3xl print:max-w-none">
       <div>
@@ -91,13 +64,13 @@ export default function AminoAcidTable() {
         <p className="font-sans text-xs text-secondary">pKa values from Brown Ch. 27. pI = isoelectric point (pH of net zero charge).</p>
       </div>
 
-      {/* pI calculation box */}
-      <div className="rounded-sm border border-border p-3 text-xs font-sans" style={{ background: 'rgb(var(--color-raised))' }}>
-        <p className="font-semibold text-primary mb-1">Calculating pI</p>
-        <p className="text-secondary"><span className="font-semibold">Neutral side chain:</span> pI = (pKa₁ + pKa₂) / 2 ≈ 6</p>
-        <p className="text-secondary"><span className="font-semibold">Acidic side chain (Asp, Glu):</span> pI = (pKa₁ + pKa<sub>R</sub>) / 2 ≈ 3</p>
-        <p className="text-secondary"><span className="font-semibold">Basic side chain (Lys, Arg, His):</span> pI = (pKa₂ + pKa<sub>R</sub>) / 2 ≈ 10</p>
-      </div>
+      <p className="text-xs text-secondary">
+        See the{' '}
+        <a href="?tab=ref-zwitterion-pi" className="underline hover:text-primary transition-colors">
+          Zwitterions &amp; pI reference
+        </a>{' '}
+        for how pI is calculated from pKa values.
+      </p>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-2 print:hidden">
@@ -129,52 +102,43 @@ export default function AminoAcidTable() {
         />
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto">
+      {/* Desktop table (md+) */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-xs font-sans border-collapse">
           <thead>
             <tr className="border-b border-border">
-              <th className="text-left py-2 pr-3 text-secondary font-semibold">Name</th>
-              <th className="text-left py-2 pr-3 text-secondary font-semibold">3L / 1L</th>
-              <th className="text-left py-2 pr-3 text-secondary font-semibold">R Group</th>
-              <th className="text-left py-2 pr-3 text-secondary font-semibold">Class</th>
-              <th className="text-right py-2 pr-3 text-secondary font-semibold">pKa(COOH)</th>
-              <th className="text-right py-2 pr-3 text-secondary font-semibold">pKa(NH₃⁺)</th>
-              <th className="text-right py-2 pr-3 text-secondary font-semibold">pKa(R)</th>
-              <th className="text-right py-2 text-secondary font-semibold">pI</th>
+              <th rowSpan={2} className="text-left py-2 pr-3 text-secondary font-semibold align-bottom" style={{ width: '8rem' }}>Name</th>
+              <th rowSpan={2} className="text-left py-2 pr-3 text-secondary font-semibold align-bottom">3L / 1L</th>
+              <th rowSpan={2} className="text-left py-2 pr-3 text-secondary font-semibold align-bottom">R Group</th>
+              <th rowSpan={2} className="text-left py-2 pr-3 text-secondary font-semibold align-bottom">Class</th>
+              <th colSpan={3} className="text-center py-2 px-3 text-secondary font-semibold border-b border-border border-l border-r border-border/30">pKa values</th>
+              <th rowSpan={2} className="text-right py-2 text-secondary font-semibold align-bottom">pI</th>
+            </tr>
+            <tr className="border-b border-border">
+              <th className="text-right py-1 pr-3 font-semibold border-l border-border/30" style={{ fontSize: 10, color: 'var(--c-acid)' }}>α-COOH</th>
+              <th className="text-right py-1 pr-3 font-semibold" style={{ fontSize: 10, color: 'var(--c-amine)' }}>α-NH₃⁺</th>
+              <th className="text-right py-1 pr-3 font-semibold italic border-r border-border/30" style={{ fontSize: 10, color: 'rgb(var(--color-secondary))' }}>R</th>
             </tr>
           </thead>
           <tbody>
             {filtered.map(aa => (
               <tr key={aa.name} className="border-b border-border/50 hover:bg-raised/50 transition-colors">
-                <td className="py-2 pr-3 text-primary font-semibold">
-                  {aa.name}
+                <td className="py-2 pr-3 text-primary font-semibold" style={{ width: '8rem' }}>
+                  <HoverPreview smiles={aa.fullSmiles} label={`${aa.name} (${aa.three})`} width={220} height={160}>
+                    <span className="cursor-help underline decoration-dotted decoration-secondary/40 underline-offset-2 print:no-underline">
+                      {aa.name}
+                    </span>
+                  </HoverPreview>
                   {aa.notes && (
                     <span className="block font-normal text-secondary" style={{ fontSize: 10 }}>{aa.notes}</span>
                   )}
                 </td>
                 <td className="py-2 pr-3 font-mono text-primary">{aa.three} / {aa.one}</td>
-                <td className="py-2 pr-3">
-                  {aa.rGroupSmiles ? (
-                    <div className="flex items-center gap-2">
-                      <CompoundDisplay smiles={aa.rGroupSmiles} label={aa.rGroup} width={80} height={64} />
-                      <span className="font-mono text-secondary" style={{ fontSize: 10 }}>{aa.rGroup}</span>
-                    </div>
-                  ) : (
-                    <span className="font-mono text-secondary">{aa.rGroup}</span>
-                  )}
-                </td>
-                <td className="py-2 pr-3">
-                  <span
-                    className="px-2 py-0.5 rounded-full text-white"
-                    style={{ background: CLASS_COLORS[aa.class], fontSize: 10 }}
-                  >
-                    {CLASS_LABELS[aa.class]}
-                  </span>
-                </td>
-                <td className="py-2 pr-3 text-right font-mono text-secondary">{aa.pKa1.toFixed(2)}</td>
+                <td className="py-2 pr-3">{rGroupCell(aa)}</td>
+                <td className="py-2 pr-3">{classPill(aa)}</td>
+                <td className="py-2 pr-3 text-right font-mono text-secondary border-l border-border/30">{aa.pKa1.toFixed(2)}</td>
                 <td className="py-2 pr-3 text-right font-mono text-secondary">{aa.pKa2.toFixed(2)}</td>
-                <td className="py-2 pr-3 text-right font-mono text-secondary">{aa.pKaR != null ? aa.pKaR.toFixed(2) : '—'}</td>
+                <td className="py-2 pr-3 text-right font-mono text-secondary border-r border-border/30">{aa.pKaR != null ? aa.pKaR.toFixed(2) : '—'}</td>
                 <td className="py-2 text-right font-mono font-semibold text-primary">{aa.pI.toFixed(2)}</td>
               </tr>
             ))}
@@ -183,6 +147,65 @@ export default function AminoAcidTable() {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile card layout (below md) */}
+      <div className="md:hidden flex flex-col gap-3">
+        {filtered.map(aa => (
+          <div
+            key={aa.name}
+            className="rounded-sm border border-border p-3"
+            style={{ background: 'rgb(var(--color-raised))' }}
+          >
+            {/* Header */}
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <div>
+                <HoverPreview smiles={aa.fullSmiles} label={`${aa.name} (${aa.three})`} width={220} height={160}>
+                <span className="font-semibold text-primary text-sm cursor-help underline decoration-dotted decoration-secondary/40 underline-offset-2 print:no-underline">
+                  {aa.name}
+                </span>
+              </HoverPreview>
+                <div className="mt-1">{classPill(aa)}</div>
+              </div>
+              <span className="font-mono text-secondary text-xs shrink-0">{aa.three} / {aa.one}</span>
+            </div>
+
+            {/* R-group structure */}
+            <div className="flex justify-center mb-3">
+              {rGroupCell(aa)}
+            </div>
+
+            {/* pKa row */}
+            <div className="grid grid-cols-3 gap-2 mb-2 text-xs">
+              <div className="flex flex-col gap-0.5">
+                <span className="font-semibold" style={{ fontSize: 10, color: 'var(--c-acid)' }}>α-COOH</span>
+                <span className="font-mono text-secondary">{aa.pKa1.toFixed(2)}</span>
+              </div>
+              <div className="flex flex-col gap-0.5">
+                <span className="font-semibold" style={{ fontSize: 10, color: 'var(--c-amine)' }}>α-NH₃⁺</span>
+                <span className="font-mono text-secondary">{aa.pKa2.toFixed(2)}</span>
+              </div>
+              <div className="flex flex-col gap-0.5">
+                <span className="italic text-secondary" style={{ fontSize: 10 }}>pKa(R)</span>
+                <span className="font-mono text-secondary">{aa.pKaR != null ? aa.pKaR.toFixed(2) : '—'}</span>
+              </div>
+            </div>
+
+            {/* pI */}
+            <div className="flex items-baseline gap-1 mb-1">
+              <span className="text-xs text-secondary">pI</span>
+              <span className="font-mono font-semibold text-primary text-sm">{aa.pI.toFixed(2)}</span>
+            </div>
+
+            {/* Notes */}
+            {aa.notes && (
+              <p className="text-secondary italic" style={{ fontSize: 10 }}>{aa.notes}</p>
+            )}
+          </div>
+        ))}
+        {filtered.length === 0 && (
+          <p className="py-4 text-center text-secondary text-xs">No amino acids match the current filter.</p>
+        )}
       </div>
     </div>
   )

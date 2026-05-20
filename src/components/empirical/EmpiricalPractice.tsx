@@ -280,8 +280,8 @@ export default function EmpiricalPractice({ allowCustom = true }: Props) {
                 <span className="font-mono text-xs uppercase tracking-widest px-2 py-0.5 rounded-sm border"
                   style={{
                     color: problem.difficulty === 'easy' ? 'rgb(var(--color-success))' : problem.difficulty === 'medium' ? 'rgb(var(--color-warning))' : 'rgb(var(--color-error))',
-                    borderColor: problem.difficulty === 'easy' ? 'rgba(74,222,128,0.3)' : problem.difficulty === 'medium' ? 'rgba(251,146,60,0.3)' : 'rgba(248,113,113,0.3)',
-                    background: problem.difficulty === 'easy' ? 'rgba(74,222,128,0.05)' : problem.difficulty === 'medium' ? 'rgba(251,146,60,0.05)' : 'rgba(248,113,113,0.05)',
+                    borderColor: problem.difficulty === 'easy' ? 'rgb(var(--color-success) / 0.3)' : problem.difficulty === 'medium' ? 'rgb(var(--color-warning) / 0.3)' : 'rgb(var(--color-error) / 0.3)',
+                    background: problem.difficulty === 'easy' ? 'rgb(var(--color-success) / 0.05)' : problem.difficulty === 'medium' ? 'rgb(var(--color-warning) / 0.05)' : 'rgb(var(--color-error) / 0.05)',
                   }}>
                   {problemIsDynamic ? 'dynamic' : problem.difficulty}
                 </span>

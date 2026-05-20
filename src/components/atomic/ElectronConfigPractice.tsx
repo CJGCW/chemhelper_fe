@@ -77,8 +77,8 @@ function ClickableOrbitalBox({
 
   const bg = {
     neutral:     value > 0 ? 'rgba(var(--overlay),0.04)' : 'transparent',
-    correct:     'rgba(34,197,94,0.08)',
-    'wrong-count': 'rgba(239,68,68,0.08)',
+    correct:     'rgb(var(--color-success) / 0.08)',
+    'wrong-count': 'rgb(var(--color-error) / 0.08)',
     'wrong-hund':  'rgba(245,158,11,0.08)',
   }[status]
 
@@ -553,7 +553,7 @@ export default function ElectronConfigPractice({ allowCustom = true }: Props) {
           {checked && writtenResult && !writtenResult.correct && (
             <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
               className="flex flex-col gap-1 p-3 rounded-sm"
-              style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)' }}>
+              style={{ background: 'rgb(var(--color-error) / 0.08)', border: '1px solid rgb(var(--color-error) / 0.25)' }}>
               {writtenResult.missingSubshells.length > 0 && (
                 <p className="font-mono text-xs" style={{ color: 'rgb(var(--color-error))' }}>
                   Missing: {writtenResult.missingSubshells.join(', ')}
@@ -605,7 +605,7 @@ export default function ElectronConfigPractice({ allowCustom = true }: Props) {
           {checked && boxResults.some(r => !r.electronCountCorrect || !r.hundCorrect) && (
             <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
               className="flex flex-col gap-1 p-3 rounded-sm"
-              style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)' }}>
+              style={{ background: 'rgb(var(--color-error) / 0.08)', border: '1px solid rgb(var(--color-error) / 0.25)' }}>
               {boxResults.filter(r => !r.electronCountCorrect).map(r => (
                 <p key={r.label} className="font-mono text-xs" style={{ color: 'rgb(var(--color-error))' }}>
                   {r.label}: {r.gotElectrons} electrons, expected {r.expectedElectrons}
@@ -708,9 +708,9 @@ export default function ElectronConfigPractice({ allowCustom = true }: Props) {
               className="flex flex-col gap-2 p-4 rounded-sm border"
               style={{
                 background: (last.magneticCorrect && last.unpairedCorrect)
-                  ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)',
+                  ? 'rgb(var(--color-success) / 0.06)' : 'rgb(var(--color-error) / 0.06)',
                 borderColor: (last.magneticCorrect && last.unpairedCorrect)
-                  ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)',
+                  ? 'rgb(var(--color-success) / 0.3)' : 'rgb(var(--color-error) / 0.3)',
               }}>
               <p className="font-mono text-xs tracking-widest uppercase text-secondary">Magnetic Result</p>
               <p className="font-mono text-xs" style={{ color: last.magneticCorrect ? 'rgb(var(--color-success))' : 'rgb(var(--color-error))' }}>

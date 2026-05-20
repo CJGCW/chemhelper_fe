@@ -189,7 +189,7 @@ export default function GasSimulation() {
     relP < 2.0  ? 'High'      : 'Very High'
   const pressColor =
     relP < 0.9  ? 'rgb(var(--color-success))' :
-    relP < 1.3  ? '#fbbf24' :
+    relP < 1.3  ? 'rgb(var(--color-warning))' :
     relP < 2.0  ? 'rgb(var(--color-warning))' : 'rgb(var(--color-error))'
 
   return (

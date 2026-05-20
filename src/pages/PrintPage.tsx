@@ -80,11 +80,31 @@ import DatingReference        from '../components/nuclear/DatingReference'
 // ── Organic ───────────────────────────────────────────────────────────────────
 import OrgMechanismReference    from '../components/mechanisms/MechanismReference'
 import MechanismPrintReference  from '../components/mechanisms/MechanismPrintReference'
-import HydrocarbonReference   from '../components/organic/HydrocarbonReference'
-import IsomerReference        from '../components/organic/IsomerReference'
-import OrganicNamingReference from '../components/organic/OrganicNamingReference'
-import FunctionalGroupReference from '../components/organic/FunctionalGroupReference'
-import OrganicReactionReference from '../components/organic/OrganicReactionReference'
+import HydrocarbonReference        from '../components/organic/HydrocarbonReference'
+import IsomerReference             from '../components/organic/IsomerReference'
+import OrganicNamingReference      from '../components/organic/OrganicNamingReference'
+import FunctionalGroupReference    from '../components/organic/FunctionalGroupReference'
+import OrganicReactionReference    from '../components/organic/OrganicReactionReference'
+import StereochemistryReference    from '../components/organic/StereochemistryReference'
+import AromaticityReference        from '../components/organic/AromaticityReference'
+import DirectingEffectsReference   from '../components/organic/DirectingEffectsReference'
+import ConjugatedDieneReference    from '../components/organic/ConjugatedDieneReference'
+import CurvedArrowReference        from '../components/organic/CurvedArrowReference'
+import ChairReference              from '../components/organic/ChairReference'
+import NewmanReference             from '../components/organic/NewmanReference'
+import ConformationalReference     from '../components/organic/ConformationalReference'
+import AcidityFactorsReference     from '../components/organic/AcidityFactorsReference'
+import PeptideBondReference        from '../components/organic/PeptideBondReference'
+import FattyAcidsReference         from '../components/organic/FattyAcidsReference'
+import TriglyceridesReference      from '../components/organic/TriglyceridesReference'
+import PhospholipidsReference      from '../components/organic/PhospholipidsReference'
+import NucleobasesReference        from '../components/organic/NucleobasesReference'
+import NucleotidesReference        from '../components/organic/NucleotidesReference'
+import DNAStructureReference       from '../components/organic/DNAStructureReference'
+// ── Spectroscopy ──────────────────────────────────────────────────────────────
+import IRCorrelationTable          from '../components/spectral/IRCorrelationTable'
+import NMRShiftTable               from '../components/spectral/NMRShiftTable'
+import FragmentationTable          from '../components/spectral/FragmentationTable'
 import PageShell from '../components/Layout/PageShell'
 
 // ── Reference component router ────────────────────────────────────────────────
@@ -199,6 +219,40 @@ function ReferenceSection({ id }: { id: string }) {
     case 'organic-naming':     return <OrganicNamingReference />
     case 'functional-groups':  return <FunctionalGroupReference />
     case 'organic-reactions':  return <OrganicReactionReference />
+    // organic — structure & stereochemistry
+    case 'stereochemistry':    return <StereochemistryReference />
+    case 'aromaticity':        return <AromaticityReference />
+    case 'directing-effects':  return <DirectingEffectsReference />
+    case 'conjugated-diene':   return <ConjugatedDieneReference />
+    case 'curved-arrows':      return <CurvedArrowReference />
+    case 'chair-ref':          return <ChairReference />
+    case 'newman-ref':         return <NewmanReference />
+    case 'conformational-ref': return <ConformationalReference />
+    case 'acidity-factors':    return <AcidityFactorsReference />
+    // organic — biomolecules
+    case 'amino-acids-ref':    return (
+      <div className="flex flex-col gap-8">
+        <PeptideBondReference />
+      </div>
+    )
+    case 'lipids-ref':         return (
+      <div className="flex flex-col gap-8">
+        <FattyAcidsReference />
+        <TriglyceridesReference />
+        <PhospholipidsReference />
+      </div>
+    )
+    case 'nucleic-acids-ref':  return (
+      <div className="flex flex-col gap-8">
+        <NucleobasesReference />
+        <NucleotidesReference />
+        <DNAStructureReference />
+      </div>
+    )
+    // spectroscopy
+    case 'ir-table':           return <IRCorrelationTable />
+    case 'nmr-table':          return <NMRShiftTable />
+    case 'ms-table':           return <FragmentationTable />
     default: return null
   }
 }
